@@ -74,6 +74,11 @@ const HistoryDatatable = () => {
   const copyConfirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการสร้างรายการนี้อีกครั้งหรือไม่?",
+    confirmProps:{
+      color: "primary",
+      startIcon: <RecyclingTwoTone />,
+    },
+    confirm: "สร้างรายการอีกครั้ง",
     onConfirm: async (id: number) => {
       try {
         const payload: ImportFromStockId = {

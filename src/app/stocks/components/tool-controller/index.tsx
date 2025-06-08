@@ -112,8 +112,8 @@ const SelecterDialog = ({
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button onClick={onClose}>ปิด</Button>
-          <Button disabled={stocks.length >= 50} onClick={onSubmit}>ยืนยัน</Button>
+          <Button color="secondary" onClick={onClose}>ปิด</Button>
+          <Button color="success" variant="contained" startIcon={<PanToolAlt/>} disabled={stocks.length >= 50} onClick={onSubmit}>ยืนยัน</Button>
         </Stack>
       </DialogActions>
     </Dialog>
@@ -133,7 +133,7 @@ const ToolController = () => {
 
   return (
     <>
-      <Button startIcon={<PanToolAlt />} variant="text" onClick={onOpen}>
+      <Button startIcon={<PanToolAlt />} variant="text" color="secondary" onClick={onOpen}>
         เครื่องมือ
       </Button>
 
