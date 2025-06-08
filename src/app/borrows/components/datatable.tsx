@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Datatable from "@/components/Datatable";
-import { CancelTwoTone, EditTwoTone } from "@mui/icons-material";
+import { CancelTwoTone, EditTwoTone, SaveTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Borrows } from "@prisma/client";
 import GetBorrows from "@/actions/borrow/get";
@@ -77,6 +77,7 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
       open={open}
       onClose={onClose}
       fullWidth
+      maxWidth="xs"
       PaperProps={{
         component: "form",
         onSubmit: onSubmit,
@@ -97,10 +98,10 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" onClick={onClose}>
+        <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button type="submit">บันทึก</Button>
+        <Button variant="contained" color="success" startIcon={<SaveTwoTone/>} type="submit">อัพเดท</Button>
       </DialogActions>
     </Dialog>
   );
