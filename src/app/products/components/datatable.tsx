@@ -4,27 +4,28 @@ import * as ff from "@/libs/formatter";
 import {
   DeleteTwoTone,
   EditTwoTone,
-  ViewAgendaTwoTone,
+  QrCodeTwoTone,
 } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useDialog } from "@/hooks/use-dialog";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
-import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import Datatable from "@/components/Datatable";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { Category, Product } from "@prisma/client";
 import GetProducts from "@/actions/product/get";
 import DeleteProduct from "@/actions/product/delete";
 import { ProductFormDialog } from "./add-controller";
+import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = ({ categories }: { categories: Category[] }) => {
   const editDialog = useDialog();
   const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const [product, setProduct] = useState<Product | null>(null);
+  const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
+  const [showBarcode, setShowBarcode] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
   const confirmation = useConfirm({
@@ -60,6 +61,13 @@ const ProductDatatable = ({ categories }: { categories: Category[] }) => {
         confirmation.handleOpen();
       },
       [confirmation]
+    ),
+    barcode: React.useCallback(
+      (product: Product) => () => {
+        setBarcodeProduct(product);
+        setShowBarcode(true);
+      },
+      [setShowBarcode]
     ),
   };
 
@@ -125,6 +133,13 @@ const ProductDatatable = ({ categories }: { categories: Category[] }) => {
             label="ลบ"
             showInMenu
           />,
+          <GridActionsCellItem
+            key="barcode"
+            icon={<QrCodeTwoTone />}
+            onClick={menu.barcode(row)}
+            label="แสดงบาร์โค้ด"
+            showInMenu
+          />,
         ],
       },
     ];
@@ -147,6 +162,11 @@ const ProductDatatable = ({ categories }: { categories: Category[] }) => {
         categories={categories}
       />
       <Confirmation {...confirmation.props} />
+      <BarcodeDialog 
+        product={barcodeProduct}
+        open={showBarcode} 
+        onClose={() => setShowBarcode(false)}
+      />
     </>
   );
 };
