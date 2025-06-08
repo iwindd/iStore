@@ -2,29 +2,48 @@
 import {
   Autocomplete,
   Box,
+  CircularProgress,
   Grid,
+  InputAdornment,
   TextField,
   TextFieldProps,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { debounce } from "@mui/material/utils";
 import { useInterface } from "@/providers/InterfaceProvider";
 import SearchCategories, { SearchCategory } from "@/actions/category/search";
-import { date, date2 } from "@/libs/formatter";
+import findCategory from "@/actions/category/find";
 
 interface SelectorProps {
   onSubmit(Product: SearchCategory | null): void;
   fieldProps?: TextFieldProps;
+  defaultValue?: number;
 }
 
 const CategorySelector = (props: SelectorProps) => {
   const [value, setValue] = React.useState<SearchCategory | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly SearchCategory[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const { isBackdrop } = useInterface();
+
+  useEffect(() => {
+    if (props.defaultValue) {
+      setIsLoading(true);
+      findCategory(props.defaultValue)
+        .then(resp => {
+          if (resp.success && resp.data) {
+            setValue(resp.data);
+          }
+        })
+        .finally(() => {
+          setIsLoading(false);
+        })
+    }
+  }, [props.defaultValue])
 
   const fetch = React.useMemo(
     () =>
@@ -61,6 +80,12 @@ const CategorySelector = (props: SelectorProps) => {
           newOptions = [...newOptions, ...results];
         }
 
+        // delete duplicates
+        newOptions = newOptions.filter(
+          (option, index, self) =>
+            index === self.findIndex((t) => t.id === option.id)
+        );
+
         setOptions(newOptions);
       }
     });
@@ -83,6 +108,7 @@ const CategorySelector = (props: SelectorProps) => {
       getOptionLabel={(option) =>
         typeof option === "string" ? option : option.label
       }
+      disabled={isLoading}
       filterOptions={(x) => x}
       options={options}
       autoComplete
@@ -104,6 +130,14 @@ const CategorySelector = (props: SelectorProps) => {
           {...props.fieldProps}
           label="กรุณาเลือกประเภทสินค้า"
           fullWidth
+          placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาประเภทสินค้า"}
+          InputProps={isLoading ? ({
+            startAdornment: (
+              <InputAdornment position="end" sx={{ mr: 1 }}>
+                <CircularProgress size={20} />
+              </InputAdornment>
+            ),
+          }): {}}
           onKeyDown={handleKeyDown} // Handle key press events here
         />
       )}

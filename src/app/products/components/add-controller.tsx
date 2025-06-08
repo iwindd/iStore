@@ -241,6 +241,7 @@ export function ProductFormDialog({
             <Grid xs={6}>
               <CategorySelector 
                 onSubmit={onSelectCategory}
+                defaultValue={defaultCategory}
               /> 
             </Grid>
             <Grid xs={6}>
