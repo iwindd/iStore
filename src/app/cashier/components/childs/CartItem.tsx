@@ -70,6 +70,10 @@ export const Item = (props: CartItem) => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการที่จะลบสินค้าหรือไม่ ?",
+    confirmProps: {
+      startIcon: <DeleteTwoTone />,
+      color: "error"
+    },
     onConfirm: async () => setCart(prev => prev.filter(i => i.serial != props.serial))
   });
 
