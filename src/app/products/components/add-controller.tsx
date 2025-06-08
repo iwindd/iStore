@@ -36,6 +36,7 @@ import CreateProduct from "@/actions/product/create";
 import UpdateProduct from "@/actions/product/update";
 import CategorySelector from "@/components/CategorySelector";
 import { SearchCategory } from "@/actions/category/search";
+import { removeWhiteSpace } from "@/libs/formatter";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -182,7 +183,7 @@ export function ProductFormDialog({
   };
 
   useEffect(() => {
-    setValue("serial", product?.serial || "");
+    setValue("serial", (product?.serial && removeWhiteSpace(product.serial)) || "");
     setValue("label", product?.label || "");
     setValue("price", product?.price || 0);
     setValue("stock_min", product?.stock_min || 0);

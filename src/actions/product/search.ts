@@ -1,6 +1,7 @@
 "use server";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
+import { removeWhiteSpace } from "@/libs/formatter";
 import { getServerSession } from "@/libs/session";
 
 export interface SearchProduct{
@@ -23,7 +24,7 @@ const SearchProducts = async (
       where: {
         OR: [
           { label: { contains: input } },
-          { serial: { contains: input } },
+          { serial: { contains: removeWhiteSpace(input) } },
           { keywords: { contains: input } },
         ],
         store_id: Number(session?.user.store),

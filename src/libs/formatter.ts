@@ -183,3 +183,7 @@ export const stockState = (status: Stock['state']): string => {
       return "ไม่ทราบ"
   }
 }
+
+export const removeWhiteSpace = (text: string): string => {
+  return text.replace(/\s+/g, '');
+}

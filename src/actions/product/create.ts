@@ -1,6 +1,7 @@
 "use server";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
+import { removeWhiteSpace } from "@/libs/formatter";
 import { getServerSession } from "@/libs/session";
 import { ProductSchema, ProductValues } from "@/schema/Product";
 
@@ -13,7 +14,7 @@ const CreateProduct = async (
     
     await db.product.create({
       data: {
-        serial: validated.serial,
+        serial: removeWhiteSpace(validated.serial),
         label: validated.label,
         price: validated.price,
         cost: validated.cost,

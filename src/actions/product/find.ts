@@ -1,6 +1,7 @@
 "use server";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
+import { removeWhiteSpace } from "@/libs/formatter";
 import { getServerSession } from "@/libs/session";
 import { Product } from "@prisma/client";
 
@@ -9,7 +10,7 @@ const GetProduct = async (serial : string, includeDelete?: boolean): Promise<Act
     const session = await getServerSession();
     const product = await db.product.findFirst({
       where: {
-        serial: serial,
+        serial: removeWhiteSpace(serial),
         store_id: Number(session?.user.store),
         ...(!includeDelete ? (
           {
