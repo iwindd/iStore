@@ -221,7 +221,12 @@ export function ProductFormDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(event, reason) => {
+        if (reason === "backdropClick" || reason === "escapeKeyDown") {
+          return; 
+        }
+        onClose();
+      }}
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit(submitProduct),
