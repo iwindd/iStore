@@ -7,6 +7,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  InputAdornment,
   Stack,
   TextField,
   Tooltip,
@@ -128,15 +130,16 @@ function SearchDialog({
               helperText={errors["serial"]?.message}
               InputLabelProps={{ shrink: true }}
               fullWidth
+              InputProps={{
+                endAdornment: <InputAdornment position="end">
+                  <Tooltip title="สุ่มรหัสสินค้า">
+                    <IconButton onClick={random}>
+                      <Rotate90DegreesCcw />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>,
+              }}
             />
-            <Tooltip
-              title="สุ่มรหัสสินค้า ในกรณีที่สินค้าไม่มีรหัสสินค้า"
-              placement="top"
-            >
-              <Button variant="contained" onClick={random}>
-                <Rotate90DegreesCcw />
-              </Button>
-            </Tooltip>
           </Stack>
           { isRandomSerial == watch("serial") && (
             <Alert sx={{ mt: 1 }} severity="info">
