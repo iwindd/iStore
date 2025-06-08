@@ -30,15 +30,19 @@ const Dashboard = async () => {
 
   // traffic
   const cashoutOrders = orders.filter((order) => order.type == "CASHOUT");
-  const trafficToPercent = (length: number) =>
-    (length / cashoutOrders.length) * 100;
+  const trafficToPercent = (length: number) => (length / cashoutOrders.length) * 100;
+  const cashOutMethodCash = cashoutOrders.filter((order) => order.method == "CASH");
+  const cashOutMethodBank = cashoutOrders.filter((order) => order.method == "BANK");
+
   const trafficStats = [
-    +trafficToPercent(
-      cashoutOrders.filter((order) => order.method == "CASH").length
-    ).toFixed(0),
-    +trafficToPercent(
-      cashoutOrders.filter((order) => order.method == "BANK").length
-    ).toFixed(0),
+    {
+      percent: +trafficToPercent(cashOutMethodCash.length).toFixed(0),
+      total: cashOutMethodCash.reduce((total, order) => total + (order.price), 0),
+    },
+    {
+      percent: +trafficToPercent(cashOutMethodBank.length).toFixed(0),
+      total: cashOutMethodBank.reduce((total, order) => total + (order.price), 0),
+    },
   ];
 
   //data

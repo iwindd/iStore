@@ -12,7 +12,10 @@ import type { ApexOptions } from 'apexcharts';
 import { Chart } from '@/components/core/chart';
 
 export interface TrafficProps {
-  chartSeries: number[];
+  chartSeries: {
+    percent: number;
+    total: number;
+  }[];
   labels: string[];
   sx?: SxProps;
 }
@@ -25,15 +28,18 @@ export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.El
       <CardHeader title="ช่องทางการชำระเงิน" />
       <CardContent>
         <Stack spacing={2}>
-          <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />
+          <Chart height={300} options={chartOptions} series={chartSeries.map(item => item.percent)} type="donut" width="100%" />
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
             {chartSeries.map((item, index) => {
               const label = labels[index];
               return (
-                <Stack key={label} spacing={1} sx={{ alignItems: 'center' }}>
+                <Stack key={label} sx={{ alignItems: 'center' }}>
                   <Typography variant="h6">{label}</Typography>
                   <Typography color="text.secondary" variant="subtitle2">
-                    {item}%
+                    {item.total} บาท 
+                  </Typography>
+                  <Typography color="text.secondary" lineHeight={.5} variant="caption">
+                    ({item.percent}%)
                   </Typography>
                 </Stack>
               );
