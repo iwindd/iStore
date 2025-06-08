@@ -17,6 +17,7 @@ import { useSnackbar } from "notistack";
 import {
   AddTwoTone,
   Rotate90DegreesCcw,
+  SaveTwoTone,
   SearchTwoTone,
 } from "@mui/icons-material";
 import { Category, Product } from "@prisma/client";
@@ -288,8 +289,8 @@ export function ProductFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>ยกเลิก</Button>
-        <Button type="submit">{product && product?.deleted ? "กู้คืนและบันทึก": "บันทึก"}</Button>
+        <Button color="secondary" onClick={onClose}>ยกเลิก</Button>
+        <Button variant="contained" startIcon={<SaveTwoTone/>} type="submit">{product && product?.deleted ? "กู้คืนและบันทึก": "บันทึก"}</Button>
       </DialogActions>
     </Dialog>
   );
