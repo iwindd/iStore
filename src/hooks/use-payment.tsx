@@ -26,6 +26,7 @@ import { money } from "@/libs/formatter";
 import { enqueueSnackbar } from "notistack";
 import Cashout from "@/actions/cashier/cashout";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { ShoppingCartCheckoutTwoTone } from "@mui/icons-material";
 const Keys = ["Space", "valAltLeft", "valNumpadEnter"];
 
 interface PaymentDialogProps {
@@ -154,10 +155,10 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" onClick={onClose}>
+        <Button color="secondary" type="button" onClick={onClose}>
           ยกเลิก
         </Button>
-        <Button type="submit">ตกลง</Button>
+        <Button variant="contained" color="success" startIcon={<ShoppingCartCheckoutTwoTone/>} autoFocus type="submit">ตกลง</Button>
       </DialogActions>
     </Dialog>
   );
