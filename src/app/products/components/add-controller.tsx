@@ -226,6 +226,7 @@ export function ProductFormDialog({
         component: "form",
         onSubmit: handleSubmit(submitProduct),
       }}
+      disableAutoFocus
     >
       <DialogTitle>{product?.label ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}</DialogTitle>
       <DialogContent>
@@ -247,6 +248,7 @@ export function ProductFormDialog({
                 error={errors["label"] !== undefined}
                 helperText={errors["label"]?.message ?? ""}
                 {...register("label")}
+                autoFocus
               />
             </Grid>
             <Grid xs={6}>
@@ -279,6 +281,7 @@ export function ProductFormDialog({
                 label="สต๊อกขั้นต่ำ"
                 error={errors["stock_min"] !== undefined}
                 helperText={errors["stock_min"]?.message}
+                placeholder="สำหรับจัดการสต๊อกหรือแจ้งเตือน"
                 {...register("stock_min", { valueAsNumber: true })}
               />
             </Grid>
