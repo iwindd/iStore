@@ -4,6 +4,7 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { AddressSchema, AddressValues, FormatAddress } from "@/schema/Address";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -95,9 +96,10 @@ const AddressForm = () => {
         <CardActions>
           <Button
             type="submit"
-            color="inherit"
-            variant="text"
+            color="success"
+            variant="contained"
             sx={{ ml: "auto" }}
+            startIcon={<SaveTwoTone/>}
           >
             บันทึก
           </Button>
