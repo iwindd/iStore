@@ -27,11 +27,11 @@ const CategorySelector = (props: SelectorProps) => {
   const [value, setValue] = React.useState<SearchCategory | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly SearchCategory[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
   const { isBackdrop } = useInterface();
 
   useEffect(() => {
-    if (props.defaultValue) {
+    if (props.defaultValue && props.defaultValue > 0) {
       setIsLoading(true);
       findCategory(props.defaultValue)
         .then(resp => {
