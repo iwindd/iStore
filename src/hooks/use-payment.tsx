@@ -178,10 +178,10 @@ const usePayment = (): PaymentHook => {
     setIsOpen(false);
   }, [setIsOpen]);
 
-  const toggle = React.useCallback(() => {
+  const toggle = React.useCallback((noAlert?: boolean) => {
     if (total() <= 0) {
       if (isOpen) setIsOpen(false);
-      enqueueSnackbar("ไม่สามารถคิดเงินได้เนื่องจากไม่พบสินค้าในตะกร้าสินค้า", {
+      if (!noAlert) enqueueSnackbar("ไม่สามารถคิดเงินได้เนื่องจากไม่พบสินค้าในตะกร้าสินค้า", {
         variant: "error",
       });
       return;
@@ -219,7 +219,7 @@ const usePayment = (): PaymentHook => {
 
   const onKeydown = React.useCallback((key: KeyboardEvent) => {
     const action = () => {
-      if (Keys.includes(key.code)) return toggle();
+      if (Keys.includes(key.code)) return toggle(true);
       if (key.code == "Delete" || key.code == "valNumpadDecimal0") return clearCart();
       if (key.code == "Numpad1") return onCashout("cash");
       if (key.code == "Numpad2") return onCashout("bank"); 

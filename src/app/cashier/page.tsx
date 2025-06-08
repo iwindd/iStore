@@ -72,7 +72,7 @@ const CashierPage = () => {
               variant="contained"
               color="success"
               startIcon={<PaymentTwoTone />}
-              onClick={toggle}
+              onClick={() => toggle()}
             >
               เช็คบิล
             </Button>
