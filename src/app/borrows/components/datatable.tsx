@@ -115,6 +115,10 @@ const BorrowDatatable = () => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการจะยกเลิกรายการเบิกหรือไม่?",
+    confirmProps: {
+      color: "error",
+      startIcon: <CancelTwoTone />,
+    },
     onConfirm: async (id: number) => {
       try {
         const resp = await PatchBorrow(id, "CANCEL");
