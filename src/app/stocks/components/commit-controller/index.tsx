@@ -151,10 +151,11 @@ const CommitController = () => {
   return (
     <>
       <Button
-        color="inherit"
+        color="warning"
         endIcon={<SaveTwoTone />}
         onClick={onOpen}
         sx={{ ml: "auto" }}
+        variant="contained"
       >
         จัดการสต๊อก
       </Button>
