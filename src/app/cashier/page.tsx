@@ -27,6 +27,11 @@ const CashierPage = () => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการจะล้างตะกร้าหรือไม่? สินค้าภายในตะกร้าจะถูกลบและไม่สามารถย้อนกลับได้!",
+    confirmProps:{
+      color: "warning",
+      startIcon: <DeleteTwoTone />,
+    },
+    confirm: "ล้างตะกร้า",
     onConfirm: async () => clear(),
   });
 
