@@ -4,7 +4,7 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EmailTwoTone, PeopleTwoTone } from "@mui/icons-material";
+import { EmailTwoTone, PeopleTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -118,10 +118,11 @@ const DetailForm = () => {
         <CardActions>
           <Button
             type="submit"
-            color="inherit"
-            variant="text"
+            color="success"
+            variant="contained"
             sx={{ ml: "auto" }}
             form="edit-profile-form"
+            startIcon={<SaveTwoTone/>}
           >
             บันทึก
           </Button>
