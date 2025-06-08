@@ -52,6 +52,11 @@ const StockDatatable = () => {
   const clearConfirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการล้างรายการสต๊อกหรือไม่?",
+    confirmProps: {
+      color: "warning",
+      startIcon: <DeleteTwoTone />,
+    },
+    confirm: "ล้างสต๊อก",
     onConfirm: async () => {
       setStocks([]);
       setTarget(null)
