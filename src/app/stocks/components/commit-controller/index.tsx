@@ -129,8 +129,8 @@ const CommitDialog = ({
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button onClick={onClose}>ปิด</Button>
-          <Button onClick={onSubmit}>ยืนยัน</Button>
+          <Button color="secondary" onClick={onClose}>ปิด</Button>
+          <Button color="success" variant="contained" startIcon={<SaveTwoTone/>} onClick={onSubmit}>ตกลง</Button>
         </Stack>
       </DialogActions>
     </Dialog>
