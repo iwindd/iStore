@@ -7,18 +7,18 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { AddTwoTone, Rotate90DegreesCcw } from "@mui/icons-material";
+import {
+  AddTwoTone,
+  Rotate90DegreesCcw,
+  SearchTwoTone,
+} from "@mui/icons-material";
 import { Category, Product } from "@prisma/client";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { useDialog } from "@/hooks/use-dialog";
@@ -114,7 +114,7 @@ function SearchDialog({
       <DialogTitle>ค้นหาสินค้า</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
-          <Stack direction="row" spacing={2}>
+          <Stack direction="row" spacing={1}>
             <TextField
               label="รหัสสินค้า"
               {...register("serial")}
@@ -125,15 +125,24 @@ function SearchDialog({
               InputLabelProps={{ shrink: true }}
               fullWidth
             />
-            <IconButton disableRipple onClick={random}>
-              <Rotate90DegreesCcw />
-            </IconButton>
+            <Tooltip
+              title="สุ่มรหัสสินค้า ในกรณีที่สินค้าไม่มีรหัสสินค้า"
+              placement="top"
+            >
+              <Button variant="contained" onClick={random}>
+                <Rotate90DegreesCcw />
+              </Button>
+            </Tooltip>
           </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>ยกเลิก</Button>
-        <Button type="submit"> ค้นหา </Button>
+        <Button color="secondary" onClick={handleClose}>
+          ยกเลิก
+        </Button>
+        <Button variant="contained" startIcon={<SearchTwoTone />} type="submit">
+          ค้นหา
+        </Button>
       </DialogActions>
     </Dialog>
   );
