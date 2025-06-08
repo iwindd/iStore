@@ -26,7 +26,7 @@ export function ConfirmationDialog({ onClose, onConfirm, disableAutoClose, open,
       <Dialog
         open={open}
         onClose={onClose}
-        maxWidth="sm"
+        maxWidth="xs"
         disableRestoreFocus
       >
         <DialogTitle>{title}</DialogTitle>
