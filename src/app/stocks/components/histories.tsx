@@ -102,6 +102,11 @@ const HistoryDatatable = () => {
   const importConfirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการนำเข้ารายการนี้หรือไม่?",
+    confirmProps: {
+      color: "warning",
+      startIcon: <UploadTwoTone />,
+    },
+    confirm: "นำเข้า",
     onConfirm: async (id: number) => {
       try {
         const payload: ImportFromStockId = {
