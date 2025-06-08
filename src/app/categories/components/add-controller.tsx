@@ -16,7 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { AddTwoTone } from "@mui/icons-material";
+import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
 import { useQueryClient } from "@tanstack/react-query";
 import { Category } from "@prisma/client";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -120,10 +120,10 @@ export function CategoryFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" onClick={onClose}>
+        <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button type="submit">ตกลง</Button>
+        <Button variant="contained" color="success" startIcon={<SaveTwoTone/>} type="submit">บันทึก</Button>
       </DialogActions>
     </Dialog>
   );
