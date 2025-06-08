@@ -12,7 +12,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
-import { AddTwoTone } from "@mui/icons-material";
+import { AddTwoTone, CreditCardTwoTone } from "@mui/icons-material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { useDialog } from "@/hooks/use-dialog";
@@ -68,6 +68,7 @@ export function PurchaseFormDialog({
       open={open}
       onClose={onClose}
       fullWidth
+      maxWidth="xs"
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit(onSubmit),
@@ -110,10 +111,10 @@ export function PurchaseFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" onClick={onClose}>
+        <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button type="submit">ตกลง</Button>
+        <Button color="success" variant="contained" startIcon={<CreditCardTwoTone/>} type="submit">ซื้อสินค้า</Button>
       </DialogActions>
     </Dialog>
   );
