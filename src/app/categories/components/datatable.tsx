@@ -34,6 +34,10 @@ const CategoryDatatable = () => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการที่จะลบประเภทสินค้าหรือไม่",
+    confirmProps: {
+      color: "error",
+      startIcon: <DeleteTwoTone />,
+    },
     onConfirm: async (id: number) => {
       try {
         const resp = await DeleteCategory(id);
