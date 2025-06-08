@@ -10,7 +10,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { AddTwoTone } from "@mui/icons-material";
+import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
 import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 import Selector from "@/components/Selector";
@@ -82,8 +82,8 @@ function StockFormDialog({
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button onClick={Close}>ปิด</Button>
-          <Button disabled={stocks.length >= 50} onClick={onConfirm}>บันทึก</Button>
+          <Button color="secondary" onClick={Close}>ปิด</Button>
+          <Button variant="contained" color="success" startIcon={<SaveTwoTone/>}  disabled={stocks.length >= 50} onClick={onConfirm}>บันทึก</Button>
         </Stack>
       </DialogActions>
     </Dialog>
