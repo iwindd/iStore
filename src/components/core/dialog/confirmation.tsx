@@ -32,7 +32,7 @@ export function ConfirmationDialog({ onClose, onConfirm, disableAutoClose, open,
         <DialogTitle>{title}</DialogTitle>
         <DialogContent><DialogContentText>{text}</DialogContentText></DialogContent>
         <DialogActions>
-          <Button size='small' variant='outlined' color='secondary' onClick={onClose} >{cancel || "ยกเลิก"}</Button>
+          <Button size='small' color='secondary' onClick={onClose} >{cancel || "ยกเลิก"}</Button>
           <Button size='small' variant='contained' color='primary' {...confirmProps} autoFocus onClick={handleConfirm} >{confirm || "ยืนยัน"}</Button>
         </DialogActions>
       </Dialog>
