@@ -12,6 +12,7 @@ import {
   Stack,
   TextField,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -69,7 +70,7 @@ function SearchDialog({
     formState: { errors },
     setValue,
     reset,
-    watch
+    watch,
   } = useForm<ProductFindValues>({
     resolver: zodResolver(ProductFindSchema),
   });
@@ -120,32 +121,31 @@ function SearchDialog({
       <DialogTitle>ค้นหาสินค้า</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
-          <Stack direction="row" spacing={1}>
-            <TextField
-              label="รหัสสินค้า"
-              {...register("serial")}
-              autoFocus
-              placeholder="EAN8 or EAN13"
-              error={errors["serial"] != undefined}
-              helperText={errors["serial"]?.message}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-              InputProps={{
-                endAdornment: <InputAdornment position="end">
+          <TextField
+            label="รหัสสินค้า"
+            {...register("serial")}
+            autoFocus
+            placeholder="EAN8 or EAN13"
+            error={errors["serial"] != undefined}
+            helperText={
+              errors["serial"]?.message ||
+              (isRandomSerial == watch("serial") &&
+                " สินค้าที่ถูกสุ่มจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง")
+            }
+            InputLabelProps={{ shrink: true }}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
                   <Tooltip title="สุ่มรหัสสินค้า">
                     <IconButton onClick={random}>
                       <Rotate90DegreesCcw />
                     </IconButton>
                   </Tooltip>
-                </InputAdornment>,
-              }}
-            />
-          </Stack>
-          { isRandomSerial == watch("serial") && (
-            <Alert sx={{ mt: 1 }} severity="info">
-              สินค้าที่ถูกสุ่มจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง
-            </Alert>
-          )}
+                </InputAdornment>
+              ),
+            }}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
