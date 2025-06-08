@@ -1,36 +1,78 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
-import { Product } from '@prisma/client'
-import React from 'react'
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
+import { Product } from "@prisma/client";
+import Barcode from "react-barcode";
+import React from "react";
 
 const BarcodeDialog = ({
   product,
   open,
-  onClose: handleClose
-}:{
-  product: Product | null,
-  open: boolean,
-  onClose: (event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLDivElement>) => void
+  onClose: handleClose,
+}: {
+  product: Product | null;
+  open: boolean;
+  onClose: (
+    event:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.KeyboardEvent<HTMLDivElement>
+  ) => void;
 }) => {
-  return (
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle id="alert-dialog-title">
-          {(product && product.label) ? `${product.label}` : 'บาร์โค้ดของสินค้า'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            TODO:: RENDER BARCODE HERE
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button color='secondary' onClick={handleClose} autoFocus>ปิด</Button>
-        </DialogActions>
-      </Dialog>
-  )
-}
+  const barcodeRef = React.useRef<HTMLDivElement>(null);
 
-export default BarcodeDialog
+  const handleDownload = () => {
+    const canvas = barcodeRef.current?.querySelector("canvas");
+    if (!canvas) return console.log("No barcode canvas found");
+
+    const url = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${product?.label || "barcode"}.png`;
+    link.click();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth disableRestoreFocus>
+      <DialogTitle>{product && product.label ? `${product.label}` : "บาร์โค้ดของสินค้า"}</DialogTitle>
+      <DialogContent
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          padding: 1,
+        }}
+      >
+        <div ref={barcodeRef}>
+          {product && product.serial ? (
+            <Barcode 
+              value={product?.serial} 
+              format="EAN13" 
+              renderer="canvas"
+            />
+          ) : (
+            <Typography>ไม่มีข้อมูลบาร์โค้ดสำหรับสินค้านี้</Typography>
+          )}
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button color="secondary" variant="outlined" size="small" onClick={handleClose}>ปิด</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleDownload}
+          size="small"
+          disabled={!product || !product.serial}
+          autoFocus
+        >
+          ดาวน์โหลด
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default BarcodeDialog;
