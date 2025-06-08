@@ -141,8 +141,8 @@ const CategorySelector = (props: SelectorProps) => {
           onKeyDown={handleKeyDown} // Handle key press events here
         />
       )}
-      renderOption={(props, option) => {
-        const { key, ...optionProps } = props;
+      renderOption={(props_, option) => {
+        const { key, ...optionProps } = props_;
 
         const parts = parse(option.label, match(option.label, inputValue));
         return (
@@ -162,6 +162,7 @@ const CategorySelector = (props: SelectorProps) => {
                   </Box>
                 ))}
                 <Typography variant="body2" color="text.secondary">
+                  {option.id == props.defaultValue ? "(กำลังใช้งาน) " : ""} 
                   {option.overstock ? "อณุญาตการเบิก" : "ไม่อณุญาตการเบิก" } 
                 </Typography>
               </Grid>
