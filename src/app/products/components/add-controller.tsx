@@ -60,12 +60,14 @@ function SearchDialog({
   onSubmit,
   setLoading,
 }: SearchDialogProps): React.JSX.Element {
+  const [isRandomSerial, setIsRandomSerial] = React.useState<string>();
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    reset
+    reset,
+    watch
   } = useForm<ProductFindValues>({
     resolver: zodResolver(ProductFindSchema),
   });
@@ -93,6 +95,7 @@ function SearchDialog({
   const random = () => {
     const randomSerial = randomEan();
     setValue("serial", randomSerial);
+    setIsRandomSerial(randomSerial);
   };
 
   const handleClose = () => {
@@ -135,6 +138,11 @@ function SearchDialog({
               </Button>
             </Tooltip>
           </Stack>
+          { isRandomSerial == watch("serial") && (
+            <Alert sx={{ mt: 1 }} severity="info">
+              สินค้าที่ถูกสุ่มจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง
+            </Alert>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>
