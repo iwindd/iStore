@@ -290,7 +290,7 @@ export function ProductFormDialog({
       </DialogContent>
       <DialogActions>
         <Button color="secondary" onClick={onClose}>ยกเลิก</Button>
-        <Button variant="contained" startIcon={<SaveTwoTone/>} type="submit">{product && product?.deleted ? "กู้คืนและบันทึก": "บันทึก"}</Button>
+        <Button variant="contained" startIcon={<SaveTwoTone/>} color="success" type="submit">{product && product?.deleted ? "กู้คืนและบันทึก": "บันทึก"}</Button>
       </DialogActions>
     </Dialog>
   );
