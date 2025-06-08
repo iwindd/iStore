@@ -19,6 +19,10 @@ const OverstockDatatable = () => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการเปลี่ยนสถานะรายการหรือไม่?",
+    confirmProps: {
+      color: "success",
+      startIcon: <CheckTwoTone />,
+    },
     onConfirm: async (id: number) => {
       try {
         const resp = await PatchOverstock(id);
