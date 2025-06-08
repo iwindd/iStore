@@ -9,6 +9,7 @@ import {
 import { Product } from "@prisma/client";
 import Barcode from "react-barcode";
 import React from "react";
+import { DownloadTwoTone } from "@mui/icons-material";
 
 const BarcodeDialog = ({
   product,
@@ -59,7 +60,7 @@ const BarcodeDialog = ({
         </div>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" variant="outlined" size="small" onClick={handleClose}>ปิด</Button>
+        <Button color="secondary" size="small" onClick={handleClose}>ปิด</Button>
         <Button
           variant="contained"
           color="primary"
@@ -67,6 +68,7 @@ const BarcodeDialog = ({
           size="small"
           disabled={!product || !product.serial}
           autoFocus
+          startIcon={<DownloadTwoTone/>}
         >
           ดาวน์โหลด
         </Button>
