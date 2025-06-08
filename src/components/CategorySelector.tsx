@@ -137,7 +137,7 @@ const CategorySelector = (props: SelectorProps) => {
                 <CircularProgress size={20} />
               </InputAdornment>
             ),
-          }): {}}
+          }): {...params.InputProps}}
           onKeyDown={handleKeyDown} // Handle key press events here
         />
       )}
