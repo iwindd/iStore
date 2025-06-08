@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Button, ButtonOwnProps, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 export interface ConfirmationProps {
   onClose: () => void;
@@ -9,11 +9,12 @@ export interface ConfirmationProps {
   text: string,
   cancel?: string,
   confirm?: string,
+  confirmProps?: ButtonOwnProps,
   disableAutoClose?: boolean,
   data?: any
 }
 
-export function ConfirmationDialog({ onClose, onConfirm, disableAutoClose, open, title, text, cancel, confirm, data }: ConfirmationProps): React.JSX.Element {
+export function ConfirmationDialog({ onClose, onConfirm, disableAutoClose, open, title, text, cancel, confirm, data, confirmProps }: ConfirmationProps): React.JSX.Element {
   const handleConfirm = () => {
     if (!disableAutoClose) onClose();
 
@@ -31,8 +32,8 @@ export function ConfirmationDialog({ onClose, onConfirm, disableAutoClose, open,
         <DialogTitle>{title}</DialogTitle>
         <DialogContent><DialogContentText>{text}</DialogContentText></DialogContent>
         <DialogActions>
-          <Button onClick={onClose} >{cancel || "ยกเลิก"}</Button>
-          <Button onClick={handleConfirm} >{confirm || "ยืนยัน"}</Button>
+          <Button size='small' variant='outlined' color='secondary' onClick={onClose} >{cancel || "ยกเลิก"}</Button>
+          <Button size='small' variant='contained' color='primary' {...confirmProps} autoFocus onClick={handleConfirm} >{confirm || "ยืนยัน"}</Button>
         </DialogActions>
       </Dialog>
     </>

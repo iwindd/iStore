@@ -1,4 +1,5 @@
 import { ConfirmationDialog } from '@/components/core/dialog/confirmation';
+import { ButtonOwnProps } from '@mui/material';
 import * as React from 'react';
 
 interface ConfirmController<T> {
@@ -19,7 +20,8 @@ interface ConfirmController<T> {
     open: boolean;
     onClose: () => void;
     onConfirm : (...args : any) => Promise<any>;
-    data: any
+    data: any;
+    confirmProps?: ButtonOwnProps;
   }
 }
 
@@ -28,6 +30,7 @@ interface ConfirmDialogProps {
   text: string,
   cancel?: string,
   confirm?: string,
+  confirmProps?: ButtonOwnProps,
   onConfirm: (...args : any) => Promise<any>
 }
 
@@ -57,6 +60,6 @@ export function useConfirm<T = HTMLElement>(props: ConfirmDialogProps): ConfirmC
     setText,
     setLCancel, setLConfirm,
     with: setData_,
-    props: {title, text, cancel, confirm, open, onClose : handleClose, onConfirm: props.onConfirm, data}
+    props: {title, text, cancel, confirm, open, onClose : handleClose, onConfirm: props.onConfirm, data, confirmProps: props.confirmProps || {}}
   };
 }
