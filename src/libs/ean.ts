@@ -1,3 +1,4 @@
+// EAN (European Article Number) barcode validation and generation
 export function isValid(code: string): boolean {
   // Remove any non-numeric characters
   code = code.replace(/\D/g, "");
@@ -26,6 +27,7 @@ export function isValid(code: string): boolean {
   return parseInt(checksum, 10) === calculatedChecksum;
 }
 
+// Generate a random EAN13 barcode
 export function randomEan(): string {
   // Generate random 12-digit product code
   let productCode = "";
