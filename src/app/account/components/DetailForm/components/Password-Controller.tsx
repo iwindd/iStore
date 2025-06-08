@@ -16,13 +16,14 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { useDialog } from "@/hooks/use-dialog";
 import { PasswordSchema, PasswordValues } from "@/schema/Password";
 import UpdatePassword from "@/actions/user/password";
+import { KeyTwoTone, SaveTwoTone } from "@mui/icons-material";
 
 interface AddDialogProps {
   onClose: () => void;
   open: boolean;
 }
 
-export function CategoryFormDialog({
+export function ChangePasswordDialog({
   open,
   onClose,
 }: AddDialogProps): React.JSX.Element {
@@ -66,6 +67,7 @@ export function CategoryFormDialog({
       open={open}
       onClose={onClose}
       fullWidth
+      maxWidth="xs"
       PaperProps={{
         component: "form",
         onSubmit: handleSubmit(onSubmit),
@@ -101,10 +103,10 @@ export function CategoryFormDialog({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button type="button" onClick={onClose}>
+        <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button type="submit">บันทึก</Button>
+        <Button variant="contained" color="success" startIcon={<SaveTwoTone/>} type="submit">บันทึก</Button>
       </DialogActions>
     </Dialog>
   );
@@ -119,7 +121,7 @@ const PasswordController = () => {
       <Button
         variant="text"
         onClick={dialog.handleOpen}
-        disableRipple
+        startIcon={<KeyTwoTone/>}
         sx={{
           justifyContent: "flex-start",
           "&:hover": {
@@ -131,7 +133,7 @@ const PasswordController = () => {
         เปลี่ยนรหัสผ่าน
       </Button>
 
-      <CategoryFormDialog
+      <ChangePasswordDialog
         open={dialog.open && !isBackdrop}
         onClose={dialog.handleClose}
       />
