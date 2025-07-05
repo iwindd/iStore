@@ -19,25 +19,37 @@ model User {
   name     String
   email    String  @unique
   password String
-  stores   Store[] // One-to-many relationship
+  userStores UserStore[]
 }
 
 model Store {
   id     Int  @id @default(autoincrement())
-  user_id Int // Foreign key to User
-  user   User @relation(fields: [user_id], references: [id])
   name    String
   categories Category[]
   product Product[]
   orders Order[]
   borrows Borrows[]
   stocks Stock[]
+  users UserStore[]
+  // Address
   line_token String?
   address String?
   district String?  
   area String?
   province String?
   postalcode String?
+}
+
+model UserStore {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  storeId Int
+  store Store @relation(fields: [storeId], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt 
+
+  @@unique([userId, storeId])
 }
 
 model Category {
