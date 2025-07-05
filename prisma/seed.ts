@@ -1,43 +1,45 @@
 import { PrismaClient } from "@prisma/client";
-import ProductData from './data/products.json';
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const user = await prisma.user.upsert({
-    where: { email: "store@gmail.com" },
-    update: {},
-    create: {
-      email: "store@gmail.com",
-      name: "iStore",
-      password: await bcrypt.hash("password", 15),
-    },
+  const user = await prisma.user.createMany({
+    data: [
+      {
+        email: "store@gmail.com",
+        name: "iStore",
+        password: await bcrypt.hash("password", 15),
+      },
+      {
+        email: "employee.store@gmail.com",
+        name: "Employee Store",
+        password: await bcrypt.hash("password", 15),
+      }
+    ]
   });
+  console.log("Users created:", user);
 
   const store = await prisma.store.create({
     data: {
-      user_id: user.id,
       name: "Main Store"
     }
-  })
+  });
+  console.log("Store created:", store);
 
-  const category = await prisma.category.create({
-    data: {
-      label: "ทั้งหมด",
-      store_id: store.id
-    },
-  })
-
-  const products = await prisma.product.createMany({
-    data: ProductData.map((product) => ({
-      ...product,
-      category_id: category.id,
-      store_id: store.id
-    }))
-  })
-
-  console.log({ user, store, category, products });
+  const userStore = await prisma.userStore.createMany({
+    data: [
+      {
+        userId: 1,
+        storeId: store.id,
+      },
+      {
+        userId: 2,
+        storeId: store.id,
+      }
+    ]
+  });
+  console.log("UserStore associations created:", userStore);
 }
 main()
   .then(async () => {
