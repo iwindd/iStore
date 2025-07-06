@@ -1,7 +1,8 @@
 "use server";
+import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getServerSession, getUser } from "@/libs/session";
 import { ProductSchema, ProductValues } from "@/schema/Product";
 
 const UpdateProduct = async (
@@ -9,12 +10,14 @@ const UpdateProduct = async (
   id: number
 ): Promise<ActionResponse<ProductValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(ProductPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
     await db.product.update({
       where: {
         id: id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       data: { 
         label: validated.label,

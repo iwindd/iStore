@@ -1,15 +1,18 @@
 "use server";
+import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { removeWhiteSpace } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { ProductSchema, ProductValues } from "@/schema/Product";
 
 const CreateProduct = async (
   payload: ProductValues
 ): Promise<ActionResponse<ProductValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(ProductPermissionEnum.CREATE)) throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
     
     await db.product.create({
@@ -21,7 +24,7 @@ const CreateProduct = async (
         stock: 0,
         stock_min: validated.stock_min,
         sold: 0,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
         category_id: validated.category_id,
         keywords: validated.keywords
       },
