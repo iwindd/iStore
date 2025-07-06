@@ -50,7 +50,13 @@ model UserStore {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt 
   role_id Int
-  role Role @relation(fields: [role_id], references: [id])
+  role Role @relation("UserStoreRole", fields: [role_id], references: [id])
+  categories Category[]
+  products Product[]
+  orders Order[]
+  borrows Borrows[]
+  stocks Stock[]
+  roles Role[]
 
   @@unique([userId, storeId])
 }
@@ -64,6 +70,8 @@ model Category {
   overstock Boolean @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt 
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
   
   @@unique([label, store_id])
 }
@@ -89,6 +97,9 @@ model Product {
   stocked StockItem[]
   deleted DateTime?
 
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
+
   @@unique([serial, store_id])
 }
 
@@ -106,6 +117,8 @@ model Order {
   updated_at DateTime @updatedAt 
   store Store @relation(fields: [store_id], references: [id])
   products OrderProduct[]
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
 model Borrows {
@@ -120,6 +133,8 @@ model Borrows {
   store Store @relation(fields: [store_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt 
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
 model OrderProduct {
@@ -146,6 +161,8 @@ model Stock{
   items StockItem[]
   store_id Int
   store Store @relation(fields: [store_id], references: [id])
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
 model StockItem{
@@ -165,7 +182,9 @@ model Role {
   updated_at DateTime @updatedAt 
   store_id Int
   store Store @relation(fields: [store_id], references: [id])
-  users UserStore[] 
+  users UserStore[] @relation("UserStoreRole")
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
 
   @@unique([label])
 }
