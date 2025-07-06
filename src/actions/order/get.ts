@@ -1,16 +1,19 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { HistoryPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { filter, order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Order } from "@prisma/client";
 
 const GetHistories = async (
   table: TableFetch
 ): Promise<ActionResponse<Order[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(HistoryPermissionEnum.READ)) throw new Error("Forbidden");
     const histories = await db.$transaction([
       db.order.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -18,12 +21,12 @@ const GetHistories = async (
         orderBy: order(table.sort.length > 0 ? table.sort : [ { field: "created_at", sort: "desc"}]),
         where: {
           ...filter(table.filter, ['text', 'note']),
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
       }),
       db.order.count({
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
       }),
     ]);
