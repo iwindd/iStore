@@ -18,7 +18,6 @@ const SearchProducts = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.READ)) throw new Error("Forbidden");
     const products = await db.product.findMany({
       take: 5,
       orderBy: {

@@ -10,7 +10,6 @@ const GetProduct = async (serial : string, includeDelete?: boolean): Promise<Act
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.READ)) throw new Error("Forbidden");
     const product = await db.product.findFirst({
       where: {
         serial: removeWhiteSpace(serial),
