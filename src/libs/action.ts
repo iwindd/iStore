@@ -19,6 +19,11 @@ export const ActionError = (error: any) => {
   } else {
     // Handle other errors (e.g., network, database)
     const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Action Error:", error);
+    }
+
     return {
       success: false,
       message: errorMessage,
