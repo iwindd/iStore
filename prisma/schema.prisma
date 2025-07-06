@@ -57,6 +57,7 @@ model UserStore {
   borrows Borrows[]
   stocks Stock[]
   roles Role[]
+  order_products OrderProduct[]
 
   @@unique([userId, storeId])
 }
@@ -147,6 +148,8 @@ model OrderProduct {
   count Int
   overstock Int @default(0)
   overstock_at DateTime?
+  user_store_id Int? // ผู้ทำรายการ สำเร็จ การเบิก
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
   order_id Int
   order Order @relation(fields: [order_id], references: [id])
 }
