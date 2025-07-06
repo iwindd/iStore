@@ -23,6 +23,17 @@ const GetHistories = async (
           ...filter(table.filter, ['text', 'note']),
           store_id: user.store,
         },
+        include: {
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       }),
       db.order.count({
         where: {
