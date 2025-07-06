@@ -1,12 +1,18 @@
 import { PermissionBit } from "@/config/Permission";
-import { PermissionEnum } from "@/enums/permission";
+import { PermissionEnum, SuperPermissionEnum } from "@/enums/permission";
 
 export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
-  return Object.entries(PermissionBit)
+  const permissions = Object.entries(PermissionBit)
     .filter(([, bit]) => {
-      return mask && Number(bit) !== 0;
+      return (mask & BigInt(bit)) !== BigInt(0);
     })
     .map(([name]) => name) as PermissionEnum[];
+
+  if (permissions.includes(SuperPermissionEnum.ALL as any as PermissionEnum)) {
+    return Object.entries(PermissionBit).map(([name]) => name) as PermissionEnum[];
+  }
+  
+  return permissions;
 };
 
 export const permissionsToMask = (permissions: PermissionEnum[]): bigint => {
