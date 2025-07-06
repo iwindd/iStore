@@ -7,6 +7,10 @@ const UpdateLineToken = async (
   token: string
 ): Promise<ActionResponse<string>> => {
   try {
+    throw new Error("Depressed feature, please use the new line bot integration");
+  /*   
+    // TODO:: Implement the line token update  
+
     const session = await getServerSession();
     await db.store.update({
       where: {
@@ -17,7 +21,7 @@ const UpdateLineToken = async (
       },
     });
 
-    return { success: true, data: token };
+    return { success: true, data: token }; */
   } catch (error) {
     return ActionError(error) as ActionResponse<string>;
   }

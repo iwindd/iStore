@@ -1,18 +1,21 @@
 "use server";
+import { AccountPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 
 const UpdateProfile = async (
   payload: ProfileValues,
 ): Promise<ActionResponse<ProfileValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(AccountPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = ProfileSchema.parse(payload);
     await db.user.update({
       where: {
-        id: Number(session?.user.id),
+        id: user.store,
       },
       data: {
         name: validated.name,

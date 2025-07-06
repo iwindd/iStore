@@ -8,6 +8,11 @@ const UpdateAddress = async (
   payload: AddressValues,
 ): Promise<ActionResponse<AddressValues>> => {
   try {
+    throw new Error("Not implemented yet");
+    
+  /*     
+    TODO:: Implement the address
+
     const session = await getServerSession();
     const validated = AddressSchema.parse(payload);
     await db.store.update({
@@ -23,7 +28,8 @@ const UpdateAddress = async (
       },
     });
 
-    return { success: true, data: validated };
+    return { success: true, data: validated }; 
+    */
   } catch (error) {
     return ActionError(error) as ActionResponse<AddressValues>;
   }
