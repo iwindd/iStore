@@ -1,6 +1,4 @@
-import TreeViewPermissionItems, {
-  TreeViewPermissionDefaultItems,
-} from "@/app/roles/components/permissionItems";
+import TreeViewPermissionItems, { TreeViewPermissionDefaultItems } from "@/app/roles/components/config/permissionItems";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { RoleSchema, RoleValues } from "@/schema/Role";
 import { zodResolver } from "@hookform/resolvers/zod";
