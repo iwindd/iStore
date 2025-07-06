@@ -1,14 +1,17 @@
 "use server";
+import { PurchasePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { PurchaseSchema, PurchaseValues } from "@/schema/Purchase";
 
 const CreatePurchase = async (
   payload: PurchaseValues
 ): Promise<ActionResponse<PurchaseValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(PurchasePermissionEnum.CREATE)) throw new Error("Forbidden");
     const validated = PurchaseSchema.parse(payload);
     const totalCost = validated.cost * validated.count;
 
@@ -20,7 +23,7 @@ const CreatePurchase = async (
         type: "PURCHASE",
         note: payload.note,
         text: payload.label,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
         products: {
           create: [
             {

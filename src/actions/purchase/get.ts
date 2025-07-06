@@ -1,9 +1,10 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { PurchasePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 
 export interface Purchase {
   id: number,
@@ -20,14 +21,16 @@ const GetPurchase = async (
   table: TableFetch
 ): Promise<ActionResponse<Purchase[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(PurchasePermissionEnum.READ)) throw new Error("Forbidden");
     const purchase = await db.$transaction([
       db.order.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
         take: table.pagination.pageSize,
         orderBy: order(table.sort),
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
           type: "PURCHASE"
         },
         select: {
@@ -45,7 +48,7 @@ const GetPurchase = async (
       }),
       db.order.count({
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
           type: "PURCHASE"
         },
       }),
