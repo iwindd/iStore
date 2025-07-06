@@ -1,4 +1,5 @@
 import { Stack, Typography } from "@mui/material"
+import AddController from "./components/add-controller"
 
 const Roles = async () => {
   return (
@@ -8,6 +9,9 @@ const Roles = async () => {
           <Typography variant="h4">พนักงาน</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
         </Stack>
+        <>
+          <AddController/>
+        </>
       </Stack>
     </Stack>
   )
