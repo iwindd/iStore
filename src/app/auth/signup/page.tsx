@@ -92,7 +92,7 @@ const SignIn = () => {
             <Avatar>
               <LoginTwoTone />
             </Avatar>
-            <Typography variant="h5">ลงทะเบียน</Typography>
+            <Typography variant="h5">ลงทะเบียนร้านค้า</Typography>
           </Stack>
           <Divider />
           <Stack px={3} pt={1} spacing={1}>
