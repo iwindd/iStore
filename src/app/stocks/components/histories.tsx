@@ -175,20 +175,19 @@ const HistoryDatatable = () => {
   const columns = (): GridColDef[] => {
     return [
       {
-        field: "id",
-        sortable: true,
-        headerName: "#หมายเลขสต๊อก",
-        flex: 1,
-        editable: false,
-        renderCell: (data: any) => `#${ff.number(data.value)}`,
-      },
-      {
         field: "action_at",
         sortable: true,
         headerName: "วันที่ทำรายการ",
         flex: 2,
         editable: false,
         renderCell: (data: any) => ff.date(data.value),
+      },
+      {
+        field: "user_store", 
+        sortable: true, 
+        headerName: "ผู้สร้างรายการ", 
+        flex: 2,
+        renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "_count",
