@@ -1,3 +1,5 @@
+import { PermissionEnum } from "@/enums/permission";
+
 export interface NavItemConfig {
   key: string;
   title?: string;
@@ -8,4 +10,5 @@ export interface NavItemConfig {
   href?: string;
   items?: NavItemConfig[];
   matcher?: { type: 'startsWith' | 'equals'; href: string };
+  somePermissions?: PermissionEnum[]; 
 }

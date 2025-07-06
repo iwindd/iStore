@@ -10,6 +10,7 @@ import { NavItemConfig } from "../type";
 import { isNavItemActive } from "../utils";
 import icons from "@/config/Icons";
 import { BorderColor, BorderRight } from "@mui/icons-material";
+import { hasPermission } from "@/libs/permission";
 
 const sx = {
   "--SideNav-color": "var(--mui-palette-common-white)",
@@ -122,10 +123,19 @@ function renderNavItems({
   session: Session | null;
 }): React.JSX.Element {
   const items = Paths.filter(path => !path.disableNav);
+  const userPermission = session?.user?.permission;
+
   const children = items.reduce(
     (acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
-      const { key, ...item } = curr;
+      const { key, somePermissions , ...item} = curr;
+      const userPermBit = userPermission ? BigInt(userPermission) : 0n;
+      if (somePermissions && !userPermission) return acc;
 
+      const hasSomePermissions = somePermissions?.some(permission => {
+        return hasPermission(userPermBit, permission);
+      });
+
+      if (!hasSomePermissions) return acc;
       acc.push(<NavItem key={key} pathname={pathname} {...item} />);
       return acc;
     },
