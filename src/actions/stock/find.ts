@@ -1,7 +1,8 @@
 "use server";
+import { StockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Product, StockItem as StockItemOriginal, Stock as StockOriginal } from "@prisma/client";
 
 interface StockItem extends StockItemOriginal{
@@ -14,11 +15,13 @@ interface Stock extends StockOriginal {
 
 const GetStock = async (id : number, includeItem?: boolean): Promise<ActionResponse<Stock | null>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(StockPermissionEnum.READ)) throw new Error("Forbidden");
     const stock = await db.stock.findFirst({
       where: {
         id: id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       ...(includeItem ? {
         include: {

@@ -1,9 +1,10 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { StockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { filter, order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Stock as StockOriginal } from "@prisma/client";
 
 interface Stock extends StockOriginal {
@@ -16,7 +17,9 @@ const GetStocks = async (
   table: TableFetch
 ): Promise<ActionResponse<Stock[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(StockPermissionEnum.READ)) throw new Error("Forbidden");
     const stocks = await db.$transaction([
       db.stock.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -28,7 +31,7 @@ const GetStocks = async (
         ),
         where: {
           ...filter(table.filter, ["note"]),
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
         include: {
           _count: {
@@ -40,7 +43,7 @@ const GetStocks = async (
       }),
       db.order.count({
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
       }),
     ]);

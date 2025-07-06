@@ -1,8 +1,9 @@
 "use server";
 import { StockItem } from "@/atoms/stock";
 import { ActionError, ActionResponse } from "@/libs/action";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import db from "@/libs/db";
+import { StockPermissionEnum } from "@/enums/permission";
 
 interface StockItemMinimal {
   changed_by: number;
@@ -71,8 +72,9 @@ const Commit = async (
   note?: string
 ): Promise<ActionResponse<StockItem[]>> => {
   try {
-    const session = await getServerSession();
-    if (!session) throw Error("no_found_session");
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(StockPermissionEnum.UPDATE)) throw new Error("Forbidden");
     payload = payload.slice(0, 50);
 
     const data = await db.stock.upsert({
@@ -82,7 +84,7 @@ const Commit = async (
       create: {
         note: note || "",
         state: instant ? "SUCCESS" : "PROGRESS",
-        store_id: Number(session.user.store),
+        store_id: user.store,
       },
       update: {
         note: note || "",
@@ -100,7 +102,7 @@ const Commit = async (
     });
 
     if (!target && data.items.length <= 0) {
-      const validated = await validateProducts(payload, Number(session.user.store))
+      const validated = await validateProducts(payload, user.store)
       data.items = validated.map((product) => ({
         changed_by: product.changed_by,
         product_id: product.product_id,

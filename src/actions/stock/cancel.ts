@@ -1,16 +1,19 @@
 "use server";
+import { StockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Stock } from "@prisma/client";
 
 const CancelStock = async (id: number): Promise<ActionResponse<Stock>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(StockPermissionEnum.DELETE)) throw new Error("Forbidden");
     const data = await db.stock.update({
       where: {
         id: id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       data: {
         state: "CANCEL",
