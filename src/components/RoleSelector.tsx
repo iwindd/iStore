@@ -14,8 +14,7 @@ import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { debounce } from "@mui/material/utils";
 import { useInterface } from "@/providers/InterfaceProvider";
-import findCategory from "@/actions/category/find";
-import * as Actions from "@/actions/roles/selector";
+import * as Actions from "@/actions/roles";
 
 interface SelectorProps {
   onSubmit(Product: Actions.RoleSelector | null): void;
@@ -33,7 +32,7 @@ const RoleSelector = (props: SelectorProps) => {
   useEffect(() => {
     if (props.defaultValue && props.defaultValue > 0) {
       setIsLoading(true);
-      findCategory(props.defaultValue)
+      Actions.find(props.defaultValue)
         .then(resp => {
           if (resp.success && resp.data) {
             setValue(resp.data);
@@ -103,7 +102,7 @@ const RoleSelector = (props: SelectorProps) => {
 
   return (
     <Autocomplete
-      id="product-selector"
+      id="role-selector"
       sx={{ width: "100%" }}
       getOptionLabel={(option) =>
         typeof option === "string" ? option : option.label
@@ -114,7 +113,7 @@ const RoleSelector = (props: SelectorProps) => {
       autoComplete
       filterSelectedOptions
       value={value}
-      noOptionsText="ไม่พบประเภทสินค้า"
+      noOptionsText="ไมพบตำแหน่ง"
       readOnly={isBackdrop}
       onChange={(_: any, newValue: Actions.RoleSelector | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
