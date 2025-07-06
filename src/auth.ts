@@ -23,7 +23,7 @@ export const authOptions = {
         ...{
           id: token.id,
           store: token.store,
-          userStoreId: token.storeId,
+          userStoreId: token.userStoreId,
           name: token.name,
           email: token.email,
           line_token: token.line_token,
