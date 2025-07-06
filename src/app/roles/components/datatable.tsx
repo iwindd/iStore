@@ -6,7 +6,7 @@ import { Role } from "@prisma/client";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import Datatable from "@/components/Datatable";
 import * as RoleActions from "@/actions/roles";
-import RoleFormDialog from "@/app/categories/components/roleFormDialog";
+import RoleFormDialog from "@/app/roles/components/roleFormDialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 

@@ -3,7 +3,7 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import React from "react";
-import RoleFormDialog from "@/app/categories/components/roleFormDialog";
+import RoleFormDialog from "@/app/roles/components/roleFormDialog";
 import { useDialog } from "@/hooks/use-dialog";
 
 type AddRoleControllerProps = {
