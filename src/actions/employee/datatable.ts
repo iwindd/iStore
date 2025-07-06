@@ -1,5 +1,6 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { EmployeePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { order } from "@/libs/formatter";
@@ -17,6 +18,7 @@ export const datatable = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(EmployeePermissionEnum.READ)) throw new Error("Forbidden");
     const employees = await db.$transaction([
       db.user.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
