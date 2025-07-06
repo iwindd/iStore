@@ -23,6 +23,15 @@ const GetProducts = async (
             select: {
               label: true
             }
+          },
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true
+                }
+              }
+            }
           }
         },
         orderBy: order(table.sort.length > 0 ? table.sort : [ { field: "updated_at", sort: "desc"}]),

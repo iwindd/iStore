@@ -80,6 +80,13 @@ const ProductDatatable = () => {
       { field: "serial", sortable: false, headerName: "รหัสสินค้า", flex: 1 },
       { field: "label", sortable: false, headerName: "ชื่อสินค้า", flex: 1 },
       {
+        field: "user_store", 
+        sortable: true, 
+        headerName: "ผู้สร้าง", 
+        flex: 1,
+        renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
+      },
+      {
         field: "keywords",
         sortable: true,
         headerName: "คีย์เวิร์ด",
