@@ -1,9 +1,7 @@
-import { AccountPermissionEnum, BorrowPermissionEnum, CashierPermissionEnum, CategoryPermissionEnum, DashboardPermissionEnum, HistoryPermissionEnum, OverStockPermissionEnum, ProductPermissionEnum, PurchasePermissionEnum, RolePermissionEnum, StockPermissionEnum, SuperPermissionEnum } from "@/enums/permission";
+import { AccountPermissionEnum, BorrowPermissionEnum, CashierPermissionEnum, CategoryPermissionEnum, DashboardPermissionEnum, EmployeePermissionEnum, HistoryPermissionEnum, OverStockPermissionEnum, ProductPermissionEnum, PurchasePermissionEnum, RolePermissionEnum, StockPermissionEnum, SuperPermissionEnum } from "@/enums/permission";
 
 export const PermissionBit = {
-  [SuperPermissionEnum.ALL]: 1n << 64n,
-  [DashboardPermissionEnum.READ]: 1n << 26n,
-  [CashierPermissionEnum.CREATE]: 1n << 27n,
+  [SuperPermissionEnum.ALL]: (1n << 64n) - 1n ,
 
   [ProductPermissionEnum.READ]: 1n << 0n,
   [ProductPermissionEnum.CREATE]: 1n << 1n,
@@ -39,4 +37,12 @@ export const PermissionBit = {
   [RolePermissionEnum.CREATE]: 1n << 23n,
   [RolePermissionEnum.UPDATE]: 1n << 24n,
   [RolePermissionEnum.DELETE]: 1n << 25n,
+
+  [DashboardPermissionEnum.READ]: 1n << 26n,
+  [CashierPermissionEnum.CREATE]: 1n << 27n,
+
+  [EmployeePermissionEnum.READ]: 1n << 28n,
+  [EmployeePermissionEnum.CREATE]: 1n << 29n,
+  [EmployeePermissionEnum.UPDATE]: 1n << 30n,
+  [EmployeePermissionEnum.DELETE]: 1n << 31n,
 };

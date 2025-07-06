@@ -32,13 +32,13 @@ async function main() {
       {
         id: 1,
         label: "Admin",
-        permission: (1n << 64n).toString(),
+        permission: ((1n << 64n) - 1n).toString(),
         store_id: store.id,
       },
       {
         id: 2,
         label: "Employee",
-        permission: (1n << 64n).toString(), 
+        permission: ((1n << 64n) - 1n).toString(), 
         store_id: store.id,
       }
     ]

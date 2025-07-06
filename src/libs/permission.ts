@@ -8,10 +8,6 @@ export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
     })
     .map(([name]) => name) as PermissionEnum[];
 
-  if (permissions.includes(SuperPermissionEnum.ALL as any as PermissionEnum)) {
-    return Object.entries(PermissionBit).map(([name]) => name) as PermissionEnum[];
-  }
-  
   return permissions;
 };
 

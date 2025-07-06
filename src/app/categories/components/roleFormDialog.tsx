@@ -22,8 +22,8 @@ import * as RoleActions from "@/actions/roles";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
-import { maskToPermissions, permissionsToMask } from "@/libs/permission";
-import { ProductPermissionEnum } from "@/enums/permission";
+import { maskToPermissions } from "@/libs/permission";
+import { SuperPermissionEnum } from "@/enums/permission";
 
 interface RoleFormDialogProps {
   onClose: () => void;
@@ -75,7 +75,9 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
   React.useEffect(() => {
     if (role){
       setValue("label", role.label);
-      if (role.permission) setValue("permissions", maskToPermissions(BigInt(role.permission)));
+      if (role.permission){
+        setValue("permissions", maskToPermissions(BigInt(role.permission)).filter((p) => p != SuperPermissionEnum.ALL))
+      };
     } 
   }, [role, setValue]);
 
