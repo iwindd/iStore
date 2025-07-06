@@ -25,6 +25,7 @@ const Paths = {
   'signin': { key: 'signin', title: 'เข้าสู่ระบบ', href: "/auth/signin", icon: 'signin', disableBreadcrumb: true, disableNav: true },
   'signup': { key: 'signup', title: 'ลงทะเบียน', href: "/auth/signup", icon: 'signup', disableBreadcrumb: true, disableNav: true },
   'account': { key: 'account', title: 'บัญชี', href: "/account", icon: 'account'},
+  'roles': { key: 'roles', title: 'ตำแหน่ง', href: "/roles", icon: 'group' },
 } satisfies Record<string, Path>
 
 export const Path = (name: keyof typeof Paths) => Paths[name];

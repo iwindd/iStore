@@ -12,6 +12,7 @@ import {
   Business,
   Settings,
   RotateRight,
+  Group,
 } from "@mui/icons-material";
 import { ElementType } from "react";
 
@@ -29,5 +30,6 @@ export default {
   borrows: BackHand,
   purchase: ReceiptLong,
   account: Settings,
-  overstocks: RotateRight
+  overstocks: RotateRight,
+  group: Group
 } as Record<string, ElementType>;
