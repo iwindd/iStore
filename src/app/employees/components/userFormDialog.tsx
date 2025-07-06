@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
 import RoleSelector from "@/components/RoleSelector";
 import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
+import * as Actions from "@/actions/employee";
 
 interface UserFormDialogProps {
   onClose: () => void;
@@ -35,7 +36,8 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
     register,
     handleSubmit,
     reset,
-    setValue
+    setValue,
+    formState: { errors },
   } = useForm<EmployeeValues>({
     resolver: zodResolver(EmployeeSchema),
     defaultValues: {
@@ -48,11 +50,14 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   const submitRole: SubmitHandler<EmployeeValues> = async (payload: EmployeeValues) => {
     setBackdrop(true);
     try {
+      const resp = await (!user ? Actions.create(payload) : null);
+      if (!resp || !resp.success) throw Error(resp?.message || "Unknown error occurred");
       reset();
       await queryClient.refetchQueries({ queryKey: ["employees"], type: "active" });
       enqueueSnackbar("บันทึกตำแหน่งเรียบร้อยแล้ว!", { variant: "success" });
       onClose();
     } catch (error) {
+      console.error("Error submitting role:", error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
@@ -61,9 +66,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
     }
   };
 
-  const onSelectRole = (role: Role) => {
-
-  }
+  const onSelectRole = (role: Role) => setValue("role", role ? role.id : 0);
 
   React.useEffect(() => {
     if (user) {
@@ -94,17 +97,23 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
               type="text"
               fullWidth
               label="ชื่อ"
+              error={!!errors["name"]?.message}
+              helperText={errors["name"]?.message}
               {...register("name")}
             />
             <TextField
               type="email"
               fullWidth
               label="อีเมล"
+              error={!!errors["email"]?.message}
+              helperText={errors["email"]?.message}
               {...register("email")}
             />
             <RoleSelector 
               onSubmit={onSelectRole} 
               defaultValue={defaultRole}
+              error={!!errors["role"]?.message}
+              helperText={errors["role"]?.message}
             />
           </Stack>
         </Stack>
