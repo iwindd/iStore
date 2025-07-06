@@ -29,6 +29,9 @@ export const create = async (
             role: {
               connect: { id: validated.role },
             },
+            user_store: {
+              connect: { id: user.userStoreId },
+            },
           },
         },
       },

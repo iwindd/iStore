@@ -42,6 +42,14 @@ const EmployeeDatatable = () => {
         editable: false,
       },
       {
+        field: "user_store",
+        sortable: true,
+        headerName: "ผู้เพิ่ม",
+        flex: 2,
+        editable: false,
+        renderCell: ({row}) => row?.userStores[0]?.user_store?.user?.name ||  "ไม่ระบุ",
+      },
+      {
         field: "email",
         sortable: false,
         headerName: "อีเมล",

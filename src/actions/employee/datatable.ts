@@ -36,11 +36,25 @@ export const datatable = async (
           name: true,
           email: true,
           userStores: {
+            take: 1,
+            where: {
+              storeId: user.store,
+            },
             select: {
               role:{
                 select: {
                   id: true,
                   label: true,
+                }
+              },
+              user_store: {
+                select: {
+                  id: true,
+                  user: {
+                    select: {
+                      name: true,
+                    }
+                  }
                 }
               }
             }
