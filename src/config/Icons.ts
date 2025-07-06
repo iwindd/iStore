@@ -31,5 +31,6 @@ export default {
   purchase: ReceiptLong,
   account: Settings,
   overstocks: RotateRight,
-  group: Group
+  group: Group,
+  employee: Badge,
 } as Record<string, ElementType>;
