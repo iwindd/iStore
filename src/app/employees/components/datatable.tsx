@@ -7,7 +7,6 @@ import {
 } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Category as OriginalCategory, User } from "@prisma/client";
-import GetCategories from "@/actions/category/get";
 import { useDialog } from "@/hooks/use-dialog";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";

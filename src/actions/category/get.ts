@@ -28,7 +28,16 @@ const GetCategories = async (
             select: {
               product: true,
             }
-          }
+          },
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         }
       }),
       db.category.count({

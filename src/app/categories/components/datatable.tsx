@@ -17,7 +17,7 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteCategory from "@/actions/category/delete";
-import { date, number } from "@/libs/formatter";
+import { date, number, text } from "@/libs/formatter";
 
 interface Category extends OriginalCategory{
   _count: {
@@ -86,6 +86,13 @@ const CategoryDatatable = () => {
         renderCell: ({value}) => date(value)
       },
       {
+        field: "user_store", 
+        sortable: true, 
+        headerName: "ผู้สร้าง", 
+        flex: 3,
+        renderCell: (data: any) => text(data.value?.user?.name || "ไม่ระบุ"),
+      },
+      {
         field: "label",
         sortable: true,
         headerName: "ประเภทสินค้า",
@@ -96,7 +103,7 @@ const CategoryDatatable = () => {
         field: "overstock",
         sortable: false,
         headerName: "การเบิก",
-        flex: 3,
+        flex: 2,
         editable: false,
         renderCell: ({value}) => value ? "อณุญาต" : "ไม่อนุญาต"
       },
@@ -104,7 +111,7 @@ const CategoryDatatable = () => {
         field: "_count",
         sortable: false,
         headerName: "จำนวนสินค้า",
-        flex: 3,
+        flex: 2,
         editable: false,
         renderCell: ({value}) => `${number(value.product)} รายการ`
       },
@@ -112,7 +119,7 @@ const CategoryDatatable = () => {
         field: "actions",
         type: "actions",
         headerName: "เครื่องมือ",
-        flex: 1,
+        flex: 2,
         getActions: ({ row }: { row: Category }) => [
           <GridActionsCellItem
             key="edit"

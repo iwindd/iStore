@@ -17,7 +17,8 @@ const CreateCategory = async (
       data: {
         label: validated.label,
         store_id: user.store,
-        overstock: validated.overstock
+        overstock: validated.overstock,
+        user_store_id: user.userStoreId,
       },
     });
 
