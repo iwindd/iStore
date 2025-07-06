@@ -1,5 +1,5 @@
 "use server";
-import { PermissionEnum } from "@/enums/permission";
+import { PermissionEnum, RolePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { permissionsToMask } from "@/libs/permission";
@@ -12,6 +12,7 @@ export const create = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(RolePermissionEnum.CREATE)) throw new Error("Forbidden");
     const validated = RoleSchema.parse(payload);
     const mask = permissionsToMask(validated.permissions as PermissionEnum[]);
 

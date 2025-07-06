@@ -1,4 +1,5 @@
 "use server";
+import { RolePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
@@ -15,6 +16,7 @@ export const find = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(RolePermissionEnum.READ)) throw new Error("Forbidden");
     const role = await db.role.findUnique({
       where: {
         id: roleId,
