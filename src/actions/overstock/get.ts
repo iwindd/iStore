@@ -1,16 +1,19 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { OverStockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { filter, order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { OrderProduct } from "@prisma/client";
 
 const GetOverstocks = async (
   table: TableFetch
 ): Promise<ActionResponse<OrderProduct[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(OverStockPermissionEnum.READ)) throw new Error("Forbidden");
     const products = await db.$transaction([
       db.orderProduct.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -19,7 +22,7 @@ const GetOverstocks = async (
         where: {
           ...filter(table.filter, ["serial", "label", "category"]),
           order: {
-            store_id: Number(session?.user.store),
+            store_id: user.store,
           },
           overstock: {
             gte: 1
@@ -38,7 +41,7 @@ const GetOverstocks = async (
       db.orderProduct.count({
         where: {
           order: {
-            store_id: Number(session?.user.store),
+            store_id: user.store,
           },
           overstock: {
             gte: 1
