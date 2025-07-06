@@ -21,6 +21,14 @@ const PurchaseDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
+        field: "user_store",
+        sortable: true,
+        headerName: "ผู้ทำรายการ",
+        flex: 1,
+        editable: false,
+        renderCell: (data: any) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+      },
+      {
         field: "cost",
         sortable: true,
         headerName: "ราคา",

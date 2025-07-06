@@ -43,7 +43,16 @@ const GetPurchase = async (
             select: {
               count: true
             }
-          }
+          },
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         }
       }),
       db.order.count({
