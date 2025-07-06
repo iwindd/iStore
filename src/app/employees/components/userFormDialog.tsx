@@ -2,7 +2,6 @@
 import { useInterface } from "@/providers/InterfaceProvider";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
@@ -12,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Role, User } from "@prisma/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
@@ -30,10 +29,13 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const [defaultRole, setDefaultRole] = React.useState<number>(0);
+  
   const {
     register,
     handleSubmit,
     reset,
+    setValue
   } = useForm<EmployeeValues>({
     resolver: zodResolver(EmployeeSchema),
     defaultValues: {
@@ -62,6 +64,16 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   const onSelectRole = (role: Role) => {
 
   }
+
+  React.useEffect(() => {
+    if (user) {
+      setValue("name", user.name);
+      setValue("email", user.email);
+      const roleId : number = (user as any).userStores?.[0]?.role?.id || null;
+      setValue("role", roleId || 0);
+      setDefaultRole(roleId || 0);
+    }
+  }, [user, setValue])
 
   return (
     <Dialog
@@ -92,6 +104,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
             />
             <RoleSelector 
               onSubmit={onSelectRole} 
+              defaultValue={defaultRole}
             />
           </Stack>
         </Stack>

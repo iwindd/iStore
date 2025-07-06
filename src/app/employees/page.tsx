@@ -1,5 +1,6 @@
 import { Stack, Typography } from "@mui/material"
 import AddController from "./components/add-controller"
+import EmployeeDatatable from "./components/datatable"
 
 const Roles = async () => {
   return (
@@ -13,6 +14,8 @@ const Roles = async () => {
           <AddController/>
         </>
       </Stack>
+
+      <EmployeeDatatable/>
     </Stack>
   )
 }
