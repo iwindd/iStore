@@ -1,7 +1,8 @@
 "use server";
+import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Borrows } from "@prisma/client";
 
 interface BorrowStat{
@@ -10,10 +11,12 @@ interface BorrowStat{
 
 const GetBorrowStats = async (): Promise<ActionResponse<BorrowStat[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(BorrowPermissionEnum.READ)) throw new Error("Forbidden");
     const borrows = await db.borrows.findMany({
       where: {
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       select: {
         status: true

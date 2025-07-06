@@ -1,18 +1,21 @@
 "use server";
+import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 
 const UpdateBorrow = async (
   borrowId: number,
   count: number
 ): Promise<ActionResponse<boolean>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(BorrowPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const data = await db.borrows.update({
       where: {
         id: borrowId,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
         status: "PROGRESS"
       },
       data: { 
@@ -42,7 +45,7 @@ const UpdateBorrow = async (
         }
       })
 
-      if (data.count > 0 && session?.user.store) {
+      if (data.count > 0 && user.store) {
         const totalPrice = product.price * data.count
         const totalCost = product.cost * data.count
         await db.order.create({
@@ -52,7 +55,7 @@ const UpdateBorrow = async (
             profit: totalPrice-totalCost,
             note: data.note,
             text: product.label,
-            store_id: +session?.user.store,
+            store_id: user.store,
             method: "CASH",
             type: "BORROW",
             products: {

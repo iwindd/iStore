@@ -1,7 +1,8 @@
 "use server";
+import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Borrows } from "@prisma/client";
 
 const PatchBorrow = async (
@@ -9,11 +10,13 @@ const PatchBorrow = async (
   status: Borrows['status']
 ): Promise<ActionResponse<boolean>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(BorrowPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const data = await db.borrows.update({
       where: {
         id: borrowId,
-        store_id: Number(session?.user.store)
+        store_id: user.store
       },
       data: { 
         status: status

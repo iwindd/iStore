@@ -1,23 +1,26 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Borrows } from "@prisma/client";
 
 const GetBorrows = async (
   table: TableFetch
 ): Promise<ActionResponse<Borrows[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(BorrowPermissionEnum.READ)) throw new Error("Forbidden");
     const borrows = await db.$transaction([
       db.borrows.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
         take: table.pagination.pageSize,
         orderBy: order(table.sort),
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
         include: {
           product: {
@@ -29,7 +32,7 @@ const GetBorrows = async (
       }),
       db.borrows.count({
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
       }),
     ]);

@@ -1,19 +1,22 @@
 "use server";
+import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { BorrowsSchema, BorrowsValues } from "@/schema/Borrows";
 
 const CreateBorrow = async (
   payload: BorrowsValues
 ): Promise<ActionResponse<BorrowsValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(BorrowPermissionEnum.CREATE)) throw new Error("Forbidden")
     BorrowsSchema.parse(payload);
     const product = await db.product.findFirst({
       where: {
         id: payload.product.id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
         deleted: null
       },
     });
@@ -26,7 +29,7 @@ const CreateBorrow = async (
         note: payload.note,
         status: "PROGRESS",
         product_id: payload.product.id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
     });
 
