@@ -128,10 +128,6 @@ const Paths = {
     href: "/histories",
     icon: "history",
     matcher: { type: "startsWith", href: "/histories" },
-    somePermissions: [
-      HistoryPermissionEnum.ALL, 
-      HistoryPermissionEnum.READ
-    ],
   },
   "histories.history": {
     key: "histories.history",
@@ -139,10 +135,6 @@ const Paths = {
     href: "/histories/:hid",
     icon: "history",
     disableNav: true,
-    somePermissions: [
-      HistoryPermissionEnum.ALL, 
-      HistoryPermissionEnum.READ
-    ],
   },
   signin: {
     key: "signin",
@@ -165,10 +157,6 @@ const Paths = {
     title: "บัญชี",
     href: "/account",
     icon: "account",
-    somePermissions: [
-      AccountPermissionEnum.ALL, 
-      AccountPermissionEnum.UPDATE
-    ],
   },
   roles: {
     key: "roles",

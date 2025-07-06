@@ -136,7 +136,7 @@ function renderNavItems({
       });
 
       if (!hasSomePermissions) return acc;
-      acc.push(<NavItem key={key} pathname={pathname} {...item} />);
+    acc.push(<NavItem key={key} pathname={pathname} {...item} />);
       return acc;
     },
     []
