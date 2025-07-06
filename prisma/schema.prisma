@@ -20,6 +20,8 @@ model User {
   email    String  @unique
   password String
   userStores UserStore[]
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Store {
