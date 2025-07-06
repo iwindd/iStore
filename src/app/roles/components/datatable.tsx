@@ -33,6 +33,14 @@ const RoleDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
+        field: "user_store",
+        sortable: true,
+        headerName: "ผู้เพิ่ม",
+        flex: 1,
+        editable: false,
+        renderCell: (data: any) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+      },
+      {
         field: "label",
         sortable: true,
         headerName: "ชื่อตำแหน่ง",

@@ -32,6 +32,15 @@ export const datatable = async (
           created_at: true,
           label: true,
           permission: true, 
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         }
       }),
       db.role.count({

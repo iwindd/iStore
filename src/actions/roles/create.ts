@@ -20,7 +20,8 @@ export const create = async (
       data: {
         label: validated.label,
         permission: mask.toString(),
-        store_id: user.store
+        store_id: user.store,
+        user_store_id: user.userStoreId,
       },
     });
 
