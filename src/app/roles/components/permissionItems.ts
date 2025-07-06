@@ -1,8 +1,10 @@
 import {
+  AccountPermissionEnum,
   BorrowPermissionEnum,
   CashierPermissionEnum,
   CategoryPermissionEnum,
   DashboardPermissionEnum,
+  EmployeePermissionEnum,
   HistoryPermissionEnum,
   OverStockPermissionEnum,
   ProductPermissionEnum,
@@ -28,6 +30,13 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
     label: "ประวัติการทำรายการ",
     children: [
       { id: HistoryPermissionEnum.READ, label: "ดูประวัติการทำรายการ" },
+    ],
+  },
+  {
+    id: AccountPermissionEnum.ALL,
+    label: "บัญชี",
+    children: [
+      { id: AccountPermissionEnum.UPDATE, label: "แก้ไขบัญชี" },
     ],
   },
   {
@@ -96,6 +105,16 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
       { id: RolePermissionEnum.DELETE, label: "ลบตำแหน่ง" },
     ],
   },
+  {
+    id: EmployeePermissionEnum.ALL,
+    label: "พนักงาน",
+    children: [
+      { id: EmployeePermissionEnum.READ, label: "ตรวจสอบพนักงาน" },
+      { id: EmployeePermissionEnum.CREATE, label: "เพิ่มพนักงาน" },
+      { id: EmployeePermissionEnum.UPDATE, label: "แก้ไขพนักงาน" },
+      { id: EmployeePermissionEnum.DELETE, label: "ลบพนักงาน" },
+    ],
+  },
 ];
 
 export const TreeViewPermissionDefaultItems = [
@@ -105,6 +124,8 @@ export const TreeViewPermissionDefaultItems = [
   CashierPermissionEnum.CREATE,
   HistoryPermissionEnum.ALL,
   HistoryPermissionEnum.READ,
+  AccountPermissionEnum.ALL,
+  AccountPermissionEnum.UPDATE,
 ]
 
 export default TreeViewPermissionItems;
