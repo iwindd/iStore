@@ -78,6 +78,7 @@ const Cashout = async (
         note: payload.note,
         text: products.map((item) => item.label).join(", "),
         store_id: user.store,
+        user_store_id: user.userStoreId,
         products: {
           create: products.map(({ id, ...product }) => ({
             ...product,
