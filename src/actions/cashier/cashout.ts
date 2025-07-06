@@ -1,15 +1,16 @@
 "use server";
 import { CartItem } from "@/atoms/cart";
+import { CashierPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import {getUser } from "@/libs/session";
+import { User } from "@/libs/user";
 import { PaymentSchema, PaymentValues } from "@/schema/Payment";
-import { Session } from "next-auth";
 
-const validateProducts = async (session: Session, cart: CartItem[]) => {
+const validateProducts = async (user: User, cart: CartItem[]) => {
   const rawProducts = await db.product.findMany({
     where: {
-      store_id: Number(session?.user.store),
+      store_id: user.store,
       id: { in: cart.map((p) => p.id) },
       deleted: null
     },
@@ -57,10 +58,11 @@ const Cashout = async (
   payload: PaymentValues
 ): Promise<ActionResponse<PaymentValues>> => {
   try {
-    const session = await getServerSession();
-    if (!session) throw Error("no_found_session");
+    const user = await getUser();
+    if (!user) throw Error("Unauthorized");
+    if (!user.hasPermission(CashierPermissionEnum.CREATE)) throw Error("Forbidden");
     const validated = PaymentSchema.parse(payload);
-    const products = await validateProducts(session, payload.cart);
+    const products = await validateProducts(user, payload.cart);
     const totalPrice = products.reduce((total, item) => total + item.price * item.count, 0);
     const totalCost = products.reduce((total, item) => total + item.cost * item.count, 0);
     const totalProfit = totalPrice - totalCost;
@@ -75,7 +77,7 @@ const Cashout = async (
         method: method,
         note: payload.note,
         text: products.map((item) => item.label).join(", "),
-        store_id: Number(session?.user.store),
+        store_id: user.store,
         products: {
           create: products.map(({ id, ...product }) => ({
             ...product,
