@@ -61,6 +61,10 @@ model UserStore {
   roles Role[]
   order_products OrderProduct[]
 
+  user_store_id Int? // ผู้เพิ่มพนักงานนี้
+  user_store UserStore? @relation("UserStoreToUserStore", fields: [user_store_id], references: [id])
+  UserStore UserStore[] @relation("UserStoreToUserStore")
+
   @@unique([userId, storeId])
 }
 
