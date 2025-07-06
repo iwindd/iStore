@@ -33,9 +33,18 @@ const GetOverstocks = async (
             select: {
               id: true,
               created_at: true,
-              note: true
+              note: true,
+              user_store: {
+                select: {
+                  user: {
+                    select: {
+                      name: true
+                    }
+                  }
+                }
+              }
             }
-          }
+          },
         }
       }),
       db.orderProduct.count({

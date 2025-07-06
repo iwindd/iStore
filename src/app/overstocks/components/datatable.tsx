@@ -64,6 +64,13 @@ const OverstockDatatable = () => {
         renderCell: ({ row }) => date(row.order.created_at),
       },
       {
+        field: "order",
+        sortable: true,
+        headerName: "ผู้คิดเงิน",
+        flex: 2,
+        renderCell: (data: any) => text(data?.value?.user_store?.user?.name || "ไม่ระบุ"),
+      },
+      {
         field: "serial",
         sortable: true,
         headerName: "รหัสสินค้า",
