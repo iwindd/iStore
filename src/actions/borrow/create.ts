@@ -30,6 +30,7 @@ const CreateBorrow = async (
         status: "PROGRESS",
         product_id: payload.product.id,
         store_id: user.store,
+        user_store_id: user.userStoreId,
       },
     });
 

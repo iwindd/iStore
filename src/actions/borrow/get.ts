@@ -27,7 +27,16 @@ const GetBorrows = async (
             select: {
               label: true
             }
-          }
+          },
+          user_store: {
+            select: {
+              user: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         }
       }),
       db.borrows.count({

@@ -164,6 +164,14 @@ const BorrowDatatable = () => {
         renderCell: ({value}) => ff.date(value)
       },
       {
+        field: "user_store",
+        sortable: true,
+        headerName: "ผู้เบิก",
+        flex: 2,
+        editable: false,
+        renderCell: (data) => ff.text(data?.value?.user?.name || "ไม่ระบุ")
+      },
+      {
         field: "product",
         sortable: true,
         headerName: "สินค้า",
