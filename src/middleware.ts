@@ -1,8 +1,10 @@
 import createMiddleware from './libs/middleware';
 import { AuthMiddleware } from './middlewares/AuthMiddleware';
+import { PermissionMiddleware } from './middlewares/PermissionMiddleware';
 
 const globalMiddlewares = {
-  before: AuthMiddleware
+  before: AuthMiddleware,
+  after: PermissionMiddleware
 }
 
 const middlewares = {};

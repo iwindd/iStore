@@ -25,4 +25,10 @@ export class User{
     const mask = BigInt(this.session?.user.permission || 0);
     return hasPermission(mask, permission as PermissionEnum);
   }
+
+  public hasSomePermissions(permissions: (keyof typeof PermissionBit)[]): boolean {
+    if (!this.session?.user.permission) return false;
+    const mask = BigInt(this.session?.user.permission || 0);
+    return permissions.some(permission => hasPermission(mask, permission as PermissionEnum));
+  }
 }
