@@ -2,7 +2,7 @@ import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import React from "react";
 import { Traffic } from "./charts/traffic";
 import { Sales } from "./charts/sales";
-import { getServerSession, getUser } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import getOrders from "@/actions/dashboard/getOrders";
 import dayjs from "@/libs/dayjs";
 import { TotalStat } from "./stats/Stat";
@@ -17,6 +17,7 @@ import getStocks from "@/actions/dashboard/getStocks";
 import { RecentOrderTable } from "./table/RecentOrders";
 import BestSellerProducts, { OrderProduct } from "./table/BestSellerProducts";
 import { BorrowPermissionEnum, OverStockPermissionEnum, ProductPermissionEnum, PurchasePermissionEnum, StockPermissionEnum } from "@/enums/permission";
+import { Stack } from "@mui/material";
 
 const Dashboard = async () => {
   const [startDate, endDate] = await getRange()
@@ -70,56 +71,60 @@ const Dashboard = async () => {
   bestSellers.sort((a, b) => b.orders - a.orders);
 
   return (
-    <Grid container spacing={1}>
-      <Grid xs={12}><Range savedStart={startDate ? startDate.format() : null} savedEnd={endDate ? endDate.format() : null} /></Grid>
-      <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("histories").href} label="ออเดอร์" color="primary" icon={<Receipt/>} value={`${number(orders.length)} รายการ`} /></Grid>
-      <Grid lg={3} sm={6} xs={12}><TotalStat label="เงินในระบบ" color="success" icon={<AttachMoney/>} value={`${money(totalProfit)}`} /></Grid>
-      {
-        user.hasPermission(BorrowPermissionEnum.READ) &&
-        (<Grid lg={3} sm={6} xs={12}><TotalStat href={Path("borrows").href} label="การเบิก" color="warning" icon={<BackHand/>} value={`${number(borrows.length)} รายการ`} /></Grid>)
-      }
-      {
-        user.hasPermission(PurchasePermissionEnum.READ) &&
-        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("purchase").href} label="การซื้อ" color="info" icon={<ShoppingBasket/>} value={`${number(orders.filter(b => b.type == "PURCHASE").length)} รายการ`} /></Grid>
-      }
-      {
-        user.hasPermission(OverStockPermissionEnum.READ) &&
-        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("overstocks").href} label="สินค้าค้าง" color="error" icon={<RotateRight/>} value={`${number(overstocks)} รายการ`} /></Grid>
-      }
-      {
-        user.hasPermission(ProductPermissionEnum.READ) &&
-        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("products").href} label="สินค้าใกล้จะหมด" color="warning" icon={<Warning/>} value={`${number(products.filter(p => p.stock <= p.stock_min).length)} รายการ`} /></Grid>
-      }
-      {
-        user.hasPermission(StockPermissionEnum.READ) &&
-        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("stock").href} label="จัดการสต๊อก" color="info" icon={<AllInbox/>} value={`${number(stocks.length)} รายการ`} /></Grid>
-      }
-      {
-        user.hasPermission(ProductPermissionEnum.READ) &&
-        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("products").href} label="สินค้าทั้งหมด" color="primary" icon={<Work/>} value={`${number(products.length)} รายการ`} /></Grid>
-      }
-      <Grid lg={8} xs={12}>
-        <Sales
-          chartSeries={[
-            { name: "ยอดขาย", data: weekSolds },
-          ]}
-          sx={{ height: "100%" }}
-        />
+    <Stack spacing={1}>
+      <Grid container spacing={1}>
+        <Grid xs={12}><Range savedStart={startDate ? startDate.format() : null} savedEnd={endDate ? endDate.format() : null} /></Grid>
+        <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("histories").href} label="ออเดอร์" color="primary" icon={<Receipt/>} value={`${number(orders.length)} รายการ`} /></Grid>
+        <Grid lg={3} sm={6} xs={12}><TotalStat label="เงินในระบบ" color="success" icon={<AttachMoney/>} value={`${money(totalProfit)}`} /></Grid>
+        {
+          user.hasPermission(BorrowPermissionEnum.READ) &&
+          (<Grid lg={3} sm={6} xs={12}><TotalStat href={Path("borrows").href} label="การเบิก" color="warning" icon={<BackHand/>} value={`${number(borrows.length)} รายการ`} /></Grid>)
+        }
+        {
+          user.hasPermission(PurchasePermissionEnum.READ) &&
+          <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("purchase").href} label="การซื้อ" color="info" icon={<ShoppingBasket/>} value={`${number(orders.filter(b => b.type == "PURCHASE").length)} รายการ`} /></Grid>
+        }
+        {
+          user.hasPermission(OverStockPermissionEnum.READ) &&
+          <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("overstocks").href} label="สินค้าค้าง" color="error" icon={<RotateRight/>} value={`${number(overstocks)} รายการ`} /></Grid>
+        }
+        {
+          user.hasPermission(ProductPermissionEnum.READ) &&
+          <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("products").href} label="สินค้าใกล้จะหมด" color="warning" icon={<Warning/>} value={`${number(products.filter(p => p.stock <= p.stock_min).length)} รายการ`} /></Grid>
+        }
+        {
+          user.hasPermission(StockPermissionEnum.READ) &&
+          <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("stock").href} label="จัดการสต๊อก" color="info" icon={<AllInbox/>} value={`${number(stocks.length)} รายการ`} /></Grid>
+        }
+        {
+          user.hasPermission(ProductPermissionEnum.READ) &&
+          <Grid lg={3} sm={6} xs={12}><TotalStat href={Path("products").href} label="สินค้าทั้งหมด" color="primary" icon={<Work/>} value={`${number(products.length)} รายการ`} /></Grid>
+        }
       </Grid>
-      <Grid lg={4} md={6} xs={12}>
-        <Traffic
-          chartSeries={trafficStats}
-          labels={["เงินสด", "ธนาคาร"]}
-          sx={{ height: "100%" }}
-        />
+      <Grid container spacing={1}>
+        <Grid lg={8} xs={12}>
+          <Sales
+            chartSeries={[
+              { name: "ยอดขาย", data: weekSolds },
+            ]}
+            sx={{ height: "100%" }}
+          />
+        </Grid>
+        <Grid lg={4} md={6} xs={12}>
+          <Traffic
+            chartSeries={trafficStats}
+            labels={["เงินสด", "ธนาคาร"]}
+            sx={{ height: "100%" }}
+          />
+        </Grid>
+        <Grid lg={8} xs={12}>
+          <RecentOrderTable orders={orders} />
+        </Grid>
+        <Grid lg={4} md={6} xs={12}>
+          <BestSellerProducts products={bestSellers.slice(0, 7)}/>
+        </Grid>
       </Grid>
-      <Grid lg={8} xs={12}>
-        <RecentOrderTable orders={orders} />
-      </Grid>
-      <Grid lg={4} md={6} xs={12}>
-        <BestSellerProducts products={bestSellers.slice(0, 7)}/>
-      </Grid>
-    </Grid>
+    </Stack>
   );
 };
 
