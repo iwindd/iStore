@@ -20,6 +20,8 @@ interface SelectorProps {
   onSubmit(Product: Actions.RoleSelector | null): void;
   fieldProps?: TextFieldProps;
   defaultValue?: number;
+  error?: boolean;
+  helperText?: string;
 }
 
 const RoleSelector = (props: SelectorProps) => {
@@ -130,6 +132,8 @@ const RoleSelector = (props: SelectorProps) => {
           label="กรุณาเลือกตำแหน่ง"
           fullWidth
           placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาตำแหน่ง"}
+          error={props.error}
+          helperText={props.helperText}
           InputProps={isLoading ? ({
             startAdornment: (
               <InputAdornment position="end" sx={{ mr: 1 }}>
