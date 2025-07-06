@@ -6,10 +6,12 @@ import { PermissionBit } from '@/config/Permission';
 export class User{
   public session: Session;
   public store: number;
+  public id: number;
 
   constructor(session: Session) {
     this.session = session;
     this.store = +session?.user.store;
+    this.id = +session?.user.id || 0;
   }
 
   public permissions()  {
