@@ -1,7 +1,8 @@
 "use server";
+import { CategoryPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { CategorySchema, CategoryValues } from "@/schema/Category";
 
 const UpdateCategory = async (
@@ -9,12 +10,14 @@ const UpdateCategory = async (
   id: number
 ): Promise<ActionResponse<CategoryValues>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(CategoryPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = CategorySchema.parse(payload);
     await db.category.update({
       where: {
         id: id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       data: { label: validated.label, overstock: validated.overstock },
     });

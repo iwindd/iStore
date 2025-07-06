@@ -1,7 +1,7 @@
 "use server";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 
 export interface FindCategoryResult {
   id: number;
@@ -13,11 +13,12 @@ const findCategory = async (
   categoryId: number
 ): Promise<ActionResponse<FindCategoryResult | null>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
     const category = await db.category.findUnique({
       where: {
         id: categoryId,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       select: {
         id: true,

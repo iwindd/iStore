@@ -1,16 +1,19 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { CategoryPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { filter, order } from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Category } from "@prisma/client";
 
 const GetCategories = async (
   table: TableFetch
 ): Promise<ActionResponse<Category[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(CategoryPermissionEnum.READ)) throw new Error("Forbidden");
     const categories = await db.$transaction([
       db.category.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -18,7 +21,7 @@ const GetCategories = async (
         orderBy: order(table.sort),
         where: {
           ...filter(table.filter, ['label']),
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
         include: {
           _count: {
@@ -30,7 +33,7 @@ const GetCategories = async (
       }),
       db.category.count({
         where: {
-          store_id: Number(session?.user.store),
+          store_id: user.store,
         },
       }),
     ]);

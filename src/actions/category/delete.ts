@@ -1,18 +1,21 @@
 "use server";
+import { CategoryPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { Category } from "@prisma/client";
 
 const DeleteCategory = async (
   id: number
 ): Promise<ActionResponse<Category>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(CategoryPermissionEnum.DELETE)) throw new Error("Forbidden");
     const data = await db.category.delete({
       where: {
         id: id,
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
     });
 

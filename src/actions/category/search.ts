@@ -1,7 +1,8 @@
 "use server";
+import { CategoryPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession } from "@/libs/session";
+import { getUser } from "@/libs/session";
 
 export interface SearchCategory {
   id: number;
@@ -13,12 +14,13 @@ const SearchCategories = async (
   input: string
 ): Promise<ActionResponse<SearchCategory[]>> => {
   try {
-    const session = await getServerSession();
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
     const products = await db.category.findMany({
       take: 5,
       where: {
         OR: [{ label: { contains: input } }],
-        store_id: Number(session?.user.store),
+        store_id: user.store,
       },
       select: {
         id: true,
