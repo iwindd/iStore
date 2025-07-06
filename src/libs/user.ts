@@ -7,11 +7,13 @@ export class User{
   public session: Session;
   public store: number;
   public id: number;
+  public userStoreId: number;
 
   constructor(session: Session) {
     this.session = session;
     this.store = +session?.user.store;
     this.id = +session?.user.id || 0;
+    this.userStoreId = +session?.user.userStoreId || 0;
   }
 
   public permissions()  {

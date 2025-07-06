@@ -23,6 +23,7 @@ export const authOptions = {
         ...{
           id: token.id,
           store: token.store,
+          userStoreId: token.storeId,
           name: token.name,
           email: token.email,
           line_token: token.line_token,
@@ -60,6 +61,7 @@ export const authOptions = {
               userStores: {
                 take: 1,
                 select: {
+                  id: true,
                   store: true,
                   role: {
                     select: {
@@ -77,18 +79,19 @@ export const authOptions = {
           )
             throw new Error("not_found_user");
 
-          const store = user?.userStores?.[0]?.store;
+          const userStore = user?.userStores?.[0];
 
-          if (!user || !store) throw new Error("no_store");
+          if (!user || !userStore) throw new Error("no_store");
 
           return {
             id: String(user.id),
-            store: store.id,
+            userStoreId: userStore.id,
+            store: userStore.store.id,
             name: user.name,
             email: user.email,
-            line_token: store.line_token,
+            line_token: userStore.store.line_token,
             permission: user.userStores[0].role.permission,
-            address: FormatAddress(store as AddressValues),
+            address: FormatAddress(userStore.store as AddressValues),
           };
         } catch (error) {
           return null;
