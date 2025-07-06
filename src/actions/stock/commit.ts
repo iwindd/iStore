@@ -85,7 +85,7 @@ const Commit = async (
         note: note || "",
         state: instant ? "SUCCESS" : "PROGRESS",
         store_id: user.store,
-        user_store_id: user.id,
+        user_store_id: user.userStoreId,
       },
       update: {
         note: note || "",
