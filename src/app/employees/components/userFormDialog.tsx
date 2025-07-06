@@ -50,7 +50,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   const submitRole: SubmitHandler<EmployeeValues> = async (payload: EmployeeValues) => {
     setBackdrop(true);
     try {
-      const resp = await (!user ? Actions.create(payload) : null);
+      const resp = await (!user ? Actions.create(payload) : Actions.update(payload, (user as User).id));
       if (!resp || !resp.success) throw Error(resp?.message || "Unknown error occurred");
       reset();
       await queryClient.refetchQueries({ queryKey: ["employees"], type: "active" });
@@ -105,6 +105,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
               type="email"
               fullWidth
               label="อีเมล"
+              disabled={!!user}
               error={!!errors["email"]?.message}
               helperText={errors["email"]?.message}
               {...register("email")}
