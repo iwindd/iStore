@@ -9,6 +9,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
   Stack,
   TextField,
 } from "@mui/material";
@@ -22,6 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
 import { maskToPermissions } from "@/libs/permission";
 import { SuperPermissionEnum } from "@/enums/permission";
+import { error } from "console";
 
 interface RoleFormDialogProps {
   onClose: () => void;
@@ -98,9 +103,31 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
               type="text"
               fullWidth
               label="ชื่อตำแหน่ง"
+              error={!!errors["label"]?.message}
+              helperText={errors["label"]?.message}
               {...register("label")}
             />
-            <Box sx={{ minHeight: 352, minWidth: 290 }}>
+            <FormControl 
+              component={Box}  
+              error={!!errors["permissions"]?.message}
+              sx={{
+                minHeight: 352,
+                minWidth: 290,
+                '&:focus-within .rich-tree-view-custom': {
+                  borderColor: (theme) =>
+                    !!errors["permissions"]
+                      ? theme.palette.error.main
+                      : theme.palette.primary.main,
+                },
+                '&:focus-within .form-label-custom': {
+                  color: (theme) =>
+                    !!errors["permissions"]
+                      ? theme.palette.error.main
+                      : theme.palette.primary.main,
+                },
+              }}
+            >
+              <FormLabel className="form-label-custom">กำหนดสิทธิ์ในการเข้าถึง</FormLabel>
               <RichTreeView
                 multiSelect
                 checkboxSelection
@@ -112,8 +139,21 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
                   descendants: true,
                   parents: true,
                 }}
+                sx={(theme) => ({
+                  borderWidth: 1,
+                  borderStyle: 'solid',
+                  borderRadius: 1,
+                  borderColor: !!errors["permissions"]
+                    ? theme.palette.error.main
+                    : theme.palette.divider,
+                  transition: 'border-color 0.2s ease',
+                })}
+                className="rich-tree-view-custom"
               />
-            </Box>
+              <FormHelperText>
+                {errors["permissions"]?.message }
+              </FormHelperText>
+            </FormControl>
           </Stack>
         </Stack>
       </DialogContent>
