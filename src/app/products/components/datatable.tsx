@@ -19,7 +19,7 @@ import DeleteProduct from "@/actions/product/delete";
 import { ProductFormDialog } from "./add-controller";
 import BarcodeDialog from "./barcode-dialog";
 
-const ProductDatatable = ({ categories }: { categories: Category[] }) => {
+const ProductDatatable = () => {
   const editDialog = useDialog();
   const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
@@ -163,7 +163,6 @@ const ProductDatatable = ({ categories }: { categories: Category[] }) => {
         onClose={editDialog.handleClose}
         setLoading={setBackdrop}
         product={product}
-        categories={categories}
       />
       <Confirmation {...confirmation.props} />
       <BarcodeDialog 

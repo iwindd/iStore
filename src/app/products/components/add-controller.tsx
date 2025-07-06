@@ -54,7 +54,6 @@ export interface SearchDialogProps extends AddDialogProps {
 
 export interface ProductFormDialogProps extends AddDialogProps {
   product: Product | null;
-  categories: Category[];
 }
 
 function SearchDialog({
@@ -164,8 +163,7 @@ export function ProductFormDialog({
   open,
   setLoading,
   onClose,
-  product,
-  categories,
+  product
 }: ProductFormDialogProps): React.JSX.Element {
   const {
     register,
@@ -316,7 +314,7 @@ export function ProductFormDialog({
   );
 }
 
-const AddController = ({ categories }: { categories: Category[] }) => {
+const AddController = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
@@ -324,10 +322,6 @@ const AddController = ({ categories }: { categories: Category[] }) => {
   const dialogInfo = useDialog();
 
   const onOpen = () => {
-    if (categories.length <= 0) {
-      return enqueueSnackbar("ไม่พบประเภทสินค้า", { variant: "error" });
-    }
-
     setIsSearch(true);
     dialogInfo.handleOpen();
   };
@@ -359,7 +353,6 @@ const AddController = ({ categories }: { categories: Category[] }) => {
         onClose={onClose}
         setLoading={setBackdrop}
         product={product}
-        categories={categories}
       />
     </>
   );
