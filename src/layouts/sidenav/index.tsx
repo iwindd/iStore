@@ -135,8 +135,8 @@ function renderNavItems({
         return hasPermission(userPermBit, permission);
       });
 
-      if (!hasSomePermissions) return acc;
-    acc.push(<NavItem key={key} pathname={pathname} {...item} />);
+      if (somePermissions && !hasSomePermissions) return acc;
+      acc.push(<NavItem key={key} pathname={pathname} {...item} />);
       return acc;
     },
     []
