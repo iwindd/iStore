@@ -1,4 +1,5 @@
-import { PermissionBit, PermissionEnum } from "@/enums/permission";
+import { PermissionBit } from "@/config/Permission";
+import { PermissionEnum } from "@/enums/permission";
 
 export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
   return Object.entries(PermissionBit)

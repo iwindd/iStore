@@ -1,27 +1,25 @@
 "use client";
-import Permissions, { PermissionInstance } from "@/config/Permission";
-import { PermissionEnum } from "@/enums/permission";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { RoleSchema, RoleValues } from "@/schema/Role";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
+  Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
   Stack,
   TextField,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
-import React, { useEffect } from "react";
+import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import * as Role from "@/actions/roles"; 
+import * as Role from "@/actions/roles";
+import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
+import TreeViewPermissionItems, { TreeViewPermissionDefaultItems } from "./permissionItems";
 
 type AddRoleControllerProps = {
   role?: any;
@@ -41,36 +39,25 @@ const AddRoleController = ({ role }: AddRoleControllerProps) => {
     formState: { errors },
     setValue,
     watch,
-    reset
+    reset,
   } = useForm<RoleValues>({
     resolver: zodResolver(RoleSchema),
     defaultValues: {
       label: "",
-      permissions: [],
+      permissions: TreeViewPermissionDefaultItems,
     },
   });
 
   const permissions: string[] = watch("permissions") || [];
-  const onPermission = (checked: boolean, Permissions: PermissionInstance[]) => {
-    const current = watch("permissions") || [];
-    const withoutChildren = current.filter(
-      (p) => !Permissions.map((perm) => perm.name).includes(p as PermissionEnum)
-    );
-    const newPermissions = checked
-      ? [...withoutChildren, ...Permissions.map((p) => p.name)]
-      : withoutChildren;
-    setValue("permissions", newPermissions);
-  };
+  const onPermission = (event: React.SyntheticEvent | null, ids: string[]) => setValue("permissions", ids);
 
-  const submitRole: SubmitHandler<RoleValues> = async (
-    payload: RoleValues
-  ) => {
+  const submitRole: SubmitHandler<RoleValues> = async (payload: RoleValues) => {
     setBackdrop(true);
     try {
       const resp = await Role.create(payload);
       if (!resp.success) throw Error(resp.message);
       reset();
-      await queryClient.refetchQueries({queryKey: ["roles"], type: "active"});
+      await queryClient.refetchQueries({ queryKey: ["roles"], type: "active" });
       enqueueSnackbar("บันทึกตำแหน่งเรียบร้อยแล้ว!", { variant: "success" });
       onClose();
     } catch (error) {
@@ -108,62 +95,20 @@ const AddRoleController = ({ role }: AddRoleControllerProps) => {
                 label="ชื่อตำแหน่ง"
                 {...register("label")}
               />
-              {Permissions.filter((perm) => !perm.childOf).map((permission) => {
-                const childrenPerms = Permissions.filter(
-                  (child) => child.childOf === permission.name
-                );
-                return (
-                  <div key={permission.name}>
-                    <FormControlLabel
-                      label={permission.label}
-                      control={
-                        <Checkbox
-                          value={permission.name}
-                          onChange={(e) =>
-                            onPermission(e.target.checked, [
-                              ...childrenPerms,
-                              permission,
-                            ])
-                          }
-                          indeterminate={
-                            childrenPerms.some((child) =>
-                              permissions.includes(child.name)
-                            ) &&
-                            childrenPerms.some(
-                              (child) => !permissions.includes(child.name)
-                            )
-                          }
-                          checked={
-                            permissions.includes(permission.name) &&
-                            childrenPerms.some((child) => permissions.includes(child.name))
-                          }
-                        />
-                      }
-                    />
-                    {childrenPerms && childrenPerms.length > 0 && (
-                      <FormGroup sx={{ ml: 2 }}>
-                        {childrenPerms.map((child) => {
-                          return (
-                            <FormControlLabel
-                              key={`${permission.name}-${child.name}`}
-                              label={child.label}
-                              control={
-                                <Checkbox
-                                  value={child.name}
-                                  checked={permissions.includes(child.name)}
-                                  onChange={(e) =>
-                                    onPermission(e.target.checked, [child])
-                                  }
-                                />
-                              }
-                            />
-                          );
-                        })}
-                      </FormGroup>
-                    )}
-                  </div>
-                );
-              })}
+              <Box sx={{ minHeight: 352, minWidth: 290 }}>
+                <RichTreeView 
+                  multiSelect 
+                  checkboxSelection 
+                  items={TreeViewPermissionItems} 
+                  defaultSelectedItems={TreeViewPermissionDefaultItems}
+                  selectedItems={permissions}
+                  onSelectedItemsChange={onPermission}
+                  selectionPropagation={{
+                    descendants: true,
+                    parents: true,
+                  }}
+                />
+              </Box>
             </Stack>
           </Stack>
         </DialogContent>

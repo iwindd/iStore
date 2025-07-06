@@ -1,6 +1,7 @@
-import { PermissionBit, PermissionEnum } from '@/enums/permission';
 import { Session } from 'next-auth';
 import { hasPermission, maskToPermissions } from './permission';
+import { PermissionEnum } from '@/enums/permission';
+import { PermissionBit } from '@/config/Permission';
 
 export class User{
   public session: Session;
