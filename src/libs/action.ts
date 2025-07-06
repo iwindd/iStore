@@ -18,10 +18,10 @@ export const ActionError = (error: any) => {
     };
   } else {
     // Handle other errors (e.g., network, database)
+    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred.";
     return {
       success: false,
-      message: "An unexpected error occurred.",
-      error: error
+      message: errorMessage,
     };
   }
 };
