@@ -26,6 +26,7 @@ export const authOptions = {
           name: token.name,
           email: token.email,
           line_token: token.line_token,
+          permission: token.permission,
           address: token.address
         },
         ...user,
@@ -60,6 +61,11 @@ export const authOptions = {
                 take: 1,
                 select: {
                   store: true,
+                  role: {
+                    select: {
+                      permission: true,
+                    }
+                  }
                 },
               },
             },
@@ -81,6 +87,7 @@ export const authOptions = {
             name: user.name,
             email: user.email,
             line_token: store.line_token,
+            permission: user.userStores[0].role.permission,
             address: FormatAddress(store as AddressValues),
           };
         } catch (error) {

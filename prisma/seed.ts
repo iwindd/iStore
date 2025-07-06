@@ -27,15 +27,35 @@ async function main() {
   });
   console.log("Store created:", store);
 
+  const roles = await prisma.role.createMany({
+    data: [
+      {
+        id: 1,
+        label: "Admin",
+        permission: (1n << 64n).toString(),
+        store_id: store.id,
+      },
+      {
+        id: 2,
+        label: "Employee",
+        permission: (1n << 64n).toString(), 
+        store_id: store.id,
+      }
+    ]
+  });
+  console.log("Roles created:", roles);
+
   const userStore = await prisma.userStore.createMany({
     data: [
       {
         userId: 1,
         storeId: store.id,
+        role_id: 1, 
       },
       {
         userId: 2,
         storeId: store.id,
+        role_id: 2, 
       }
     ]
   });

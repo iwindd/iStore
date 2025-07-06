@@ -31,6 +31,7 @@ model Store {
   borrows Borrows[]
   stocks Stock[]
   users UserStore[]
+  roles Role[] 
   // Address
   line_token String?
   address String?
@@ -48,6 +49,8 @@ model UserStore {
   store Store @relation(fields: [storeId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt 
+  role_id Int
+  role Role @relation(fields: [role_id], references: [id])
 
   @@unique([userId, storeId])
 }
@@ -152,6 +155,19 @@ model StockItem{
   stock Stock @relation(fields: [stock_id], references: [id])
   product_id Int
   product Product @relation(fields: [product_id], references: [id])
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  label String
+  permission String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt 
+  store_id Int
+  store Store @relation(fields: [store_id], references: [id])
+  users UserStore[] 
+
+  @@unique([label])
 }
 
 enum Method {
