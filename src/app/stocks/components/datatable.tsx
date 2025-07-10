@@ -53,6 +53,7 @@ const StockDatatable = () => {
   const { user } = useAuth();
   const permissions = {
     canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE),
+    canUpdateStock: user?.hasPermission(StockPermissionEnum.UPDATE),
   } 
 
   const clearConfirmation = useConfirm({
@@ -112,20 +113,24 @@ const StockDatatable = () => {
         headerName: "ยอดรวม",
         renderCell: ({ row }) => `${ff.number(row.stock + row.payload)} รายการ`,
       },
-      {
-        field: "actions",
-        type: "actions",
-        headerName: "เครื่องมือ",
-        flex: 1,
-        getActions: ({ row }: { row: StockItem }) => [
-          <GridActionsCellItem
-            key="delete"
-            icon={<DeleteTwoTone />}
-            onClick={menu.delete(row)}
-            label="ลบ"
-          />,
-        ],
-      },
+      ...(
+        !target ? ([
+          {
+            field: "actions",
+            type: "actions" as const,
+            headerName: "เครื่องมือ",
+            flex: 1,
+            getActions: ({ row }: { row: StockItem }) => [
+              <GridActionsCellItem
+                key="delete"
+                icon={<DeleteTwoTone />}
+                onClick={menu.delete(row)}
+                label="ลบ"
+              />,
+            ],
+          },
+        ]) : ([])
+      )
     ];
   };
 
@@ -243,7 +248,7 @@ const StockDatatable = () => {
             <Button onClick={clearConfirmation.handleOpen} color="inherit" variant="text" sx={{ ml: "auto" }}>
               ล้าง
             </Button>
-            {permissions.canCreateStock && (
+            {(permissions.canCreateStock || permissions.canUpdateStock) && (
               <CommitController />
             )}
           </CardActions>

@@ -125,6 +125,7 @@ const SelecterDialog = ({
 const ToolController = () => {
   const dialogInfo = useDialog();
   const {user} = useAuth();
+  const { target  } = useStock();
 
   const onOpen = () => {
     dialogInfo.handleOpen();
@@ -138,7 +139,13 @@ const ToolController = () => {
 
   return (
     <>
-      <Button startIcon={<PanToolAlt />} variant="text" color="secondary" onClick={onOpen}>
+      <Button 
+        startIcon={<PanToolAlt />} 
+        variant="text" 
+        color="secondary" 
+        onClick={onOpen}
+        disabled={target != null}
+      >
         เครื่องมือ
       </Button>
 

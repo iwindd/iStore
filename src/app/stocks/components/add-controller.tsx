@@ -96,6 +96,7 @@ const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
   const {user} = useAuth();
+  const { target  } = useStock();
 
   if (!user?.hasPermission(StockPermissionEnum.CREATE)) return null;
 
@@ -105,6 +106,7 @@ const AddController = () => {
         startIcon={<AddTwoTone />}
         variant="contained"
         onClick={dialog.handleOpen}
+        disabled={target != null || isBackdrop}
       >
         เพิ่มรายการ
       </Button>
