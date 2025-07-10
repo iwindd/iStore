@@ -7,10 +7,15 @@ import { AddTwoTone } from "@mui/icons-material";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { useDialog } from "@/hooks/use-dialog";
 import BorrowDialogForm from "./borrowDialogForm";
+import { useAuth } from "@/hooks/use-auth";
+import { BorrowPermissionEnum } from "@/enums/permission";
 
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
+  const { user } = useAuth();
+
+  if (!user?.hasPermission(BorrowPermissionEnum.CREATE)) return null;
 
   return (
     <>
