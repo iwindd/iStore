@@ -1,4 +1,5 @@
 "use server";
+import { CashoutMethod, CashoutType } from "@/enums/cashout";
 import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
@@ -57,8 +58,8 @@ const UpdateBorrow = async (
             note: data.note,
             text: product.label,
             store_id: user.store,
-            method: "CASH",
-            type: "BORROW",
+            method: CashoutMethod.CASH,
+            type: CashoutType.BORROW,
             products: {
               create: [
                 {

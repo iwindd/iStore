@@ -1,5 +1,6 @@
 "use server";
-import { HistoryPermissionEnum, OverStockPermissionEnum } from "@/enums/permission";
+import { CashoutType } from "@/enums/cashout";
+import { HistoryPermissionEnum, OverStockPermissionEnum, PurchasePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
@@ -21,9 +22,11 @@ const GetHistory = async (
         store_id: user.store,
         OR: [
           { 
+            type: CashoutType.CASHOUT,
             user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
           },
           { 
+            type: CashoutType.CASHOUT,
             user_store_id: !user.hasPermission(OverStockPermissionEnum.READ) ? user.userStoreId : undefined,
             products: {
               some: {
@@ -33,6 +36,10 @@ const GetHistory = async (
               }
             }
           },
+          {
+            type: CashoutType.PURCHASE,
+            user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
+          }
         ],
       },
       include: {

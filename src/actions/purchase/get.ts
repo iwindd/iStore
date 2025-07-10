@@ -1,5 +1,6 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { CashoutType } from "@/enums/cashout";
 import { PurchasePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
@@ -31,7 +32,7 @@ const GetPurchase = async (
         orderBy: order(table.sort),
         where: {
           store_id: user.store,
-          type: "PURCHASE"
+          type: CashoutType.PURCHASE
         },
         select: {
           id: true,
@@ -58,7 +59,7 @@ const GetPurchase = async (
       db.order.count({
         where: {
           store_id: user.store,
-          type: "PURCHASE"
+          type: CashoutType.PURCHASE
         },
       }),
     ]);

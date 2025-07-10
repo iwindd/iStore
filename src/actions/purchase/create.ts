@@ -1,4 +1,5 @@
 "use server";
+import { CashoutType } from "@/enums/cashout";
 import { PurchasePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
@@ -20,7 +21,7 @@ const CreatePurchase = async (
         price: 0,
         cost: totalCost,
         profit: 0 - (totalCost),
-        type: "PURCHASE",
+        type: CashoutType.PURCHASE,
         note: payload.note,
         text: payload.label,
         store_id: user.store,
