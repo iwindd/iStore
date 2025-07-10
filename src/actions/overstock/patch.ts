@@ -8,12 +8,12 @@ const PatchOverstock = async (id: number): Promise<ActionResponse<boolean>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(OverStockPermissionEnum.UPDATE)) throw new Error("Forbidden");
     await db.orderProduct.update({
       where: {
         id: id,
         order: {
           store_id: user.store,
+          user_store_id: !user.hasPermission(OverStockPermissionEnum.UPDATE) ? user.userStoreId : undefined,
         },
       },
       data: {

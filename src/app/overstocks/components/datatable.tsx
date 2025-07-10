@@ -11,10 +11,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import { date, number, text } from "@/libs/formatter";
 import GetOverstocks from "@/actions/overstock/get";
 import PatchOverstock from "@/actions/overstock/patch";
+import { useAuth } from "@/hooks/use-auth";
+import { OverStockPermissionEnum } from "@/enums/permission";
 
 const OverstockDatatable = () => {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const {user} = useAuth();
+  const permissions = (row: any) => ({
+    canUpdateOverstock: user?.hasPermission(OverStockPermissionEnum.UPDATE) || row.order.user_store_id === user?.userStoreId,
+  })
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -119,6 +125,7 @@ const OverstockDatatable = () => {
             icon={<CheckTwoTone />}
             onClick={menu.patch(row.id)}
             label="สำเร็จรายการ"
+            sx={{ display: !permissions(row).canUpdateOverstock ? "none" : undefined }}
             showInMenu
           />,
         ],

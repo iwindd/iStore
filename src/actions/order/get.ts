@@ -13,7 +13,6 @@ const GetHistories = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(HistoryPermissionEnum.READ)) throw new Error("Forbidden");
     const histories = await db.$transaction([
       db.order.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -22,6 +21,7 @@ const GetHistories = async (
         where: {
           ...filter(table.filter, ['text', 'note']),
           store_id: user.store,
+          user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
         },
         include: {
           user_store: {
@@ -38,6 +38,7 @@ const GetHistories = async (
       db.order.count({
         where: {
           store_id: user.store,
+          user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
         },
       }),
     ]);
