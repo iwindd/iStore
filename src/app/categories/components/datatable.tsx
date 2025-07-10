@@ -18,6 +18,8 @@ import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteCategory from "@/actions/category/delete";
 import { date, number, text } from "@/libs/formatter";
+import { useAuth } from "@/hooks/use-auth";
+import { CategoryPermissionEnum } from "@/enums/permission";
 
 interface Category extends OriginalCategory{
   _count: {
@@ -30,6 +32,11 @@ const CategoryDatatable = () => {
   const [category, setCategory] = React.useState<Category | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const permissions = (Category: Category) => ({
+    canRemoveCategory: user?.hasPermission(CategoryPermissionEnum.DELETE) || Category.user_store_id === user?.userStoreId,
+    canUpdateCategory: user?.hasPermission(CategoryPermissionEnum.UPDATE) || Category.user_store_id === user?.userStoreId,
+  })
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -126,6 +133,7 @@ const CategoryDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
+            sx={{display: !permissions(row).canUpdateCategory ? 'none' : undefined}}
             showInMenu
           />,
           <GridActionsCellItem

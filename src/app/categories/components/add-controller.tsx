@@ -24,6 +24,8 @@ import { CategorySchema, CategoryValues } from "@/schema/Category";
 import { useDialog } from "@/hooks/use-dialog";
 import CreateCategory from "@/actions/category/create";
 import UpdateCategory from "@/actions/category/update";
+import { useAuth } from "@/hooks/use-auth";
+import { CategoryPermissionEnum } from "@/enums/permission";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -132,6 +134,9 @@ export function CategoryFormDialog({
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
+  const {user} = useAuth();
+
+  if (!user?.hasPermission(CategoryPermissionEnum.CREATE)) return null;
 
   return (
     <>

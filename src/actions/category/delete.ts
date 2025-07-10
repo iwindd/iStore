@@ -11,12 +11,12 @@ const DeleteCategory = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(CategoryPermissionEnum.DELETE)) throw new Error("Forbidden");
     const data = await db.category.delete({
       where: {
         id: id,
         store_id: user.store,
-      },
+        user_store_id: !user.hasPermission(CategoryPermissionEnum.DELETE) ? user.userStoreId : undefined,
+      }
     });
 
     return { success: true, data: data };

@@ -12,17 +12,17 @@ const UpdateCategory = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(CategoryPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = CategorySchema.parse(payload);
-    await db.category.update({
+    const deleted = await db.category.update({
       where: {
         id: id,
         store_id: user.store,
+        user_store_id: !user.hasPermission(CategoryPermissionEnum.UPDATE) ? user.userStoreId : undefined,
       },
       data: { label: validated.label, overstock: validated.overstock },
     });
 
-    if (payload.active){
+    if (deleted && payload.active){
       await db.product.updateMany({
         where: {
           category_id: null
