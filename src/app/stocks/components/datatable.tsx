@@ -29,6 +29,8 @@ import { Product } from "@prisma/client";
 import CommitController from "./commit-controller";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { enqueueSnackbar } from "notistack";
+import { useAuth } from "@/hooks/use-auth";
+import { StockPermissionEnum } from "@/enums/permission";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -48,6 +50,10 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 const StockDatatable = () => {
   const { target, stocks, addProduct, setStocks, setTarget } = useStock();
   const [expanded, setExpanded] = React.useState(false);
+  const { user } = useAuth();
+  const permissions = {
+    canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE),
+  } 
 
   const clearConfirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -237,7 +243,9 @@ const StockDatatable = () => {
             <Button onClick={clearConfirmation.handleOpen} color="inherit" variant="text" sx={{ ml: "auto" }}>
               ล้าง
             </Button>
-            <CommitController />
+            {permissions.canCreateStock && (
+              <CommitController />
+            )}
           </CardActions>
         </Collapse>
       </Card>

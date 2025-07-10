@@ -16,6 +16,8 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import Selector from "@/components/Selector";
 import { useStock } from "@/hooks/use-stock";
 import { Product } from "@prisma/client";
+import { useAuth } from "@/hooks/use-auth";
+import { StockPermissionEnum } from "@/enums/permission";
 
 interface StockDialogProps {
   onClose: () => void;
@@ -93,6 +95,9 @@ function StockFormDialog({
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
+  const {user} = useAuth();
+
+  if (!user?.hasPermission(StockPermissionEnum.CREATE)) return null;
 
   return (
     <>

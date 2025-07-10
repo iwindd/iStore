@@ -8,10 +8,10 @@ import { StockPermissionEnum } from "@/enums/permission";
 interface StockItemMinimal {
   changed_by: number;
   product_id: number;
-  stock_id?: number
+  stock_id?: number;
 }
 
-const UpdateStock = async (payload: StockItemMinimal[], batchSize = 20) => {
+export const UpdateStockProducts = async (payload: StockItemMinimal[], batchSize = 20) => {
   for (let i = 0; i < payload.length; i += batchSize) {
     const batch = payload.slice(i, i + batchSize);
     await db.$transaction(
@@ -30,24 +30,12 @@ const UpdateStock = async (payload: StockItemMinimal[], batchSize = 20) => {
   console.log("[INFO] UPDATE STOCKS SUCCESS");
 };
 
-const CreateItems = async (payload: StockItemMinimal[], batchSize = 10) => {
-  for (let i = 0; i < payload.length; i += batchSize) {
-    const batch = payload.slice(i, i + batchSize);
-    await db.stockItem.createMany({
-      data: batch.map(payload => ({
-        ...payload,
-        stock_id: payload.stock_id as number
-      })), 
-    })
-  }
-};
-
-const validateProducts = async (payload: StockItem[], storeId: number) => {
+export const validateProducts = async (payload: StockItem[], storeId: number) => {
   const rawProducts = await db.product.findMany({
     where: {
       store_id: storeId,
       id: { in: payload.map((p) => p.id) },
-      deleted: null
+      deleted: null,
     },
     select: {
       id: true,
@@ -67,8 +55,7 @@ const validateProducts = async (payload: StockItem[], storeId: number) => {
 
 const Commit = async (
   payload: StockItem[],
-  target: number | null,
-  instant?: boolean,
+  stockId: number,
   note?: string
 ): Promise<ActionResponse<StockItem[]>> => {
   try {
@@ -77,46 +64,25 @@ const Commit = async (
     if (!user.hasPermission(StockPermissionEnum.UPDATE)) throw new Error("Forbidden");
     payload = payload.slice(0, 50);
 
-    const data = await db.stock.upsert({
+    const data = await db.stock.update({
       where: {
-        id: target || -1
+        id: stockId,
       },
-      create: {
-        note: note || "",
-        state: instant ? "SUCCESS" : "PROGRESS",
-        store_id: user.store,
-        user_store_id: user.userStoreId,
-      },
-      update: {
+      data: {
         note: note || "",
         state: "SUCCESS",
       },
       select: {
         id: true,
         items: {
-          select: {
-            product_id: true,
-            changed_by: true,
-          },
+          select: { product_id: true, changed_by: true },
         },
       },
     });
 
-    if (!target && data.items.length <= 0) {
-      const validated = await validateProducts(payload, user.store)
-      data.items = validated.map((product) => ({
-        changed_by: product.changed_by,
-        product_id: product.product_id,
-        stock_id: data.id
-      }))
-      await CreateItems(data.items);
-    }
-    
-    if (instant || target != null) await UpdateStock(data.items);
-    
+    await UpdateStockProducts(data.items);
     return { success: true, data: payload };
   } catch (error) {
-    console.error(error);
     return ActionError(error) as ActionResponse<StockItem[]>;
   }
 };

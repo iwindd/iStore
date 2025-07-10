@@ -1,4 +1,5 @@
 import CommitAction from "@/actions/stock/commit";
+import Create from "@/actions/stock/create";
 import { StockItem, StockState } from "@/atoms/stock";
 import { StockTargetState } from "@/atoms/stock-target";
 import { Product } from "@prisma/client";
@@ -46,16 +47,38 @@ export function useStock(): StockHook {
     });
   };
 
-  const commit = async (instant?: boolean, note?: string) => {
+  const create = async (instant?: boolean, note?: string) => {
     try {
       if (stocks.length <= 0) throw Error("no_items");
-      const resp = await CommitAction(stocks, target, instant, note);
+      const resp = await Create(stocks, instant, note);
       if (!resp.success) throw Error(resp.message);
       setStocks([]);
       setTarget(null);
       return true;
     } catch (error) {
       return false;
+    }
+  }
+
+  const update = async (note?: string) => {
+    try {
+      if (stocks.length <= 0) throw Error("no_items");
+      if (!target) throw Error("no_target");
+      const resp = await CommitAction(stocks, target, note);
+      if (!resp.success) throw Error(resp.message);
+      setStocks([]);
+      setTarget(null);
+      return true;
+    } catch (error) {
+      return false;      
+    }
+  }
+
+  const commit = async (instant?: boolean, note?: string) => {
+    if (!target) {
+      return await create(instant, note);
+    }else{
+      return await update(note);
     }
   };
 
