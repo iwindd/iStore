@@ -36,7 +36,15 @@ export function PurchaseFormDialog({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<PurchaseValues>({ resolver: zodResolver(PurchaseSchema) });
+  } = useForm<PurchaseValues>({ 
+    resolver: zodResolver(PurchaseSchema),
+    defaultValues: {
+      label: "",
+      cost: null as any, // number | null 
+      count: null as any, // number | null
+      note: "",
+    }
+  });
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
 
@@ -68,7 +76,12 @@ export function PurchaseFormDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={(event, reason) => {
+        if (reason === "backdropClick" || reason === "escapeKeyDown") {
+          return; 
+        }
+        onClose();
+      }}
       fullWidth
       maxWidth="xs"
       PaperProps={{
