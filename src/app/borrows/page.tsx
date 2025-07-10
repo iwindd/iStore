@@ -1,11 +1,9 @@
 "use server";
 import { Stack, Typography } from "@mui/material";
-import AddForm from "./components/AddForm";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import { TasksProgress } from "./components/Stats/components/TasksProgress";
-import { CancelTwoTone, CheckTwoTone, TimerTwoTone } from "@mui/icons-material";
 import BorrowDatatable from "./components/datatable";
 import GetBorrowStats from "@/actions/borrow/stats";
+import AddController from "./components/add-controller";
 
 const Borrows = async () => {
   const data = { progress: 0, success: 0, cancel: 0, all: 0 };
@@ -37,34 +35,11 @@ const Borrows = async () => {
             sx={{ alignItems: "center" }}
           ></Stack>
         </Stack>
+        <>
+          <AddController />
+        </>
       </Stack>
       <Grid container spacing={1}>
-        <Grid xs={6}>
-          <AddForm />
-        </Grid>
-        <Grid xs={6}>
-          <Stack sx={{ height: "100%" }} spacing={1}>
-            <Typography variant="caption" sx={{mb: 'auto'}}>* การเบิกคือการหยิบยืมสินค้าเพื่อไปขายข้างนอกร้านค้าโดยจะทำการซิงค์ข้อมูลกับสต๊อก</Typography>
-            <TasksProgress
-              label="กำลังดำเนินการ"
-              value={data.progress}
-              color="warning"
-              icon={<TimerTwoTone />}
-            />
-            <TasksProgress
-              label="สำเร็จ"
-              value={data.success}
-              color="success"
-              icon={<CheckTwoTone />}
-            />
-            <TasksProgress
-              label="ยกเลิก"
-              value={data.cancel}
-              color="error"
-              icon={<CancelTwoTone />}
-            />
-          </Stack>
-        </Grid>
         <Grid xs={12}>
           <BorrowDatatable />
         </Grid>

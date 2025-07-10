@@ -1,44 +1,41 @@
-"use client";
 import CreateBorrow from "@/actions/borrow/create";
-import { SearchProduct } from "@/actions/product/search";
 import Selector from "@/components/Selector";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { BorrowsSchema, BorrowsValues } from "@/schema/Borrows";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddTwoTone } from "@mui/icons-material";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Divider,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
-import React from "react";
+import { useSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-const AddForm = () => {
-  const [selectProduct, setSelectProduct] =
-    React.useState<SearchProduct | null>(null);
-  const queryClient = useQueryClient();
-  const { setBackdrop } = useInterface();
+interface BorrowDialogFormDialogProps {
+  onClose: () => void;
+  open: boolean;
+}
 
+function BorrowDialogForm({
+  open,
+  onClose,
+}: BorrowDialogFormDialogProps): React.JSX.Element {
+  const { setBackdrop } = useInterface();
   const {
     register,
     handleSubmit,
-    reset,
-    setValue,
     formState: { errors },
-  } = useForm<BorrowsValues>({
+    reset,
+    setValue
+  } = useForm<BorrowsValues>({ 
     resolver: zodResolver(BorrowsSchema),
+    defaultValues: {
+      product: 0,
+      count: null as any, // Use null to allow empty input
+      note: "",
+    }
   });
-
-  const onSelect = (product: SearchProduct | null) =>
-    setValue("product", product as SearchProduct);
+  const { enqueueSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
 
   const onSubmit: SubmitHandler<BorrowsValues> = async (
     payload: BorrowsValues
@@ -47,12 +44,13 @@ const AddForm = () => {
       setBackdrop(true);
       const resp = await CreateBorrow(payload);
       if (!resp.success) throw Error("error");
+      onClose();
       reset();
       await queryClient.refetchQueries({
         queryKey: ["borrows"],
         type: "active",
       });
-      enqueueSnackbar("บันทึกการซื้อสินค้าเรียบร้อยแล้ว!", {
+      enqueueSnackbar("บันทึกการเบิกสินค้าเรียบร้อยแล้ว!", {
         variant: "success",
       });
     } catch (error) {
@@ -64,13 +62,23 @@ const AddForm = () => {
     }
   };
 
+  const onSelect = (product: Product) => setValue("product", product ? product.id : 0);
+
   return (
-    <Card component={"form"} onSubmit={handleSubmit(onSubmit)}>
-      <CardHeader title="เพิ่มรายการเบิก" />
-      <Divider />
-      <CardContent>
-        <Stack spacing={1}>
-          <Selector 
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="xs"
+      PaperProps={{
+        component: "form",
+        onSubmit: handleSubmit(onSubmit),
+      }}
+    >
+      <DialogTitle>เบิกสินค้า</DialogTitle>
+      <DialogContent>
+        <Stack sx={{ mt: 1 }} spacing={1}>
+          <Selector
             onSubmit={onSelect} 
             fieldProps={{
               error: errors["product"] !== undefined,
@@ -91,15 +99,15 @@ const AddForm = () => {
             {...register("note")}
           />
         </Stack>
-      </CardContent>
-      <Divider />
-      <CardActions disableSpacing>
-        <Button type="submit" startIcon={<AddTwoTone />} sx={{ ml: "auto" }}>
-          เพิ่ม
+      </DialogContent>
+      <DialogActions>
+        <Button color="secondary" type="button" onClick={onClose}>
+          ปิด
         </Button>
-      </CardActions>
-    </Card>
+        <Button color="success" variant="contained" startIcon={<AddTwoTone/>} type="submit">เบิกสินค้า</Button>
+      </DialogActions>
+    </Dialog>
   );
-};
+}
 
-export default AddForm;
+export default BorrowDialogForm;
