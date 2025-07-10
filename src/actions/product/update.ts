@@ -12,12 +12,12 @@ const UpdateProduct = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
     await db.product.update({
       where: {
         id: id,
         store_id: user.store,
+        user_store_id: !user.hasPermission(ProductPermissionEnum.UPDATE) ? user.userStoreId : undefined,
       },
       data: { 
         label: validated.label,

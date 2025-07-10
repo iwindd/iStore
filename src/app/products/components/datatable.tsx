@@ -18,6 +18,8 @@ import GetProducts from "@/actions/product/get";
 import DeleteProduct from "@/actions/product/delete";
 import { ProductFormDialog } from "./add-controller";
 import BarcodeDialog from "./barcode-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { ProductPermissionEnum } from "@/enums/permission";
 
 const ProductDatatable = () => {
   const editDialog = useDialog();
@@ -27,6 +29,11 @@ const ProductDatatable = () => {
   const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
   const queryClient = useQueryClient();
+  const {user} = useAuth();
+  const permissions = (product: Product) => ({
+    canEditProduct: product && user && product.user_store_id == user.id || user?.hasPermission(ProductPermissionEnum.UPDATE),
+    canRemoveProduct: product && user && product.user_store_id == user.id || user?.hasPermission(ProductPermissionEnum.DELETE),
+  })
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -135,6 +142,7 @@ const ProductDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
+            sx={{display: !permissions(row).canEditProduct ? 'none' : undefined}}
             showInMenu
           />,
           <GridActionsCellItem
@@ -142,6 +150,7 @@ const ProductDatatable = () => {
             icon={<DeleteTwoTone />}
             onClick={menu.delete(row)}
             label="ลบ"
+            sx={{display: !permissions(row).canRemoveProduct ? 'none' : undefined}}
             showInMenu
           />,
           <GridActionsCellItem

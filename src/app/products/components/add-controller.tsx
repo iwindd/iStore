@@ -12,7 +12,6 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -23,7 +22,7 @@ import {
   SaveTwoTone,
   SearchTwoTone,
 } from "@mui/icons-material";
-import { Category, Product } from "@prisma/client";
+import { Product } from "@prisma/client";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { useDialog } from "@/hooks/use-dialog";
 import { useQueryClient } from "@tanstack/react-query";
@@ -41,6 +40,8 @@ import UpdateProduct from "@/actions/product/update";
 import CategorySelector from "@/components/CategorySelector";
 import { SearchCategory } from "@/actions/category/search";
 import { removeWhiteSpace } from "@/libs/formatter";
+import { useAuth } from "@/hooks/use-auth";
+import { ProductPermissionEnum } from "@/enums/permission";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -317,8 +318,8 @@ export function ProductFormDialog({
 const AddController = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const { setBackdrop, isBackdrop } = useInterface();
-  const { enqueueSnackbar } = useSnackbar();
   const [isSearch, setIsSearch] = useState<boolean>(true);
+  const { user } = useAuth();
   const dialogInfo = useDialog();
 
   const onOpen = () => {
@@ -335,6 +336,9 @@ const AddController = () => {
     setProduct(foundProduct ? foundProduct : null);
     setIsSearch(false);
   };
+
+  if (!user) return null;   
+  if (!user.hasPermission(ProductPermissionEnum.CREATE)) return null;
 
   return (
     <>
