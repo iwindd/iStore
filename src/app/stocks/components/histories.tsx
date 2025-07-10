@@ -21,6 +21,8 @@ import { ImportFromStockId, ImportType } from "../import";
 import { useInterface } from "@/providers/InterfaceProvider";
 import GetStock from "@/actions/stock/find";
 import { useExport } from "@/hooks/use-export";
+import { useAuth } from "@/hooks/use-auth";
+import { StockPermissionEnum } from "@/enums/permission";
 
 const formatCellColor = (status: Stock["state"]) => {
   switch (status) {
@@ -39,6 +41,12 @@ const HistoryDatatable = () => {
   const { setBackdrop } = useInterface();
   const { setStocks, setTarget } = useStock();
   const queryClient = useQueryClient();
+  const {user} = useAuth();
+  const permissions = (stock : Stock) => ({
+    canCancelStock: user?.hasPermission(StockPermissionEnum.DELETE) || stock.user_store_id === user?.userStoreId,
+    canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE) ,
+  })
+
   const {setItems, Export, ExportHandler} = useExport([
     { label: "รหัสสินค้า", key: "serial" },
     { label: "ชื่อสินค้า", key: "label" },
@@ -233,6 +241,7 @@ const HistoryDatatable = () => {
                   icon={<CancelTwoTone />}
                   onClick={menu.cancel(row)}
                   label="ยกเลิก"
+                  sx={{display: !permissions(row).canCancelStock ? 'none' : undefined}}
                   showInMenu
                 />,
               ]
@@ -242,6 +251,7 @@ const HistoryDatatable = () => {
                   icon={<RecyclingTwoTone />}
                   onClick={menu.copy(row)}
                   label="สร้างรายการอีกครั้ง"
+                  sx={{display: !permissions(row).canCreateStock ? 'none' : undefined}}
                   showInMenu
                 />,
               ]),

@@ -24,6 +24,8 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import ImportToolAction from "@/actions/stock/tool";
 import { useStock } from "@/hooks/use-stock";
 import { enqueueSnackbar } from "notistack";
+import { useAuth } from "@/hooks/use-auth";
+import { StockPermissionEnum } from "@/enums/permission";
 
 interface SelecterDialogProps {
   onClose: () => void;
@@ -122,6 +124,7 @@ const SelecterDialog = ({
 
 const ToolController = () => {
   const dialogInfo = useDialog();
+  const {user} = useAuth();
 
   const onOpen = () => {
     dialogInfo.handleOpen();
@@ -130,6 +133,8 @@ const ToolController = () => {
   const onClose = () => {
     dialogInfo.handleClose();
   };
+
+  if (!user?.hasPermission(StockPermissionEnum.CREATE)) return null;
 
   return (
     <>

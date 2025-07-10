@@ -9,11 +9,11 @@ const CancelStock = async (id: number): Promise<ActionResponse<Stock>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.DELETE)) throw new Error("Forbidden");
     const data = await db.stock.update({
       where: {
         id: id,
         store_id: user.store,
+        user_store_id: !user.hasPermission(StockPermissionEnum.DELETE) ? user.userStoreId : undefined,
       },
       data: {
         state: "CANCEL",

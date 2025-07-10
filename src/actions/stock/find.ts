@@ -17,11 +17,11 @@ const GetStock = async (id : number, includeItem?: boolean): Promise<ActionRespo
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.READ)) throw new Error("Forbidden");
     const stock = await db.stock.findFirst({
       where: {
         id: id,
         store_id: user.store,
+        user_store_id: !user.hasPermission(StockPermissionEnum.READ) ? user.userStoreId : undefined,
       },
       ...(includeItem ? {
         include: {

@@ -19,7 +19,6 @@ const GetStocks = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.READ)) throw new Error("Forbidden");
     const stocks = await db.$transaction([
       db.stock.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -32,6 +31,7 @@ const GetStocks = async (
         where: {
           ...filter(table.filter, ["note"]),
           store_id: user.store,
+          user_store_id: !user.hasPermission(StockPermissionEnum.READ) ? user.userStoreId : undefined,
         },
         include: {
           _count: {
