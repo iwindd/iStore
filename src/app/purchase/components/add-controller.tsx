@@ -18,6 +18,8 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { useDialog } from "@/hooks/use-dialog";
 import { PurchaseSchema, PurchaseValues } from "@/schema/Purchase";
 import CreatePurchase from "@/actions/purchase/create";
+import { PurchasePermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -123,6 +125,9 @@ export function PurchaseFormDialog({
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
+  const { user } = useAuth();
+
+  if (!user?.hasPermission(PurchasePermissionEnum.CREATE)) return null;
 
   return (
     <>

@@ -24,7 +24,6 @@ const GetPurchase = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(PurchasePermissionEnum.READ)) throw new Error("Forbidden");
     const purchase = await db.$transaction([
       db.order.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -32,7 +31,8 @@ const GetPurchase = async (
         orderBy: order(table.sort),
         where: {
           store_id: user.store,
-          type: CashoutType.PURCHASE
+          type: CashoutType.PURCHASE,
+          user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
         },
         select: {
           id: true,
@@ -59,7 +59,8 @@ const GetPurchase = async (
       db.order.count({
         where: {
           store_id: user.store,
-          type: CashoutType.PURCHASE
+          type: CashoutType.PURCHASE,
+          user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
         },
       }),
     ]);
