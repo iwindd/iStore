@@ -13,7 +13,6 @@ const GetBorrows = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(BorrowPermissionEnum.READ)) throw new Error("Forbidden");
     const borrows = await db.$transaction([
       db.borrows.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -21,6 +20,7 @@ const GetBorrows = async (
         orderBy: order(table.sort),
         where: {
           store_id: user.store,
+          user_store_id: !user.hasPermission(BorrowPermissionEnum.READ) ? user.userStoreId : undefined,
         },
         include: {
           product: {

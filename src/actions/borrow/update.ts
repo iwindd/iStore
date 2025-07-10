@@ -11,11 +11,11 @@ const UpdateBorrow = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(BorrowPermissionEnum.UPDATE)) throw new Error("Forbidden");
     const data = await db.borrows.update({
       where: {
         id: borrowId,
         store_id: user.store,
+        user_store_id: !user.hasPermission(BorrowPermissionEnum.UPDATE) ? user.userStoreId : undefined,
         status: "PROGRESS"
       },
       data: { 
@@ -25,6 +25,7 @@ const UpdateBorrow = async (
         status: "SUCCESS"
       },
     });
+    if (!data) throw new Error("Forbidden");
 
     if (data && data.count < data.amount) {
       const product = await db.product.update({

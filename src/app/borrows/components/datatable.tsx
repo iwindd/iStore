@@ -8,7 +8,7 @@ import GetBorrows from "@/actions/borrow/get";
 import { enqueueSnackbar } from "notistack";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useQueryClient } from "@tanstack/react-query";
-import PatchBorrow from "@/actions/borrow/patch";
+import CancelBorrow from "@/actions/borrow/cancel";
 import * as ff from '@/libs/formatter';
 import {
   Button,
@@ -22,6 +22,8 @@ import {
 import UpdateBorrow from "@/actions/borrow/update";
 import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { useAuth } from "@/hooks/use-auth";
+import { BorrowPermissionEnum } from "@/enums/permission";
 
 interface BorrowUpdateProps {
   onClose: () => void;
@@ -112,6 +114,11 @@ const BorrowDatatable = () => {
   const updateDialog = useDialog();
   const {isBackdrop} = useInterface();
   const [borrow, setBorrow] = React.useState<Borrows | null>(null);
+  const {user} = useAuth();
+  const permissions = (borrow : Borrows) => ({
+    canCancelBorrow: user?.hasPermission(BorrowPermissionEnum.DELETE) || borrow.user_store_id == user?.userStoreId,
+    canUpdateBorrow: user?.hasPermission(BorrowPermissionEnum.UPDATE) || borrow.user_store_id == user?.userStoreId,
+  })
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -122,7 +129,7 @@ const BorrowDatatable = () => {
     },
     onConfirm: async (id: number) => {
       try {
-        const resp = await PatchBorrow(id, "CANCEL");
+        const resp = await CancelBorrow(id, "CANCEL");
 
         if (!resp.success) throw Error(resp.message);
         enqueueSnackbar("ยกเลิกรายการเบิกสำเร็จแล้ว!", { variant: "success" });
@@ -224,6 +231,7 @@ const BorrowDatatable = () => {
                   icon={<EditTwoTone />}
                   onClick={menu.edit(row)}
                   label="อัพเดท"
+                  sx={{ display: !permissions(row).canUpdateBorrow ? "none" : undefined}}
                   showInMenu
                 />,
                 <GridActionsCellItem
@@ -231,6 +239,7 @@ const BorrowDatatable = () => {
                   icon={<CancelTwoTone />}
                   onClick={menu.cancel(row)}
                   label="ยกเลิก"
+                  sx={{ display: !permissions(row).canCancelBorrow ? "none" : undefined}}
                   showInMenu
                 />,
               ]
