@@ -15,6 +15,7 @@ const Create = async (
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(StockPermissionEnum.CREATE)) throw new Error("Forbidden");
+    if (instant && !user.hasPermission(StockPermissionEnum.UPDATE)) throw new Error("Forbidden");
     payload = payload.slice(0, 50);
     const validated = await validateProducts(payload, user.store)
 

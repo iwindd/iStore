@@ -22,6 +22,8 @@ import { enqueueSnackbar } from "notistack";
 import { number } from "@/libs/formatter";
 import GetStock from "@/actions/stock/find";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { StockPermissionEnum } from "@/enums/permission";
 
 interface CommitDialogProps {
   onClose: () => void;
@@ -37,6 +39,7 @@ const CommitDialog = ({
   const { isBackdrop, setBackdrop } = useInterface();
   const { commit, target, setStocks, setTarget } = useStock();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const handleChange = (event: SelectChangeEvent) => {
     setType(+event.target.value >= 1 ? 1 : 0);
@@ -115,7 +118,7 @@ const CommitDialog = ({
                 disabled={target != null}
               >
                 <MenuItem value={0}>บันทึก</MenuItem>
-                <MenuItem value={1}>จัดการทันที</MenuItem>
+                <MenuItem value={1} disabled={!user?.hasPermission(StockPermissionEnum.UPDATE)}>จัดการทันที</MenuItem>
               </Select>
             </FormControl>
           </Stack>

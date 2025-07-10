@@ -76,7 +76,7 @@ const ImportToolAction = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(StockPermissionEnum.CREATE)) throw new Error("Forbidden");
     let resp: StockItem[] = [];
 
     if (payload.type == ImportType.FromMinStock)
