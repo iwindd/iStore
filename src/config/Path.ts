@@ -1,10 +1,9 @@
 import {
-  AccountPermissionEnum,
   BorrowPermissionEnum,
   CashierPermissionEnum,
   CategoryPermissionEnum,
   EmployeePermissionEnum,
-  HistoryPermissionEnum,
+  OverStockPermissionEnum,
   PermissionEnum,
   ProductPermissionEnum,
   PurchasePermissionEnum,
@@ -81,9 +80,9 @@ const Paths = {
     href: "/overstocks",
     icon: "overstocks",
     somePermissions: [
-      StockPermissionEnum.ALL,
-      StockPermissionEnum.READ,
-      StockPermissionEnum.UPDATE,
+      OverStockPermissionEnum.ALL,
+      OverStockPermissionEnum.READ,
+      OverStockPermissionEnum.UPDATE,
     ],
   },
   borrows: {
