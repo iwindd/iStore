@@ -1,8 +1,8 @@
 "use server";
-import { PermissionEnum, RolePermissionEnum } from "@/enums/permission";
+import { CategoryPermissionEnum, PermissionEnum, ProductPermissionEnum, RolePermissionEnum, SuperPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { permissionsToMask } from "@/libs/permission";
+import { extractPermissionGroups, maskToPermissions, permissionsToMask } from "@/libs/permission";
 import { getUser } from "@/libs/session";
 import { RoleSchema, RoleValues } from "@/schema/Role";
 
@@ -24,7 +24,7 @@ export const create = async (
         user_store_id: user.userStoreId,
       },
     });
-
+  
     return { success: true, data: validated };
   } catch (error) {
     return ActionError(error) as ActionResponse<RoleValues>;

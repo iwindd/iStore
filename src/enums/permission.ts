@@ -12,6 +12,7 @@ export enum SuperPermissionEnum {
   ACCOUNT = "ACCOUNT.*",
   ROLE = "ROLE.*",
   EMPLOYEE = "EMPLOYEE.*",
+  STORE = "STORE.*",
 }
 
 export enum DashboardPermissionEnum {

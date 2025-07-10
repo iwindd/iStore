@@ -3,8 +3,9 @@ import { ActionError, ActionResponse } from "@/libs/action";
 import { SignUpSchema, SignUpValues } from "@/schema/Signup";
 import bcrypt from "bcrypt";
 import db from "@/libs/db";
-import { PermissionBit } from "@/config/Permission";
 import { Role } from "@prisma/client";
+import { permissionsToMask } from "@/libs/permission";
+import { SuperPermissionEnum } from "@/enums/permission";
 
 const Signup = async (
   payload: SignUpValues
@@ -25,7 +26,7 @@ const Signup = async (
         roles: {
           create: {
             label: "Owner",
-            permission: PermissionBit["*"].toString(),
+            permission: permissionsToMask([SuperPermissionEnum.ALL]).toString(),
           },
         },
       },

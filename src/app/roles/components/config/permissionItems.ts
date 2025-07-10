@@ -4,13 +4,12 @@ import {
   CashierPermissionEnum,
   CategoryPermissionEnum,
   DashboardPermissionEnum,
-  EmployeePermissionEnum,
   HistoryPermissionEnum,
   OverStockPermissionEnum,
   ProductPermissionEnum,
   PurchasePermissionEnum,
-  RolePermissionEnum,
   StockPermissionEnum,
+  SuperPermissionEnum,
 } from "@/enums/permission";
 import { TreeViewBaseItem } from "@mui/x-tree-view";
 
@@ -96,24 +95,13 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
     ],
   },
   {
-    id: RolePermissionEnum.ALL,
-    label: "ตำแหน่ง",
+    id: "MANAGER",
+    label: "ผู้ดูแลระบบ",
     children: [
-      { id: RolePermissionEnum.READ, label: "ตรวจสอบตำแหน่ง" },
-      { id: RolePermissionEnum.CREATE, label: "เพิ่มตำแหน่ง" },
-      { id: RolePermissionEnum.UPDATE, label: "แก้ไขตำแหน่ง" },
-      { id: RolePermissionEnum.DELETE, label: "ลบตำแหน่ง" },
-    ],
-  },
-  {
-    id: EmployeePermissionEnum.ALL,
-    label: "พนักงาน",
-    children: [
-      { id: EmployeePermissionEnum.READ, label: "ตรวจสอบพนักงาน" },
-      { id: EmployeePermissionEnum.CREATE, label: "เพิ่มพนักงาน" },
-      { id: EmployeePermissionEnum.UPDATE, label: "แก้ไขพนักงาน" },
-      { id: EmployeePermissionEnum.DELETE, label: "ลบพนักงาน" },
-    ],
+      {id: SuperPermissionEnum.ROLE, label: "จัดการตำแหน่ง"},
+      {id: SuperPermissionEnum.EMPLOYEE, label: "จัดการพนักงาน"},
+      {id: SuperPermissionEnum.STORE, label: "จัดการรายละเอียดร้านค้า"},
+    ]
   },
 ];
 

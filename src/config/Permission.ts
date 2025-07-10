@@ -1,8 +1,20 @@
-import { AccountPermissionEnum, BorrowPermissionEnum, CashierPermissionEnum, CategoryPermissionEnum, DashboardPermissionEnum, EmployeePermissionEnum, HistoryPermissionEnum, OverStockPermissionEnum, ProductPermissionEnum, PurchasePermissionEnum, RolePermissionEnum, StockPermissionEnum, SuperPermissionEnum } from "@/enums/permission";
+import {
+  AccountPermissionEnum,
+  BorrowPermissionEnum,
+  CashierPermissionEnum,
+  CategoryPermissionEnum,
+  DashboardPermissionEnum,
+  EmployeePermissionEnum,
+  HistoryPermissionEnum,
+  OverStockPermissionEnum,
+  ProductPermissionEnum,
+  PurchasePermissionEnum,
+  RolePermissionEnum,
+  StockPermissionEnum,
+  SuperPermissionEnum,
+} from "@/enums/permission";
 
 export const PermissionBit = {
-  [SuperPermissionEnum.ALL]: (1n << 64n) - 1n ,
-
   [ProductPermissionEnum.READ]: 1n << 0n,
   [ProductPermissionEnum.CREATE]: 1n << 1n,
   [ProductPermissionEnum.UPDATE]: 1n << 2n,
@@ -45,4 +57,56 @@ export const PermissionBit = {
   [EmployeePermissionEnum.CREATE]: 1n << 29n,
   [EmployeePermissionEnum.UPDATE]: 1n << 30n,
   [EmployeePermissionEnum.DELETE]: 1n << 31n,
+};
+
+export const GroupedPermissionBit: Record<any, string[]> = {
+  [SuperPermissionEnum.ALL]: Object.keys(
+    PermissionBit
+  ).filter(p => p != SuperPermissionEnum.ALL) as (keyof typeof PermissionBit)[], // all
+  [SuperPermissionEnum.PRODUCT]: [
+    ProductPermissionEnum.READ,
+    ProductPermissionEnum.CREATE,
+    ProductPermissionEnum.UPDATE,
+    ProductPermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.CATEGORY]: [
+    CategoryPermissionEnum.READ,
+    CategoryPermissionEnum.CREATE,
+    CategoryPermissionEnum.UPDATE,
+    CategoryPermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.STOCK]: [
+    StockPermissionEnum.READ,
+    StockPermissionEnum.CREATE,
+    StockPermissionEnum.UPDATE,
+    StockPermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.OVERSTOCK]: [
+    OverStockPermissionEnum.READ,
+    OverStockPermissionEnum.UPDATE,
+  ],
+  [SuperPermissionEnum.BORROW]: [
+    BorrowPermissionEnum.READ,
+    BorrowPermissionEnum.CREATE,
+    BorrowPermissionEnum.UPDATE,
+    BorrowPermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.PURCHASE]: [
+    PurchasePermissionEnum.READ,
+    PurchasePermissionEnum.CREATE,
+  ],
+  [SuperPermissionEnum.HISTORY]: [HistoryPermissionEnum.READ],
+  [SuperPermissionEnum.ACCOUNT]: [AccountPermissionEnum.UPDATE],
+  [SuperPermissionEnum.ROLE]: [
+    RolePermissionEnum.READ,
+    RolePermissionEnum.CREATE,
+    RolePermissionEnum.UPDATE,
+    RolePermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.EMPLOYEE]: [
+    EmployeePermissionEnum.READ,
+    EmployeePermissionEnum.CREATE,
+    EmployeePermissionEnum.UPDATE,
+    EmployeePermissionEnum.DELETE,
+  ],
 };
