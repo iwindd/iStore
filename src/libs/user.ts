@@ -5,15 +5,21 @@ import { PermissionBit } from '@/config/Permission';
 
 export class User{
   public session: Session;
-  public store: number;
+
   public id: number;
+  public store: number;
   public userStoreId: number;
+
+  public email: string;
+  public displayName: string;
 
   constructor(session: Session) {
     this.session = session;
     this.store = +session?.user.store;
     this.id = +session?.user.id || 0;
     this.userStoreId = +session?.user.userStoreId || 0;
+    this.displayName = session?.user.name || '';
+    this.email = session?.user.email || '';
   }
 
   public permissions()  {

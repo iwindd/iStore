@@ -1,19 +1,9 @@
+'use client';
 import { Stack, Typography } from "@mui/material";
 import React from "react";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import dynamic from "next/dynamic";
-
-const DetailForm = dynamic(() => import("./components/DetailForm"), {
-  ssr: false,
-});
-
-const AddressForm = dynamic(() => import("./components/AddressForm"), {
-  ssr: false,
-});
-
-const LineForm = dynamic(() => import("./components/LineForm"), {
-  ssr: false,
-});
+import AccountInfo from "./components/AccountInfo";
+import PasswordChanger from "./components/PasswordChanger";
 
 const Account = () => {
   return (
@@ -28,17 +18,12 @@ const Account = () => {
           ></Stack>
         </Stack>
       </Stack>
-      <Grid container spacing={1}>
-        <Grid xs={12} lg={6}>
-          <Stack spacing={1}>
-            <DetailForm />
-           {/*  <LineForm /> :: TODO:: Make notification */} 
-          </Stack>
+      <Grid container spacing={2}>
+        <Grid xs={12} lg={12}>
+          <AccountInfo />
         </Grid>
-        <Grid xs={12} lg={6}>
-          <Stack spacing={1}>
-            <AddressForm />
-          </Stack>
+        <Grid xs={12} lg={12}>
+          <PasswordChanger />
         </Grid>
       </Grid>
     </Stack>

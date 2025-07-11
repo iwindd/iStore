@@ -1,5 +1,6 @@
 "use client";
 import UpdateProfile from "@/actions/user/update";
+import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
@@ -8,29 +9,25 @@ import { EmailTwoTone, PeopleTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   Divider,
   InputAdornment,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
-import { enqueueSnackbar } from "notistack";
+import { useSnackbar } from "notistack";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import PasswordController from "./components/Password-Controller";
 
-const DetailForm = () => {
+const AccountInfo = () => {
+  const { user, setName } = useAuth();
   const { setBackdrop } = useInterface();
-  const { data: session, update } = useSession();
-  const { register, handleSubmit } = useForm<ProfileValues>({
+  const { enqueueSnackbar } = useSnackbar();
+  const { register, handleSubmit, formState: {errors} } = useForm<ProfileValues>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
-      name: session?.user.name,
-      email: session?.user.email,
+      name: user?.displayName,
     },
   });
 
@@ -38,19 +35,11 @@ const DetailForm = () => {
     title: "แจ้งเตือน",
     text: "คุณต้องการที่จะแก้ไขโปรไฟล์หรือไม่?",
     onConfirm: async (payload: ProfileValues) => {
-      if (!session) return;
-      setBackdrop(false);
+      setBackdrop(true);
       try {
         const resp = await UpdateProfile(payload);
         if (!resp.success) throw Error(resp.message);
-        update({
-          ...session,
-          user: {
-            ...session.user,
-            name: resp.data.name,
-            email: resp.data.email,
-          },
-        });
+        setName(resp.data.name);
         enqueueSnackbar("บันทึกข้อมูลผู้ใช้สำเร็จแล้ว!", {
           variant: "success",
         });
@@ -71,22 +60,19 @@ const DetailForm = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader
-          title="ข้อมูลผู้ใช้"
-          action={
-            <>
-              <PasswordController />
-            </>
-          }
-        ></CardHeader>
+      <Card component={"form"} onSubmit={handleSubmit(onSubmit)}>
+        <CardHeader title="ข้อมูลผู้ใช้" />
         <Divider />
-        <CardContent
-          id="edit-profile-form"
-          component={"form"}
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <Stack spacing={1}>
+        <CardContent>
+          <Stack
+            spacing={2}
+            width={{
+              xs: "100%",
+              sm: "400px",
+              md: "500px",
+              lg: "600px",
+            }}
+          >
             <TextField
               InputProps={{
                 startAdornment: (
@@ -95,10 +81,11 @@ const DetailForm = () => {
                   </InputAdornment>
                 ),
               }}
-              fullWidth
-              placeholder="ชื่อ"
+              label="ชื่อ"
               autoFocus
               {...register("name")}
+              error={errors["name"] !== undefined}
+              helperText={errors["name"]?.message}
             />
             <TextField
               InputProps={{
@@ -108,29 +95,28 @@ const DetailForm = () => {
                   </InputAdornment>
                 ),
               }}
-              fullWidth
-              placeholder="อีเมล"
-              {...register("email")}
+              label="อีเมล"
+              value={user?.email || ""}
+              disabled
+              aria-readonly
             />
+            <div>
+              <Button
+                type="submit"
+                color="success"
+                variant="contained"
+                startIcon={<SaveTwoTone />}
+              >
+                บันทึก
+              </Button>
+            </div>
           </Stack>
         </CardContent>
         <Divider />
-        <CardActions>
-          <Button
-            type="submit"
-            color="success"
-            variant="contained"
-            sx={{ ml: "auto" }}
-            form="edit-profile-form"
-            startIcon={<SaveTwoTone/>}
-          >
-            บันทึก
-          </Button>
-        </CardActions>
       </Card>
       <Confirmation {...confirmation.props} />
     </>
   );
 };
 
-export default DetailForm;
+export default AccountInfo;

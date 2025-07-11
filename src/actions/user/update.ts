@@ -19,7 +19,6 @@ const UpdateProfile = async (
       },
       data: {
         name: validated.name,
-        email: validated.email,
       },
     });
 
