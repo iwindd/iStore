@@ -1,5 +1,6 @@
 "use client";
 import UpdateProfile from "@/actions/user/update";
+import { AccountPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -83,6 +84,7 @@ const AccountInfo = () => {
               }}
               label="ชื่อ"
               autoFocus
+              disabled={!user?.hasPermission(AccountPermissionEnum.UPDATE)}
               {...register("name")}
               error={errors["name"] !== undefined}
               helperText={errors["name"]?.message}
@@ -100,16 +102,17 @@ const AccountInfo = () => {
               disabled
               aria-readonly
             />
-            <div>
-              <Button
-                type="submit"
-                color="success"
-                variant="contained"
-                startIcon={<SaveTwoTone />}
-              >
-                บันทึก
-              </Button>
-            </div>
+            {
+              user?.hasPermission(AccountPermissionEnum.UPDATE) && (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={<SaveTwoTone />}
+                >
+                  บันทึก
+                </Button>
+              )
+            }
           </Stack>
         </CardContent>
         <Divider />
