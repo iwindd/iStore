@@ -32,6 +32,7 @@ const History = async ({ params }: { params: { id: string } }) => {
           <Stack  sx={{ flex: "1 1 auto" }}>
             <Typography variant="h4">ประวัติการทำรายการ</Typography>
             <Typography variant="caption">คิดเงินโดย: {cashoutBy}</Typography>
+            <Typography variant="caption">วันที่ทำรายการ: {ff.date(data.created_at)}</Typography>
           </Stack>
           <>
             <ReceiptController items={data.products} name={session.user.name} address={addressText} left={ff.date(data.created_at)} right={`No.${data.id}`}  />
