@@ -41,7 +41,6 @@ export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
 
 export const permissionsToMask = (permissions: PermissionEnum[]): bigint => {
   permissions = extractPermissionGroups(permissions);
-  console.warn("Converting permissions to mask:", permissions);
   return permissions.reduce((mask, permission) => {
     const bit = PermissionBit[permission as keyof typeof PermissionBit];
     if (bit !== undefined) {
