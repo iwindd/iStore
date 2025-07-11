@@ -194,6 +194,7 @@ model Role {
   users UserStore[] @relation("UserStoreRole")
   user_store_id Int?
   user_store UserStore? @relation(fields: [user_store_id], references: [id])
+  is_super_admin Boolean @default(false)
 
   @@unique([label])
 }

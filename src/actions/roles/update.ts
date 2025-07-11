@@ -16,6 +16,13 @@ export const update = async (
     if (!user.hasPermission(RolePermissionEnum.UPDATE)) throw new Error("Forbidden");
     const validated = RoleSchema.parse(payload);
     const mask = permissionsToMask(validated.permissions as PermissionEnum[]);
+    const isSuperAdminRole = await db.role.count({
+      where: {
+        id: id,
+        store_id: user.store,
+        is_super_admin: true,
+      },
+    }) > 0
 
     await db.role.update({
       where: {
@@ -24,7 +31,7 @@ export const update = async (
       },
       data: {
         label: validated.label,
-        permission: mask.toString(),
+        ...(!isSuperAdminRole ? { permission: mask.toString() } : {}),
       },
     });
 

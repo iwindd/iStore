@@ -1,4 +1,6 @@
-import TreeViewPermissionItems, { TreeViewPermissionDefaultItems } from "@/app/roles/components/config/permissionItems";
+import TreeViewPermissionItems, {
+  TreeViewPermissionDefaultItems,
+} from "@/app/roles/components/config/permissionItems";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { RoleSchema, RoleValues } from "@/schema/Role";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +16,7 @@ import {
   FormLabel,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { RichTreeView } from "@mui/x-tree-view";
 import { Role } from "@prisma/client";
@@ -23,7 +26,7 @@ import * as RoleActions from "@/actions/roles";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
-import { getPermissionsWithGroups, maskToPermissions} from "@/libs/permission";
+import { getPermissionsWithGroups, maskToPermissions } from "@/libs/permission";
 
 interface RoleFormDialogProps {
   onClose: () => void;
@@ -35,6 +38,7 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const [isSuperAdmin, setIsSuperAdmin] = React.useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -73,13 +77,15 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
   };
 
   React.useEffect(() => {
-    if (role){
+    if (role) {
       setValue("label", role.label);
-      if (role.permission){
+      if (role.permission) {
         const permissions = maskToPermissions(BigInt(role.permission));
-        setValue("permissions", getPermissionsWithGroups(permissions))
-      };
-    } 
+        setValue("permissions", getPermissionsWithGroups(permissions));
+      }
+
+      setIsSuperAdmin(role.is_super_admin || false);
+    }
   }, [role, setValue]);
 
   return (
@@ -105,53 +111,61 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
               helperText={errors["label"]?.message}
               {...register("label")}
             />
-            <FormControl 
-              component={Box}  
-              error={!!errors["permissions"]?.message}
-              sx={{
-                minHeight: 352,
-                minWidth: 290,
-                '&:focus-within .rich-tree-view-custom': {
-                  borderColor: (theme) =>
-                    !!errors["permissions"]
-                      ? theme.palette.error.main
-                      : theme.palette.primary.main,
-                },
-                '&:focus-within .form-label-custom': {
-                  color: (theme) =>
-                    !!errors["permissions"]
-                      ? theme.palette.error.main
-                      : theme.palette.primary.main,
-                },
-              }}
-            >
-              <FormLabel className="form-label-custom">กำหนดสิทธิ์ในการเข้าถึง</FormLabel>
-              <RichTreeView
-                multiSelect
-                checkboxSelection
-                items={TreeViewPermissionItems}
-                defaultSelectedItems={TreeViewPermissionDefaultItems}
-                selectedItems={permissions}
-                onSelectedItemsChange={onPermission}
-                selectionPropagation={{
-                  descendants: true,
-                  parents: true,
+            {!isSuperAdmin ? (
+              <FormControl
+                component={Box}
+                error={!!errors["permissions"]?.message}
+                sx={{
+                  minHeight: 352,
+                  minWidth: 290,
+                  "&:focus-within .rich-tree-view-custom": {
+                    borderColor: (theme) =>
+                      !!errors["permissions"]
+                        ? theme.palette.error.main
+                        : theme.palette.primary.main,
+                  },
+                  "&:focus-within .form-label-custom": {
+                    color: (theme) =>
+                      !!errors["permissions"]
+                        ? theme.palette.error.main
+                        : theme.palette.primary.main,
+                  },
                 }}
-                sx={(theme) => ({
-                  borderWidth: 1,
-                  borderStyle: 'solid',
-                  borderRadius: 1,
-                  borderColor: !!errors["permissions"]
-                    ? theme.palette.error.main
-                    : theme.palette.divider,
-                  transition: 'border-color 0.2s ease',
-                })}
-                className="rich-tree-view-custom"
-              />
-              <FormHelperText>
-                {errors["permissions"]?.message }
-              </FormHelperText>
-            </FormControl>
+              >
+                <FormLabel className="form-label-custom">
+                  กำหนดสิทธิ์ในการเข้าถึง
+                </FormLabel>
+                <RichTreeView
+                  multiSelect
+                  checkboxSelection
+                  items={TreeViewPermissionItems}
+                  defaultSelectedItems={TreeViewPermissionDefaultItems}
+                  selectedItems={permissions}
+                  onSelectedItemsChange={onPermission}
+                  selectionPropagation={{
+                    descendants: true,
+                    parents: true,
+                  }}
+                  sx={(theme) => ({
+                    borderWidth: 1,
+                    borderStyle: "solid",
+                    borderRadius: 1,
+                    borderColor: !!errors["permissions"]
+                      ? theme.palette.error.main
+                      : theme.palette.divider,
+                    transition: "border-color 0.2s ease",
+                  })}
+                  className="rich-tree-view-custom"
+                />
+                <FormHelperText>
+                  {errors["permissions"]?.message}
+                </FormHelperText>
+              </FormControl>
+            ) : (
+              <Typography variant="caption">
+                ตำแหน่งนี้ไม่สามารถแก้ไขสิทธิ์ได้ เนื่องจากเป็นตำแหน่งผู้ดูแลระบบ
+              </Typography>
+            )}
           </Stack>
         </Stack>
       </DialogContent>

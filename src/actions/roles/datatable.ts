@@ -32,6 +32,7 @@ export const datatable = async (
           created_at: true,
           label: true,
           permission: true, 
+          is_super_admin: true,
           user_store: {
             select: {
               user: {

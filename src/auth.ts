@@ -2,8 +2,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import AuthConfig from "./config/AuthConfig";
 import db from "./libs/db";
 import bcrypt from "bcrypt";
-import { StoreAddress } from "../next-auth";
 import { AddressValues, FormatAddress } from "./schema/Address";
+import { permissionsToMask } from "./libs/permission";
+import { SuperPermissionEnum } from "./enums/permission";
 
 export const authOptions = {
   pages: {
@@ -66,6 +67,7 @@ export const authOptions = {
                   role: {
                     select: {
                       permission: true,
+                      is_super_admin: true,
                     }
                   }
                 },
@@ -83,6 +85,8 @@ export const authOptions = {
 
           if (!user || !userStore) throw new Error("no_store");
 
+          const role = userStore.role;
+
           return {
             id: String(user.id),
             userStoreId: userStore.id,
@@ -90,7 +94,7 @@ export const authOptions = {
             name: user.name,
             email: user.email,
             line_token: userStore.store.line_token,
-            permission: user.userStores[0].role.permission,
+            permission: role.is_super_admin ? permissionsToMask([SuperPermissionEnum.ALL]).toString() : role.permission,
             address: FormatAddress(userStore.store as AddressValues),
           };
         } catch (error) {
