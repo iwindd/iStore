@@ -95,7 +95,7 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
     ],
   },
   {
-    id: "MANAGER",
+    id: SuperPermissionEnum.ALL,
     label: "ผู้ดูแลระบบ",
     children: [
       {id: SuperPermissionEnum.ROLE, label: "จัดการตำแหน่ง"},

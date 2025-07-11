@@ -63,6 +63,9 @@ export const GroupedPermissionBit: Record<any, string[]> = {
   [SuperPermissionEnum.ALL]: Object.keys(
     PermissionBit
   ).filter(p => p != SuperPermissionEnum.ALL) as (keyof typeof PermissionBit)[], // all
+  
+  [SuperPermissionEnum.DASHBOARD]: [DashboardPermissionEnum.READ],
+  [SuperPermissionEnum.CASHIER]: [CashierPermissionEnum.CREATE],
   [SuperPermissionEnum.PRODUCT]: [
     ProductPermissionEnum.READ,
     ProductPermissionEnum.CREATE,
@@ -109,4 +112,5 @@ export const GroupedPermissionBit: Record<any, string[]> = {
     EmployeePermissionEnum.UPDATE,
     EmployeePermissionEnum.DELETE,
   ],
+  [SuperPermissionEnum.STORE]: [],
 };

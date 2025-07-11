@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   FormHelperText,
   FormLabel,
   Stack,
@@ -24,9 +23,7 @@ import * as RoleActions from "@/actions/roles";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
-import { maskToPermissions } from "@/libs/permission";
-import { SuperPermissionEnum } from "@/enums/permission";
-import { error } from "console";
+import { getPermissionsWithGroups, maskToPermissions} from "@/libs/permission";
 
 interface RoleFormDialogProps {
   onClose: () => void;
@@ -79,7 +76,8 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
     if (role){
       setValue("label", role.label);
       if (role.permission){
-        setValue("permissions", maskToPermissions(BigInt(role.permission)).filter((p) => p != SuperPermissionEnum.ALL))
+        const permissions = maskToPermissions(BigInt(role.permission));
+        setValue("permissions", getPermissionsWithGroups(permissions))
       };
     } 
   }, [role, setValue]);

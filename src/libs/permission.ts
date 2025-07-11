@@ -1,5 +1,5 @@
 import { PermissionBit, GroupedPermissionBit } from "@/config/Permission";
-import { PermissionEnum, SuperPermissionEnum } from "@/enums/permission";
+import { PermissionEnum, ProductPermissionEnum, SuperPermissionEnum } from "@/enums/permission";
 
 export const extractPermissionGroups = (permissions: PermissionEnum[]) => {
   const result: PermissionEnum[] = [];
@@ -7,10 +7,26 @@ export const extractPermissionGroups = (permissions: PermissionEnum[]) => {
   permissions.map((permission) => {
     if (GroupedPermissionBit[permission]) {
       result.push(...(GroupedPermissionBit[permission] as PermissionEnum[]));
+    }else{
+      result.push(permission);
     }
   });
 
-  return result.filter(p => p != SuperPermissionEnum.ALL);
+  return result.filter(p =>  GroupedPermissionBit[p] === undefined && PermissionBit[p as keyof typeof PermissionBit] !== undefined);
+}
+
+export const getPermissionsWithGroups = (permissions: PermissionEnum[]): PermissionEnum[] => {
+  const keyOfGroups = Object.keys(GroupedPermissionBit) as SuperPermissionEnum[];
+  const hasGroups : PermissionEnum[] = [];
+
+  keyOfGroups.map((group) => {
+    const groupPermissions = GroupedPermissionBit[group] as PermissionEnum[];
+    if (groupPermissions.every(p => permissions.includes(p))) {
+      hasGroups.push(group);
+    }
+  })
+
+  return [...permissions.filter(p => !GroupedPermissionBit[p]), ...hasGroups];
 }
 
 export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
@@ -25,6 +41,7 @@ export const maskToPermissions = (mask: bigint): PermissionEnum[] => {
 
 export const permissionsToMask = (permissions: PermissionEnum[]): bigint => {
   permissions = extractPermissionGroups(permissions);
+  console.warn("Converting permissions to mask:", permissions);
   return permissions.reduce((mask, permission) => {
     const bit = PermissionBit[permission as keyof typeof PermissionBit];
     if (bit !== undefined) {
