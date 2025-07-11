@@ -8,6 +8,11 @@ import { Order, OrderProduct } from "@prisma/client";
 
 interface History extends Order{
   products: OrderProduct[]
+  user_store: {
+    user: {
+      name: string;
+    };
+  }
 }
 
 const GetHistory = async (
@@ -43,13 +48,22 @@ const GetHistory = async (
         ],
       },
       include: {
-        products: true
+        products: true,
+        user_store:{
+          select:{
+            user: {
+              select: {
+                name: true,
+              }
+            }
+          }
+        }
       }
     });
 
     return {
       success: true,
-      data: history,
+      data: history as History | null,
     };
   } catch (error) {
     return ActionError(error) as ActionResponse<History | null>;
