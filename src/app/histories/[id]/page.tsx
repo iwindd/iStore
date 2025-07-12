@@ -35,7 +35,8 @@ const History = async ({ params }: { params: { id: string } }) => {
             <Typography variant="caption">วันที่ทำรายการ: {ff.date(data.created_at)}</Typography>
           </Stack>
           <>
-            <ReceiptController items={data.products} name={session.user.name} address={addressText} left={ff.date(data.created_at)} right={`No.${data.id}`}  />
+            {/* TODO */}
+            {/* <ReceiptController items={data.products} name={session.user.name} address={addressText} left={ff.date(data.created_at)} right={`No.${data.id}`}  /> */}
           </>
         </Stack>
       </Grid>
