@@ -104,13 +104,16 @@ const AccountInfo = () => {
             />
             {
               user?.hasPermission(AccountPermissionEnum.UPDATE) && (
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={<SaveTwoTone />}
-                >
-                  บันทึก
-                </Button>
+                <div>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="success"
+                    startIcon={<SaveTwoTone />}
+                  >
+                    บันทึก
+                  </Button>
+                </div>
               )
             }
           </Stack>
