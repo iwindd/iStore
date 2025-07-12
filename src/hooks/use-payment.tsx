@@ -180,7 +180,7 @@ const usePayment = (): PaymentHook => {
   }, [setIsOpen]);
 
   const toggle = React.useCallback((noAlert?: boolean) => {
-    if (total() <= 0) {
+    if (cart.length <= 0) {
       if (isOpen) setIsOpen(false);
       if (!noAlert) enqueueSnackbar("ไม่สามารถคิดเงินได้เนื่องจากไม่พบสินค้าในตะกร้าสินค้า", {
         variant: "error",
