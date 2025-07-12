@@ -130,14 +130,14 @@ function SearchDialog({
             helperText={
               errors["serial"]?.message ||
               (isRandomSerial == watch("serial") &&
-                " สินค้าที่ถูกสุ่มจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง")
+                " สินค้าที่สร้างรหัสสินค้าจากระบบจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง")
             }
             InputLabelProps={{ shrink: true }}
             fullWidth
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <Tooltip title="สุ่มรหัสสินค้า">
+                  <Tooltip title="สร้างรหัสสินค้า">
                     <IconButton onClick={random}>
                       <Rotate90DegreesCcw />
                     </IconButton>

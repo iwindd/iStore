@@ -29,10 +29,11 @@ export function isValid(code: string): boolean {
 
 // Generate a random EAN13 barcode
 export function randomEan(): string {
-  // Generate random 12-digit product code
-  let productCode = "";
-  for (let i = 0; i < 12; i++) {
-    productCode += Math.floor(Math.random() * 10);
+  // Generate random 12-digit product code, starting with 1-9
+  let productCode = Math.floor(Math.random() * 9 + 1).toString(); // first digit: 1-9
+
+  for (let i = 1; i < 12; i++) {
+    productCode += Math.floor(Math.random() * 10); // remaining digits: 0-9
   }
 
   // Calculate checksum
