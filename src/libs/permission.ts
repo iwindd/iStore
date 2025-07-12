@@ -15,7 +15,7 @@ export const extractPermissionGroups = (permissions: PermissionEnum[]) => {
   return result.filter(p =>  GroupedPermissionBit[p] === undefined && PermissionBit[p as keyof typeof PermissionBit] !== undefined);
 }
 
-export const getPermissionsWithGroups = (permissions: PermissionEnum[]): PermissionEnum[] => {
+export const getPermissionsWithGroups = (permissions: PermissionEnum[], removePermissionInGroup : boolean = false): PermissionEnum[] => {
   const keyOfGroups = Object.keys(GroupedPermissionBit) as SuperPermissionEnum[];
   const hasGroups : PermissionEnum[] = [];
 
@@ -25,6 +25,13 @@ export const getPermissionsWithGroups = (permissions: PermissionEnum[]): Permiss
       hasGroups.push(group);
     }
   })
+
+  if (removePermissionInGroup) {
+    hasGroups.map((group) => {
+      const groupPermissions = GroupedPermissionBit[group] as PermissionEnum[];
+      permissions = permissions.filter(p => !groupPermissions.includes(p));
+    });
+  } 
 
   return [...permissions.filter(p => !GroupedPermissionBit[p]), ...hasGroups];
 }
