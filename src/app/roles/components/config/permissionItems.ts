@@ -15,6 +15,10 @@ import { TreeViewBaseItem } from "@mui/x-tree-view";
 
 const TreeViewPermissionItems: TreeViewBaseItem[] = [
   {
+    id: SuperPermissionEnum.ALL,
+    label: "ผู้ดูแลระบบ",
+  },
+  {
     id: CashierPermissionEnum.ALL,
     label: "แคชเชียร์",
     children: [{ id: CashierPermissionEnum.CREATE, label: "ขายสินค้า" }],
@@ -93,16 +97,7 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
       { id: PurchasePermissionEnum.READ, label: "เข้าถึงการสั่งซื้อทั้งหมด" },
       { id: PurchasePermissionEnum.CREATE, label: "เพิ่มรายการสั่งซื้อ" },
     ],
-  },
-  {
-    id: SuperPermissionEnum.ALL,
-    label: "ผู้ดูแลระบบ",
-    children: [
-      {id: SuperPermissionEnum.ROLE, label: "จัดการตำแหน่ง"},
-      {id: SuperPermissionEnum.EMPLOYEE, label: "จัดการพนักงาน"},
-      {id: SuperPermissionEnum.STORE, label: "จัดการรายละเอียดร้านค้า"},
-    ]
-  },
+  }
 ];
 
 export const TreeViewPermissionDefaultItems = [
@@ -113,5 +108,13 @@ export const TreeViewPermissionDefaultItems = [
   AccountPermissionEnum.ALL,
   AccountPermissionEnum.UPDATE,
 ]
+
+export const treeViewPermissionAllIds = TreeViewPermissionItems.reduce((acc: string[], item) => {
+  acc.push(item.id);
+  if (item.children) {
+    item.children.forEach(child => acc.push(child.id));
+  }
+  return acc;
+}, []);
 
 export default TreeViewPermissionItems;

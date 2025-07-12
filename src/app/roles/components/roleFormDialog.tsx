@@ -1,4 +1,5 @@
 import TreeViewPermissionItems, {
+  treeViewPermissionAllIds,
   TreeViewPermissionDefaultItems,
 } from "@/app/roles/components/config/permissionItems";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -26,7 +27,7 @@ import * as RoleActions from "@/actions/roles";
 import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
 import { SaveTwoTone } from "@mui/icons-material";
-import { getPermissionsWithGroups, maskToPermissions } from "@/libs/permission";
+import { extractPermissionGroups, getPermissionsWithGroups, maskToPermissions } from "@/libs/permission";
 
 interface RoleFormDialogProps {
   onClose: () => void;
@@ -60,8 +61,12 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
 
   const submitRole: SubmitHandler<RoleValues> = async (payload: RoleValues) => {
     setBackdrop(true);
+    const validatedPayload = {
+      ...payload,
+      permissions: extractPermissionGroups(payload.permissions as any),
+    }
     try {
-      const resp = await (!role ? RoleActions.create(payload) : RoleActions.update(payload, (role as Role).id));
+      const resp = await (!role ? RoleActions.create(validatedPayload) : RoleActions.update(validatedPayload, (role as Role).id));
       if (!resp.success) throw Error(resp.message);
       reset();
       await queryClient.refetchQueries({ queryKey: ["roles"], type: "active" });
@@ -81,9 +86,13 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
       setValue("label", role.label);
       if (role.permission) {
         const permissions = maskToPermissions(BigInt(role.permission));
-        setValue("permissions", getPermissionsWithGroups(permissions));
+        const withGroups =  getPermissionsWithGroups(permissions, false);
+        const hasInTreeView = withGroups.filter((p) => treeViewPermissionAllIds.includes(p));
+        setValue("permissions", hasInTreeView);
       }
-
+      else {
+        setValue("permissions", TreeViewPermissionDefaultItems);
+      } 
       setIsSuperAdmin(role.is_super_admin || false);
     }
   }, [role, setValue]);
