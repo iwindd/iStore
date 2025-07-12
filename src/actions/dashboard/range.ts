@@ -29,6 +29,9 @@ export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
 export const getFilterRange = async (key: string = "created_at") => {
   const [start, end] = await getRange();
 
+  if (start) start.startOf("day");
+  if (end) end.endOf("day");
+
   return {
     [key]: {
       ...(start && {

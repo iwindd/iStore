@@ -15,7 +15,7 @@ const getOrders = async (store: number) => {
       },
       where: {
         store_id: store,
-        user_store_id: user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
+        user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
         ...await getFilterRange()
       },
       include: {

@@ -12,7 +12,7 @@ const getBorrows = async (store: number): Promise<Borrows[]> => {
     return await db.borrows.findMany({
       where: {
         store_id: store,
-        user_store_id: user.hasPermission(BorrowPermissionEnum.READ) ? user.userStoreId : undefined,
+        user_store_id: !user.hasPermission(BorrowPermissionEnum.READ) ? user.userStoreId : undefined,
         ...await getFilterRange()
       },
     });
