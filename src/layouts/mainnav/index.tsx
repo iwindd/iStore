@@ -7,12 +7,12 @@ import Stack from "@mui/material/Stack";
 
 import { usePopover } from "@/hooks/use-popover";
 
-import { UserPopover } from "../user-popover";
 import { MenuTwoTone } from "@mui/icons-material";
 import { Session } from "next-auth";
 import { Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import MobileNav from "../sidenav/MobileNav";
+import UserPopover from "../popover";
 
 export function MainNav({
   session,

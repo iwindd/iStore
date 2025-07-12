@@ -1,4 +1,4 @@
-import { NavItemConfig } from "./type";
+import { NavItemConfig } from "@/config/Navbar";
 
 export function isNavItemActive({
   disabled,

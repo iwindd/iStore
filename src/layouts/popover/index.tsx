@@ -8,15 +8,15 @@ import MenuList from "@mui/material/MenuList";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
 
-import { LogoutTwoTone, PeopleTwoTone, Settings } from "@mui/icons-material";
-import { signOut, useSession } from "next-auth/react";
+import { LogoutTwoTone, Settings } from "@mui/icons-material";
+import { signOut } from "next-auth/react";
 import { useSnackbar } from "notistack";
-import { useInterface } from "@/providers/InterfaceProvider";
 import Link from "next/link";
 import { Path } from "@/config/Path";
 import { useRecoilState } from "recoil";
 import { CartState } from "@/atoms/cart";
 import { StockState } from "@/atoms/stock";
+import { useAuth } from "@/hooks/use-auth";
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -24,15 +24,14 @@ export interface UserPopoverProps {
   open: boolean;
 }
 
-export function UserPopover({
+function UserPopover({
   anchorEl,
   onClose,
   open,
 }: UserPopoverProps): React.JSX.Element {
   const router = useRouter();
-  const { data, update } = useSession();
+  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const { setBackdrop } = useInterface();
   const [, setCart] = useRecoilState(CartState);
   const [, setStocks] = useRecoilState(StockState);
 
@@ -60,9 +59,9 @@ export function UserPopover({
       slotProps={{ paper: { sx: { width: "240px" } } }}
     >
       <Box sx={{ p: "16px 20px " }}>
-        <Typography variant="subtitle1">{data?.user?.name}</Typography>
+        <Typography variant="subtitle1">{user?.displayName}</Typography>
         <Typography color="text.secondary" variant="body2">
-          {data?.user?.email}
+          {user?.email}
         </Typography>
       </Box>
       <Divider />
@@ -86,3 +85,5 @@ export function UserPopover({
     </Popover>
   );
 }
+
+export default UserPopover;
