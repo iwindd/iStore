@@ -2,7 +2,7 @@ import { PermissionBit, GroupedPermissionBit } from "@/config/Permission";
 import { PermissionEnum, ProductPermissionEnum, SuperPermissionEnum } from "@/enums/permission";
 
 export const extractPermissionGroups = (permissions: PermissionEnum[]) => {
-  const result: PermissionEnum[] = [];
+  let result: PermissionEnum[] = [];
 
   permissions.map((permission) => {
     if (GroupedPermissionBit[permission]) {
@@ -12,6 +12,8 @@ export const extractPermissionGroups = (permissions: PermissionEnum[]) => {
     }
   });
 
+  result = result.filter((value, index, self) => self.indexOf(value) === index);
+  result = result.filter((value, index, self) => self.indexOf(value) === index);
   return result.filter(p =>  GroupedPermissionBit[p] === undefined && PermissionBit[p as keyof typeof PermissionBit] !== undefined);
 }
 
