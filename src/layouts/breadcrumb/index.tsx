@@ -3,7 +3,7 @@ import React from "react";
 import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
-import PathConfig, { PathType } from "@/config/Path";
+import PathConfig, { HomePath, PathType } from "@/config/Path";
 const Path = Object.values(PathConfig) as PathType[];
 
 const findRoute = (pathSegments: string[]) => {
@@ -22,10 +22,7 @@ const Breadcrumb = () => {
 
   return (
     <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
-      <Link underline="hover" color="inherit" href="/admin/">
-        {" "}
-        ภาพรวม{" "}
-      </Link>
+      <Link underline="hover" color="inherit" href={HomePath}>ภาพรวม</Link>
 
       {pathNames.map((_, index) => {
         const pathSegments = pathNames.slice(0, index + 1);

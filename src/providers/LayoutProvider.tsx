@@ -1,9 +1,9 @@
 import { Box, Container, GlobalStyles } from "@mui/material";
 import { MainNav } from "../layouts/mainnav";
 import Breadcrumb from "../layouts/breadcrumb";
-import { DesktopNav } from "../layouts/sidenav";
 import { Session } from "next-auth";
 import { InterfaceProvider } from "./InterfaceProvider";
+import DesktopNav from "@/layouts/sidenav/DesktopNav";
 
 export default async function MainLayout({
   children,
