@@ -5,12 +5,12 @@ import React from "react";
 import RouterLink from "next/link";
 import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
-import Paths, { Path } from "@/config/Path";
 import { NavItemConfig } from "../type";
 import { isNavItemActive } from "../utils";
 import icons from "@/config/Icons";
-import { BorderColor, BorderRight } from "@mui/icons-material";
 import { hasPermission } from "@/libs/permission";
+import navItems, { NavItemType } from "@/config/Navbar";
+import { HomePath } from "@/config/Path";
 
 const sx = {
   "--SideNav-color": "var(--mui-palette-common-white)",
@@ -43,7 +43,6 @@ const sx = {
 export interface MobileNavProps {
   onClose?: () => void;
   open?: boolean;
-  items?: Path[];
   session: Session | null;
 }
 
@@ -101,7 +100,7 @@ const SideNav = (session: { session: Session | null }) => {
       <Stack spacing={2} sx={{ p: 3 }}>
         <Box
           component={RouterLink}
-          href={Path("overview").href}
+          href={HomePath}
           sx={{ display: "inline-flex", textDecoration: "none" }}
         >
           <Logo />
@@ -122,12 +121,12 @@ function renderNavItems({
   pathname: string;
   session: Session | null;
 }): React.JSX.Element {
-  const items = Paths.filter(path => !path.disableNav);
+  const items = navItems;
   const userPermission = session?.user?.permission;
 
   const children = items.reduce(
-    (acc: React.ReactNode[], curr: NavItemConfig): React.ReactNode[] => {
-      const { key, somePermissions , ...item} = curr;
+    (acc: React.ReactNode[], navItem: NavItemType): React.ReactNode[] => {
+      const { key, somePermissions , ...item} = navItem.path;
       const userPermBit = userPermission ? BigInt(userPermission) : 0n;
       if (somePermissions && !userPermission) return acc;
 

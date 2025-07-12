@@ -7,6 +7,7 @@ import {
   EmployeePermissionEnum,
   HistoryPermissionEnum,
   OverStockPermissionEnum,
+  PermissionEnum,
   ProductPermissionEnum,
   PurchasePermissionEnum,
   RolePermissionEnum,
@@ -59,7 +60,7 @@ export const PermissionBit = {
   [EmployeePermissionEnum.DELETE]: 1n << 31n,
 };
 
-export const GroupedPermissionBit: Record<any, string[]> = {
+export const GroupedPermissionBit: Record<string, PermissionEnum[]> = {
   [SuperPermissionEnum.ALL]: Object.keys(
     PermissionBit
   ).filter(p => p != SuperPermissionEnum.ALL) as (keyof typeof PermissionBit)[], // all

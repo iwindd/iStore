@@ -3,7 +3,8 @@ import React from "react";
 import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
-import Path from "@/config/Path";
+import PathConfig, { PathType } from "@/config/Path";
+const Path = Object.values(PathConfig) as PathType[];
 
 const findRoute = (pathSegments: string[]) => {
   return Path.filter(path => !path.disableBreadcrumb).find((route) => {
