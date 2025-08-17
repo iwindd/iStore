@@ -248,7 +248,7 @@ const StockDatatable = () => {
             <Button onClick={clearConfirmation.handleOpen} color="inherit" variant="text" sx={{ ml: "auto" }}>
               ล้าง
             </Button>
-            {(permissions.canCreateStock && !target) && (
+            {(permissions.canCreateStock ) && (
               <CommitController />
             )}
           </CardActions>
