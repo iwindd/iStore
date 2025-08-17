@@ -24,7 +24,6 @@ const Paths = {
     title: "รายงาน",
     href: "/dashboard/report",
     icon: "report",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.DASHBOARD],
   },
   ["cashier"]: {
     key: "cashier",
