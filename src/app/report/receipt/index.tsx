@@ -10,22 +10,22 @@ import {
 } from "@react-pdf/renderer";
 import { OrderProduct } from "@prisma/client";
 import { money, number } from "@/libs/formatter";
+import { getBaseUrl } from "@/libs/utils";
+const domain = getBaseUrl();
 
 Font.register({
   family: "Sarabun",
   fonts: [
-    { src: "/assets/fonts/THSarabun.ttf" },
-    { src: "/assets/fonts/THSarabunItalic.ttf", fontStyle: "italic" },
-    {
-      src: "/assets/fonts/THSarabunBoldItalic.ttf",
-      fontStyle: "italic",
-      fontWeight: 700,
-    },
-    {
-      src: "/assets/fonts/THSarabunBold.ttf",
-      fontStyle: "bold",
-      fontWeight: 700,
-    },
+    { src: `${domain}/assets/fonts/THSarabun.ttf`, fontStyle: "normal"},
+    { src: `${domain}/assets/fonts/THSarabunItalic.ttf`, fontStyle: "italic" },
+  ],
+});
+
+Font.register({
+  family: "Sarabun Bold",
+  fonts: [
+    { src: `${domain}/assets/fonts/THSarabunBold.ttf`, fontStyle: "normal" },
+    { src: `${domain}/assets/fonts/THSarabunBoldItalic.ttf`, fontStyle: "italic" },
   ],
 });
 
@@ -37,11 +37,10 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: '20px'
+    marginBottom: "20px",
   },
   heading: {
-    fontFamily: "Sarabun",
-    fontStyle: "bold",
+    fontFamily: "Sarabun Bold",
     fontSize: 40,
   },
   address: {
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
   itemRow: {
     display: "flex",
     flexDirection: "row",
-    marginVertical: '1px'
+    marginVertical: "1px",
   },
   row: {
     width: "20%",
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
     borderBottom: "1px solid black",
   },
   wrapper: {
-    marginTop: '20px',
+    marginTop: "20px",
     alignItems: "center",
   },
   heading2: {
@@ -125,16 +124,24 @@ const Receipt = ({ name, address, left, right, items }: ReceiptProps) => {
         <Divider />
         <View style={styles.table}>
           <View style={styles.row2}>
-            <Text wrap={false} style={styles.item}>ชื่อรายการ</Text>
+            <Text wrap={false} style={styles.item}>
+              ชื่อรายการ
+            </Text>
           </View>
           <View style={styles.row}>
-            <Text wrap={false} style={styles.item}>ราคา</Text>
+            <Text wrap={false} style={styles.item}>
+              ราคา
+            </Text>
           </View>
           <View style={styles.row}>
-            <Text wrap={false} style={styles.item}>จำนวน</Text>
+            <Text wrap={false} style={styles.item}>
+              จำนวน
+            </Text>
           </View>
           <View style={styles.row}>
-            <Text wrap={false} style={styles.item}>รวม</Text>
+            <Text wrap={false} style={styles.item}>
+              รวม
+            </Text>
           </View>
         </View>
         <Divider />
@@ -163,12 +170,14 @@ const Receipt = ({ name, address, left, right, items }: ReceiptProps) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.item}>
-              {money(items.reduce((current, item) => current += item.price, 0))}
+              {money(
+                items.reduce((current, item) => (current += item.price), 0)
+              )}
             </Text>
           </View>
         </View>
         <View style={styles.wrapper}>
-        <Text style={styles.heading2}>* ขอบคุณ *</Text>
+          <Text style={styles.heading2}>* ขอบคุณ *</Text>
         </View>
       </Page>
     </Document>
