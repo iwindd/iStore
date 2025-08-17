@@ -96,7 +96,7 @@ const Cashout = async (
           },
           data: {
             stock: { decrement: product.count },
-            sold: { increment: product.cost },
+            sold: { increment: product.count },
           },
         });
       })
