@@ -22,6 +22,8 @@ import { enqueueSnackbar } from "notistack";
 import { RangeChange } from "@/actions/dashboard/range";
 import { usePopover } from "@/hooks/use-popover";
 import { date2 as date } from "@/libs/formatter";
+import Link from "next/link";
+import Paths from "@/config/Path";
 
 const Range = ({
   savedStart,
@@ -74,6 +76,13 @@ const Range = ({
               direction={"row"}
               spacing={1}
             >
+              <Button 
+                color="inherit"
+                component={Link}
+                href={Paths["overview.report"].href}
+              >
+                พิมพ์
+              </Button>
               <div>
                 <Tooltip title="สรุปผล">
                   <Button

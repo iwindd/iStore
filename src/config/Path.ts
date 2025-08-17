@@ -19,6 +19,13 @@ const Paths = {
     href: "/",
     icon: "chart-pie",
   },
+  ["overview.report"]: {
+    key: "dashboard/report",
+    title: "รายงาน",
+    href: "/dashboard/report",
+    icon: "report",
+    somePermissions: GroupedPermissionBit[SuperPermissionEnum.DASHBOARD],
+  },
   ["cashier"]: {
     key: "cashier",
     title: "ขายสินค้า",
