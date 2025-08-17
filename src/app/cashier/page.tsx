@@ -3,7 +3,7 @@ import React from "react";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import Cashier from "./components/Cashier";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { Button, Divider, Stack, Typography } from "@mui/material";
+import { Button, Divider, Stack } from "@mui/material";
 import dynamic from "next/dynamic";
 import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
 import { CartProduct, useCart } from "@/hooks/use-cart";
@@ -72,6 +72,10 @@ const CashierPage = () => {
             >เพิ่ม</Button>
           </Stack>
           <Divider sx={{my: 1}} />
+          <Stack>
+            <CartContainer />
+          </Stack>
+          <Divider sx={{my: 1}} />
           <Stack spacing={1} direction={"row"}>
             <Button
               variant="contained"
@@ -93,7 +97,7 @@ const CashierPage = () => {
           <Confirmation {...confirmation.props} />
         </Grid>
         <Grid xs={12} lg={9}>
-          <CartContainer />
+          {/* TODO: Most ordered list */}
         </Grid>
       </Grid>
 
