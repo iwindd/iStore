@@ -19,7 +19,7 @@ const RoleDatatable = () => {
     edit: React.useCallback((role: Role) => () => {
       setRole(role);
       editDialog.handleOpen();
-    }, []),
+    }, [editDialog]),
   };
 
   const columns = (): GridColDef[] => {

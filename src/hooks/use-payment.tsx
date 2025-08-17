@@ -189,7 +189,7 @@ const usePayment = (): PaymentHook => {
     }
 
     setIsOpen(!isOpen);
-  }, [total, isOpen, setIsOpen]);
+  }, [isOpen, setIsOpen, cart]);
 
   const clearCart = React.useCallback(() => clear(), [clear])
 
