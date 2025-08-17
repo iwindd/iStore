@@ -145,8 +145,8 @@ const Range = ({
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={() => setIsOpenCustomDialog(false)}>ปิด</Button>
-            <Button autoFocus onClick={() => setDateRange(start, end)}>สรุปผล</Button>
+            <Button autoFocus variant="text" color="inherit" onClick={() => setIsOpenCustomDialog(false)}>ปิด</Button>
+            <Button autoFocus variant="contained" color="success" startIcon={<AnalyticsTwoTone />} onClick={() => setDateRange(start, end)}>สรุปผล</Button>
           </DialogActions>
         </Dialog>
       </>
