@@ -26,8 +26,6 @@ export const UpdateStockProducts = async (payload: StockItemMinimal[], batchSize
       })
     );
   }
-
-  console.log("[INFO] UPDATE STOCKS SUCCESS");
 };
 
 export const validateProducts = async (payload: StockItem[], storeId: number) => {

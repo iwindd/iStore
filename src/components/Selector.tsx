@@ -83,8 +83,6 @@ const Selector = (props: SelectorProps) => {
       noOptionsText="ไม่พบสินค้า"
       readOnly={isBackdrop}
       onChange={(_: any, newValue: SearchProduct | null) => {
-        console.log("submit");
-
         setOptions(newValue ? [newValue, ...options] : options);
         setValue(newValue);
         props.onSubmit(newValue);

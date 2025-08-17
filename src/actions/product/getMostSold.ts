@@ -5,8 +5,6 @@ import { HistoryPermissionEnum } from "@/enums/permission";
 import { CartProduct } from "@/hooks/use-cart";
 
 const getMostSoldProducts = async (): Promise<CartProduct[]> => {
-    console.warn('fetch')
-
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
