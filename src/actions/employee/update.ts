@@ -12,7 +12,8 @@ export const update = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(EmployeePermissionEnum.UPDATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(EmployeePermissionEnum.UPDATE))
+      throw new Error("Forbidden");
     const validated = EmployeeSchema.parse(payload);
     if (!validated.role) throw new Error("Role is required");
 
@@ -23,9 +24,9 @@ export const update = async (
         userStores: {
           update: {
             where: {
-              userId_storeId: {
+              userId_store_id: {
                 userId: id,
-                storeId: user.store,
+                store_id: user.store.toString(),
               },
             },
             data: {

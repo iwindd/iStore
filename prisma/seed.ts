@@ -1,66 +1,57 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import stores from "./data/stores.json";
 
 const prisma = new PrismaClient();
+const DEFAULT_PASSWORD = "password";
 
 async function main() {
-  const user = await prisma.user.createMany({
-    data: [
-      {
-        email: "store@gmail.com",
-        name: "iStore",
-        password: await bcrypt.hash("password", 15),
-      },
-      {
-        email: "employee.store@gmail.com",
-        name: "Employee Store",
-        password: await bcrypt.hash("password", 15),
-      },
-    ],
+  await prisma.$transaction(async () => {
+    const password = await bcrypt.hash(DEFAULT_PASSWORD, 15);
+    for (const store of stores) {
+      await prisma.store.upsert({
+        where: { id: store.id },
+        update: {},
+        create: {
+          id: store.id,
+          name: store.name,
+          roles: {
+            create: store.employees.map(
+              (employee: (typeof store.employees)[0]) => ({
+                label: employee.label,
+                permission: "-1",
+                users: {
+                  create: employee.users.map(
+                    (user: (typeof employee.users)[0]) => ({
+                      user: {
+                        create: {
+                          email: user.email,
+                          name: user.name,
+                          password: password,
+                        },
+                      },
+                      store: {
+                        connect: { id: store.id },
+                      },
+                    })
+                  ),
+                },
+              })
+            ),
+          },
+        },
+      });
+    }
   });
-  console.log("Users created:", user);
 
-  const store = await prisma.store.create({
-    data: {
-      name: "Main Store",
-    },
-  });
-  console.log("Store created:", store);
-
-  const roles = await prisma.role.createMany({
-    data: [
-      {
-        id: 1,
-        label: "Admin",
-        permission: "-1",
-        store_id: store.id,
-        is_super_admin: true,
-      },
-      {
-        id: 2,
-        label: "Employee",
-        permission: ((1n << 64n) - 1n).toString(),
-        store_id: store.id,
-      },
-    ],
-  });
-  console.log("Roles created:", roles);
-
-  const userStore = await prisma.userStore.createMany({
-    data: [
-      {
-        userId: 1,
-        storeId: store.id,
-        role_id: 1,
-      },
-      {
-        userId: 2,
-        storeId: store.id,
-        role_id: 2,
-      },
-    ],
-  });
-  console.log("UserStore associations created:", userStore);
+  console.log(
+    `✅ Seed completed successfully!\n`,
+    `--------------------------------\n`,
+    `Created ${await prisma.store.count()} stores\n`,
+    `Created ${await prisma.role.count()} roles\n`,
+    `Created ${await prisma.user.count()} users (default password: ${DEFAULT_PASSWORD})\n`,
+    `--------------------------------\n`
+  );
 }
 main()
   .then(async () => {

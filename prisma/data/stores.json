@@ -1,0 +1,64 @@
+[
+  {
+    "id": "istore",
+    "name": "iStore",
+    "employees": [
+      {
+        "label": "ผู้จัดการ",
+        "users": [
+          {
+            "email": "istore@gmail.com",
+            "name": "Master Store",
+            "password": "password"
+          }
+        ]
+      },
+      {
+        "label": "พนักงาน",
+        "users": [
+          {
+            "email": "john.store@gmail.com",
+            "name": "John Doe",
+            "password": "password"
+          },
+          {
+            "email": "jane.store@gmail.com",
+            "name": "Jane Doe",
+            "password": "password"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "doe_store",
+    "name": "Doe Store",
+    "employees": [
+      {
+        "label": "ผู้จัดการ",
+        "users": [
+          {
+            "email": "doe@gmail.com",
+            "name": "Master Doe",
+            "password": "password"
+          }
+        ]
+      },
+      {
+        "label": "พนักงาน",
+        "users": [
+          {
+            "email": "john.doe@gmail.com",
+            "name": "John Doe",
+            "password": "password"
+          },
+          {
+            "email": "jane.doe@gmail.com",
+            "name": "Jane Doe",
+            "password": "password"
+          }
+        ]
+      }
+    ]
+  }
+]

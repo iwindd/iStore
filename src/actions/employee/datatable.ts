@@ -7,9 +7,9 @@ import { order } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 
 export interface User {
-  id: number,
-  name: string,
-  email: string,
+  id: number;
+  name: string;
+  email: string;
 }
 
 export const datatable = async (
@@ -18,7 +18,9 @@ export const datatable = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(EmployeePermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(EmployeePermissionEnum.READ))
+      throw new Error("Forbidden");
+
     const employees = await db.$transaction([
       db.user.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -27,9 +29,9 @@ export const datatable = async (
         where: {
           userStores: {
             some: {
-              storeId: user.store,
-            }
-          }
+              store_id: user.store,
+            },
+          },
         },
         select: {
           id: true,
@@ -38,14 +40,14 @@ export const datatable = async (
           userStores: {
             take: 1,
             where: {
-              storeId: user.store,
+              store_id: user.store,
             },
             select: {
-              role:{
+              role: {
                 select: {
                   id: true,
                   label: true,
-                }
+                },
               },
               user_store: {
                 select: {
@@ -53,21 +55,21 @@ export const datatable = async (
                   user: {
                     select: {
                       name: true,
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       }),
       db.user.count({
         where: {
           userStores: {
             some: {
-              storeId: user.store,
-            }
-          }
+              store_id: user.store,
+            },
+          },
         },
       }),
     ]);

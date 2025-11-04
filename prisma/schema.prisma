@@ -9,211 +9,217 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  password String
+  id         Int         @id @default(autoincrement())
+  name       String
+  email      String      @unique
+  password   String
   userStores UserStore[]
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
 
   @@map("users")
 }
 
 model Store {
-  id     Int  @id @default(autoincrement())
-  name    String
+  id         String      @id @default(cuid())
+  name       String
   categories Category[]
-  product Product[]
-  orders Order[]
-  borrows Borrow[]
-  stocks Stock[]
-  users UserStore[]
-  roles Role[] 
+  product    Product[]
+  orders     Order[]
+  borrows    Borrow[]
+  stocks     Stock[]
+  users      UserStore[]
+  roles      Role[]
   // Address
   line_token String?
-  address String?
-  district String?  
-  area String?
-  province String?
+  address    String?
+  district   String?
+  area       String?
+  province   String?
   postalcode String?
 
   @@map("stores")
 }
 
 model UserStore {
-  id Int @id @default(autoincrement())
+  id     Int  @id @default(autoincrement())
   userId Int
-  user User @relation(fields: [userId], references: [id])
-  storeId Int
-  store Store @relation(fields: [storeId], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
-  role_id Int
-  role Role @relation("UserStoreRole", fields: [role_id], references: [id])
-  categories Category[]
-  products Product[]
-  orders Order[]
-  borrows Borrow[]
-  stocks Stock[]
-  roles Role[]
+  user   User @relation(fields: [userId], references: [id])
+
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  role_id        Int
+  role           Role           @relation("UserStoreRole", fields: [role_id], references: [id])
+  categories     Category[]
+  products       Product[]
+  orders         Order[]
+  borrows        Borrow[]
+  stocks         Stock[]
+  roles          Role[]
   order_products OrderProduct[]
 
+  store_id      String
+  store         Store       @relation(fields: [store_id], references: [id])
   user_store_id Int? // ผู้เพิ่มพนักงานนี้
-  user_store UserStore? @relation("UserStoreToUserStore", fields: [user_store_id], references: [id])
-  UserStore UserStore[] @relation("UserStoreToUserStore")
+  user_store    UserStore?  @relation("UserStoreToUserStore", fields: [user_store_id], references: [id])
+  UserStore     UserStore[] @relation("UserStoreToUserStore")
 
-  @@unique([userId, storeId])
+  @@unique([userId, store_id])
   @@map("user_stores")
 }
 
 model Category {
-  id Int @id @default(autoincrement())
-  label String
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
-  product Product[]
-  overstock Boolean @default(false)
+  id         Int      @id @default(autoincrement())
+  label      String
+  overstock  Boolean  @default(false)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
+  updated_at DateTime @updatedAt
+
+  store_id      String
+  store         Store      @relation(fields: [store_id], references: [id])
   user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
-  
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+  product       Product[]
+
   @@unique([label, store_id])
   @@map("categories")
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  serial String
-  label String
-  price Int @default(0)
-  cost Int @default(0)
-  stock Int @default(0)
-  stock_min Int @default(10)
-  sold Int @default(0)
+  id         Int      @id @default(autoincrement())
+  serial     String
+  label      String
+  price      Int      @default(0)
+  cost       Int      @default(0)
+  stock      Int      @default(0)
+  stock_min  Int      @default(10)
+  sold       Int      @default(0)
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
+  updated_at DateTime @updatedAt
 
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
-  category_id  Int?
-  category Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  keywords    String   @default("")
-  borrows Borrow[]
-  stocked StockItem[]
-  deleted DateTime?
+  store_id    String
+  store       Store       @relation(fields: [store_id], references: [id])
+  category_id Int?
+  category    Category?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  keywords    String      @default("")
+  borrows     Borrow[]
+  stocked     StockItem[]
+  deleted     DateTime?
 
   user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
 
   @@unique([serial, store_id])
   @@map("products")
 }
 
 model Order {
-  id Int @id @default(autoincrement())
-  price Int 
-  cost Int
-  profit Int
-  method Method @default(CASH)
-  type OrderType @default(CASHOUT)
-  note String 
-  text String @db.Text
-  store_id Int
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
-  store Store @relation(fields: [store_id], references: [id])
-  products OrderProduct[]
+  id         Int       @id @default(autoincrement())
+  price      Int
+  cost       Int
+  profit     Int
+  method     Method    @default(CASH)
+  type       OrderType @default(CASHOUT)
+  note       String
+  text       String    @db.Text
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  store_id      String
+  store         Store          @relation(fields: [store_id], references: [id])
   user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
+  user_store    UserStore?     @relation(fields: [user_store_id], references: [id])
+  products      OrderProduct[]
 
   @@map("orders")
 }
 
 model OrderProduct {
-  id Int @id @default(autoincrement())
-  serial String
-  label String
-  category String
-  price Int
-  cost Int
-  count Int
-  overstock Int @default(0)
-  overstock_at DateTime?
+  id            Int        @id @default(autoincrement())
+  serial        String
+  label         String
+  category      String
+  price         Int
+  cost          Int
+  count         Int
+  overstock     Int        @default(0)
+  overstock_at  DateTime?
   user_store_id Int? // ผู้ทำรายการ สำเร็จ การเบิก
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
-  order_id Int
-  order Order @relation(fields: [order_id], references: [id])
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+  order_id      Int
+  order         Order      @relation(fields: [order_id], references: [id])
 
   @@map("order_products")
 }
 
 model Borrow {
-  id Int @id @default(autoincrement())
-  amount Int
-  count Int @default(0)
-  note String
-  status BorrowState @default(PROGRESS)
-  product_id Int
-  product Product @relation(fields: [product_id], references: [id])
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
+  id         Int         @id @default(autoincrement())
+  amount     Int
+  count      Int         @default(0)
+  note       String
+  status     BorrowState @default(PROGRESS)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  product_id    Int
+  product       Product    @relation(fields: [product_id], references: [id])
+  store_id      String
+  store         Store      @relation(fields: [store_id], references: [id])
   user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
 
   @@map("borrows")
 }
 
-model Stock{
-  id Int @id @default(autoincrement())
-  note String
-  state BorrowState
-  action_at DateTime @default(now())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
-  items StockItem[]
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
+model Stock {
+  id         Int         @id @default(autoincrement())
+  note       String
+  state      BorrowState
+  action_at  DateTime    @default(now())
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  store_id      String
+  store         Store       @relation(fields: [store_id], references: [id])
   user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
+  user_store    UserStore?  @relation(fields: [user_store_id], references: [id])
+  items         StockItem[]
 
   @@map("stocks")
 }
 
-model StockItem{
-  id Int @id @default(autoincrement())
-  changed_by Int 
-  stock_id Int 
-  stock Stock @relation(fields: [stock_id], references: [id])
+model StockItem {
+  id         Int     @id @default(autoincrement())
+  changed_by Int
+  stock_id   Int
+  stock      Stock   @relation(fields: [stock_id], references: [id])
   product_id Int
-  product Product @relation(fields: [product_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
 
   @@map("stock_items")
 }
 
 model Role {
-  id Int @id @default(autoincrement())
-  label String
-  permission String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
-  users UserStore[] @relation("UserStoreRole")
-  user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
-  is_super_admin Boolean @default(false)
+  id             Int      @id @default(autoincrement())
+  label          String
+  permission     String
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  is_super_admin Boolean  @default(false)
 
-  @@unique([label])
+  store_id      String
+  store         Store       @relation(fields: [store_id], references: [id])
+  user_store_id Int?
+  user_store    UserStore?  @relation(fields: [user_store_id], references: [id])
+  users         UserStore[] @relation("UserStoreRole")
+
+  @@unique([store_id, label])
   @@map("roles")
 }
 
