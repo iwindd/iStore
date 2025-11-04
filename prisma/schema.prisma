@@ -128,22 +128,6 @@ model Order {
   user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
-model Borrow {
-  id Int @id @default(autoincrement())
-  amount Int
-  count Int @default(0)
-  note String
-  status BorrowState @default(PROGRESS)
-  product_id Int
-  product Product @relation(fields: [product_id], references: [id])
-  store_id Int
-  store Store @relation(fields: [store_id], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt 
-  user_store_id Int?
-  user_store UserStore? @relation(fields: [user_store_id], references: [id])
-}
-
 model OrderProduct {
   id Int @id @default(autoincrement())
   serial String
@@ -158,6 +142,22 @@ model OrderProduct {
   user_store UserStore? @relation(fields: [user_store_id], references: [id])
   order_id Int
   order Order @relation(fields: [order_id], references: [id])
+}
+
+model Borrow {
+  id Int @id @default(autoincrement())
+  amount Int
+  count Int @default(0)
+  note String
+  status BorrowState @default(PROGRESS)
+  product_id Int
+  product Product @relation(fields: [product_id], references: [id])
+  store_id Int
+  store Store @relation(fields: [store_id], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt 
+  user_store_id Int?
+  user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
 model Stock{
