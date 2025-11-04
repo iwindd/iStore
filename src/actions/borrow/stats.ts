@@ -3,10 +3,10 @@ import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { Borrows } from "@prisma/client";
+import { Borrow } from "@prisma/client";
 
 interface BorrowStat{
-  status: Borrows['status']
+  status: Borrow['status']
 }
 
 const GetBorrowStats = async (): Promise<ActionResponse<BorrowStat[]>> => {
@@ -14,7 +14,7 @@ const GetBorrowStats = async (): Promise<ActionResponse<BorrowStat[]>> => {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(BorrowPermissionEnum.READ)) throw new Error("Forbidden");
-    const borrows = await db.borrows.findMany({
+    const borrows = await db.borrow.findMany({
       where: {
         store_id: user.store,
       },

@@ -30,7 +30,7 @@ model Store {
   categories Category[]
   product Product[]
   orders Order[]
-  borrows Borrows[]
+  borrows Borrow[]
   stocks Stock[]
   users UserStore[]
   roles Role[] 
@@ -56,7 +56,7 @@ model UserStore {
   categories Category[]
   products Product[]
   orders Order[]
-  borrows Borrows[]
+  borrows Borrow[]
   stocks Stock[]
   roles Role[]
   order_products OrderProduct[]
@@ -100,7 +100,7 @@ model Product {
   category_id  Int?
   category Category? @relation(fields: [category_id], references: [id], onDelete: SetNull)
   keywords    String   @default("")
-  borrows Borrows[]
+  borrows Borrow[]
   stocked StockItem[]
   deleted DateTime?
 
@@ -128,7 +128,7 @@ model Order {
   user_store UserStore? @relation(fields: [user_store_id], references: [id])
 }
 
-model Borrows {
+model Borrow {
   id Int @id @default(autoincrement())
   amount Int
   count Int @default(0)

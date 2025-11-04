@@ -12,7 +12,7 @@ const UpdateBorrow = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    const data = await db.borrows.update({
+    const data = await db.borrow.update({
       where: {
         id: borrowId,
         store_id: user.store,

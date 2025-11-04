@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import Datatable from "@/components/Datatable";
 import { CancelTwoTone, EditTwoTone, SaveTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Borrows } from "@prisma/client";
 import GetBorrows from "@/actions/borrow/get";
 import { enqueueSnackbar } from "notistack";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
@@ -24,14 +23,15 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { useAuth } from "@/hooks/use-auth";
 import { BorrowPermissionEnum } from "@/enums/permission";
+import { Borrow } from "@prisma/client";
 
 interface BorrowUpdateProps {
   onClose: () => void;
   open: boolean;
-  borrow: Borrows | null;
+  borrow: Borrow | null;
 }
 
-const formatCellColor = (status : Borrows['status']) => {
+const formatCellColor = (status : Borrow['status']) => {
   switch (status) {
     case "PROGRESS": 
       return "warning"
@@ -113,9 +113,9 @@ const BorrowDatatable = () => {
   const queryClient = useQueryClient();
   const updateDialog = useDialog();
   const {isBackdrop} = useInterface();
-  const [borrow, setBorrow] = React.useState<Borrows | null>(null);
+  const [borrow, setBorrow] = React.useState<Borrow | null>(null);
   const {user} = useAuth();
-  const permissions = (borrow : Borrows) => ({
+  const permissions = (borrow : Borrow) => ({
     canCancelBorrow: user?.hasPermission(BorrowPermissionEnum.DELETE) || borrow.user_store_id == user?.userStoreId,
     canUpdateBorrow: user?.hasPermission(BorrowPermissionEnum.UPDATE) || borrow.user_store_id == user?.userStoreId,
   })
@@ -145,14 +145,14 @@ const BorrowDatatable = () => {
 
   const menu = {
     edit: React.useCallback(
-      (row: Borrows) => () => {
+      (row: Borrow) => () => {
         setBorrow(row);
         updateDialog.handleOpen();
       },
       [setBorrow, updateDialog]
     ),
     cancel: React.useCallback(
-      (row: Borrows) => () => {
+      (row: Borrow) => () => {
         confirmation.with(row.id);
         confirmation.handleOpen();
       },
@@ -208,7 +208,7 @@ const BorrowDatatable = () => {
         headerName: "จำนวนที่เบิก",
         flex: 2,
         editable: false,
-        renderCell: ({row} : {row : Borrows}) => `${ff.number(row.amount)} รายการ`
+        renderCell: ({row} : {row : Borrow}) => `${ff.number(row.amount)} รายการ`
       },
       {
         field: "count",
@@ -216,14 +216,14 @@ const BorrowDatatable = () => {
         headerName: "จำนวนที่ขายได้",
         flex: 2,
         editable: false,
-        renderCell: ({row} : {row : Borrows}) => `${ff.number(row.count)} รายการ`
+        renderCell: ({row} : {row : Borrow}) => `${ff.number(row.count)} รายการ`
       },
       {
         field: "actions",
         type: "actions",
         headerName: "เครื่องมือ",
         flex: 1,
-        getActions: ({ row }: { row: Borrows }) => [
+        getActions: ({ row }: { row: Borrow }) => [
           ...(row.status == "PROGRESS"
             ? [
                 <GridActionsCellItem
@@ -256,7 +256,7 @@ const BorrowDatatable = () => {
         columns={columns()}
         fetch={GetBorrows}
         height={700}
-        getCellClassName={(params) => params.field == 'status' ? `text-color-${formatCellColor(params.value as Borrows["status"])}` : ""}
+        getCellClassName={(params) => params.field == 'status' ? `text-color-${formatCellColor(params.value as Borrow["status"])}` : ""}
       />
 
       <Confirmation {...confirmation.props} />

@@ -1,15 +1,15 @@
 "use server";
-import { Borrows } from "@prisma/client";
 import db from "@/libs/db";
 import { getFilterRange } from "./range";
 import { getUser } from "@/libs/session";
 import { BorrowPermissionEnum } from "@/enums/permission";
+import { Borrow } from "@prisma/client";
 
-const getBorrows = async (store: number): Promise<Borrows[]> => {
+const getBorrows = async (store: number): Promise<Borrow[]> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    return await db.borrows.findMany({
+    return await db.borrow.findMany({
       where: {
         store_id: store,
         user_store_id: !user.hasPermission(BorrowPermissionEnum.READ) ? user.userStoreId : undefined,

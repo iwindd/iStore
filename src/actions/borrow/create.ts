@@ -24,7 +24,7 @@ const CreateBorrow = async (
     const validated = BorrowsSchema.parse(payload); // revalidate
     if (!product) throw Error("not_found_product");
 
-    await db.borrows.create({
+    await db.borrow.create({
       data: {
         amount: validated.count,
         note: validated.note,
