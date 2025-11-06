@@ -1,10 +1,9 @@
+import bcrypt from "bcrypt";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthConfig from "./config/AuthConfig";
-import db from "./libs/db";
-import bcrypt from "bcrypt";
-import { AddressValues, FormatAddress } from "./schema/Address";
-import { permissionsToMask } from "./libs/permission";
 import { SuperPermissionEnum } from "./enums/permission";
+import db from "./libs/db";
+import { AddressValues, FormatAddress } from "./schema/Address";
 
 export const authOptions = {
   pages: {
@@ -28,8 +27,8 @@ export const authOptions = {
           name: token.name,
           email: token.email,
           line_token: token.line_token,
-          permission: token.permission,
-          address: token.address
+          permissions: token.permissions,
+          address: token.address,
         },
         ...user,
       };
@@ -66,10 +65,10 @@ export const authOptions = {
                   store: true,
                   role: {
                     select: {
-                      permission: true,
+                      permissions: true,
                       is_super_admin: true,
-                    }
-                  }
+                    },
+                  },
                 },
               },
             },
@@ -94,7 +93,9 @@ export const authOptions = {
             name: user.name,
             email: user.email,
             line_token: userStore.store.line_token,
-            permission: role.is_super_admin ? permissionsToMask([SuperPermissionEnum.ALL]).toString() : role.permission,
+            permissions: role.is_super_admin
+              ? [SuperPermissionEnum.ALL]
+              : role.permissions.flatMap((p) => p.name),
             address: FormatAddress(userStore.store as AddressValues),
           };
         } catch (error) {

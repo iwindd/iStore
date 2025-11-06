@@ -1,10 +1,14 @@
+import * as RoleActions from "@/actions/roles";
 import TreeViewPermissionItems, {
   treeViewPermissionAllIds,
   TreeViewPermissionDefaultItems,
 } from "@/app/roles/components/config/permissionItems";
+import { PermissionEnum } from "@/enums/permission";
+import { getRawPermissions } from "@/libs/permission";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { RoleSchema, RoleValues } from "@/schema/Role";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveTwoTone } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -20,19 +24,20 @@ import {
   Typography,
 } from "@mui/material";
 import { RichTreeView } from "@mui/x-tree-view";
-import { Role } from "@prisma/client";
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import * as RoleActions from "@/actions/roles";
-import { useSnackbar } from "notistack";
+import { Prisma } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { SaveTwoTone } from "@mui/icons-material";
-import { extractPermissionGroups, getPermissionsWithGroups, maskToPermissions } from "@/libs/permission";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { useForm } from "react-hook-form";
+
+type RoleWithPermissions = Prisma.RoleGetPayload<{
+  include: { permissions: true };
+}>;
 
 interface RoleFormDialogProps {
   onClose: () => void;
   isOpen: boolean;
-  role: Role | null;
+  role: RoleWithPermissions | null;
 }
 
 const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
@@ -55,24 +60,43 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
     },
   });
 
-  const permissions: string[] = watch("permissions") || [];
-  const onPermission = (event: React.SyntheticEvent | null, ids: string[]) =>
+  const onPermissionChange = (_: React.SyntheticEvent | null, ids: string[]) =>
     setValue("permissions", ids);
 
-  const submitRole: SubmitHandler<RoleValues> = async (payload: RoleValues) => {
-    setBackdrop(true);
-    const validatedPayload = {
-      ...payload,
-      permissions: extractPermissionGroups(payload.permissions as any),
+  React.useEffect(() => {
+    if (role) {
+      const permissions = role.permissions.map(
+        (p) => p.name
+      ) as PermissionEnum[];
+      setValue("label", role.label);
+      setIsSuperAdmin(role.is_super_admin || false);
+
+      if (role.permissions) {
+        const rawPermissions = getRawPermissions(permissions);
+        const hasInTreeView = rawPermissions.filter((p) =>
+          treeViewPermissionAllIds.includes(p)
+        );
+
+        setValue("permissions", hasInTreeView);
+      } else {
+        setValue("permissions", TreeViewPermissionDefaultItems);
+      }
     }
+  }, [role, setValue]);
+
+  const onSubmit = async (payload: RoleValues) => {
+    setBackdrop(true);
     try {
-      const resp = await (!role ? RoleActions.create(validatedPayload) : RoleActions.update(validatedPayload, (role as Role).id));
+      const resp = await (!role
+        ? RoleActions.create(payload)
+        : RoleActions.update(payload, role.id));
       if (!resp.success) throw Error(resp.message);
       reset();
       await queryClient.refetchQueries({ queryKey: ["roles"], type: "active" });
       enqueueSnackbar("บันทึกตำแหน่งเรียบร้อยแล้ว!", { variant: "success" });
       onClose();
     } catch (error) {
+      console.error("error", error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
@@ -80,22 +104,6 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
       setBackdrop(false);
     }
   };
-
-  React.useEffect(() => {
-    if (role) {
-      setValue("label", role.label);
-      if (role.permission) {
-        const permissions = maskToPermissions(BigInt(role.permission));
-        const withGroups =  getPermissionsWithGroups(permissions, false);
-        const hasInTreeView = withGroups.filter((p) => treeViewPermissionAllIds.includes(p));
-        setValue("permissions", hasInTreeView);
-      }
-      else {
-        setValue("permissions", TreeViewPermissionDefaultItems);
-      } 
-      setIsSuperAdmin(role.is_super_admin || false);
-    }
-  }, [role, setValue]);
 
   return (
     <Dialog
@@ -105,7 +113,7 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
       maxWidth="xs"
       PaperProps={{
         component: "form",
-        onSubmit: handleSubmit(submitRole),
+        onSubmit: handleSubmit(onSubmit),
       }}
     >
       <DialogTitle>{role ? "แก้ไขตำแหน่ง" : "เพิ่มตำแหน่ง"}</DialogTitle>
@@ -149,8 +157,8 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
                   checkboxSelection
                   items={TreeViewPermissionItems}
                   defaultSelectedItems={TreeViewPermissionDefaultItems}
-                  selectedItems={permissions}
-                  onSelectedItemsChange={onPermission}
+                  selectedItems={watch("permissions") || []}
+                  onSelectedItemsChange={onPermissionChange}
                   selectionPropagation={{
                     descendants: true,
                     parents: true,
@@ -172,7 +180,8 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
               </FormControl>
             ) : (
               <Typography variant="caption">
-                ตำแหน่งนี้ไม่สามารถแก้ไขสิทธิ์ได้ เนื่องจากเป็นตำแหน่งผู้ดูแลระบบ
+                ตำแหน่งนี้ไม่สามารถแก้ไขสิทธิ์ได้
+                เนื่องจากเป็นตำแหน่งผู้ดูแลระบบ
               </Typography>
             )}
           </Stack>

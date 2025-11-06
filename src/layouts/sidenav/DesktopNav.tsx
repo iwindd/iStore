@@ -1,14 +1,12 @@
 "use client";
 import Logo from "@/components/core/logo";
+import { HomePath } from "@/config/Path";
 import { Box, Divider, Stack } from "@mui/material";
-import React from "react";
 import RouterLink from "next/link";
 import { usePathname } from "next/navigation";
-import { Session } from "next-auth";
-import { HomePath } from "@/config/Path";
 import NavItems from "./NavItems";
 
-const DesktopNav = (session: { session: Session | null }) => {
+const DesktopNav = () => {
   const pathname = usePathname();
 
   return (
@@ -52,7 +50,7 @@ const DesktopNav = (session: { session: Session | null }) => {
         </Box>
       </Stack>
       <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
-        {NavItems({ pathname, session: session.session })}
+        {NavItems({ pathname })}
       </Box>
       <Divider sx={{ borderColor: "var(--mui-palette-neutral-700)" }} />
     </Box>

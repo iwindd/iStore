@@ -1,11 +1,10 @@
 "use server";
-import { ActionError, ActionResponse } from "@/libs/action";
-import { SignUpSchema, SignUpValues } from "@/schema/Signup";
-import bcrypt from "bcrypt";
-import db from "@/libs/db";
-import { Role } from "@prisma/client";
-import { permissionsToMask } from "@/libs/permission";
 import { SuperPermissionEnum } from "@/enums/permission";
+import { ActionError, ActionResponse } from "@/libs/action";
+import db from "@/libs/db";
+import { SignUpSchema, SignUpValues } from "@/schema/Signup";
+import { Role } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const Signup = async (
   payload: SignUpValues
@@ -25,8 +24,12 @@ const Signup = async (
         name: validated.name,
         roles: {
           create: {
-            label: "Owner",
-            permission: permissionsToMask([SuperPermissionEnum.ALL]).toString(),
+            label: "เจ้าของร้าน",
+            permissions: {
+              connect: {
+                name: SuperPermissionEnum.ALL,
+              },
+            },
           },
         },
       },
@@ -47,7 +50,7 @@ const Signup = async (
               connect: { id: store.id },
             },
             role: {
-              connect: { id: ownerRole.id }, 
+              connect: { id: ownerRole.id },
             },
           },
         },

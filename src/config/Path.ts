@@ -1,6 +1,6 @@
 import { PermissionEnum, SuperPermissionEnum } from "@/enums/permission";
-import { GroupedPermissionBit } from "./Permission";
 import icons from "./Icons";
+import { getPermissionInGroup } from "./Permission";
 
 export interface PathType {
   key: string;
@@ -30,42 +30,42 @@ const Paths = {
     title: "ขายสินค้า",
     href: "/cashier",
     icon: "cashier",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.CASHIER],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.CASHIER),
   },
   ["products"]: {
     key: "products",
     title: "สินค้า",
     href: "/products",
     icon: "product",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.PRODUCT],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
   },
   ["categories"]: {
     key: "categories",
     title: "ประเภทสินค้า",
     href: "/categories",
     icon: "category",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.CATEGORY],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.CATEGORY),
   },
   ["stock"]: {
     key: "stock",
     title: "จัดการสต๊อก",
     href: "/stocks",
     icon: "stock",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.STOCK],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.STOCK),
   },
   ["overstocks"]: {
     key: "overstocks",
     title: "สินค้าค้าง",
     href: "/overstocks",
     icon: "overstocks",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.OVERSTOCK],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.OVERSTOCK),
   },
   ["borrows"]: {
     key: "borrows",
     title: "การเบิก",
     href: "/borrows",
     icon: "borrows",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.BORROW],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.BORROW),
   },
   ["purchase"]: {
     key: "purchase",
@@ -73,14 +73,14 @@ const Paths = {
     href: "/purchase",
     icon: "purchase",
     matcher: { type: "startsWith", href: "/purchase" },
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.PURCHASE],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PURCHASE),
   },
   ["purchase.purchase"]: {
     key: "purchase",
     title: "รายละเอียดการซื้อสินค้า",
     href: "/purchase/:pid",
     icon: "purchase",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.PURCHASE],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PURCHASE),
   },
   ["histories"]: {
     key: "histories",
@@ -120,14 +120,14 @@ const Paths = {
     title: "ตำแหน่ง",
     href: "/roles",
     icon: "group",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.ROLE],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.ROLE),
   },
   ["employees"]: {
     key: "employees",
     title: "พนักงาน",
     href: "/employees",
     icon: "employee",
-    somePermissions: GroupedPermissionBit[SuperPermissionEnum.EMPLOYEE],
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.EMPLOYEE),
   },
 } satisfies Record<string, PathType>;
 

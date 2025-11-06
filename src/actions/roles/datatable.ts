@@ -7,9 +7,9 @@ import { order } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 
 export interface Role {
-  id: number,
-  label: string,
-  created_at: Date,
+  id: number;
+  label: string;
+  created_at: Date;
 }
 
 export const datatable = async (
@@ -18,7 +18,8 @@ export const datatable = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(RolePermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(RolePermissionEnum.READ))
+      throw new Error("Forbidden");
     const roles = await db.$transaction([
       db.role.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -31,7 +32,7 @@ export const datatable = async (
           id: true,
           created_at: true,
           label: true,
-          permission: true, 
+          permissions: true,
           is_super_admin: true,
           user_store: {
             select: {
@@ -42,7 +43,7 @@ export const datatable = async (
               },
             },
           },
-        }
+        },
       }),
       db.role.count({
         where: {

@@ -5,6 +5,7 @@
     "employees": [
       {
         "label": "ผู้จัดการ",
+        "permissions": ["*"],
         "users": [
           {
             "email": "istore@gmail.com",
@@ -15,6 +16,14 @@
       },
       {
         "label": "พนักงาน",
+        "permissions": [
+          "Product.*",
+          "Category.*",
+          "Stock.*",
+          "Borrow.*",
+          "Account.*",
+          "Cashier.*"
+        ],
         "users": [
           {
             "email": "john.store@gmail.com",
@@ -36,6 +45,7 @@
     "employees": [
       {
         "label": "ผู้จัดการ",
+        "permissions": ["*"],
         "users": [
           {
             "email": "doe@gmail.com",
@@ -46,6 +56,14 @@
       },
       {
         "label": "พนักงาน",
+        "permissions": [
+          "Product.*",
+          "Category.*",
+          "Stock.*",
+          "Borrow.*",
+          "Account.*",
+          "Cashier.*"
+        ],
         "users": [
           {
             "email": "john.doe@gmail.com",

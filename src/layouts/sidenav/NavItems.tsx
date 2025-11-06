@@ -1,18 +1,15 @@
 "use client";
-import { hasPermission } from "@/libs/permission";
 import navItems, { NavItemType } from "@/config/Navbar";
+import { useAuth } from "@/hooks/use-auth";
 import { Stack, Typography } from "@mui/material";
-import { Session } from "next-auth";
 import NavItem from "./NavItem";
 
 interface RenderNavItemsProps {
   pathname: string;
-  session: Session | null;
 }
 
-const NavItems = ({ pathname, session }: RenderNavItemsProps) => {
-  const userPermission = session?.user?.permission;
-  const userPermBit = userPermission ? BigInt(userPermission) : 0n;
+const NavItems = ({ pathname }: RenderNavItemsProps) => {
+  const { user } = useAuth();
   const renderNormalItem = (navItem: NavItemType) => {
     if (navItem.type == "group") return;
     const {
@@ -21,11 +18,11 @@ const NavItems = ({ pathname, session }: RenderNavItemsProps) => {
       ...restPath
     } = navItem.path;
 
-    if (needSomePermissions && !userPermission) return;
-    const hasSomePermission = needSomePermissions?.some((permission) =>
-      hasPermission(userPermBit, permission)
-    );
-    if (needSomePermissions && !hasSomePermission) return;
+    if (
+      needSomePermissions &&
+      !user?.hasSomePermissions(...needSomePermissions)
+    )
+      return;
 
     return (
       <NavItem

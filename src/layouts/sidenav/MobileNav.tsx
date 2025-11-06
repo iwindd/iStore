@@ -1,17 +1,14 @@
 "use client";
 import { Box, Drawer } from "@mui/material";
-import React from "react";
 import { usePathname } from "next/navigation";
-import { Session } from "next-auth";
 import NavItems from "./NavItems";
 
 export interface MobileNavProps {
   onClose?: () => void;
   open?: boolean;
-  session: Session | null;
 }
 
-const MobileNav = ({ open, onClose, session }: MobileNavProps) => {
+const MobileNav = ({ open, onClose }: MobileNavProps) => {
   const pathname = usePathname();
 
   return (
@@ -44,7 +41,7 @@ const MobileNav = ({ open, onClose, session }: MobileNavProps) => {
       open={open}
     >
       <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
-        {NavItems({ pathname, session: session })}
+        {NavItems({ pathname })}
       </Box>
     </Drawer>
   );

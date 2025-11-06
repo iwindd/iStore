@@ -1,29 +1,26 @@
 "use client";
-import * as React from "react";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import * as React from "react";
 
 import { usePopover } from "@/hooks/use-popover";
 
+import { useAuth } from "@/hooks/use-auth";
 import { MenuTwoTone } from "@mui/icons-material";
-import { Session } from "next-auth";
 import { Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
-import MobileNav from "../sidenav/MobileNav";
 import UserPopover from "../popover";
+import MobileNav from "../sidenav/MobileNav";
 
-export function MainNav({
-  session,
-}: {
-  session: Session | null;
-}): React.JSX.Element {
+export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
 
+  const { user } = useAuth();
   const userPopover = usePopover<HTMLDivElement>();
   const pathname = usePathname();
-  React.useEffect(() => (setOpenNav(false)), [pathname]);
+  React.useEffect(() => setOpenNav(false), [pathname]);
 
   return (
     <React.Fragment>
@@ -57,8 +54,8 @@ export function MainNav({
               <MenuTwoTone />
             </IconButton>
           </Stack>
-          <Stack 
-            direction="row" 
+          <Stack
+            direction="row"
             spacing={2}
             onClick={userPopover.handleOpen}
             alignItems={"center"}
@@ -66,8 +63,12 @@ export function MainNav({
             sx={{ cursor: "pointer" }}
           >
             <Stack>
-              <Typography align="right" variant="subtitle2">{session?.user.name}</Typography>
-              <Typography align="right" variant="caption">{session?.user.email}</Typography>
+              <Typography align="right" variant="subtitle2">
+                {user?.session.user.name}
+              </Typography>
+              <Typography align="right" variant="caption">
+                {user?.session.user.email}
+              </Typography>
             </Stack>
             <Avatar
               onClick={userPopover.handleOpen}
@@ -83,7 +84,6 @@ export function MainNav({
         open={userPopover.open}
       />
       <MobileNav
-        session={session}
         onClose={() => {
           setOpenNav(false);
         }}

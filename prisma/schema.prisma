@@ -208,19 +208,26 @@ model StockItem {
 model Role {
   id             Int      @id @default(autoincrement())
   label          String
-  permission     String
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   is_super_admin Boolean  @default(false)
 
   store_id      String
-  store         Store       @relation(fields: [store_id], references: [id])
+  store         Store        @relation(fields: [store_id], references: [id])
   user_store_id Int?
-  user_store    UserStore?  @relation(fields: [user_store_id], references: [id])
-  users         UserStore[] @relation("UserStoreRole")
+  user_store    UserStore?   @relation(fields: [user_store_id], references: [id])
+  users         UserStore[]  @relation("UserStoreRole")
+  permissions   Permission[] @relation("RolePermission")
 
   @@unique([store_id, label])
   @@map("roles")
+}
+
+model Permission {
+  name  String @id @unique
+  roles Role[] @relation("RolePermission")
+
+  @@map("permissions")
 }
 
 enum Method {

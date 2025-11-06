@@ -4,10 +4,11 @@ import MainLayout from "@/providers/LayoutProvider";
 /* PROVIDERS */
 import LocalizationProvider from "@/providers/LocalizationProvider";
 import QueryProvider from "@/providers/QueryProvider";
+import RecoilProvider from "@/providers/RecoilProvider";
 import SessionProvider from "@/providers/SessionProvder";
-import RecoilProvider from '@/providers/RecoilProvider';
 
 /* THEME */
+import { InterfaceProvider } from "@/providers/InterfaceProvider";
 import ThemeRegistry from "@/styles/ThemeRegistry";
 
 export const metadata = {
@@ -30,7 +31,9 @@ export default async function RootLayout({ children }: RootLayoutProps) {
             <ThemeRegistry>
               <SessionProvider session={session}>
                 <QueryProvider>
-                  <MainLayout session={session}>{children}</MainLayout>
+                  <InterfaceProvider>
+                    <MainLayout>{children}</MainLayout>
+                  </InterfaceProvider>
                 </QueryProvider>
               </SessionProvider>
             </ThemeRegistry>

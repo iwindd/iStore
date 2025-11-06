@@ -1,3 +1,4 @@
+import { PermissionEnum } from "@/enums/permission";
 import "next-auth";
 
 interface StoreAddress {
@@ -18,7 +19,7 @@ declare module "next-auth" {
       email: string;
       line_token: string;
       address: StoreAddress | null;
-      permission: string;
+      permissions: PermissionEnum[];
     };
   }
 }
