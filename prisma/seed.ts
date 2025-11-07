@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import permissions from "./data/permissions.json";
+import products from "./data/products.json";
 import stores from "./data/stores.json";
 
 const prisma = new PrismaClient();
@@ -61,6 +62,58 @@ async function main() {
     }
   });
 
+  await prisma.$transaction(async () => {
+    for (const category of products) {
+      await prisma.category.upsert({
+        where: {
+          label_store_id: {
+            label: category.label,
+            store_id: category.store_id,
+          },
+        },
+        update: {},
+        create: {
+          label: category.label,
+          store: {
+            connect: { id: category.store_id },
+          },
+          product: {
+            create: category.products.map((product) => ({
+              serial: product.serial,
+              label: product.label,
+              price: product.price,
+              cost: product.cost,
+              store: {
+                connect: { id: category.store_id },
+              },
+            })),
+          },
+        },
+      });
+
+      /*       for (const product of category.products) {
+        await prisma.product.upsert({
+          where: {
+            serial_store_id: {
+              serial: product.serial,
+              store_id: category.store_id,
+            },
+          },
+          update: {},
+          create: {
+            serial: product.serial,
+            label: product.label,
+            price: product.price,
+            cost: product.cost,
+            store: {
+              connect: { id: category.store_id },
+            },
+          },
+        });
+      } */
+    }
+  });
+
   console.log(
     `✅ Seed completed successfully!\n`,
     `--------------------------------\n`,
@@ -68,6 +121,8 @@ async function main() {
     `Created ${await prisma.permission.count()} permissions\n`,
     `Created ${await prisma.role.count()} roles\n`,
     `Created ${await prisma.user.count()} users (default password: ${DEFAULT_PASSWORD})\n`,
+    `Created ${await prisma.product.count()} products\n`,
+    `Created ${await prisma.category.count()} categories\n`,
     `--------------------------------\n`
   );
 }
