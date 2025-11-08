@@ -29,9 +29,6 @@ yarn-error.log*
 .env*.local
 .env
 
-# prisma
-/prisma/migrations
-
 # vercel
 .vercel
 
