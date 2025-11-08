@@ -2,7 +2,7 @@
 import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getServerSession, getUser } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { ProductSchema, ProductValues } from "@/schema/Product";
 
 const UpdateProduct = async (
@@ -17,16 +17,18 @@ const UpdateProduct = async (
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(ProductPermissionEnum.UPDATE) ? user.userStoreId : undefined,
+        user_store_id: !user.hasPermission(ProductPermissionEnum.UPDATE)
+          ? user.userStoreId
+          : undefined,
       },
-      data: { 
+      data: {
         label: validated.label,
         price: validated.price,
         cost: validated.cost,
         stock_min: validated.stock_min,
         category_id: validated.category_id,
         keywords: validated.keywords,
-        deleted: null
+        deleted_at: null,
       },
     });
 

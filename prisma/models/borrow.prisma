@@ -1,0 +1,24 @@
+model Borrow {
+  id         Int         @id @default(autoincrement())
+  amount     Int
+  count      Int         @default(0)
+  note       String
+  status     BorrowState @default(PROGRESS)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  product_id    Int
+  product       Product    @relation(fields: [product_id], references: [id])
+  store_id      String
+  store         Store      @relation(fields: [store_id], references: [id])
+  user_store_id Int?
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+
+  @@map("borrows")
+}
+
+enum BorrowState {
+  PROGRESS
+  SUCCESS
+  CANCEL
+}

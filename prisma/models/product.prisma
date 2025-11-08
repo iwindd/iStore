@@ -1,0 +1,44 @@
+model Category {
+  id         Int      @id @default(autoincrement())
+  label      String
+  overstock  Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  store_id      String
+  store         Store      @relation(fields: [store_id], references: [id])
+  user_store_id Int?
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+  product       Product[]
+
+  @@unique([label, store_id])
+  @@map("categories")
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  serial     String
+  label      String
+  price      Int      @default(0)
+  cost       Int      @default(0)
+  stock      Int      @default(0)
+  stock_min  Int      @default(10)
+  sold       Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  store_id    String
+  store       Store       @relation(fields: [store_id], references: [id])
+  category_id Int?
+  category    Category?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  keywords    String      @default("")
+  borrows     Borrow[]
+  stocked     StockItem[]
+  deleted_at     DateTime?
+
+  user_store_id Int?
+  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+
+  @@unique([serial, store_id])
+  @@map("products")
+}

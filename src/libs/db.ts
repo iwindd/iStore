@@ -1,26 +1,22 @@
 import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
+import { createSoftDeleteExtension } from "prisma-extension-soft-delete";
 
 const prismaClientSingleton = () => {
-  const prisma = new PrismaClient();
-
-  // DELETE METHOD
-  prisma.$use(async (params, next) => {
-    if (params.model == 'Product') {
-      if (params.action == 'delete') {
-        params.action = 'update'
-        params.args['data'] = { deleted: new Date() }
-      }
-      if (params.action == 'deleteMany') {
-        params.action = 'updateMany'
-        if (params.args.data != undefined) {
-          params.args.data['deleted'] = new Date()
-        } else {
-          params.args['data'] = { deleted: new Date() }
-        }
-      }
-    }
-    return next(params)
-  })
+  const prisma = new PrismaClient().$extends(withAccelerate()).$extends(
+    createSoftDeleteExtension({
+      models: {
+        Product: true,
+      },
+      defaultConfig: {
+        field: "deleted_at",
+        createValue: (deleted) => {
+          if (deleted) return new Date();
+          return null;
+        },
+      },
+    })
+  );
 
   return prisma;
 };

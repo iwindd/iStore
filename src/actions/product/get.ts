@@ -13,7 +13,8 @@ const GetProducts = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(ProductPermissionEnum.READ))
+      throw new Error("Forbidden");
     const products = await db.$transaction([
       db.product.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
@@ -21,30 +22,34 @@ const GetProducts = async (
         include: {
           category: {
             select: {
-              label: true
-            }
+              label: true,
+            },
           },
           user_store: {
             select: {
               user: {
                 select: {
-                  name: true
-                }
-              }
-            }
-          }
+                  name: true,
+                },
+              },
+            },
+          },
         },
-        orderBy: order(table.sort.length > 0 ? table.sort : [ { field: "updated_at", sort: "desc"}]),
+        orderBy: order(
+          table.sort.length > 0
+            ? table.sort
+            : [{ field: "updated_at", sort: "desc" }]
+        ),
         where: {
           ...filter(table.filter, ["serial", "label", "keywords"]),
           store_id: user.store,
-          deleted: null
+          deleted_at: null,
         },
       }),
       db.product.count({
         where: {
           store_id: user.store,
-          deleted: null
+          deleted_at: null,
         },
       }),
     ]);
@@ -55,8 +60,8 @@ const GetProducts = async (
       total: products[1],
     };
   } catch (error) {
-    console.log('catch', error);
-    
+    console.log("catch", error);
+
     return ActionError(error) as ActionResponse<Product[]>;
   }
 };

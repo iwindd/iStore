@@ -24,7 +24,7 @@ const ImportMinStock = async (
           ? db.product.fields.stock_min
           : payload.value,
       },
-      deleted: null
+      deleted_at: null,
     },
     select: {
       id: true,
@@ -34,8 +34,8 @@ const ImportMinStock = async (
     },
     take: 50,
     orderBy: {
-      sold: "desc"
-    }
+      sold: "desc",
+    },
   });
 
   return data.map((p) => ({ ...p, payload: 0 })) as StockItem[];
@@ -45,14 +45,16 @@ const ImportStockId = async (
   payload: ImportFromStockId,
   user: User
 ): Promise<StockItem[]> => {
-  const validated = await db.stock.count({where: {id: payload.id, store_id: user.store}});
+  const validated = await db.stock.count({
+    where: { id: payload.id, store_id: user.store },
+  });
   if (!validated) throw Error("not_found_stock");
   const data = await db.stockItem.findMany({
     where: {
       stock_id: payload.id,
       product: {
-        deleted: null
-      }
+        deleted_at: null,
+      },
     },
     select: {
       changed_by: true,
@@ -62,12 +64,15 @@ const ImportStockId = async (
           serial: true,
           label: true,
           stock: true,
-        }
-      }
+        },
+      },
     },
   });
 
-  return data.map((p) => ({ payload: p.changed_by, ...p.product })) as StockItem[];
+  return data.map((p) => ({
+    payload: p.changed_by,
+    ...p.product,
+  })) as StockItem[];
 };
 
 const ImportToolAction = async (
@@ -76,13 +81,14 @@ const ImportToolAction = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.CREATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(StockPermissionEnum.CREATE))
+      throw new Error("Forbidden");
     let resp: StockItem[] = [];
 
     if (payload.type == ImportType.FromMinStock)
       resp = await ImportMinStock(payload, user);
     if (payload.type == ImportType.FromStockId)
-      resp = await ImportStockId(payload, user)
+      resp = await ImportStockId(payload, user);
 
     return { success: true, data: resp };
   } catch (error) {

@@ -1,9 +1,9 @@
 "use server";
 import { StockItem } from "@/atoms/stock";
-import { ActionError, ActionResponse } from "@/libs/action";
-import { getUser } from "@/libs/session";
-import db from "@/libs/db";
 import { StockPermissionEnum } from "@/enums/permission";
+import { ActionError, ActionResponse } from "@/libs/action";
+import db from "@/libs/db";
+import { getUser } from "@/libs/session";
 
 interface StockItemMinimal {
   changed_by: number;
@@ -11,7 +11,10 @@ interface StockItemMinimal {
   stock_id?: number;
 }
 
-export const UpdateStockProducts = async (payload: StockItemMinimal[], batchSize = 20) => {
+export const UpdateStockProducts = async (
+  payload: StockItemMinimal[],
+  batchSize = 20
+) => {
   for (let i = 0; i < payload.length; i += batchSize) {
     const batch = payload.slice(i, i + batchSize);
     await db.$transaction(
@@ -19,7 +22,7 @@ export const UpdateStockProducts = async (payload: StockItemMinimal[], batchSize
         return db.product.update({
           where: {
             id: product.product_id,
-            deleted: null,
+            deleted_at: null,
           },
           data: { stock: { increment: product.changed_by } },
         });
@@ -28,12 +31,15 @@ export const UpdateStockProducts = async (payload: StockItemMinimal[], batchSize
   }
 };
 
-export const validateProducts = async (payload: StockItem[], storeId: number) => {
+export const validateProducts = async (
+  payload: StockItem[],
+  storeId: number
+) => {
   const rawProducts = await db.product.findMany({
     where: {
       store_id: storeId,
       id: { in: payload.map((p) => p.id) },
-      deleted: null,
+      deleted_at: null,
     },
     select: {
       id: true,
@@ -59,7 +65,8 @@ const Commit = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.UPDATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(StockPermissionEnum.UPDATE))
+      throw new Error("Forbidden");
     payload = payload.slice(0, 50);
 
     const data = await db.stock.update({

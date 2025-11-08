@@ -1,15 +1,14 @@
 "use server";
-import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { removeWhiteSpace } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 
-export interface SearchProduct{
-  id: number,
-  serial: string,
-  stock: number,
-  label: string
+export interface SearchProduct {
+  id: number;
+  serial: string;
+  stock: number;
+  label: string;
 }
 
 const SearchProducts = async (
@@ -21,7 +20,7 @@ const SearchProducts = async (
     const products = await db.product.findMany({
       take: 5,
       orderBy: {
-        sold: "desc"
+        sold: "desc",
       },
       where: {
         OR: [
@@ -30,14 +29,14 @@ const SearchProducts = async (
           { keywords: { contains: input } },
         ],
         store_id: user.store,
-        deleted: null
+        deleted_at: null,
       },
       select: {
         id: true,
         serial: true,
         stock: true,
-        label: true
-      }
+        label: true,
+      },
     });
 
     return {

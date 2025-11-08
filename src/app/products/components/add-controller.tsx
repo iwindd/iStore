@@ -1,5 +1,28 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { SearchCategory } from "@/actions/category/search";
+import CreateProduct from "@/actions/product/create";
+import GetProduct from "@/actions/product/find";
+import UpdateProduct from "@/actions/product/update";
+import CategorySelector from "@/components/CategorySelector";
+import { ProductPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { randomEan } from "@/libs/ean";
+import { removeWhiteSpace } from "@/libs/formatter";
+import { useInterface } from "@/providers/InterfaceProvider";
+import {
+  ProductFindSchema,
+  ProductFindValues,
+  ProductSchema,
+  ProductValues,
+} from "@/schema/Product";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AddTwoTone,
+  Rotate90DegreesCcw,
+  SaveTwoTone,
+  SearchTwoTone,
+} from "@mui/icons-material";
 import {
   Alert,
   Button,
@@ -13,35 +36,12 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
-import {
-  AddTwoTone,
-  Rotate90DegreesCcw,
-  SaveTwoTone,
-  SearchTwoTone,
-} from "@mui/icons-material";
-import { Product } from "@prisma/client";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import { useDialog } from "@/hooks/use-dialog";
+import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useInterface } from "@/providers/InterfaceProvider";
-import {
-  ProductFindSchema,
-  ProductFindValues,
-  ProductSchema,
-  ProductValues,
-} from "@/schema/Product";
-import GetProduct from "@/actions/product/find";
-import { randomEan } from "@/libs/ean";
-import CreateProduct from "@/actions/product/create";
-import UpdateProduct from "@/actions/product/update";
-import CategorySelector from "@/components/CategorySelector";
-import { SearchCategory } from "@/actions/category/search";
-import { removeWhiteSpace } from "@/libs/formatter";
-import { useAuth } from "@/hooks/use-auth";
-import { ProductPermissionEnum } from "@/enums/permission";
+import { useSnackbar } from "notistack";
+import React, { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -104,7 +104,7 @@ function SearchDialog({
   const handleClose = () => {
     reset();
     onClose();
-  }
+  };
 
   return (
     <Dialog
@@ -164,7 +164,7 @@ export function ProductFormDialog({
   open,
   setLoading,
   onClose,
-  product
+  product,
 }: ProductFormDialogProps): React.JSX.Element {
   const {
     register,
@@ -184,7 +184,9 @@ export function ProductFormDialog({
     payload: ProductValues
   ) => {
     try {
-      const resp = await (!product?.id ? CreateProduct(payload) : UpdateProduct(payload, product.id));
+      const resp = await (!product?.id
+        ? CreateProduct(payload)
+        : UpdateProduct(payload, product.id));
       if (!resp.success) throw Error(resp.message);
       reset();
       await queryClient.refetchQueries({
@@ -203,7 +205,10 @@ export function ProductFormDialog({
   };
 
   useEffect(() => {
-    setValue("serial", (product?.serial && removeWhiteSpace(product.serial)) || "");
+    setValue(
+      "serial",
+      (product?.serial && removeWhiteSpace(product.serial)) || ""
+    );
     setValue("label", product?.label || "");
     setValue("price", product?.price || 0);
     setValue("stock_min", product?.stock_min || 0);
@@ -215,14 +220,14 @@ export function ProductFormDialog({
 
   const onSelectCategory = (category: SearchCategory) => {
     setValue("category_id", category?.id || 0);
-  }
+  };
 
   return (
     <Dialog
       open={open}
       onClose={(event, reason) => {
         if (reason === "backdropClick" || reason === "escapeKeyDown") {
-          return; 
+          return;
         }
         onClose();
       }}
@@ -232,7 +237,9 @@ export function ProductFormDialog({
       }}
       disableAutoFocus
     >
-      <DialogTitle>{product?.label ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}</DialogTitle>
+      <DialogTitle>
+        {product?.label ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
+      </DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
           <Grid container spacing={1}>
@@ -256,10 +263,10 @@ export function ProductFormDialog({
               />
             </Grid>
             <Grid xs={6}>
-              <CategorySelector 
+              <CategorySelector
                 onSubmit={onSelectCategory}
                 defaultValue={defaultCategory}
-              /> 
+              />
             </Grid>
             <Grid xs={6}>
               <TextField
@@ -300,16 +307,26 @@ export function ProductFormDialog({
               />
             </Grid>
           </Grid>
-          {
-            product?.id && product?.deleted != null && (
-              <Alert color="error">สินค้านี้ถูกลบไปแล้ว! หากคุณบันทึกสินค้านี้จะถูกกู้คืน {product.label} </Alert>
-            )
-          }
+          {product?.id && product?.deleted_at != null && (
+            <Alert color="error">
+              สินค้านี้ถูกลบไปแล้ว! หากคุณบันทึกสินค้านี้จะถูกกู้คืน{" "}
+              {product.label}{" "}
+            </Alert>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" onClick={onClose}>ยกเลิก</Button>
-        <Button variant="contained" startIcon={<SaveTwoTone/>} color="success" type="submit">{product && product?.deleted ? "กู้คืนและบันทึก": "บันทึก"}</Button>
+        <Button color="secondary" onClick={onClose}>
+          ยกเลิก
+        </Button>
+        <Button
+          variant="contained"
+          startIcon={<SaveTwoTone />}
+          color="success"
+          type="submit"
+        >
+          {product && product?.deleted_at ? "กู้คืนและบันทึก" : "บันทึก"}
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -337,7 +354,7 @@ const AddController = () => {
     setIsSearch(false);
   };
 
-  if (!user) return null;   
+  if (!user) return null;
   if (!user.hasPermission(ProductPermissionEnum.CREATE)) return null;
 
   return (

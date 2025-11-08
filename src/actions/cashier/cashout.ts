@@ -3,7 +3,7 @@ import { CartItem } from "@/atoms/cart";
 import { CashierPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import {getUser } from "@/libs/session";
+import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
 import { PaymentSchema, PaymentValues } from "@/schema/Payment";
 
@@ -12,22 +12,25 @@ const validateProducts = async (user: User, cart: CartItem[]) => {
     where: {
       store_id: user.store,
       id: { in: cart.map((p) => p.id) },
-      deleted: null
+      deleted_at: null,
     },
     include: {
       category: {
         select: {
           label: true,
-          overstock: true
+          overstock: true,
         },
       },
     },
   });
 
   const validated = rawProducts.map((product) => {
-    const cartProduct = (cart.find((p) => p.id == product.id) as CartItem);
+    const cartProduct = cart.find((p) => p.id == product.id) as CartItem;
     const canOverStock = product.category?.overstock || false;
-    const count = (!canOverStock && (cartProduct.count > product.stock)) ? product.stock : cartProduct.count;
+    const count =
+      !canOverStock && cartProduct.count > product.stock
+        ? product.stock
+        : cartProduct.count;
     const isOverStock = count > product.stock;
 
     return {
@@ -38,7 +41,7 @@ const validateProducts = async (user: User, cart: CartItem[]) => {
       cost: product.cost,
       count: count,
       category: product.category?.label || "ไม่มีประเภท",
-      overstock: isOverStock ? (count - product.stock) : 0,
+      overstock: isOverStock ? count - product.stock : 0,
     };
   }) as {
     id: number;
@@ -60,11 +63,18 @@ const Cashout = async (
   try {
     const user = await getUser();
     if (!user) throw Error("Unauthorized");
-    if (!user.hasPermission(CashierPermissionEnum.CREATE)) throw Error("Forbidden");
+    if (!user.hasPermission(CashierPermissionEnum.CREATE))
+      throw Error("Forbidden");
     const validated = PaymentSchema.parse(payload);
     const products = await validateProducts(user, payload.cart);
-    const totalPrice = products.reduce((total, item) => total + item.price * item.count, 0);
-    const totalCost = products.reduce((total, item) => total + item.cost * item.count, 0);
+    const totalPrice = products.reduce(
+      (total, item) => total + item.price * item.count,
+      0
+    );
+    const totalCost = products.reduce(
+      (total, item) => total + item.cost * item.count,
+      0
+    );
     const totalProfit = totalPrice - totalCost;
     const method = payload.method == "bank" ? "BANK" : "CASH";
 

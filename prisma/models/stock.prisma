@@ -1,0 +1,33 @@
+model Stock {
+  id         Int        @id @default(autoincrement())
+  note       String
+  state      StockState
+  action_at  DateTime   @default(now())
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  store_id      String
+  store         Store       @relation(fields: [store_id], references: [id])
+  user_store_id Int?
+  user_store    UserStore?  @relation(fields: [user_store_id], references: [id])
+  items         StockItem[]
+
+  @@map("stocks")
+}
+
+model StockItem {
+  id         Int     @id @default(autoincrement())
+  changed_by Int
+  stock_id   Int
+  stock      Stock   @relation(fields: [stock_id], references: [id])
+  product_id Int
+  product    Product @relation(fields: [product_id], references: [id])
+
+  @@map("stock_items")
+}
+
+enum StockState {
+  PROGRESS
+  SUCCESS
+  CANCEL
+}

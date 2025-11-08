@@ -1,0 +1,47 @@
+model Store {
+  id         String      @id @default(cuid())
+  name       String
+  categories Category[]
+  product    Product[]
+  orders     Order[]
+  borrows    Borrow[]
+  stocks     Stock[]
+  users      UserStore[]
+  roles      Role[]
+  // Address
+  line_token String?
+  address    String?
+  district   String?
+  area       String?
+  province   String?
+  postalcode String?
+
+  @@map("stores")
+}
+
+model UserStore {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  role_id        Int
+  role           Role           @relation("UserStoreRole", fields: [role_id], references: [id])
+  categories     Category[]
+  products       Product[]
+  orders         Order[]
+  borrows        Borrow[]
+  stocks         Stock[]
+  roles          Role[]
+  order_products OrderProduct[]
+
+  store_id      String
+  store         Store       @relation(fields: [store_id], references: [id])
+  user_store_id Int? // ผู้เพิ่มพนักงานนี้
+  user_store    UserStore?  @relation("UserStoreToUserStore", fields: [user_store_id], references: [id])
+  UserStore     UserStore[] @relation("UserStoreToUserStore")
+
+  @@unique([userId, store_id])
+  @@map("user_stores")
+}
