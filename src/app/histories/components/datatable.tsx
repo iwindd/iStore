@@ -1,13 +1,12 @@
 "use client";
-import React from "react";
+import GetHistories from "@/actions/order/get";
+import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
-import { Category } from "@prisma/client";
-import GridLinkAction from "@/components/GridLinkAction";
 import { GridColDef } from "@mui/x-data-grid";
-import GetHistories from "@/actions/order/get";
-import { Path } from "@/config/Path";
-import Datatable from "@/components/Datatable";
+import { Category } from "@prisma/client";
 
 const HistoryDatatable = () => {
   const columns = (): GridColDef[] => {
@@ -21,12 +20,13 @@ const HistoryDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
-        field: "user_store",
+        field: "creator",
         sortable: true,
         headerName: "ผู้คิดเงิน",
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          ff.text(data?.value?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "price",

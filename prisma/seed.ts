@@ -153,33 +153,12 @@ async function main() {
           },
         },
       });
-
-      /*       for (const product of category.products) {
-        await prisma.product.upsert({
-          where: {
-            serial_store_id: {
-              serial: product.serial,
-              store_id: category.store_id,
-            },
-          },
-          update: {},
-          create: {
-            serial: product.serial,
-            label: product.label,
-            price: product.price,
-            cost: product.cost,
-            store: {
-              connect: { id: category.store_id },
-            },
-          },
-        });
-      } */
     }
   });
 
   const ordersData = await getOrders();
 
-  const chunks = _.chunk(ordersData, 100);
+  const chunks = _.chunk(ordersData, 500);
 
   console.log(
     `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`
@@ -213,6 +192,7 @@ async function main() {
     `--------------------------------\n`
   );
 }
+
 main()
   .then(async () => {
     await prisma.$disconnect();

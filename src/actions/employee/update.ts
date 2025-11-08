@@ -24,8 +24,8 @@ export const update = async (
         userStores: {
           update: {
             where: {
-              userId_store_id: {
-                userId: id,
+              user_id_store_id: {
+                user_id: id,
                 store_id: user.store.toString(),
               },
             },

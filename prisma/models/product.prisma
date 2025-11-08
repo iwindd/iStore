@@ -1,43 +1,41 @@
 model Category {
-  id         Int      @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   label      String
-  overstock  Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  store_id      String
-  store         Store      @relation(fields: [store_id], references: [id])
-  user_store_id Int?
-  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
-  product       Product[]
+  overstock  Boolean     @default(false)
+  store_id   String
+  creator_id Int?
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  store      Store      @relation(fields: [store_id], references: [id])
+  creator    UserStore? @relation(fields: [creator_id], references: [id])
+  product    Product[]
 
   @@unique([label, store_id])
   @@map("categories")
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  serial      String
-  label       String
-  price       Int      @default(0)
-  cost        Int      @default(0)
-  stock       Int      @default(0)
-  stock_min   Int      @default(10)
-  sold        Int      @default(0)
-  category_id Int?
-  store_id    String
-  keywords    String   @default("")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  deleted_at  DateTime?
+  id            Int             @id @default(autoincrement())
+  serial        String
+  label         String
+  price         Int             @default(0)
+  cost          Int             @default(0)
+  stock         Int             @default(0)
+  stock_min     Int             @default(10)
+  sold          Int             @default(0)
+  category_id   Int?
+  store_id      String
+  creator_id    Int?
+  keywords      String          @default("")
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  deleted_at    DateTime?
 
-  store         Store       @relation(fields: [store_id], references: [id])
-  category      Category?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  store         Store          @relation(fields: [store_id], references: [id])
+  category      Category?      @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  creator       UserStore?     @relation(fields: [creator_id], references: [id])
   borrows       Borrow[]
   stockProducts StockProduct[]
-
-  user_store_id Int?
-  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
 
   @@unique([serial, store_id])
   @@map("products")

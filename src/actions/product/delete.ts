@@ -13,7 +13,9 @@ const DeleteProduct = async (id: number): Promise<ActionResponse<Product>> => {
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(ProductPermissionEnum.DELETE) ? user.userStoreId : undefined,
+        creator_id: !user.hasPermission(ProductPermissionEnum.DELETE)
+          ? user.userStoreId
+          : undefined,
       },
     });
     return { success: true, data: data };

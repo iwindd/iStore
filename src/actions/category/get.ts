@@ -13,23 +13,24 @@ const GetCategories = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(CategoryPermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(CategoryPermissionEnum.READ))
+      throw new Error("Forbidden");
     const categories = await db.$transaction([
       db.category.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
         take: table.pagination.pageSize,
         orderBy: order(table.sort),
         where: {
-          ...filter(table.filter, ['label']),
+          ...filter(table.filter, ["label"]),
           store_id: user.store,
         },
         include: {
           _count: {
             select: {
               product: true,
-            }
+            },
           },
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {
@@ -38,7 +39,7 @@ const GetCategories = async (
               },
             },
           },
-        }
+        },
       }),
       db.category.count({
         where: {

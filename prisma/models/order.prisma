@@ -1,38 +1,39 @@
 model Order {
-  id         Int       @id @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   price      Int
   cost       Int
   profit     Int
-  method     Method    @default(CASH)
-  type       OrderType @default(CASHOUT)
+  method     Method          @default(CASH)
+  type       OrderType       @default(CASHOUT)
   note       String
-  text       String    @db.Text
+  text       String          @db.Text
   store_id   String
   creator_id Int?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
 
-  store         Store          @relation(fields: [store_id], references: [id])
-  creator       UserStore?     @relation(fields: [creator_id], references: [id])
-  products      OrderProduct[]
+  store      Store          @relation(fields: [store_id], references: [id])
+  creator    UserStore?     @relation(fields: [creator_id], references: [id])
+  products   OrderProduct[]
 
   @@map("orders")
 }
 
 model OrderProduct {
-  id            Int        @id @default(autoincrement())
-  serial        String
-  label         String
-  category      String
-  price         Int
-  cost          Int
-  count         Int
-  overstock     Int        @default(0)
-  overstock_at  DateTime?
-  creator_id    Int? // ผู้ทำรายการ สำเร็จ การเบิก
-  creator       UserStore? @relation(fields: [creator_id], references: [id])
-  order_id      Int
-  order         Order      @relation(fields: [order_id], references: [id])
+  id           Int         @id @default(autoincrement())
+  serial       String
+  label        String
+  category     String
+  price        Int
+  cost         Int
+  count        Int
+  overstock    Int         @default(0)
+  overstock_at DateTime?
+  creator_id   Int?
+  order_id     Int
+
+  creator      UserStore? @relation(fields: [creator_id], references: [id])
+  order        Order      @relation(fields: [order_id], references: [id])
 
   @@map("order_products")
 }

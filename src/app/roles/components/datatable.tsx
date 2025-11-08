@@ -36,7 +36,7 @@ const RoleDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
-        field: "user_store",
+        field: "creator",
         sortable: true,
         headerName: "ผู้เพิ่ม",
         flex: 1,

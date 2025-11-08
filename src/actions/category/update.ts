@@ -17,20 +17,22 @@ const UpdateCategory = async (
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(CategoryPermissionEnum.UPDATE) ? user.userStoreId : undefined,
+        creator_id: !user.hasPermission(CategoryPermissionEnum.UPDATE)
+          ? user.userStoreId
+          : undefined,
       },
       data: { label: validated.label, overstock: validated.overstock },
     });
 
-    if (deleted && payload.active){
+    if (deleted && payload.active) {
       await db.product.updateMany({
         where: {
-          category_id: null
+          category_id: null,
         },
         data: {
-          category_id: id
-        }
-      })
+          category_id: id,
+        },
+      });
     }
 
     return { success: true, data: validated };

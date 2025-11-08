@@ -12,7 +12,7 @@ const getProducts = async (store: string): Promise<Product[]> => {
     return await db.product.findMany({
       where: {
         store_id: store,
-        user_store_id: !user.hasPermission(ProductPermissionEnum.READ)
+        creator_id: !user.hasPermission(ProductPermissionEnum.READ)
           ? user.userStoreId
           : undefined,
         ...(await getFilterRange()),

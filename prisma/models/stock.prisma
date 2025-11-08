@@ -1,22 +1,22 @@
 model Stock {
-  id         Int        @id @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   note       String
   state      StockState
-  action_at  DateTime   @default(now())
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
+  action_at  DateTime        @default(now())
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
   store_id   String
   creator_id Int
 
-  store         Store       @relation(fields: [store_id], references: [id])
-  creator       UserStore?  @relation(fields: [creator_id], references: [id])
-  products      StockProduct[]
+  store      Store          @relation(fields: [store_id], references: [id])
+  creator    UserStore?     @relation(fields: [creator_id], references: [id])
+  products   StockProduct[]
 
   @@map("stocks")
 }
 
 model StockProduct {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   changed_by Int
   stock_id   Int
   product_id Int

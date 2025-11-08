@@ -25,7 +25,7 @@ const GetProducts = async (
               label: true,
             },
           },
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {

@@ -12,7 +12,7 @@ import { Order, OrderProduct } from "@prisma/client";
 
 interface History extends Order {
   products: OrderProduct[];
-  user_store: {
+  creator: {
     user: {
       name: string;
     };

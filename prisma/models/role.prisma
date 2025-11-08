@@ -1,23 +1,23 @@
 model Role {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   label          String
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  is_super_admin Boolean  @default(false)
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  is_super_admin Boolean       @default(false)
+  store_id       String
+  creator_id     Int?
 
-  store_id      String
-  store         Store        @relation(fields: [store_id], references: [id])
-  user_store_id Int?
-  user_store    UserStore?   @relation(fields: [user_store_id], references: [id])
-  users         UserStore[]  @relation("UserStoreRole")
-  permissions   Permission[] @relation("RolePermission")
+  store          Store        @relation(fields: [store_id], references: [id])
+  creator        UserStore?   @relation(fields: [creator_id], references: [id])
+  users          UserStore[]  @relation("UserStoreRole")
+  permissions    Permission[] @relation("RolePermission")
 
   @@unique([store_id, label])
   @@map("roles")
 }
 
 model Permission {
-  name  String @id @unique
+  name  String  @id @unique
   roles Role[] @relation("RolePermission")
 
   @@map("permissions")

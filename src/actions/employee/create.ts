@@ -12,7 +12,8 @@ export const create = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(EmployeePermissionEnum.CREATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(EmployeePermissionEnum.CREATE))
+      throw new Error("Forbidden");
     const validated = EmployeeSchema.parse(payload);
     if (!validated.role) throw new Error("Role is required");
 
@@ -24,12 +25,12 @@ export const create = async (
         userStores: {
           create: {
             store: {
-              connect: { id: user.store }, 
+              connect: { id: user.store },
             },
             role: {
               connect: { id: validated.role },
             },
-            user_store: {
+            creator: {
               connect: { id: user.userStoreId },
             },
           },
@@ -42,4 +43,3 @@ export const create = async (
     return ActionError(error) as ActionResponse<EmployeeValues>;
   }
 };
-

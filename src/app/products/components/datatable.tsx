@@ -1,25 +1,21 @@
 "use client";
-import React, { useState } from "react";
-import * as ff from "@/libs/formatter";
-import {
-  DeleteTwoTone,
-  EditTwoTone,
-  QrCodeTwoTone,
-} from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { useDialog } from "@/hooks/use-dialog";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useSnackbar } from "notistack";
-import { useQueryClient } from "@tanstack/react-query";
-import Datatable from "@/components/Datatable";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { Category, Product } from "@prisma/client";
-import GetProducts from "@/actions/product/get";
 import DeleteProduct from "@/actions/product/delete";
+import GetProducts from "@/actions/product/get";
+import Datatable from "@/components/Datatable";
+import { ProductPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useDialog } from "@/hooks/use-dialog";
+import * as ff from "@/libs/formatter";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { DeleteTwoTone, EditTwoTone, QrCodeTwoTone } from "@mui/icons-material";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { Product } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import React, { useState } from "react";
 import { ProductFormDialog } from "./add-controller";
 import BarcodeDialog from "./barcode-dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { ProductPermissionEnum } from "@/enums/permission";
 
 const ProductDatatable = () => {
   const editDialog = useDialog();
@@ -29,11 +25,15 @@ const ProductDatatable = () => {
   const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
   const queryClient = useQueryClient();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const permissions = (product: Product) => ({
-    canEditProduct: product && user && product.user_store_id == user.id || user?.hasPermission(ProductPermissionEnum.UPDATE),
-    canRemoveProduct: product && user && product.user_store_id == user.id || user?.hasPermission(ProductPermissionEnum.DELETE),
-  })
+    canEditProduct:
+      (product && user && product.creator_id == user.id) ||
+      user?.hasPermission(ProductPermissionEnum.UPDATE),
+    canRemoveProduct:
+      (product && user && product.creator_id == user.id) ||
+      user?.hasPermission(ProductPermissionEnum.DELETE),
+  });
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -87,9 +87,9 @@ const ProductDatatable = () => {
       { field: "serial", sortable: false, headerName: "รหัสสินค้า", flex: 1 },
       { field: "label", sortable: false, headerName: "ชื่อสินค้า", flex: 1 },
       {
-        field: "user_store", 
-        sortable: true, 
-        headerName: "ผู้สร้าง", 
+        field: "creator",
+        sortable: true,
+        headerName: "ผู้สร้าง",
         flex: 1,
         renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
       },
@@ -105,7 +105,7 @@ const ProductDatatable = () => {
         sortable: true,
         headerName: "ประเภทสินค้า",
         flex: 1,
-        renderCell: ({row}: any) => row.category?.label || "ไม่มีประเภท",
+        renderCell: ({ row }: any) => row.category?.label || "ไม่มีประเภท",
       },
       {
         field: "price",
@@ -142,7 +142,9 @@ const ProductDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
-            sx={{display: !permissions(row).canEditProduct ? 'none' : undefined}}
+            sx={{
+              display: !permissions(row).canEditProduct ? "none" : undefined,
+            }}
             showInMenu
           />,
           <GridActionsCellItem
@@ -150,7 +152,9 @@ const ProductDatatable = () => {
             icon={<DeleteTwoTone />}
             onClick={menu.delete(row)}
             label="ลบ"
-            sx={{display: !permissions(row).canRemoveProduct ? 'none' : undefined}}
+            sx={{
+              display: !permissions(row).canRemoveProduct ? "none" : undefined,
+            }}
             showInMenu
           />,
           <GridActionsCellItem
@@ -181,9 +185,9 @@ const ProductDatatable = () => {
         product={product}
       />
       <Confirmation {...confirmation.props} />
-      <BarcodeDialog 
+      <BarcodeDialog
         product={barcodeProduct}
-        open={showBarcode} 
+        open={showBarcode}
         onClose={() => setShowBarcode(false)}
       />
     </>

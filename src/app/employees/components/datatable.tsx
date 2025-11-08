@@ -1,19 +1,15 @@
 "use client";
-import React from "react";
-import Datatable from "@/components/Datatable";
-import {
-  DeleteTwoTone,
-  EditTwoTone,
-} from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Category as OriginalCategory, User } from "@prisma/client";
-import { useDialog } from "@/hooks/use-dialog";
-import { useSnackbar } from "notistack";
-import { useQueryClient } from "@tanstack/react-query";
-import { date, number } from "@/libs/formatter";
 import * as EmployeeActions from "@/actions/employee";
-import UserFormDialog from "./userFormDialog";
+import Datatable from "@/components/Datatable";
+import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { DeleteTwoTone, EditTwoTone } from "@mui/icons-material";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { User } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import React from "react";
+import UserFormDialog from "./userFormDialog";
 
 const EmployeeDatatable = () => {
   const editDialog = useDialog();
@@ -23,13 +19,14 @@ const EmployeeDatatable = () => {
   const { isBackdrop } = useInterface();
 
   const menu = {
-    edit: React.useCallback((user: User) => () => {
-      setUser(user);
-      editDialog.handleOpen();
-    }, [setUser, editDialog]),
-    delete: React.useCallback((user: User) => () => {
-
-    }, []),
+    edit: React.useCallback(
+      (user: User) => () => {
+        setUser(user);
+        editDialog.handleOpen();
+      },
+      [setUser, editDialog]
+    ),
+    delete: React.useCallback((user: User) => () => {}, []),
   };
 
   const columns = (): GridColDef[] => {
@@ -42,12 +39,13 @@ const EmployeeDatatable = () => {
         editable: false,
       },
       {
-        field: "user_store",
+        field: "creator",
         sortable: true,
         headerName: "ผู้เพิ่ม",
         flex: 2,
         editable: false,
-        renderCell: ({row}) => row?.userStores[0]?.user_store?.user?.name ||  "ไม่ระบุ",
+        renderCell: ({ row }) =>
+          row?.userStores[0]?.creator?.user?.name || "ไม่ระบุ",
       },
       {
         field: "email",
@@ -62,7 +60,8 @@ const EmployeeDatatable = () => {
         headerName: "ตำแหน่ง",
         flex: 3,
         editable: false,
-        renderCell: ({row}: any) => row.userStores[0]?.role.label || "ไม่ระบุ",
+        renderCell: ({ row }: any) =>
+          row.userStores[0]?.role.label || "ไม่ระบุ",
       },
       {
         field: "actions",

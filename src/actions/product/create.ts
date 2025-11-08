@@ -12,9 +12,10 @@ const CreateProduct = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.CREATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(ProductPermissionEnum.CREATE))
+      throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
-    
+
     await db.product.create({
       data: {
         serial: removeWhiteSpace(validated.serial),
@@ -26,8 +27,8 @@ const CreateProduct = async (
         sold: 0,
         store_id: user.store,
         category_id: validated.category_id,
-        user_store_id: user.userStoreId,
-        keywords: validated.keywords
+        creator_id: user.userStoreId,
+        keywords: validated.keywords,
       },
     });
 

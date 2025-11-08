@@ -1,13 +1,12 @@
 "use client";
-import React from "react";
+import GetPurchase, { Purchase } from "@/actions/purchase/get";
+import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
-import { Category } from "@prisma/client";
-import GridLinkAction from "@/components/GridLinkAction";
 import { GridColDef } from "@mui/x-data-grid";
-import { Path } from "@/config/Path";
-import Datatable from "@/components/Datatable";
-import GetPurchase, { Purchase } from "@/actions/purchase/get";
+import { Category } from "@prisma/client";
 
 const PurchaseDatatable = () => {
   const columns = (): GridColDef[] => {
@@ -21,12 +20,13 @@ const PurchaseDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
-        field: "user_store",
+        field: "creator",
         sortable: true,
         headerName: "ผู้ทำรายการ",
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          ff.text(data?.value?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "cost",
@@ -42,7 +42,8 @@ const PurchaseDatatable = () => {
         headerName: "สินค้า",
         flex: 1,
         editable: false,
-        renderCell: ({row}: {row:Purchase}) => `${row.text} x${row.products[0].count}`,
+        renderCell: ({ row }: { row: Purchase }) =>
+          `${row.text} x${row.products[0].count}`,
       },
       {
         field: "note",

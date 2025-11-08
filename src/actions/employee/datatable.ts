@@ -49,7 +49,7 @@ export const datatable = async (
                   label: true,
                 },
               },
-              user_store: {
+              creator: {
                 select: {
                   id: true,
                   user: {

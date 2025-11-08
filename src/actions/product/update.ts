@@ -17,7 +17,7 @@ const UpdateProduct = async (
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(ProductPermissionEnum.UPDATE)
+        creator_id: !user.hasPermission(ProductPermissionEnum.UPDATE)
           ? user.userStoreId
           : undefined,
       },

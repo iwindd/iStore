@@ -208,7 +208,7 @@ const HistoryDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
-        field: "user_store",
+        field: "creator",
         sortable: true,
         headerName: "ผู้สร้างรายการ",
         flex: 2,

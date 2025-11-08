@@ -22,7 +22,7 @@ export const create = async (
           connect: validated.permissions.map((p) => ({ name: p })),
         },
         store_id: user.store,
-        user_store_id: user.userStoreId,
+        creator_id: user.userStoreId,
       },
     });
 

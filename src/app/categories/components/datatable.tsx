@@ -1,30 +1,24 @@
 "use client";
-import React from "react";
-import Datatable from "@/components/Datatable";
-import {
-  DeleteTwoTone,
-  EditTwoTone,
-  ViewAgendaTwoTone,
-} from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import GridLinkAction from "@/components/GridLinkAction";
-import { Category as OriginalCategory } from "@prisma/client";
-import { Path } from "@/config/Path";
-import GetCategories from "@/actions/category/get";
-import { CategoryFormDialog } from "./add-controller";
-import { useDialog } from "@/hooks/use-dialog";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useSnackbar } from "notistack";
-import { useQueryClient } from "@tanstack/react-query";
 import DeleteCategory from "@/actions/category/delete";
-import { date, number, text } from "@/libs/formatter";
-import { useAuth } from "@/hooks/use-auth";
+import GetCategories from "@/actions/category/get";
+import Datatable from "@/components/Datatable";
 import { CategoryPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useDialog } from "@/hooks/use-dialog";
+import { date, number, text } from "@/libs/formatter";
+import { DeleteTwoTone, EditTwoTone } from "@mui/icons-material";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { Category as OriginalCategory } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { CategoryFormDialog } from "./add-controller";
 
-interface Category extends OriginalCategory{
+interface Category extends OriginalCategory {
   _count: {
-    product: number
-  }
+    product: number;
+  };
 }
 
 const CategoryDatatable = () => {
@@ -34,9 +28,13 @@ const CategoryDatatable = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const permissions = (Category: Category) => ({
-    canRemoveCategory: user?.hasPermission(CategoryPermissionEnum.DELETE) || Category.user_store_id === user?.userStoreId,
-    canUpdateCategory: user?.hasPermission(CategoryPermissionEnum.UPDATE) || Category.user_store_id === user?.userStoreId,
-  })
+    canRemoveCategory:
+      user?.hasPermission(CategoryPermissionEnum.DELETE) ||
+      Category.creator_id === user?.userStoreId,
+    canUpdateCategory:
+      user?.hasPermission(CategoryPermissionEnum.UPDATE) ||
+      Category.creator_id === user?.userStoreId,
+  });
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -90,12 +88,12 @@ const CategoryDatatable = () => {
         headerName: "วันที่สร้าง",
         flex: 3,
         editable: false,
-        renderCell: ({value}) => date(value)
+        renderCell: ({ value }) => date(value),
       },
       {
-        field: "user_store", 
-        sortable: true, 
-        headerName: "ผู้สร้าง", 
+        field: "creator",
+        sortable: true,
+        headerName: "ผู้สร้าง",
         flex: 3,
         renderCell: (data: any) => text(data.value?.user?.name || "ไม่ระบุ"),
       },
@@ -112,7 +110,7 @@ const CategoryDatatable = () => {
         headerName: "การเบิก",
         flex: 2,
         editable: false,
-        renderCell: ({value}) => value ? "อณุญาต" : "ไม่อนุญาต"
+        renderCell: ({ value }) => (value ? "อณุญาต" : "ไม่อนุญาต"),
       },
       {
         field: "_count",
@@ -120,7 +118,7 @@ const CategoryDatatable = () => {
         headerName: "จำนวนสินค้า",
         flex: 2,
         editable: false,
-        renderCell: ({value}) => `${number(value.product)} รายการ`
+        renderCell: ({ value }) => `${number(value.product)} รายการ`,
       },
       {
         field: "actions",
@@ -133,7 +131,9 @@ const CategoryDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
-            sx={{display: !permissions(row).canUpdateCategory ? 'none' : undefined}}
+            sx={{
+              display: !permissions(row).canUpdateCategory ? "none" : undefined,
+            }}
             showInMenu
           />,
           <GridActionsCellItem
@@ -157,7 +157,11 @@ const CategoryDatatable = () => {
         height={700}
       />
 
-      <CategoryFormDialog open={editDialog.open} onClose={editDialog.handleClose} category={category} />
+      <CategoryFormDialog
+        open={editDialog.open}
+        onClose={editDialog.handleClose}
+        category={category}
+      />
       <Confirmation {...confirmation.props} />
     </>
   );

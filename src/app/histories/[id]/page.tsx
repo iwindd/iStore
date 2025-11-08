@@ -1,17 +1,15 @@
 "use server";
-import { Paper, Stack, Typography } from "@mui/material";
+import GetHistory from "@/actions/order/find";
+import * as ff from "@/libs/formatter";
+import { getServerSession } from "@/libs/session";
+import { Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { notFound } from "next/navigation";
-import React from "react";
-import { HistoryProductTable } from "./components/table/table-product";
-import { NoteCard } from "./components/card/NoteCard";
-import * as ff from "@/libs/formatter";
-import { PriceCard } from "./components/card/PriceCard";
 import { CostCard } from "./components/card/CostCard";
+import { NoteCard } from "./components/card/NoteCard";
+import { PriceCard } from "./components/card/PriceCard";
 import { ProfitCard } from "./components/card/ProfitCard";
-import GetHistory from "@/actions/order/find";
-import ReceiptController from "./components/receipt-controller";
-import { getServerSession } from "@/libs/session";
+import { HistoryProductTable } from "./components/table/table-product";
 
 const History = async ({ params }: { params: { id: string } }) => {
   const history = await GetHistory(Number(params.id));
@@ -22,17 +20,23 @@ const History = async ({ params }: { params: { id: string } }) => {
 
   const data = history.data;
   const address = session.user.address;
-  const addressText = session.user.address ? `${address?.province} ${address?.area} ${address?.district} ${address?.address} ${address?.postalcode}` : "ไม่ทราบที่อยู่";
-  const cashoutBy = data?.user_store?.user ? data.user_store.user.name : "ไม่ทราบชื่อผู้ทำรายการ";
+  const addressText = session.user.address
+    ? `${address?.province} ${address?.area} ${address?.district} ${address?.address} ${address?.postalcode}`
+    : "ไม่ทราบที่อยู่";
+  const cashoutBy = data?.creator?.user
+    ? data.creator.user.name
+    : "ไม่ทราบชื่อผู้ทำรายการ";
 
   return (
     <Grid container spacing={1}>
       <Grid lg={12} md={12} xs={12}>
         <Stack direction="row" spacing={3} alignItems={"center"}>
-          <Stack  sx={{ flex: "1 1 auto" }}>
+          <Stack sx={{ flex: "1 1 auto" }}>
             <Typography variant="h4">ประวัติการทำรายการ</Typography>
             <Typography variant="caption">คิดเงินโดย: {cashoutBy}</Typography>
-            <Typography variant="caption">วันที่ทำรายการ: {ff.date(data.created_at)}</Typography>
+            <Typography variant="caption">
+              วันที่ทำรายการ: {ff.date(data.created_at)}
+            </Typography>
           </Stack>
           <>
             {/* TODO */}

@@ -1,26 +1,28 @@
 "use client";
-import React from "react";
-import Datatable from "@/components/Datatable";
-import { CheckTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useSnackbar } from "notistack";
-import { useQueryClient } from "@tanstack/react-query";
-import { date, number, text } from "@/libs/formatter";
 import GetOverstocks from "@/actions/overstock/get";
 import PatchOverstock from "@/actions/overstock/patch";
-import { useAuth } from "@/hooks/use-auth";
+import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
 import { OverStockPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { date, number, text } from "@/libs/formatter";
+import { CheckTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import React from "react";
 
 const OverstockDatatable = () => {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const permissions = (row: any) => ({
-    canUpdateOverstock: user?.hasPermission(OverStockPermissionEnum.UPDATE) || row.order.user_store_id === user?.userStoreId,
-  })
+    canUpdateOverstock:
+      user?.hasPermission(OverStockPermissionEnum.UPDATE) ||
+      row.order.creator_id === user?.userStoreId,
+  });
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -74,7 +76,8 @@ const OverstockDatatable = () => {
         sortable: true,
         headerName: "ผู้คิดเงิน",
         flex: 2,
-        renderCell: (data: any) => text(data?.value?.user_store?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          text(data?.value?.creator?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "label",
@@ -125,7 +128,11 @@ const OverstockDatatable = () => {
             icon={<CheckTwoTone />}
             onClick={menu.patch(row.id)}
             label="สำเร็จรายการ"
-            sx={{ display: !permissions(row).canUpdateOverstock ? "none" : undefined }}
+            sx={{
+              display: !permissions(row).canUpdateOverstock
+                ? "none"
+                : undefined,
+            }}
             showInMenu
           />,
         ],

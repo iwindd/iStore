@@ -15,8 +15,10 @@ const DeleteCategory = async (
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(CategoryPermissionEnum.DELETE) ? user.userStoreId : undefined,
-      }
+        creator_id: !user.hasPermission(CategoryPermissionEnum.DELETE)
+          ? user.userStoreId
+          : undefined,
+      },
     });
 
     return { success: true, data: data };
