@@ -8,14 +8,14 @@ import { order } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 
 export interface Purchase {
-  id: number,
-  created_at: Date,
-  cost: number,
-  text: string,
-  note: string,
+  id: number;
+  created_at: Date;
+  cost: number;
+  text: string;
+  note: string;
   products: {
-    count: number
-  }[]
+    count: number;
+  }[];
 }
 
 const GetPurchase = async (
@@ -32,7 +32,7 @@ const GetPurchase = async (
         where: {
           store_id: user.store,
           type: CashoutType.PURCHASE,
-          user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: user.onPermission(PurchasePermissionEnum.READ),
         },
         select: {
           id: true,
@@ -42,10 +42,10 @@ const GetPurchase = async (
           note: true,
           products: {
             select: {
-              count: true
-            }
+              count: true,
+            },
           },
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {
@@ -54,13 +54,13 @@ const GetPurchase = async (
               },
             },
           },
-        }
+        },
       }),
       db.order.count({
         where: {
           store_id: user.store,
           type: CashoutType.PURCHASE,
-          user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: user.onPermission(PurchasePermissionEnum.READ),
         },
       }),
     ]);

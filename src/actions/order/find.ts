@@ -1,18 +1,22 @@
 "use server";
 import { CashoutType } from "@/enums/cashout";
-import { HistoryPermissionEnum, OverStockPermissionEnum, PurchasePermissionEnum } from "@/enums/permission";
+import {
+  HistoryPermissionEnum,
+  OverStockPermissionEnum,
+  PurchasePermissionEnum,
+} from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { Order, OrderProduct } from "@prisma/client";
 
-interface History extends Order{
-  products: OrderProduct[]
+interface History extends Order {
+  products: OrderProduct[];
   user_store: {
     user: {
       name: string;
     };
-  }
+  };
 }
 
 const GetHistory = async (
@@ -26,39 +30,39 @@ const GetHistory = async (
         id: id,
         store_id: user.store,
         OR: [
-          { 
+          {
             type: CashoutType.CASHOUT,
-            user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
+            creator_id: user.onPermission(HistoryPermissionEnum.READ),
           },
-          { 
+          {
             type: CashoutType.CASHOUT,
-            user_store_id: !user.hasPermission(OverStockPermissionEnum.READ) ? user.userStoreId : undefined,
+            creator_id: user.onPermission(OverStockPermissionEnum.READ),
             products: {
               some: {
                 overstock: {
-                  gte: 1
-                }
-              }
-            }
+                  gte: 1,
+                },
+              },
+            },
           },
           {
             type: CashoutType.PURCHASE,
-            user_store_id: !user.hasPermission(PurchasePermissionEnum.READ) ? user.userStoreId : undefined,
-          }
+            creator_id: user.onPermission(PurchasePermissionEnum.READ),
+          },
         ],
       },
       include: {
         products: true,
-        user_store:{
-          select:{
+        creator: {
+          select: {
             user: {
               select: {
                 name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     return {

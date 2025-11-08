@@ -17,14 +17,18 @@ const GetHistories = async (
       db.order.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
         take: table.pagination.pageSize,
-        orderBy: order(table.sort.length > 0 ? table.sort : [ { field: "created_at", sort: "desc"}]),
+        orderBy: order(
+          table.sort.length > 0
+            ? table.sort
+            : [{ field: "created_at", sort: "desc" }]
+        ),
         where: {
-          ...filter(table.filter, ['text', 'note']),
+          ...filter(table.filter, ["text", "note"]),
           store_id: user.store,
-          user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: user.onPermission(HistoryPermissionEnum.READ),
         },
         include: {
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {
@@ -38,7 +42,7 @@ const GetHistories = async (
       db.order.count({
         where: {
           store_id: user.store,
-          user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: user.onPermission(HistoryPermissionEnum.READ),
         },
       }),
     ]);

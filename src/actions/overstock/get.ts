@@ -13,20 +13,25 @@ const GetOverstocks = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(OverStockPermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(OverStockPermissionEnum.READ))
+      throw new Error("Forbidden");
     const products = await db.$transaction([
       db.orderProduct.findMany({
         skip: table.pagination.page * table.pagination.pageSize,
         take: table.pagination.pageSize,
-        orderBy: order(table.sort.length > 0 ? table.sort : [ { field: "overstock_at", sort: "asc"}]),
+        orderBy: order(
+          table.sort.length > 0
+            ? table.sort
+            : [{ field: "overstock_at", sort: "asc" }]
+        ),
         where: {
           ...filter(table.filter, ["serial", "label", "category"]),
           order: {
             store_id: user.store,
           },
           overstock: {
-            gte: 1
-          }
+            gte: 1,
+          },
         },
         include: {
           order: {
@@ -34,18 +39,18 @@ const GetOverstocks = async (
               id: true,
               created_at: true,
               note: true,
-              user_store: {
+              creator: {
                 select: {
                   user: {
                     select: {
-                      name: true
-                    }
-                  }
-                }
-              }
-            }
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
           },
-        }
+        },
       }),
       db.orderProduct.count({
         where: {
@@ -53,8 +58,8 @@ const GetOverstocks = async (
             store_id: user.store,
           },
           overstock: {
-            gte: 1
-          }
+            gte: 1,
+          },
         },
       }),
     ]);

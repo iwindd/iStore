@@ -12,7 +12,8 @@ const CreatePurchase = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(PurchasePermissionEnum.CREATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(PurchasePermissionEnum.CREATE))
+      throw new Error("Forbidden");
     const validated = PurchaseSchema.parse(payload);
     const totalCost = validated.cost * validated.count;
 
@@ -20,12 +21,12 @@ const CreatePurchase = async (
       data: {
         price: 0,
         cost: totalCost,
-        profit: 0 - (totalCost),
+        profit: 0 - totalCost,
         type: CashoutType.PURCHASE,
         note: payload.note,
         text: payload.label,
         store_id: user.store,
-        user_store_id: user.userStoreId,
+        creator_id: user.userStoreId,
         products: {
           create: [
             {
@@ -36,9 +37,9 @@ const CreatePurchase = async (
               cost: payload.cost,
               count: payload.count,
               overstock: 0,
-            }
-          ]
-        }
+            },
+          ],
+        },
       },
     });
 

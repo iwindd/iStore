@@ -7,13 +7,13 @@ model Order {
   type       OrderType @default(CASHOUT)
   note       String
   text       String    @db.Text
+  store_id   String
+  creator_id Int?
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
 
-  store_id      String
   store         Store          @relation(fields: [store_id], references: [id])
-  user_store_id Int?
-  user_store    UserStore?     @relation(fields: [user_store_id], references: [id])
+  creator       UserStore?     @relation(fields: [creator_id], references: [id])
   products      OrderProduct[]
 
   @@map("orders")
@@ -29,8 +29,8 @@ model OrderProduct {
   count         Int
   overstock     Int        @default(0)
   overstock_at  DateTime?
-  user_store_id Int? // ผู้ทำรายการ สำเร็จ การเบิก
-  user_store    UserStore? @relation(fields: [user_store_id], references: [id])
+  creator_id    Int? // ผู้ทำรายการ สำเร็จ การเบิก
+  creator       UserStore? @relation(fields: [creator_id], references: [id])
   order_id      Int
   order         Order      @relation(fields: [order_id], references: [id])
 

@@ -2,7 +2,7 @@
 import { OverStockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import {  getUser } from "@/libs/session";
+import { getUser } from "@/libs/session";
 
 const PatchOverstock = async (id: number): Promise<ActionResponse<boolean>> => {
   try {
@@ -13,7 +13,7 @@ const PatchOverstock = async (id: number): Promise<ActionResponse<boolean>> => {
         id: id,
         order: {
           store_id: user.store,
-          user_store_id: !user.hasPermission(OverStockPermissionEnum.UPDATE) ? user.userStoreId : undefined,
+          creator_id: user.onPermission(OverStockPermissionEnum.UPDATE),
         },
       },
       data: {

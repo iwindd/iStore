@@ -24,7 +24,7 @@ const getProductOrder = async (): Promise<ProductOrder[]> => {
       },
       where: {
         store_id: user.store,
-        user_store_id: !user.hasPermission(HistoryPermissionEnum.READ)
+        creator_id: !user.hasPermission(HistoryPermissionEnum.READ)
           ? user.userStoreId
           : undefined,
         ...(await getFilterRange()),
