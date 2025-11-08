@@ -6,16 +6,17 @@ import { getUser } from "@/libs/session";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 
 const UpdateProfile = async (
-  payload: ProfileValues,
+  payload: ProfileValues
 ): Promise<ActionResponse<ProfileValues>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(AccountPermissionEnum.UPDATE)) throw new Error("Forbidden");
+    if (!user.hasPermission(AccountPermissionEnum.UPDATE))
+      throw new Error("Forbidden");
     const validated = ProfileSchema.parse(payload);
     await db.user.update({
       where: {
-        id: user.store,
+        id: user.id,
       },
       data: {
         name: validated.name,

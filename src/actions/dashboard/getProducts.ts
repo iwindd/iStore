@@ -5,7 +5,7 @@ import { getUser } from "@/libs/session";
 import { Product } from "@prisma/client";
 import { getFilterRange } from "./range";
 
-const getProducts = async (store: number): Promise<Product[]> => {
+const getProducts = async (store: string): Promise<Product[]> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");

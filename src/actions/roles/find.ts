@@ -7,7 +7,7 @@ import { getUser } from "@/libs/session";
 interface RoleFindResult {
   id: number;
   label: string;
-  permission: string;
+  permissions: string[];
 }
 
 export const find = async (
@@ -16,7 +16,8 @@ export const find = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(RolePermissionEnum.READ)) throw new Error("Forbidden");
+    if (!user.hasPermission(RolePermissionEnum.READ))
+      throw new Error("Forbidden");
     const role = await db.role.findUnique({
       where: {
         id: roleId,
@@ -25,14 +26,18 @@ export const find = async (
       select: {
         id: true,
         label: true,
-        permission: true,
+        permissions: true,
       },
     });
 
-
     return {
       success: true,
-      data: role || null,
+      data:
+        (role && {
+          ...role,
+          permissions: role.permissions.map((p) => p.name),
+        }) ||
+        null,
     };
   } catch (error) {
     return ActionError(error) as ActionResponse<RoleFindResult>;

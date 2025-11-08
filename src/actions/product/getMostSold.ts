@@ -1,8 +1,8 @@
 "use server";
-import db from "@/libs/db";
-import { getUser } from "@/libs/session";
 import { HistoryPermissionEnum } from "@/enums/permission";
 import { CartProduct } from "@/hooks/use-cart";
+import db from "@/libs/db";
+import { getUser } from "@/libs/session";
 
 const getMostSoldProducts = async (): Promise<CartProduct[]> => {
   try {
@@ -14,60 +14,62 @@ const getMostSoldProducts = async (): Promise<CartProduct[]> => {
         sold: "desc",
       },
       where: {
-        store_id: user.userStoreId,
-        user_store_id: !user.hasPermission(HistoryPermissionEnum.READ) ? user.userStoreId : undefined,
+        store_id: user.store,
+        user_store_id: !user.hasPermission(HistoryPermissionEnum.READ)
+          ? user.userStoreId
+          : undefined,
         sold: {
-          gt: 0
+          gt: 0,
         },
         OR: [
-          { 
+          {
             AND: [
               {
                 category: {
-                  overstock: true
-                }
-              }
-            ]
-          },
-          { 
-            AND: [
-              {
-                stock: {
-                  gt: 0
+                  overstock: true,
                 },
               },
-              {
-                category: {
-                  overstock: false
-                }
-              }
-            ]
+            ],
           },
           {
             AND: [
               {
                 stock: {
-                  gt: 0
+                  gt: 0,
                 },
               },
               {
-                category: null
-              }
-            ]
-          }
-        ]
+                category: {
+                  overstock: false,
+                },
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                stock: {
+                  gt: 0,
+                },
+              },
+              {
+                category: null,
+              },
+            ],
+          },
+        ],
       },
       take: 10,
       include: {
         category: {
-          select:{
-            overstock: true
-          }
-        }
-      }
+          select: {
+            overstock: true,
+          },
+        },
+      },
     });
 
-    return products;
+    return products as CartProduct[];
   } catch (error) {
     return [];
   }

@@ -33,7 +33,7 @@ export const UpdateStockProducts = async (
 
 export const validateProducts = async (
   payload: StockItem[],
-  storeId: number
+  storeId: string
 ) => {
   const rawProducts = await db.product.findMany({
     where: {

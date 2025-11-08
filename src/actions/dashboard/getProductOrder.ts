@@ -1,8 +1,8 @@
 "use server";
-import db from "@/libs/db";
-import { getFilterRange } from "./range";
-import { getUser } from "@/libs/session";
 import { HistoryPermissionEnum } from "@/enums/permission";
+import db from "@/libs/db";
+import { getUser } from "@/libs/session";
+import { getFilterRange } from "./range";
 
 export interface ProductOrder {
   serial: string;
@@ -23,7 +23,7 @@ const getProductOrder = async (): Promise<ProductOrder[]> => {
         id: "desc",
       },
       where: {
-        store_id: user.userStoreId,
+        store_id: user.store,
         user_store_id: !user.hasPermission(HistoryPermissionEnum.READ)
           ? user.userStoreId
           : undefined,
@@ -63,7 +63,9 @@ const getProductOrder = async (): Promise<ProductOrder[]> => {
       return acc;
     }, {} as Record<string, ProductOrder>);
 
-    return Object.values(mergedProducts).sort((a, b) => a.serial.localeCompare(b.serial));
+    return Object.values(mergedProducts).sort((a, b) =>
+      a.serial.localeCompare(b.serial)
+    );
   } catch (error) {
     return [];
   }

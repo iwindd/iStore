@@ -1,14 +1,14 @@
 "use client";
-import React, { useState } from "react";
-import * as ff from "@/libs/formatter";
-import { EditTwoTone } from "@mui/icons-material";
-import { Role } from "@prisma/client";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import Datatable from "@/components/Datatable";
 import * as RoleActions from "@/actions/roles";
 import RoleFormDialog from "@/app/roles/components/roleFormDialog";
+import Datatable from "@/components/Datatable";
 import { useDialog } from "@/hooks/use-dialog";
+import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { EditTwoTone } from "@mui/icons-material";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { Role } from "@prisma/client";
+import React, { useState } from "react";
 
 const RoleDatatable = () => {
   const editDialog = useDialog();
@@ -16,10 +16,13 @@ const RoleDatatable = () => {
   const [role, setRole] = useState<Role | null>(null);
 
   const menu = {
-    edit: React.useCallback((role: Role) => () => {
-      setRole(role);
-      editDialog.handleOpen();
-    }, [editDialog]),
+    edit: React.useCallback(
+      (role: Role) => () => {
+        setRole(role);
+        editDialog.handleOpen();
+      },
+      [editDialog]
+    ),
   };
 
   const columns = (): GridColDef[] => {
@@ -38,7 +41,8 @@ const RoleDatatable = () => {
         headerName: "ผู้เพิ่ม",
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          ff.text(data?.value?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "label",
@@ -77,7 +81,7 @@ const RoleDatatable = () => {
       <RoleFormDialog
         isOpen={editDialog.open && !isBackdrop}
         onClose={editDialog.handleClose}
-        role={role}
+        role={role as any}
       />
     </>
   );
