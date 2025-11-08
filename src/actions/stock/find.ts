@@ -28,7 +28,7 @@ const GetStock = async (
       where: {
         id: id,
         store_id: user.store,
-        creator_id: user.onPermission(StockPermissionEnum.READ),
+        creator_id: user.limitPermission(StockPermissionEnum.READ),
       },
       ...(includeItem
         ? {

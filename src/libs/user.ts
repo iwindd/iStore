@@ -41,6 +41,16 @@ export class User {
     return undefined;
   }
 
+  public limitPermission<T = number>(
+    permission: PermissionEnum,
+    returnValue?: T
+  ) {
+    if (!this.hasPermission(permission)) {
+      return returnValue || this.userStoreId;
+    }
+    return undefined;
+  }
+
   public hasPermission(permission: PermissionEnum): boolean {
     return this.permissions.includes(permission);
   }

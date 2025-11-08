@@ -32,7 +32,7 @@ const GetPurchase = async (
         where: {
           store_id: user.store,
           type: CashoutType.PURCHASE,
-          creator_id: user.onPermission(PurchasePermissionEnum.READ),
+          creator_id: user.limitPermission(PurchasePermissionEnum.READ),
         },
         select: {
           id: true,
@@ -60,7 +60,7 @@ const GetPurchase = async (
         where: {
           store_id: user.store,
           type: CashoutType.PURCHASE,
-          creator_id: user.onPermission(PurchasePermissionEnum.READ),
+          creator_id: user.limitPermission(PurchasePermissionEnum.READ),
         },
       }),
     ]);

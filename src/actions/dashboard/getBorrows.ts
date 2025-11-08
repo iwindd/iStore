@@ -12,7 +12,7 @@ const getBorrows = async (store: string): Promise<Borrow[]> => {
     return await db.borrow.findMany({
       where: {
         store_id: store,
-        creator_id: user.onPermission(BorrowPermissionEnum.READ),
+        creator_id: user.limitPermission(BorrowPermissionEnum.READ),
         ...(await getFilterRange()),
       },
     });

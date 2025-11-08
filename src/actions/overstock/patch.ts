@@ -13,7 +13,7 @@ const PatchOverstock = async (id: number): Promise<ActionResponse<boolean>> => {
         id: id,
         order: {
           store_id: user.store,
-          creator_id: user.onPermission(OverStockPermissionEnum.UPDATE),
+          creator_id: user.limitPermission(OverStockPermissionEnum.UPDATE),
         },
       },
       data: {

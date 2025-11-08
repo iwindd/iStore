@@ -32,11 +32,11 @@ const GetHistory = async (
         OR: [
           {
             type: CashoutType.CASHOUT,
-            creator_id: user.onPermission(HistoryPermissionEnum.READ),
+            creator_id: user.limitPermission(HistoryPermissionEnum.READ),
           },
           {
             type: CashoutType.CASHOUT,
-            creator_id: user.onPermission(OverStockPermissionEnum.READ),
+            creator_id: user.limitPermission(OverStockPermissionEnum.READ),
             products: {
               some: {
                 overstock: {
@@ -47,7 +47,7 @@ const GetHistory = async (
           },
           {
             type: CashoutType.PURCHASE,
-            creator_id: user.onPermission(PurchasePermissionEnum.READ),
+            creator_id: user.limitPermission(PurchasePermissionEnum.READ),
           },
         ],
       },

@@ -13,7 +13,7 @@ const CancelStock = async (id: number): Promise<ActionResponse<Stock>> => {
       where: {
         id: id,
         store_id: user.store,
-        creator_id: user.onPermission(StockPermissionEnum.DELETE),
+        creator_id: user.limitPermission(StockPermissionEnum.DELETE),
       },
       data: {
         state: "CANCEL",

@@ -25,7 +25,7 @@ const GetHistories = async (
         where: {
           ...filter(table.filter, ["text", "note"]),
           store_id: user.store,
-          creator_id: user.onPermission(HistoryPermissionEnum.READ),
+          creator_id: user.limitPermission(HistoryPermissionEnum.READ),
         },
         include: {
           creator: {
@@ -42,7 +42,7 @@ const GetHistories = async (
       db.order.count({
         where: {
           store_id: user.store,
-          creator_id: user.onPermission(HistoryPermissionEnum.READ),
+          creator_id: user.limitPermission(HistoryPermissionEnum.READ),
         },
       }),
     ]);

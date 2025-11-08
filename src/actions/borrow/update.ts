@@ -16,7 +16,7 @@ const UpdateBorrow = async (
       where: {
         id: borrowId,
         store_id: user.store,
-        creator_id: user.onPermission(BorrowPermissionEnum.UPDATE),
+        creator_id: user.limitPermission(BorrowPermissionEnum.UPDATE),
         status: "PROGRESS",
       },
       data: {

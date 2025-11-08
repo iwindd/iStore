@@ -12,7 +12,7 @@ const getStocks = async (store: string): Promise<Stock[]> => {
     return await db.stock.findMany({
       where: {
         store_id: store,
-        creator_id: user.onPermission(StockPermissionEnum.READ),
+        creator_id: user.limitPermission(StockPermissionEnum.READ),
         ...(await getFilterRange()),
       },
     });
