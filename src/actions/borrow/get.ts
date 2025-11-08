@@ -20,15 +20,17 @@ const GetBorrows = async (
         orderBy: order(table.sort),
         where: {
           store_id: user.store,
-          user_store_id: !user.hasPermission(BorrowPermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: !user.hasPermission(BorrowPermissionEnum.READ)
+            ? user.userStoreId
+            : undefined,
         },
         include: {
           product: {
             select: {
-              label: true
-            }
+              label: true,
+            },
           },
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {
@@ -37,7 +39,7 @@ const GetBorrows = async (
               },
             },
           },
-        }
+        },
       }),
       db.borrow.count({
         where: {

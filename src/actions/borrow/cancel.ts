@@ -7,7 +7,7 @@ import { Borrow } from "@prisma/client";
 
 const CancelBorrow = async (
   borrowId: number,
-  status: Borrow['status']
+  status: Borrow["status"]
 ): Promise<ActionResponse<boolean>> => {
   try {
     const user = await getUser();
@@ -16,10 +16,12 @@ const CancelBorrow = async (
       where: {
         id: borrowId,
         store_id: user.store,
-        user_store_id: !user.hasPermission(BorrowPermissionEnum.DELETE) ? user.userStoreId : undefined,
+        creator_id: !user.hasPermission(BorrowPermissionEnum.DELETE)
+          ? user.userStoreId
+          : undefined,
       },
-      data: { 
-        status: status
+      data: {
+        status: status,
       },
     });
 
@@ -29,10 +31,10 @@ const CancelBorrow = async (
       },
       data: {
         stock: {
-          increment: data.amount - data.count
-        }
-      }
-    })
+          increment: data.amount - data.count,
+        },
+      },
+    });
 
     return { success: true, data: true };
   } catch (error) {

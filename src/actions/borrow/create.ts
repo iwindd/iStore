@@ -32,7 +32,7 @@ const CreateBorrow = async (
         status: "PROGRESS",
         product_id: product.id,
         store_id: user.store,
-        user_store_id: user.userStoreId,
+        creator_id: user.userStoreId,
       },
     });
 

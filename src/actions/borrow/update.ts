@@ -16,14 +16,14 @@ const UpdateBorrow = async (
       where: {
         id: borrowId,
         store_id: user.store,
-        user_store_id: !user.hasPermission(BorrowPermissionEnum.UPDATE) ? user.userStoreId : undefined,
-        status: "PROGRESS"
+        creator_id: user.onPermission(BorrowPermissionEnum.UPDATE),
+        status: "PROGRESS",
       },
-      data: { 
+      data: {
         count: {
-          increment: count
+          increment: count,
         },
-        status: "SUCCESS"
+        status: "SUCCESS",
       },
     });
     if (!data) throw new Error("Forbidden");
@@ -31,30 +31,30 @@ const UpdateBorrow = async (
     if (data && data.count < data.amount) {
       const product = await db.product.update({
         where: {
-          id: data.product_id
+          id: data.product_id,
         },
         data: {
           stock: {
-            increment: data.amount - data.count
-          }
+            increment: data.amount - data.count,
+          },
         },
         include: {
           category: {
             select: {
-              label: true
-            }
-          }
-        }
-      })
+              label: true,
+            },
+          },
+        },
+      });
 
       if (data.count > 0 && user.store) {
-        const totalPrice = product.price * data.count
-        const totalCost = product.cost * data.count
+        const totalPrice = product.price * data.count;
+        const totalCost = product.cost * data.count;
         await db.order.create({
           data: {
             price: totalPrice,
             cost: totalCost,
-            profit: totalPrice-totalCost,
+            profit: totalPrice - totalCost,
             note: data.note,
             text: product.label,
             store_id: user.store,
@@ -69,12 +69,12 @@ const UpdateBorrow = async (
                   price: product.price,
                   cost: product.cost,
                   count: data.count,
-                  overstock: 0
-                }
-              ]
-            }
-          }
-        })
+                  overstock: 0,
+                },
+              ],
+            },
+          },
+        });
       }
     }
 

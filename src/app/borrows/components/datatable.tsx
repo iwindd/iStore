@@ -1,14 +1,15 @@
 "use client";
-import React, { useEffect } from "react";
-import Datatable from "@/components/Datatable";
-import { CancelTwoTone, EditTwoTone, SaveTwoTone } from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import GetBorrows from "@/actions/borrow/get";
-import { enqueueSnackbar } from "notistack";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useQueryClient } from "@tanstack/react-query";
 import CancelBorrow from "@/actions/borrow/cancel";
-import * as ff from '@/libs/formatter';
+import GetBorrows from "@/actions/borrow/get";
+import UpdateBorrow from "@/actions/borrow/update";
+import Datatable from "@/components/Datatable";
+import { BorrowPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useDialog } from "@/hooks/use-dialog";
+import * as ff from "@/libs/formatter";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { CancelTwoTone, EditTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -18,12 +19,11 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import UpdateBorrow from "@/actions/borrow/update";
-import { useDialog } from "@/hooks/use-dialog";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { useAuth } from "@/hooks/use-auth";
-import { BorrowPermissionEnum } from "@/enums/permission";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Borrow } from "@prisma/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import React, { useEffect } from "react";
 
 interface BorrowUpdateProps {
   onClose: () => void;
@@ -31,31 +31,31 @@ interface BorrowUpdateProps {
   borrow: Borrow | null;
 }
 
-const formatCellColor = (status : Borrow['status']) => {
+const formatCellColor = (status: Borrow["status"]) => {
   switch (status) {
-    case "PROGRESS": 
-      return "warning"
+    case "PROGRESS":
+      return "warning";
     case "SUCCESS":
-      return "success"
+      return "success";
     case "CANCEL":
-      return "secondary"
+      return "secondary";
     default:
-      return "secondary"
+      return "secondary";
   }
-}
+};
 
 const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
   const productLeft = borrow ? borrow.amount - borrow.count : 0;
   const borrowId = borrow ? borrow.id : 0;
   const [count, setCount] = React.useState<number>(productLeft);
-  const {setBackdrop} = useInterface();
+  const { setBackdrop } = useInterface();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (borrow) setCount(borrow?.amount-borrow?.count)
-  }, [borrow])
+    if (borrow) setCount(borrow?.amount - borrow?.count);
+  }, [borrow]);
 
-  const onSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBackdrop(true);
     try {
@@ -103,7 +103,14 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
         <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button variant="contained" color="success" startIcon={<SaveTwoTone/>} type="submit">อัพเดท</Button>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<SaveTwoTone />}
+          type="submit"
+        >
+          อัพเดท
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -112,13 +119,17 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
 const BorrowDatatable = () => {
   const queryClient = useQueryClient();
   const updateDialog = useDialog();
-  const {isBackdrop} = useInterface();
+  const { isBackdrop } = useInterface();
   const [borrow, setBorrow] = React.useState<Borrow | null>(null);
-  const {user} = useAuth();
-  const permissions = (borrow : Borrow) => ({
-    canCancelBorrow: user?.hasPermission(BorrowPermissionEnum.DELETE) || borrow.user_store_id == user?.userStoreId,
-    canUpdateBorrow: user?.hasPermission(BorrowPermissionEnum.UPDATE) || borrow.user_store_id == user?.userStoreId,
-  })
+  const { user } = useAuth();
+  const permissions = (borrow: Borrow) => ({
+    canCancelBorrow:
+      user?.hasPermission(BorrowPermissionEnum.DELETE) ||
+      borrow.creator_id == user?.userStoreId,
+    canUpdateBorrow:
+      user?.hasPermission(BorrowPermissionEnum.UPDATE) ||
+      borrow.creator_id == user?.userStoreId,
+  });
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -168,7 +179,7 @@ const BorrowDatatable = () => {
         headerName: "วันที่เบิก",
         flex: 3,
         editable: false,
-        renderCell: ({value}) => ff.date(value)
+        renderCell: ({ value }) => ff.date(value),
       },
       {
         field: "user_store",
@@ -176,7 +187,7 @@ const BorrowDatatable = () => {
         headerName: "ผู้เบิก",
         flex: 2,
         editable: false,
-        renderCell: (data) => ff.text(data?.value?.user?.name || "ไม่ระบุ")
+        renderCell: (data) => ff.text(data?.value?.user?.name || "ไม่ระบุ"),
       },
       {
         field: "product",
@@ -184,7 +195,7 @@ const BorrowDatatable = () => {
         headerName: "สินค้า",
         flex: 3,
         editable: false,
-        renderCell: ({row}) => row.product.label
+        renderCell: ({ row }) => row.product.label,
       },
       {
         field: "note",
@@ -192,7 +203,7 @@ const BorrowDatatable = () => {
         headerName: "หมายเหตุ",
         flex: 3,
         editable: false,
-        renderCell: ({value}) => ff.text(value)
+        renderCell: ({ value }) => ff.text(value),
       },
       {
         field: "status",
@@ -200,7 +211,7 @@ const BorrowDatatable = () => {
         headerName: "สถานะ",
         flex: 2,
         editable: false,
-        renderCell: ({value}) => ff.borrowStatus(value)
+        renderCell: ({ value }) => ff.borrowStatus(value),
       },
       {
         field: "amount",
@@ -208,7 +219,8 @@ const BorrowDatatable = () => {
         headerName: "จำนวนที่เบิก",
         flex: 2,
         editable: false,
-        renderCell: ({row} : {row : Borrow}) => `${ff.number(row.amount)} รายการ`
+        renderCell: ({ row }: { row: Borrow }) =>
+          `${ff.number(row.amount)} รายการ`,
       },
       {
         field: "count",
@@ -216,7 +228,8 @@ const BorrowDatatable = () => {
         headerName: "จำนวนที่ขายได้",
         flex: 2,
         editable: false,
-        renderCell: ({row} : {row : Borrow}) => `${ff.number(row.count)} รายการ`
+        renderCell: ({ row }: { row: Borrow }) =>
+          `${ff.number(row.count)} รายการ`,
       },
       {
         field: "actions",
@@ -231,7 +244,11 @@ const BorrowDatatable = () => {
                   icon={<EditTwoTone />}
                   onClick={menu.edit(row)}
                   label="อัพเดท"
-                  sx={{ display: !permissions(row).canUpdateBorrow ? "none" : undefined}}
+                  sx={{
+                    display: !permissions(row).canUpdateBorrow
+                      ? "none"
+                      : undefined,
+                  }}
                   showInMenu
                 />,
                 <GridActionsCellItem
@@ -239,7 +256,11 @@ const BorrowDatatable = () => {
                   icon={<CancelTwoTone />}
                   onClick={menu.cancel(row)}
                   label="ยกเลิก"
-                  sx={{ display: !permissions(row).canCancelBorrow ? "none" : undefined}}
+                  sx={{
+                    display: !permissions(row).canCancelBorrow
+                      ? "none"
+                      : undefined,
+                  }}
                   showInMenu
                 />,
               ]
@@ -256,7 +277,11 @@ const BorrowDatatable = () => {
         columns={columns()}
         fetch={GetBorrows}
         height={700}
-        getCellClassName={(params) => params.field == 'status' ? `text-color-${formatCellColor(params.value as Borrow["status"])}` : ""}
+        getCellClassName={(params) =>
+          params.field == "status"
+            ? `text-color-${formatCellColor(params.value as Borrow["status"])}`
+            : ""
+        }
       />
 
       <Confirmation {...confirmation.props} />
