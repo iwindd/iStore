@@ -79,13 +79,13 @@ const Commit = async (
       },
       select: {
         id: true,
-        items: {
+        products: {
           select: { product_id: true, changed_by: true },
         },
       },
     });
 
-    await UpdateStockProducts(data.items);
+    await UpdateStockProducts(data.products);
     return { success: true, data: payload };
   } catch (error) {
     return ActionError(error) as ActionResponse<StockItem[]>;

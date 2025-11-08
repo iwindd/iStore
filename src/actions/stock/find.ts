@@ -3,17 +3,24 @@ import { StockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { Product, StockItem as StockItemOriginal, Stock as StockOriginal } from "@prisma/client";
+import {
+  Product,
+  Stock as StockOriginal,
+  StockProduct as StockProductOriginal,
+} from "@prisma/client";
 
-interface StockItem extends StockItemOriginal{
-  product: Product
+interface StockProduct extends StockProductOriginal {
+  product: Product;
 }
 
-interface Stock extends StockOriginal { 
-  items?: StockItem[]
+interface Stock extends StockOriginal {
+  products?: StockProduct[];
 }
 
-const GetStock = async (id : number, includeItem?: boolean): Promise<ActionResponse<Stock | null>> => {
+const GetStock = async (
+  id: number,
+  includeItem?: boolean
+): Promise<ActionResponse<Stock | null>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -21,22 +28,24 @@ const GetStock = async (id : number, includeItem?: boolean): Promise<ActionRespo
       where: {
         id: id,
         store_id: user.store,
-        user_store_id: !user.hasPermission(StockPermissionEnum.READ) ? user.userStoreId : undefined,
+        creator_id: user.onPermission(StockPermissionEnum.READ),
       },
-      ...(includeItem ? {
-        include: {
-          items: {
+      ...(includeItem
+        ? {
             include: {
-              product: true
-            }
-          },
-        }
-      } : {})
-    })
+              products: {
+                include: {
+                  product: true,
+                },
+              },
+            },
+          }
+        : {}),
+    });
 
     return {
       success: true,
-      data: stock 
+      data: stock,
     };
   } catch (error) {
     return ActionError(error) as ActionResponse<Stock | null>;

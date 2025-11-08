@@ -1,28 +1,28 @@
 "use client";
-import React from "react";
+import CancelStock from "@/actions/stock/cancel";
+import GetStock from "@/actions/stock/find";
+import GetStocks from "@/actions/stock/get";
+import ImportToolAction from "@/actions/stock/tool";
+import Datatable from "@/components/Datatable";
+import { StockPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useExport } from "@/hooks/use-export";
+import { useStock } from "@/hooks/use-stock";
 import * as ff from "@/libs/formatter";
+import { useInterface } from "@/providers/InterfaceProvider";
 import {
   CancelTwoTone,
   DownloadTwoTone,
   RecyclingTwoTone,
   UploadTwoTone,
 } from "@mui/icons-material";
-import { Stock, StockItem } from "@prisma/client";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import Datatable from "@/components/Datatable";
-import GetStocks from "@/actions/stock/get";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { enqueueSnackbar } from "notistack";
+import { Stock } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
-import CancelStock from "@/actions/stock/cancel";
-import { useStock } from "@/hooks/use-stock";
-import ImportToolAction from "@/actions/stock/tool";
+import { enqueueSnackbar } from "notistack";
+import React from "react";
 import { ImportFromStockId, ImportType } from "../import";
-import { useInterface } from "@/providers/InterfaceProvider";
-import GetStock from "@/actions/stock/find";
-import { useExport } from "@/hooks/use-export";
-import { useAuth } from "@/hooks/use-auth";
-import { StockPermissionEnum } from "@/enums/permission";
 
 const formatCellColor = (status: Stock["state"]) => {
   switch (status) {
@@ -41,19 +41,21 @@ const HistoryDatatable = () => {
   const { setBackdrop } = useInterface();
   const { setStocks, setTarget } = useStock();
   const queryClient = useQueryClient();
-  const {user} = useAuth();
-  const permissions = (stock : Stock) => ({
-    canCancelStock: user?.hasPermission(StockPermissionEnum.DELETE) || stock.user_store_id === user?.userStoreId,
-    canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE) ,
-  })
+  const { user } = useAuth();
+  const permissions = (stock: Stock) => ({
+    canCancelStock:
+      user?.hasPermission(StockPermissionEnum.DELETE) ||
+      stock.creator_id === user?.userStoreId,
+    canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE),
+  });
 
-  const {setItems, Export, ExportHandler} = useExport([
+  const { setItems, Export, ExportHandler } = useExport([
     { label: "รหัสสินค้า", key: "serial" },
     { label: "ชื่อสินค้า", key: "label" },
     { label: "ราคา", key: "price" },
     { label: "ต้นทุน", key: "cost" },
     { label: "จำนวน", key: "changed_by" },
-    { label: "อื่นๆ", key: "keywords" }
+    { label: "อื่นๆ", key: "keywords" },
   ]);
 
   const cancelConfirmation = useConfirm({
@@ -82,7 +84,7 @@ const HistoryDatatable = () => {
   const copyConfirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการสร้างรายการนี้อีกครั้งหรือไม่?",
-    confirmProps:{
+    confirmProps: {
       color: "primary",
       startIcon: <RecyclingTwoTone />,
     },
@@ -136,34 +138,43 @@ const HistoryDatatable = () => {
     },
   });
 
-  const onExport = React.useCallback(async (stockId : number) => {
-    try {
-      setBackdrop(true)
-      const resp = await GetStock(stockId, true);
-      if (!resp.success || !resp.data || !resp.data.items) throw new Error(resp.message);
-      setItems(resp.data.items.map((item) => ({
-        serial: item.product.serial,
-        label: item.product.label,
-        price: item.product.price,
-        cost: item.product.cost,
-        changed_by: item.changed_by,
-        keywords: item.product.keywords
-      })))
-      Export();
-    } catch (error) {
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
-        variant: "error",
-      });
-    } finally{
-      setBackdrop(false);
-    }
-  }, [setBackdrop, setItems, Export])
+  const onExport = React.useCallback(
+    async (stockId: number) => {
+      try {
+        setBackdrop(true);
+        const resp = await GetStock(stockId, true);
+        if (!resp.success || !resp.data || !resp.data.products)
+          throw new Error(resp.message);
+        setItems(
+          resp.data.products.map((item) => ({
+            serial: item.product.serial,
+            label: item.product.label,
+            price: item.product.price,
+            cost: item.product.cost,
+            changed_by: item.changed_by,
+            keywords: item.product.keywords,
+          }))
+        );
+        Export();
+      } catch (error) {
+        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+          variant: "error",
+        });
+      } finally {
+        setBackdrop(false);
+      }
+    },
+    [setBackdrop, setItems, Export]
+  );
 
   const menu = {
-    import: React.useCallback((row: Stock) => () => {
-      importConfirmation.with(row.id);
-      importConfirmation.handleOpen();
-    }, [importConfirmation]),
+    import: React.useCallback(
+      (row: Stock) => () => {
+        importConfirmation.with(row.id);
+        importConfirmation.handleOpen();
+      },
+      [importConfirmation]
+    ),
     cancel: React.useCallback(
       (row: Stock) => () => {
         cancelConfirmation.with(row.id);
@@ -171,13 +182,19 @@ const HistoryDatatable = () => {
       },
       [cancelConfirmation]
     ),
-    copy: React.useCallback((row: Stock) => () => {
-      copyConfirmation.with(row.id);
-      copyConfirmation.handleOpen();
-    }, [copyConfirmation]),
-    export: React.useCallback((row: Stock) => () => {
-      onExport(row.id)
-    }, [onExport]),
+    copy: React.useCallback(
+      (row: Stock) => () => {
+        copyConfirmation.with(row.id);
+        copyConfirmation.handleOpen();
+      },
+      [copyConfirmation]
+    ),
+    export: React.useCallback(
+      (row: Stock) => () => {
+        onExport(row.id);
+      },
+      [onExport]
+    ),
   };
 
   const columns = (): GridColDef[] => {
@@ -191,9 +208,9 @@ const HistoryDatatable = () => {
         renderCell: (data: any) => ff.date(data.value),
       },
       {
-        field: "user_store", 
-        sortable: true, 
-        headerName: "ผู้สร้างรายการ", 
+        field: "user_store",
+        sortable: true,
+        headerName: "ผู้สร้างรายการ",
         flex: 2,
         renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
       },
@@ -241,7 +258,11 @@ const HistoryDatatable = () => {
                   icon={<CancelTwoTone />}
                   onClick={menu.cancel(row)}
                   label="ยกเลิก"
-                  sx={{display: !permissions(row).canCancelStock ? 'none' : undefined}}
+                  sx={{
+                    display: !permissions(row).canCancelStock
+                      ? "none"
+                      : undefined,
+                  }}
                   showInMenu
                 />,
               ]
@@ -251,7 +272,11 @@ const HistoryDatatable = () => {
                   icon={<RecyclingTwoTone />}
                   onClick={menu.copy(row)}
                   label="สร้างรายการอีกครั้ง"
-                  sx={{display: !permissions(row).canCreateStock ? 'none' : undefined}}
+                  sx={{
+                    display: !permissions(row).canCreateStock
+                      ? "none"
+                      : undefined,
+                  }}
                   showInMenu
                 />,
               ]),
@@ -261,7 +286,7 @@ const HistoryDatatable = () => {
             onClick={menu.export(row)}
             label="Export"
             showInMenu
-          />
+          />,
         ],
       },
     ];

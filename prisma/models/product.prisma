@@ -16,25 +16,25 @@ model Category {
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
-  serial     String
-  label      String
-  price      Int      @default(0)
-  cost       Int      @default(0)
-  stock      Int      @default(0)
-  stock_min  Int      @default(10)
-  sold       Int      @default(0)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  store_id    String
-  store       Store       @relation(fields: [store_id], references: [id])
+  id          Int      @id @default(autoincrement())
+  serial      String
+  label       String
+  price       Int      @default(0)
+  cost        Int      @default(0)
+  stock       Int      @default(0)
+  stock_min   Int      @default(10)
+  sold        Int      @default(0)
   category_id Int?
-  category    Category?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  keywords    String      @default("")
-  borrows     Borrow[]
-  stocked     StockItem[]
-  deleted_at     DateTime?
+  store_id    String
+  keywords    String   @default("")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  deleted_at  DateTime?
+
+  store         Store       @relation(fields: [store_id], references: [id])
+  category      Category?   @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  borrows       Borrow[]
+  stockProducts StockProduct[]
 
   user_store_id Int?
   user_store    UserStore? @relation(fields: [user_store_id], references: [id])

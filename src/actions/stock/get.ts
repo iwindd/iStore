@@ -9,7 +9,7 @@ import { Stock as StockOriginal } from "@prisma/client";
 
 interface Stock extends StockOriginal {
   _count: {
-    items: number;
+    products: number;
   };
 }
 
@@ -31,15 +31,17 @@ const GetStocks = async (
         where: {
           ...filter(table.filter, ["note"]),
           store_id: user.store,
-          user_store_id: !user.hasPermission(StockPermissionEnum.READ) ? user.userStoreId : undefined,
+          creator_id: !user.hasPermission(StockPermissionEnum.READ)
+            ? user.userStoreId
+            : undefined,
         },
         include: {
           _count: {
             select: {
-              items: true,
+              products: true,
             },
           },
-          user_store: {
+          creator: {
             select: {
               user: {
                 select: {

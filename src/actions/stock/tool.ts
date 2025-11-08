@@ -49,7 +49,7 @@ const ImportStockId = async (
     where: { id: payload.id, store_id: user.store },
   });
   if (!validated) throw Error("not_found_stock");
-  const data = await db.stockItem.findMany({
+  const data = await db.stockProduct.findMany({
     where: {
       stock_id: payload.id,
       product: {

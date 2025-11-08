@@ -33,6 +33,14 @@ export class User {
     return this.session?.user.email || "";
   }
 
+  public onPermission<T = number>(permission: PermissionEnum, returnValue?: T) {
+    if (this.hasPermission(permission)) {
+      return returnValue || this.userStoreId;
+    }
+
+    return undefined;
+  }
+
   public hasPermission(permission: PermissionEnum): boolean {
     return this.permissions.includes(permission);
   }
