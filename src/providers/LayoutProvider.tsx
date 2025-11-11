@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/hooks/use-auth";
 import DesktopNav from "@/layouts/sidenav/DesktopNav";
-import { Box, Container, GlobalStyles } from "@mui/material";
+import { Box, GlobalStyles, Stack } from "@mui/material";
 import Breadcrumb from "../layouts/breadcrumb";
 import { MainNav } from "../layouts/mainnav";
 
@@ -49,14 +49,10 @@ export default function MainLayout({
           }}
         >
           <MainNav />
-          <main>
-            <Container maxWidth="xl" sx={{ py: 2 }}>
-              <Breadcrumb />
-            </Container>
-            <Container maxWidth="xl" sx={{ py: "10px" }}>
-              {children}
-            </Container>
-          </main>
+          <Stack p={2} spacing={1}>
+            <Breadcrumb />
+            {children}
+          </Stack>
         </Box>
       </Box>
     </>

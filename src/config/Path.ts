@@ -129,6 +129,19 @@ const Paths = {
     icon: "employee",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.EMPLOYEE),
   },
+  ["promotions"]: {
+    key: "promotions",
+    title: "โปรโมชั่น",
+    href: "/promotions",
+    icon: "promotion",
+    matcher: { type: "startsWith", href: "/promotions" },
+  },
+  ["promotions.offer.create"]: {
+    key: "promotions.offer.create",
+    title: "สร้างข้อเสนอ",
+    href: "/promotions/offers/create",
+    icon: "promotion",
+  },
 } satisfies Record<string, PathType>;
 
 export const HomePath = Paths.overview.href;

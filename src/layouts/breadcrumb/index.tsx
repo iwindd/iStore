@@ -1,13 +1,12 @@
 "use client";
-import React from "react";
+import PathConfig, { HomePath, PathType } from "@/config/Path";
 import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
-import PathConfig, { HomePath, PathType } from "@/config/Path";
 const Path = Object.values(PathConfig) as PathType[];
 
 const findRoute = (pathSegments: string[]) => {
-  return Path.filter(path => !path.disableBreadcrumb).find((route) => {
+  return Path.filter((path) => !path.disableBreadcrumb).find((route) => {
     const routeSegments = route.href.split("/").filter((segment) => segment);
     if (routeSegments.length !== pathSegments.length) return false;
     return routeSegments.every((segment, index) => {
@@ -22,7 +21,9 @@ const Breadcrumb = () => {
 
   return (
     <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
-      <Link underline="hover" color="inherit" href={HomePath}>ภาพรวม</Link>
+      <Link underline="hover" color="inherit" href={HomePath}>
+        ภาพรวม
+      </Link>
 
       {pathNames.map((_, index) => {
         const pathSegments = pathNames.slice(0, index + 1);

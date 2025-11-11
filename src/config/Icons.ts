@@ -1,18 +1,19 @@
 import {
-  Store,
-  ShoppingCart,
-  Work,
-  BackHand,
-  ReceiptLong,
-  Category,
-  History,
   AllInbox,
+  BackHand,
   Badge,
-  Person,
   Business,
-  Settings,
-  RotateRight,
+  Category,
   Group,
+  History,
+  LocalOffer,
+  Person,
+  ReceiptLong,
+  RotateRight,
+  Settings,
+  ShoppingCart,
+  Store,
+  Work,
 } from "@mui/icons-material";
 import { ElementType } from "react";
 
@@ -33,4 +34,5 @@ export default {
   overstocks: RotateRight,
   group: Group,
   employee: Badge,
+  promotion: LocalOffer,
 } as Record<string, ElementType>;

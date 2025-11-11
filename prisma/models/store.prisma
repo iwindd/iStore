@@ -8,6 +8,7 @@ model Store {
   stocks     Stock[]
   users      UserStore[]
   roles      Role[]
+  events     Event[]
   //         Address
   line_token String?
   address    String?
@@ -40,6 +41,7 @@ model UserStore {
   store          Store          @relation(fields: [store_id], references: [id])
   creator        UserStore?     @relation("UserStoreToUserStore", fields: [creator_id], references: [id])
   UserStore      UserStore[]    @relation("UserStoreToUserStore")
+  events         Event[]
 
   @@unique([user_id, store_id])
   @@map("creators")

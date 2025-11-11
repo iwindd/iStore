@@ -2,9 +2,9 @@ import { PermissionEnum } from "@/enums/permission";
 import { Path } from "./Path";
 
 /**
- * 
+ *
  * ก่อนจะเพิ่ม navbar ต้องมี path ก่อน
- * 
+ *
  * type:
  *    - item : รายการเดี่ยว
  *          - จะใช้ title, key ของ path มาเป็นตัวเลือก
@@ -13,7 +13,7 @@ import { Path } from "./Path";
  *          - จำเป็นต้องมี key ไม่ซ้ำกัน
  *          - title ของ item จะใช้ title ของ path
  *          - key ของ item จะใช้ key ของ path และ group key merge กัน
-*/
+ */
 
 const navItems = [
   { type: "item", path: Path("overview") },
@@ -34,6 +34,7 @@ const navItems = [
     key: "etc",
     title: "อื่นๆ",
     items: [
+      { path: Path("promotions") },
       { path: Path("overstocks") },
       { path: Path("borrows") },
       { path: Path("purchase") },
