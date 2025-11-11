@@ -1,9 +1,14 @@
 "use client";
-import React from "react";
-import { Item } from "./childs/CartItem";
-import { Alert, ListItem, ListItemText, Stack, Typography } from "@mui/material";
+import {
+  Alert,
+  ListItem,
+  ListItemText,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useRecoilState } from "recoil";
 import { CartState } from "../../../atoms/cart";
+import { Item } from "./childs/CartItem";
 
 const Cart = () => {
   const [cart] = useRecoilState(CartState);
@@ -21,7 +26,6 @@ const Cart = () => {
       <Stack
         sx={{
           width: "100%",
-          maxWidth: 360,
           height: 360,
           bgcolor: "background.paper",
           overflowY: "auto",
