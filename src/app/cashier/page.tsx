@@ -1,31 +1,30 @@
 "use client";
-import React from "react";
-import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import Cashier from "./components/Cashier";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
-import dynamic from "next/dynamic";
-import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
-import { CartProduct, useCart } from "@/hooks/use-cart";
-import usePayment from "@/hooks/use-payment";
-import Selector from "@/components/Selector";
-import { Product } from "@prisma/client";
-import { useInterface } from "@/providers/InterfaceProvider";
-import GetProduct from "@/actions/product/find";
-import { enqueueSnackbar } from "notistack";
 import getMostSoldProducts from "@/actions/product/getMostSold";
+import { SearchProduct } from "@/actions/product/search";
+import Scanner from "@/components/Scanner";
+import Selector from "@/components/Selector";
+import { useAppDispatch } from "@/hooks";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import usePayment from "@/hooks/use-payment";
+import { addProductToCartById, clearProductCart } from "@/reducers/cartReducer";
+import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
+import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2/Grid2";
+import { Product } from "@prisma/client";
+import dynamic from "next/dynamic";
+import React from "react";
 
 const CartContainer = dynamic(() => import("./components/Cart"), {
   ssr: false,
 });
 
 const CashierPage = () => {
-  const { clear, addProduct } = useCart();
-  const { Dialog, toggle } = usePayment();
-  const [selectProduct, setSelectProduct] = React.useState<Product | null>(null);
-  const { setBackdrop } = useInterface();
-  const [mostSoldProducts, setMostSoldProducts] = React.useState<CartProduct[]>([]);
+  const [selectProduct, setSelectProduct] =
+    React.useState<SearchProduct | null>(null);
+  const [mostSoldProducts, setMostSoldProducts] = React.useState<Product[]>([]);
   const [isFetching, setIsFetching] = React.useState(false);
+  const dispatch = useAppDispatch();
+  const payment = usePayment();
 
   const fetchMostSoldProducts = async () => {
     try {
@@ -46,80 +45,53 @@ const CashierPage = () => {
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการจะล้างตะกร้าหรือไม่? สินค้าภายในตะกร้าจะถูกลบและไม่สามารถย้อนกลับได้!",
-    confirmProps:{
+    confirmProps: {
       color: "warning",
       startIcon: <DeleteTwoTone />,
     },
     confirm: "ล้างตะกร้า",
-    onConfirm: async () => clear(),
+    onConfirm: async () => {
+      dispatch(clearProductCart());
+    },
   });
-
-  const onSubmit = (Product: Product | null) => {
-    setSelectProduct(Product)
-  }
-
-  const onAddBySelector = async () => {
-    if (!selectProduct) return;
-    try {
-      setBackdrop(true);
-      const resp = await GetProduct(selectProduct.serial);
-      if (!resp.success && resp.data) throw Error("not_found");
-      addProduct(resp.data as CartProduct);
-      enqueueSnackbar(`เพิ่มสินค้า <${resp.data?.label}> เข้าตะกร้าแล้ว!`, {
-        variant: "success",
-      });
-    } catch (error) {
-      enqueueSnackbar(typeof(error) == "string" ? error : `ไม่พบสินค้า ${selectProduct.label} ในระบบ!`, { variant: "error" });
-    } finally{
-      setBackdrop(false)
-    }
-  }
-
-  const onAddByMostSold = async (productId : number) => {
-    const product = mostSoldProducts.find((p) => p.id === productId);
-    if (!product) return;
-
-    try {
-      setBackdrop(true);
-      const resp = await GetProduct(product.serial);
-      if (!resp.success && resp.data) throw Error("not_found");
-      addProduct(resp.data as CartProduct);
-      enqueueSnackbar(`เพิ่มสินค้า <${resp.data?.label}> เข้าตะกร้าแล้ว!`, {
-        variant: "success",
-      });
-    } catch (error) {
-      enqueueSnackbar(typeof(error) == "string" ? error : `ไม่พบสินค้า ${product.label} ในระบบ!`, { variant: "error" });
-    } finally{
-      setBackdrop(false)
-    }
-  }
 
   return (
     <>
       <Grid container spacing={1} direction={"row-reverse"}>
         <Grid xs={12}>
-          <Cashier />
+          <Scanner
+            onSubmit={(p) => {
+              dispatch(addProductToCartById(p.id));
+            }}
+          />
         </Grid>
         <Grid xs={12} lg={3}>
           <Stack direction={"row"} spacing={0.3}>
-            <Selector onSubmit={onSubmit} />
+            <Selector
+              onSubmit={(product) => setSelectProduct(product || null)}
+            />
             <Button
-              variant={selectProduct == null ? "text": "contained"}
+              variant={selectProduct == null ? "text" : "contained"}
               disabled={selectProduct == null}
-              onClick={onAddBySelector}
-            >เพิ่ม</Button>
+              onClick={() =>
+                selectProduct &&
+                dispatch(addProductToCartById(selectProduct.id))
+              }
+            >
+              เพิ่ม
+            </Button>
           </Stack>
-          <Divider sx={{my: 1}} />
+          <Divider sx={{ my: 1 }} />
           <Stack>
             <CartContainer />
           </Stack>
-          <Divider sx={{my: 1}} />
+          <Divider sx={{ my: 1 }} />
           <Stack spacing={1} direction={"row"}>
             <Button
               variant="contained"
               color="success"
               startIcon={<PaymentTwoTone />}
-              onClick={() => toggle()}
+              onClick={payment.toggle}
             >
               เช็คบิล
             </Button>
@@ -142,7 +114,7 @@ const CashierPage = () => {
                 <Chip
                   label={product.label}
                   component="button"
-                  onClick={() => onAddByMostSold(product.id)}
+                  onClick={() => dispatch(addProductToCartById(product.id))}
                   clickable
                 />
               </Grid>
@@ -151,7 +123,7 @@ const CashierPage = () => {
         </Grid>
       </Grid>
 
-      {Dialog}
+      {payment.dialog}
     </>
   );
 };

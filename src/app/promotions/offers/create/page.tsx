@@ -1,5 +1,7 @@
 "use client";
-import findProductById from "@/actions/product/findById";
+import findProductById, {
+  FindProductByIdResult,
+} from "@/actions/product/findById";
 import CreatePromotionOffer from "@/actions/promotionOffer/create";
 import AddProductDialog from "@/app/promotions/offers/create/components/AddProductDialog";
 import { Path } from "@/config/Path";
@@ -28,7 +30,6 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { DatePicker } from "@mui/x-date-pickers";
-import { Product } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
@@ -40,7 +41,7 @@ import ProductTable from "./components/ProductTable";
 interface PromotionOfferCreatePageProps {}
 
 export interface ProductTableRow {
-  product: Product;
+  product: FindProductByIdResult;
   quantity: number;
 }
 

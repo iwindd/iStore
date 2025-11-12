@@ -1,5 +1,3 @@
-import * as React from "react";
-import { useRouter } from "next/navigation";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -7,16 +5,19 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 
+import { StockState } from "@/atoms/stock";
+import { Path } from "@/config/Path";
+import { useAuth } from "@/hooks/use-auth";
+import { clearProductCart } from "@/reducers/cartReducer";
 import { LogoutTwoTone, Settings } from "@mui/icons-material";
 import { signOut } from "next-auth/react";
-import { useSnackbar } from "notistack";
 import Link from "next/link";
-import { Path } from "@/config/Path";
+import { useSnackbar } from "notistack";
+import { useDispatch } from "react-redux";
 import { useRecoilState } from "recoil";
-import { CartState } from "@/atoms/cart";
-import { StockState } from "@/atoms/stock";
-import { useAuth } from "@/hooks/use-auth";
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -28,27 +29,28 @@ function UserPopover({
   anchorEl,
   onClose,
   open,
-}: UserPopoverProps): React.JSX.Element {
+}: Readonly<UserPopoverProps>): React.JSX.Element {
   const router = useRouter();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const [, setCart] = useRecoilState(CartState);
   const [, setStocks] = useRecoilState(StockState);
+  const dispatch = useDispatch();
 
   const onSignout = React.useCallback(async (): Promise<void> => {
     onClose();
     try {
       await signOut({ callbackUrl: "/", redirect: true });
-      setCart([]);
+      dispatch(clearProductCart());
       setStocks([]);
       router.refresh();
       enqueueSnackbar("ออกจากระบบสำเร็จ", { variant: "success" });
     } catch (err) {
+      console.error(err);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
     }
-  }, [router, enqueueSnackbar, onClose, setCart, setStocks]);
+  }, [router, enqueueSnackbar, onClose, dispatch, clearProductCart, setStocks]);
 
   return (
     <Popover

@@ -1,17 +1,18 @@
 "use server";
-import { CartItem } from "@/atoms/cart";
 import { CashierPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
-import { PaymentSchema, PaymentValues } from "@/schema/Payment";
+import { CartProduct } from "@/reducers/cartReducer";
+import { CashoutSchema, CashoutValues } from "@/schema/Payment";
+import { Order } from "@prisma/client";
 
-const validateProducts = async (user: User, cart: CartItem[]) => {
+const validateProducts = async (user: User, products: CartProduct[]) => {
   const rawProducts = await db.product.findMany({
     where: {
       store_id: user.store,
-      id: { in: cart.map((p) => p.id) },
+      id: { in: products.map((p) => p.id) },
       deleted_at: null,
     },
     include: {
@@ -25,12 +26,12 @@ const validateProducts = async (user: User, cart: CartItem[]) => {
   });
 
   const validated = rawProducts.map((product) => {
-    const cartProduct = cart.find((p) => p.id == product.id) as CartItem;
+    const cartProduct = products.find((p) => p.id == product.id) as CartProduct;
     const canOverStock = product.category?.overstock || false;
     const count =
-      !canOverStock && cartProduct.count > product.stock
+      !canOverStock && cartProduct.quantity > product.stock
         ? product.stock
-        : cartProduct.count;
+        : cartProduct.quantity;
     const isOverStock = count > product.stock;
 
     return {
@@ -58,15 +59,15 @@ const validateProducts = async (user: User, cart: CartItem[]) => {
 };
 
 const Cashout = async (
-  payload: PaymentValues
-): Promise<ActionResponse<PaymentValues>> => {
+  payload: CashoutValues
+): Promise<ActionResponse<Order>> => {
   try {
     const user = await getUser();
-    if (!user) throw Error("Unauthorized");
+    if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(CashierPermissionEnum.CREATE))
-      throw Error("Forbidden");
-    const validated = PaymentSchema.parse(payload);
-    const products = await validateProducts(user, payload.cart);
+      throw new Error("Forbidden");
+    const validated = CashoutSchema.parse(payload);
+    const products = await validateProducts(user, payload.products);
     const totalPrice = products.reduce(
       (total, item) => total + item.price * item.count,
       0
@@ -76,16 +77,15 @@ const Cashout = async (
       0
     );
     const totalProfit = totalPrice - totalCost;
-    const method = payload.method == "bank" ? "BANK" : "CASH";
 
     // CREATE ORDER
-    await db.order.create({
+    const order = await db.order.create({
       data: {
         price: totalPrice,
         cost: totalCost,
         profit: totalProfit,
-        method: method,
-        note: payload.note,
+        method: payload.method,
+        note: payload.note || "",
         text: products.map((item) => item.label).join(", "),
         store_id: user.store,
         creator_id: user.userStoreId,
@@ -97,7 +97,6 @@ const Cashout = async (
       },
     });
 
-    // UPDATE STOCK
     db.$transaction(
       products.map((product) => {
         return db.product.update({
@@ -112,9 +111,9 @@ const Cashout = async (
       })
     );
 
-    return { success: true, data: validated };
+    return { success: true, data: order };
   } catch (error) {
-    return ActionError(error) as ActionResponse<PaymentValues>;
+    return ActionError(error) as ActionResponse<Order>;
   }
 };
 

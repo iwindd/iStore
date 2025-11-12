@@ -1,10 +1,10 @@
 "use server";
 import { HistoryPermissionEnum } from "@/enums/permission";
-import { CartProduct } from "@/hooks/use-cart";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
+import { Product } from "@prisma/client";
 
-const getMostSoldProducts = async (): Promise<CartProduct[]> => {
+const getMostSoldProducts = async (): Promise<Product[]> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -15,9 +15,7 @@ const getMostSoldProducts = async (): Promise<CartProduct[]> => {
       },
       where: {
         store_id: user.store,
-        creator_id: !user.hasPermission(HistoryPermissionEnum.READ)
-          ? user.userStoreId
-          : undefined,
+        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
         sold: {
           gt: 0,
         },
@@ -69,8 +67,9 @@ const getMostSoldProducts = async (): Promise<CartProduct[]> => {
       },
     });
 
-    return products as CartProduct[];
+    return products as Product[];
   } catch (error) {
+    console.error(error);
     return [];
   }
 };

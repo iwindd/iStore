@@ -1,4 +1,5 @@
 "use client";
+import { useAppSelector } from "@/hooks";
 import {
   Alert,
   ListItem,
@@ -6,17 +7,18 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useRecoilState } from "recoil";
-import { CartState } from "../../../atoms/cart";
-import { Item } from "./childs/CartItem";
+import CartProductChild from "./childs/CartProduct";
 
 const Cart = () => {
-  const [cart] = useRecoilState(CartState);
+  const cart = useAppSelector((state) => state.cart.products);
+  const hasSomeProductOverstock = useAppSelector(
+    (state) => state.cart.hasSomeProductOverstock
+  );
 
   return (
     <Stack spacing={1}>
       <Typography variant="body1">ตะกร้าสินค้า :</Typography>
-      {cart.some((val) => val.category?.overstock && val.count > val.stock) && (
+      {hasSomeProductOverstock && (
         <Alert severity="error">
           สินค้าสีแดงเป็นสินค้าที่สต๊อกคงเหลือไม่เพียงพอและระบบจะทำการค้างสินค้าไว้
           คุณสามารถจัดการได้ภายหลังที่เมนูสินค้าค้าง
@@ -32,7 +34,9 @@ const Cart = () => {
         }}
       >
         {cart.length > 0 ? (
-          cart.map((product) => <Item key={product.id} {...product} />)
+          cart.map((product) => (
+            <CartProductChild key={product.id} {...product} />
+          ))
         ) : (
           <ListItem>
             <ListItemText

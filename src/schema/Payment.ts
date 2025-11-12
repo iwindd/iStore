@@ -1,22 +1,24 @@
+import { Method } from "@prisma/client";
 import { z } from "zod";
 
-const CartItemSchema = z.object({
-  id: z.number(),
-  serial: z.string(),
-  label: z.string(),
-  price: z.number(),
-  count: z.number(),
-  stock: z.number(),
-  category: z.object({
-    overstock: z.boolean()
-  }).nullable()
+export const CashoutInputSchema = z.object({
+  method: z.enum([Method.CASH, Method.BANK]),
+  note: z.string().optional(),
 });
 
-export const PaymentSchema = z
-  .object({
-    method: z.enum(["cash", "bank"]),
-    note: z.string(),
-    cart: z.array(CartItemSchema).min(1),
-  })
+export type CashoutInputValues = z.infer<typeof CashoutInputSchema>;
 
-export type PaymentValues = z.infer<typeof PaymentSchema>;
+export const CashoutSchema = z
+  .object({
+    products: z
+      .array(
+        z.object({
+          id: z.number(),
+          quantity: z.number().min(1, "จำนวนต้องมากกว่าหรือเท่ากับ 1"),
+        })
+      )
+      .min(1, "ต้องมีสินค้าอย่างน้อย 1 รายการ"),
+  })
+  .merge(CashoutInputSchema);
+
+export type CashoutValues = z.infer<typeof CashoutSchema>;

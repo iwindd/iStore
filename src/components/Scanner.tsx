@@ -15,23 +15,28 @@ const Scanner = (props: ScannerProps) => {
   const ref = React.useRef<HTMLInputElement | null>(null);
 
   const onSubmit = async () => {
+    if (!serial) return;
     try {
       const _serial = serial;
       setSerial("");
       const resp = await GetProduct(_serial);
-
-      if (!resp || !resp.data) throw Error(resp.message);
+      if (!resp?.data) throw new Error(resp.message);
 
       props.onSubmit(resp.data);
       if (ref.current) ref.current.focus();
     } catch (error) {
-      enqueueSnackbar(typeof(error) == "string" ? error : "ไม่พบสินค้านี้ในระบบ", { variant: "error" });
+      console.error("Scanner error:", error);
+      enqueueSnackbar("ไม่พบสินค้านี้ในระบบ", {
+        variant: "error",
+        preventDuplicate: true,
+        key: "scanner-error",
+      });
     }
   };
 
   useEffect(() => {
     if (ref.current) ref.current.focus();
-  }, [ref])
+  }, [ref]);
 
   return (
     <form action={onSubmit}>
