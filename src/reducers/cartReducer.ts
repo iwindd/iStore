@@ -88,6 +88,14 @@ const getTotalPrice = (products: CartProduct[]) => {
   );
 };
 
+const getHasSomeProductOverstock = (products: CartProduct[]) => {
+  return products.some(
+    (product) =>
+      product.quantity > (product.data?.stock || 0) &&
+      product.data?.category?.overstock
+  );
+};
+
 const cartSlice = createSlice({
   name: "cart",
   initialState: initialState,
@@ -100,6 +108,9 @@ const cartSlice = createSlice({
     removeProductFromCart: (state, action: PayloadAction<number>) => {
       state.products = state.products.filter((p) => p.id != action.payload);
       state.total = getTotalPrice(state.products);
+      state.hasSomeProductOverstock = getHasSomeProductOverstock(
+        state.products
+      );
     },
     setProductQuantity: (
       state,
@@ -114,6 +125,9 @@ const cartSlice = createSlice({
 
       product.quantity = Math.max(+quantity, 1);
       state.total = getTotalPrice(state.products);
+      state.hasSomeProductOverstock = getHasSomeProductOverstock(
+        state.products
+      );
     },
   },
   extraReducers: (builder) => {
