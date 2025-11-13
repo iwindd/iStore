@@ -1,5 +1,6 @@
 "use client";
 import { useAppSelector } from "@/hooks";
+import useObtainPromotionOffer from "@/hooks/useObtainPromotionOffer";
 import { CartProduct } from "@/reducers/cartReducer";
 import {
   Alert,
@@ -15,10 +16,13 @@ const Cart = () => {
   const hasSomeProductOverstock = useAppSelector(
     (state) => state.cart.hasSomeProductOverstock
   );
+  const { data: obtainPromotionOffers } = useObtainPromotionOffer({
+    products: cart.map((p) => ({ id: p.id, quantity: p.quantity })),
+  });
 
   return (
     <Stack spacing={1}>
-      <Typography variant="body1">ตะกร้าสินค้า :</Typography>
+      <Typography variant="caption">ตะกร้าสินค้า :</Typography>
       {hasSomeProductOverstock && (
         <Alert severity="error">
           สินค้าสีแดงเป็นสินค้าที่สต๊อกคงเหลือไม่เพียงพอและระบบจะทำการค้างสินค้าไว้
@@ -29,14 +33,21 @@ const Cart = () => {
       <Stack
         sx={{
           width: "100%",
-          height: 360,
           bgcolor: "background.paper",
           overflowY: "auto",
         }}
       >
         {cart.length > 0 ? (
           cart.map((product) => (
-            <CartProductChild key={product.id} {...product} />
+            <CartProductChild
+              id={product.id}
+              key={product.id}
+              label={product.data?.label || "..."}
+              quantity={product.quantity}
+              price={product.data?.price || 0}
+              canOverstock={product.data?.category?.overstock || false}
+              stock={product.data?.stock || 0}
+            />
           ))
         ) : (
           <ListItem>
@@ -49,6 +60,36 @@ const Cart = () => {
           </ListItem>
         )}
       </Stack>
+
+      {obtainPromotionOffers && obtainPromotionOffers.length > 0 && (
+        <>
+          <Typography variant="caption">ได้รับสินค้าจากโปรโมชั่น :</Typography>
+          <Stack
+            sx={{
+              width: "100%",
+              bgcolor: "background.paper",
+              overflowY: "auto",
+            }}
+          >
+            {obtainPromotionOffers.map((offer) =>
+              offer.getItems.map(({ id, quantity, product }) => (
+                <CartProductChild
+                  key={id}
+                  id={product.id}
+                  label={product.label}
+                  quantity={quantity}
+                  price={0}
+                  canOverstock={product.category?.overstock || false}
+                  stock={product.stock || 0}
+                  options={{
+                    canRemoveFromCart: false,
+                  }}
+                />
+              ))
+            )}
+          </Stack>
+        </>
+      )}
     </Stack>
   );
 };

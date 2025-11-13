@@ -4,7 +4,6 @@ import { money } from "@/libs/formatter";
 import {
   removeProductFromCart,
   setProductQuantity,
-  type CartProduct,
 } from "@/reducers/cartReducer";
 import { DeleteTwoTone } from "@mui/icons-material";
 import { IconButton, Input, Typography } from "@mui/material";
@@ -12,27 +11,40 @@ import Grid from "@mui/material/Unstable_Grid2";
 import React from "react";
 import { useDispatch } from "react-redux";
 
-const getBackgroundColor = (product: CartProduct, grow: boolean) => {
-  const canOverstock = product.data?.category?.overstock || false;
-  const productStock = product.data?.stock || 0;
+interface CartProductChildProps {
+  id: number;
+  label: string;
+  quantity: number;
+  price: number;
+  stock: number;
+  canOverstock?: boolean;
+  options?: {
+    canRemoveFromCart?: boolean;
+    canChangeQuantity?: boolean;
+  };
+}
 
+const getBackgroundColor = (
+  { canOverstock = false, stock, quantity }: CartProductChildProps,
+  grow: boolean
+) => {
   // OVERSTOCK
-  if (product.quantity > productStock && canOverstock && grow)
+  if (quantity > stock && canOverstock && grow)
     return "var(--mui-palette-Slider-errorTrack)";
-  if (product.quantity > productStock && canOverstock)
+  if (quantity > stock && canOverstock)
     return "var(--mui-palette-Alert-errorStandardBg)";
 
   // FULL
-  if (product.quantity >= productStock && !canOverstock && grow)
+  if (quantity >= stock && !canOverstock && grow)
     return "var(--mui-palette-Slider-warningTrack)";
-  if (product.quantity >= productStock && !canOverstock)
+  if (quantity >= stock && !canOverstock)
     return "var(--mui-palette-Alert-warningStandardBg)";
 
   // NORMAL
   if (grow) return "var(--mui-palette-Alert-successStandardBg)";
 };
 
-const CartProductChild = (product: CartProduct) => {
+const CartProductChild = (product: CartProductChildProps) => {
   const [grow, setGrow] = React.useState<boolean>(false);
   const prevCountRef = React.useRef<number>(product.quantity);
   const dispatch = useDispatch();
@@ -89,22 +101,33 @@ const CartProductChild = (product: CartProduct) => {
               })
             );
           }}
+          disabled={product.options?.canChangeQuantity === false}
+          readOnly={product.options?.canChangeQuantity === false}
         />
       </Grid>
       <Grid xs={6}>
-        <Typography noWrap={true}>{product.data?.label || "..."}</Typography>
+        <Typography noWrap={true}>{product.label}</Typography>
       </Grid>
-      <Grid xs={2}>
+      <Grid
+        xs={product.options?.canRemoveFromCart === false ? 4 : 2}
+        alignItems="right"
+      >
         <Typography>
-          {money((product.data?.price || 0) * product.quantity)}
+          {product.price > 0 ? (
+            money(product.price * product.quantity)
+          ) : (
+            <Typography color={"green"}>ฟรี</Typography>
+          )}
         </Typography>
       </Grid>
-      <Grid xs={2}>
-        <IconButton onClick={confirmation.handleOpen}>
-          <DeleteTwoTone />
-        </IconButton>
-        <Confirmation {...confirmation.props} />
-      </Grid>
+      {product.options?.canRemoveFromCart !== false && (
+        <Grid xs={2}>
+          <IconButton onClick={confirmation.handleOpen}>
+            <DeleteTwoTone />
+          </IconButton>
+          <Confirmation {...confirmation.props} />
+        </Grid>
+      )}
     </Grid>
   );
 };

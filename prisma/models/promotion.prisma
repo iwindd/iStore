@@ -16,14 +16,15 @@ model Event {
 }
 
 model PromotionOffer {
-  id         Int                      @id @default(autoincrement())
-  event_id   Int
-  created_at DateTime                 @default(now())
-  updated_at DateTime                 @updatedAt
+  id            Int                      @id @default(autoincrement())
+  event_id      Int
+  created_at    DateTime                 @default(now())
+  updated_at    DateTime                 @updatedAt
 
-  buyItems   PromotionOfferBuyItem[] @relation("BuyItems")
-  getItems   PromotionOfferGetItem[] @relation("GetItems")
-  event      Event                   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  buyItems      PromotionOfferBuyItem[] @relation("BuyItems")
+  getItems      PromotionOfferGetItem[] @relation("GetItems")
+  event         Event                   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  orderProducts OrderProduct[]
 
   @@map("promotion_offers")
 }
