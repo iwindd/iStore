@@ -11,6 +11,7 @@ import {
   GridRowClassNameParams,
   GridSortDirection,
   GridSortModel,
+  GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import _ from "lodash";
@@ -32,8 +33,8 @@ export interface TableFetch {
   filter: GridFilterModel;
 }
 
-interface DatatableProps {
-  columns: GridColDef[];
+export interface DatatableProps<T extends GridValidRowModel = any> {
+  columns: GridColDef<T>[];
   burger?: boolean;
 
   loading?: boolean;
@@ -98,9 +99,20 @@ const Datatable = (props: DatatableProps) => {
   }, [paginationModel, sortModel, filterModel, refetch]);
 
   React.useEffect(() => {
-    if (data?.success || data?.state) {
+    let isSuccess = data?.success || data?.state;
+
+    // Migration to new datatable fetch result format
+    if (
+      !isSuccess &&
+      data?.success === undefined &&
+      data?.state === undefined
+    ) {
+      isSuccess = true;
+    }
+
+    if (isSuccess && data) {
       setRows(data.data);
-      setTotal(data.total);
+      setTotal(data.total || 0);
     }
   }, [data, setRows, setTotal]);
 

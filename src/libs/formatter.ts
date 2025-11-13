@@ -1,6 +1,6 @@
+import dayjs from "@/libs/dayjs";
 import { SortDirection } from "@mui/material";
 import { GridFilterModel, GridSortModel } from "@mui/x-data-grid";
-import dayjs from "@/libs/dayjs";
 
 import { Borrow, Stock } from "@prisma/client";
 
@@ -41,21 +41,45 @@ export const absNumber = (val: number) => {
   }
 };
 
-export const date = (val: Date) => {
+export const date = (
+  val: Date,
+  options?: {
+    withTime?: boolean;
+    shortMonth?: boolean;
+    shortYear?: boolean;
+  }
+) => {
   try {
     return new Intl.DateTimeFormat("th-TH", {
       timeZone: "Asia/Bangkok",
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      ...(options?.withTime ?? true
+        ? {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          }
+        : {}),
+      ...(options?.shortMonth
+        ? {
+            month: "short",
+          }
+        : {}),
+      ...(options?.shortYear
+        ? {
+            year: "2-digit",
+          }
+        : {}),
     }).format(new Date(val));
   } catch (error) {
+    console.error(error);
     return "-";
   }
 };
 
+/** @Deprecated use date() with options.withTime instead */
 export const date2 = (val: Date) => {
   try {
     return new Intl.DateTimeFormat("th-TH", {
@@ -79,14 +103,27 @@ export const text = (text: string | undefined, replacer: string = "-") => {
   }
 };
 
-export const order = (sort: GridSortModel) => {
-  const orderBy: Record<any, SortDirection>[] = [];
+export const order = (sorts: GridSortModel) => {
+  const orderBy: Record<string, any>[] = [];
 
-  sort.map((sort) => {
-    orderBy.unshift({
-      [sort.field]: sort.sort as SortDirection,
-    });
-  });
+  for (const sort of sorts) {
+    const keys = sort.field.split(".");
+    const direction = sort.sort as SortDirection;
+
+    let nested: any = {};
+    let current = nested;
+
+    for (const [index, key] of keys.entries()) {
+      if (index === keys.length - 1) {
+        current[key] = direction;
+      } else {
+        current[key] = {};
+        current = current[key];
+      }
+    }
+
+    orderBy.unshift(nested);
+  }
 
   return orderBy;
 };
@@ -159,32 +196,32 @@ export const filter = (
   };
 };
 
-export const borrowStatus = (status: Borrow['status']): string => {
+export const borrowStatus = (status: Borrow["status"]): string => {
   switch (status) {
-    case "PROGRESS": 
-      return "กำลังดำเนินการ"
+    case "PROGRESS":
+      return "กำลังดำเนินการ";
     case "SUCCESS":
-      return "สิ้นสุดแล้ว"
+      return "สิ้นสุดแล้ว";
     case "CANCEL":
-      return "ยกเลิกแล้ว"
+      return "ยกเลิกแล้ว";
     default:
-      return "ไม่ทราบ"
+      return "ไม่ทราบ";
   }
-}
+};
 
-export const stockState = (status: Stock['state']): string => {
+export const stockState = (status: Stock["state"]): string => {
   switch (status) {
-    case "PROGRESS": 
-      return "กำลังรอ"
+    case "PROGRESS":
+      return "กำลังรอ";
     case "SUCCESS":
-      return "สำเร็จ"
+      return "สำเร็จ";
     case "CANCEL":
-      return "ยกเลิกแล้ว"
+      return "ยกเลิกแล้ว";
     default:
-      return "ไม่ทราบ"
+      return "ไม่ทราบ";
   }
-}
+};
 
 export const removeWhiteSpace = (text: string): string => {
-  return text.replace(/\s+/g, '');
-}
+  return text.replace(/\s+/g, "");
+};

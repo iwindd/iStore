@@ -2,6 +2,11 @@ import { TableFetch } from "@/components/Datatable";
 import { Prisma } from "@prisma/client";
 import { filter, order } from "../formatter";
 
+export interface DatatableFetchResult<T> {
+  data: T[];
+  total: number;
+}
+
 export const datatableFetchExtension = Prisma.defineExtension((client) => {
   return client.$extends({
     name: "datatableFetch",
