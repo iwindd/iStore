@@ -1,5 +1,6 @@
 "use client";
 import { useAppSelector } from "@/hooks";
+import { CartProduct } from "@/reducers/cartReducer";
 import {
   Alert,
   ListItem,
@@ -10,7 +11,7 @@ import {
 import CartProductChild from "./childs/CartProduct";
 
 const Cart = () => {
-  const cart = useAppSelector((state) => state.cart.products);
+  const cart: CartProduct[] = useAppSelector((state) => state.cart.products);
   const hasSomeProductOverstock = useAppSelector(
     (state) => state.cart.hasSomeProductOverstock
   );

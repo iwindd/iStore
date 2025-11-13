@@ -1,5 +1,4 @@
 "use client";
-import getMostSoldProducts from "@/actions/product/getMostSold";
 import { SearchProduct } from "@/actions/product/search";
 import Scanner from "@/components/Scanner";
 import Selector from "@/components/Selector";
@@ -8,11 +7,11 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import usePayment from "@/hooks/use-payment";
 import { addProductToCartById, clearProductCart } from "@/reducers/cartReducer";
 import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
-import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Button, Divider, Stack } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import { Product } from "@prisma/client";
 import dynamic from "next/dynamic";
 import React from "react";
+import CashierTab from "./components/CashierTab";
 
 const CartContainer = dynamic(() => import("./components/Cart"), {
   ssr: false,
@@ -21,26 +20,8 @@ const CartContainer = dynamic(() => import("./components/Cart"), {
 const CashierPage = () => {
   const [selectProduct, setSelectProduct] =
     React.useState<SearchProduct | null>(null);
-  const [mostSoldProducts, setMostSoldProducts] = React.useState<Product[]>([]);
-  const [isFetching, setIsFetching] = React.useState(false);
   const dispatch = useAppDispatch();
   const payment = usePayment();
-
-  const fetchMostSoldProducts = async () => {
-    try {
-      setIsFetching(true);
-      const resp = await getMostSoldProducts();
-      setMostSoldProducts(resp);
-    } catch (error) {
-      console.error("Failed to fetch most sold products:", error);
-    }
-  };
-
-  React.useEffect(() => {
-    if (mostSoldProducts.length === 0 && !isFetching) {
-      fetchMostSoldProducts();
-    }
-  }, [mostSoldProducts, setMostSoldProducts, isFetching, setIsFetching]);
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -107,19 +88,7 @@ const CashierPage = () => {
           <Confirmation {...confirmation.props} />
         </Grid>
         <Grid xs={12} lg={9}>
-          <Typography variant="body1">สินค้าขายดี</Typography>
-          <Grid container gap={1}>
-            {mostSoldProducts.map((product) => (
-              <Grid key={product.id}>
-                <Chip
-                  label={product.label}
-                  component="button"
-                  onClick={() => dispatch(addProductToCartById(product.id))}
-                  clickable
-                />
-              </Grid>
-            ))}
-          </Grid>
+          <CashierTab />
         </Grid>
       </Grid>
 
