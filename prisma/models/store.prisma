@@ -19,30 +19,3 @@ model Store {
 
   @@map("stores")
 }
-
-model UserStore {
-  id             Int             @id @default(autoincrement())
-  user_id        Int
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-  role_id        Int
-  store_id       String
-  creator_id     Int?
-
-  user           User           @relation(fields: [user_id], references: [id])
-  role           Role           @relation("UserStoreRole", fields: [role_id], references: [id])
-  categories     Category[]
-  products       Product[]
-  orders         Order[]
-  borrows        Borrow[]
-  stocks         Stock[]
-  roles          Role[]
-  order_products OrderProduct[]
-  store          Store          @relation(fields: [store_id], references: [id])
-  creator        UserStore?     @relation("UserStoreToUserStore", fields: [creator_id], references: [id])
-  UserStore      UserStore[]    @relation("UserStoreToUserStore")
-  events         Event[]
-
-  @@unique([user_id, store_id])
-  @@map("creators")
-}
