@@ -30,7 +30,7 @@ model UserStore {
   order_products OrderProduct[]
   store          Store          @relation(fields: [store_id], references: [id])
   creator        UserStore?     @relation("UserStoreToUserStore", fields: [creator_id], references: [id])
-  UserStore      UserStore[]    @relation("UserStoreToUserStore")
+  userStores     UserStore[]    @relation("UserStoreToUserStore")
   events         Event[]
 
   @@unique([user_id, store_id])
