@@ -1,0 +1,44 @@
+import { TableFetch } from "@/components/Datatable";
+import { Prisma } from "@prisma/client";
+import { filter, order } from "../formatter";
+
+export const datatableFetchExtension = Prisma.defineExtension((client) => {
+  return client.$extends({
+    name: "datatableFetch",
+    model: {
+      $allModels: {
+        async datatableFetch<T, A extends Prisma.Args<T, "findMany">>(
+          this: T,
+          {
+            table,
+            filter: columnFilter,
+            ...args
+          }: A & { table: TableFetch; filter?: string[] }
+        ) {
+          const skip = table.pagination.page * table.pagination.pageSize;
+          const take = table.pagination.pageSize;
+          const orderBy = order(table.sort);
+
+          const [data, total] = await Promise.all([
+            (this as any).findMany({
+              skip,
+              take,
+              orderBy,
+              ...args,
+              where: {
+                ...args.where,
+                ...filter(table.filter, columnFilter),
+              },
+            }),
+            (this as any).count({ where: args.where }),
+          ]);
+
+          return {
+            data,
+            total,
+          };
+        },
+      },
+    },
+  });
+});

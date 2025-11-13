@@ -1,22 +1,26 @@
 import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { createSoftDeleteExtension } from "prisma-extension-soft-delete";
+import { datatableFetchExtension } from "./prismaExtensions/Datatable";
 
 const prismaClientSingleton = () => {
-  const prisma = new PrismaClient().$extends(withAccelerate()).$extends(
-    createSoftDeleteExtension({
-      models: {
-        Product: true,
-      },
-      defaultConfig: {
-        field: "deleted_at",
-        createValue: (deleted) => {
-          if (deleted) return new Date();
-          return null;
+  const prisma = new PrismaClient()
+    .$extends(withAccelerate())
+    .$extends(datatableFetchExtension)
+    .$extends(
+      createSoftDeleteExtension({
+        models: {
+          Product: true,
         },
-      },
-    })
-  );
+        defaultConfig: {
+          field: "deleted_at",
+          createValue: (deleted) => {
+            if (deleted) return new Date();
+            return null;
+          },
+        },
+      })
+    );
 
   return prisma;
 };

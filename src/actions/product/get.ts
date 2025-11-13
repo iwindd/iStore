@@ -3,7 +3,6 @@ import { TableFetch } from "@/components/Datatable";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { filter, order } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 import { Product } from "@prisma/client";
 
@@ -15,49 +14,34 @@ const GetProducts = async (
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(ProductPermissionEnum.READ))
       throw new Error("Forbidden");
-    const products = await db.$transaction([
-      db.product.findMany({
-        skip: table.pagination.page * table.pagination.pageSize,
-        take: table.pagination.pageSize,
-        include: {
-          category: {
-            select: {
-              label: true,
-            },
+    const datatable = await db.product.datatableFetch({
+      table: table,
+      filter: ["serial", "label", "keywords"],
+      include: {
+        category: {
+          select: {
+            label: true,
           },
-          creator: {
-            select: {
-              user: {
-                select: {
-                  name: true,
-                },
+        },
+        creator: {
+          select: {
+            user: {
+              select: {
+                name: true,
               },
             },
           },
         },
-        orderBy: order(
-          table.sort.length > 0
-            ? table.sort
-            : [{ field: "updated_at", sort: "desc" }]
-        ),
-        where: {
-          ...filter(table.filter, ["serial", "label", "keywords"]),
-          store_id: user.store,
-          deleted_at: null,
-        },
-      }),
-      db.product.count({
-        where: {
-          store_id: user.store,
-          deleted_at: null,
-        },
-      }),
-    ]);
+      },
+      where: {
+        store_id: user.store,
+        deleted_at: null,
+      },
+    });
 
     return {
       success: true,
-      data: products[0],
-      total: products[1],
+      ...datatable,
     };
   } catch (error) {
     console.log("catch", error);
