@@ -80,8 +80,15 @@ const Datatable = (props: DatatableProps) => {
     quickFilterValues: fSearch ? fSearch.split(" ") : [],
   });
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: [props.name],
+  const { data, isLoading } = useQuery({
+    queryKey: [
+      props.name, // will be removed soon (use datatable:name instead)
+      `datatable:${props.name}`,
+      paginationModel,
+      paginationModel,
+      sortModel,
+      filterModel,
+    ],
     queryFn: async () => {
       return await props.fetch(
         {
@@ -93,10 +100,6 @@ const Datatable = (props: DatatableProps) => {
       );
     },
   });
-
-  React.useEffect(() => {
-    refetch();
-  }, [paginationModel, sortModel, filterModel, refetch]);
 
   React.useEffect(() => {
     let isSuccess = data?.success || data?.state;
