@@ -1,30 +1,23 @@
 "use client";
-import { Button, ButtonProps, Paper, Stack } from "@mui/material";
+import { ButtonProps, Paper } from "@mui/material";
 import {
-  gridClasses,
   DataGrid,
+  DataGridProps,
+  GridCellParams,
+  gridClasses,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
+  GridRowClassNameParams,
   GridSortDirection,
   GridSortModel,
-  GridRowClassNameParams,
-  GridCellParams,
-  GridToolbar,
-  DataGridProps,
-  GridToolbarContainer,
-  GridToolbarExport,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
-  GridToolbarDensitySelector,
-  GridToolbarColumnsButton,
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import _ from "lodash";
 import { useSearchParams } from "next/navigation";
+import React from "react";
+import CustomToolbar from "./DatatableCustomToolbar";
 import thTHGrid from "./locale/datatable";
-import { Download } from "@mui/icons-material";
 
 export interface TableOption {
   title: string;
@@ -59,34 +52,6 @@ interface DatatableProps {
   onDoubleClick?: (data: any) => void;
   overwrite?: DataGridProps;
   onExport?(): void;
-}
-
-function CustomToolbar({ onExport }: { onExport?: () => any }) {
-  return (
-    <GridToolbarContainer>
-      <Stack
-        direction={"row"}
-        spacing={1}
-        mb={1}
-        justifyContent={"space-between"}
-        sx={{ width: "100%" }}
-      >
-        <Stack direction={"row"} spacing={1}>
-          <GridToolbarColumnsButton />
-          <GridToolbarFilterButton />
-          <GridToolbarDensitySelector />
-          {onExport && (
-            <Button onClick={onExport} startIcon={<Download />}>
-              Export
-            </Button>
-          )}
-        </Stack>
-        <Stack>
-          <GridToolbarQuickFilter />
-        </Stack>
-      </Stack>
-    </GridToolbarContainer>
-  );
 }
 
 const Datatable = (props: DatatableProps) => {
@@ -146,6 +111,10 @@ const Datatable = (props: DatatableProps) => {
     return props.processRowUpdate(newData, oldData);
   };
 
+  const customToolbar = () => {
+    return <CustomToolbar onExport={props.onExport} />;
+  };
+
   return (
     <Paper
       sx={{
@@ -173,7 +142,7 @@ const Datatable = (props: DatatableProps) => {
         filterModel={filterModel}
         onFilterModelChange={(newModel: any) => setFilterModel(newModel)}
         slots={{
-          toolbar: () => <CustomToolbar onExport={props.onExport} />,
+          toolbar: customToolbar,
         }}
         slotProps={{
           toolbar: {
