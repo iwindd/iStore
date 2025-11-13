@@ -118,7 +118,7 @@ const Datatable = (props: DatatableProps) => {
   return (
     <Paper
       sx={{
-        height: props.height,
+        height: props.height ?? 700,
         width: "100%",
       }}
     >
