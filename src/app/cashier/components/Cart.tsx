@@ -89,6 +89,7 @@ const Cart = () => {
                   stock={product.stock || 0}
                   options={{
                     canRemoveFromCart: false,
+                    canChangeQuantity: false,
                   }}
                 />
               ))

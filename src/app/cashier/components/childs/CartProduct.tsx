@@ -86,26 +86,28 @@ const CartProductChild = (product: CartProductChildProps) => {
         background: getBackgroundColor(product, grow),
       }}
     >
-      <Grid xs={2}>
-        <Input
-          disableUnderline
-          sx={{ width: "3em" }}
-          inputProps={{ min: 0, style: { textAlign: "center" } }}
-          type="number"
-          value={product.quantity}
-          onChange={(e) => {
-            dispatch(
-              setProductQuantity({
-                id: product.id,
-                quantity: Number(e.target.value),
-              })
-            );
-          }}
-          disabled={product.options?.canChangeQuantity === false}
-          readOnly={product.options?.canChangeQuantity === false}
-        />
+      <Grid xs={1}>
+        {product.options?.canChangeQuantity === false ? (
+          <Typography align="left">{product.quantity}</Typography>
+        ) : (
+          <Input
+            disableUnderline
+            sx={{ width: "100%" }}
+            inputProps={{ min: 0, style: { textAlign: "left" } }}
+            type="number"
+            value={product.quantity}
+            onChange={(e) => {
+              dispatch(
+                setProductQuantity({
+                  id: product.id,
+                  quantity: Number(e.target.value),
+                })
+              );
+            }}
+          />
+        )}
       </Grid>
-      <Grid xs={6}>
+      <Grid xs={7}>
         <Typography noWrap={true}>{product.label}</Typography>
       </Grid>
       <Grid
