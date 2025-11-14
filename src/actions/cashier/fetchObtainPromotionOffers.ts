@@ -6,6 +6,13 @@ import { Prisma } from "@prisma/client";
 export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
   select: {
     id: true;
+    buyItems: {
+      select: {
+        id: true;
+        quantity: true;
+        product_id: true;
+      };
+    };
     getItems: {
       select: {
         id: true;
@@ -23,6 +30,7 @@ export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
             };
           };
         };
+        product_id: true;
       };
     };
     event: {
@@ -65,6 +73,13 @@ const fetchObtainPromotionOffer = async (
       },
       select: {
         id: true,
+        buyItems: {
+          select: {
+            id: true,
+            quantity: true,
+            product_id: true,
+          },
+        },
         getItems: {
           select: {
             id: true,
@@ -82,6 +97,7 @@ const fetchObtainPromotionOffer = async (
                 },
               },
             },
+            product_id: true,
           },
         },
         event: {

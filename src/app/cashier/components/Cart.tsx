@@ -1,6 +1,7 @@
 "use client";
 import { useAppSelector } from "@/hooks";
 import useObtainPromotionOffer from "@/hooks/useObtainPromotionOffer";
+import { getQuantityByItem } from "@/libs/promotion";
 import { CartProduct } from "@/reducers/cartReducer";
 import {
   Alert,
@@ -77,7 +78,12 @@ const Cart = () => {
                   key={id}
                   id={product.id}
                   label={product.label}
-                  quantity={quantity}
+                  quantity={getQuantityByItem(
+                    product.id,
+                    offer.buyItems,
+                    offer.getItems,
+                    cart
+                  )}
                   price={0}
                   canOverstock={product.category?.overstock || false}
                   stock={product.stock || 0}
