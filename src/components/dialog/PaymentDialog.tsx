@@ -52,7 +52,7 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
     setBackdrop(true);
     const resp = await dispatch(cashoutCart(payload));
     if (resp.meta.requestStatus == "fulfilled") reset();
-    if (resp.meta.requestStatus == "rejected") onClose();
+    onClose();
     setBackdrop(false);
   };
 
