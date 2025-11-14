@@ -45,17 +45,11 @@ const fetchRelatedPromotionOffer = async (
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const result = await db.promotionOffer.findMany({
+    const result = await db.promotionOffer.findRelatedPromotionOffer({
+      productIds,
       where: {
         event: {
           store_id: user.store,
-        },
-        buyItems: {
-          some: {
-            product_id: {
-              in: productIds,
-            },
-          },
         },
       },
       select: {
