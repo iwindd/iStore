@@ -61,3 +61,38 @@ export const getQuantityByItem = (
 
   return productPromotion ? productPromotion.quantity : 0;
 };
+
+export const mergePromotionQuantities = (
+  quantitiesList: {
+    id: number;
+    quantity: number;
+    promotion_offer_id?: number;
+  }[][]
+): { id: number; quantity: number; promotion_offer_id: number[] }[] => {
+  const mergedMap: Map<
+    number,
+    { id: number; quantity: number; promotion_offer_id: number[] }
+  > = new Map();
+
+  for (const quantities of quantitiesList) {
+    for (const item of quantities) {
+      if (mergedMap.has(item.id)) {
+        const existing = mergedMap.get(item.id)!;
+        existing.quantity += item.quantity;
+        if (item.promotion_offer_id) {
+          existing.promotion_offer_id.push(item.promotion_offer_id);
+        }
+      } else {
+        mergedMap.set(item.id, {
+          id: item.id,
+          quantity: item.quantity,
+          promotion_offer_id: item.promotion_offer_id
+            ? [item.promotion_offer_id]
+            : [],
+        });
+      }
+    }
+  }
+
+  return Array.from(mergedMap.values());
+};
