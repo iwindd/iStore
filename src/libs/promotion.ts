@@ -8,32 +8,41 @@ type PromotionItemOffer = Prisma.PromotionOfferBuyItemGetPayload<{
   };
 }>;
 
-const getPromotionQuantities = (
+const isSuccessCondition = (
+  buyItems: PromotionItemOffer[],
+  items: Pick<CartProduct, "id" | "quantity">[]
+): boolean => {
+  for (const buyItem of buyItems) {
+    const cartItem = items.find((item) => item.id === buyItem.product_id);
+    if (!cartItem) return false;
+    if (cartItem.quantity < buyItem.quantity) return false;
+  }
+
+  return true;
+};
+
+export const getPromotionQuantities = (
   buyItems: PromotionItemOffer[],
   getItems: PromotionItemOffer[],
   items: Pick<CartProduct, "id" | "quantity">[]
 ): { id: number; quantity: number }[] => {
+  if (!isSuccessCondition(buyItems, items)) return [];
+
   const result: { id: number; quantity: number }[] = [];
 
-  for (const get of getItems) {
-    const correspondingBuyItem = buyItems.find(
-      (buy) => buy.product_id === get.product_id
-    );
-
-    if (correspondingBuyItem) {
-      const cartItem = items.find(
-        (item) => item.id === correspondingBuyItem.product_id
-      );
-      if (cartItem) {
-        const multiplier = Math.floor(
-          cartItem.quantity / correspondingBuyItem.quantity
-        );
-        result.push({
-          id: get.product_id,
-          quantity: get.quantity * multiplier,
-        });
-      }
-    }
+  for (const getItem of getItems) {
+    result.push({
+      id: getItem.product_id,
+      quantity:
+        getItem.quantity *
+          Math.min(
+            ...buyItems.map((buy) => {
+              const cartItem = items.find((item) => item.id === buy.product_id);
+              if (!cartItem) return 0;
+              return Math.floor(cartItem.quantity / buy.quantity);
+            })
+          ) || 0,
+    });
   }
 
   return result;
