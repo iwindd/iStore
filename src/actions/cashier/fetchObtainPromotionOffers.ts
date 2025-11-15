@@ -59,7 +59,11 @@ const fetchObtainPromotionOffer = async (
       where: {
         event: {
           store_id: user.store,
+          start_at: { lte: new Date() },
+          end_at: { gte: new Date() },
+          disabled_at: null,
         },
+
         buyItems: {
           every: {
             OR: products.map((product) => ({

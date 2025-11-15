@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 
 interface RelatedPromotionOfferArgs {
   productIds: number[];
+  disableOnlyActive?: boolean;
 }
 
 export const promotionExtension = Prisma.defineExtension((client) => {
@@ -14,8 +15,13 @@ export const promotionExtension = Prisma.defineExtension((client) => {
           A extends Prisma.Args<T, "findMany">
         >(
           this: T,
-          { productIds, ...args }: A & RelatedPromotionOfferArgs
+          {
+            productIds,
+            disableOnlyActive,
+            ...args
+          }: A & RelatedPromotionOfferArgs
         ): Promise<Prisma.PromotionOfferGetPayload<A>[]> {
+          const isDisableOnlyActive = disableOnlyActive ?? true;
           const result = (this as any).findMany({
             ...args,
             where: {
@@ -26,6 +32,20 @@ export const promotionExtension = Prisma.defineExtension((client) => {
                     in: productIds,
                   },
                 },
+              },
+              event: {
+                ...args.where?.event,
+                ...(isDisableOnlyActive
+                  ? {
+                      start_at: {
+                        lte: new Date(),
+                      },
+                      end_at: {
+                        gte: new Date(),
+                      },
+                      disabled_at: null,
+                    }
+                  : {}),
               },
             },
           });
