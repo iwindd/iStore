@@ -44,6 +44,7 @@ const BuyXGetYPage = () => {
       <App.Main>
         <FormBuyXGetY
           isLoading={false}
+          disabled={promotionOffer.disabled_at !== null}
           onSubmit={updatePromotionOffer.mutate}
           buyXgetY={promotionOffer}
         />

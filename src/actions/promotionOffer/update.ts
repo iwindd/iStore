@@ -29,12 +29,15 @@ const UpdatePromotionOffer = async (
           select: {
             start_at: true,
             end_at: true,
+            disabled_at: true,
           },
         },
       },
     });
 
     if (!oldPromotionOffer) throw new Error("Promotion offer not found");
+    if (oldPromotionOffer.event.disabled_at !== null)
+      throw new Error("Promotion offer is disabled");
     const isStarted = dayjs().isAfter(dayjs(oldPromotionOffer.event.start_at));
     const isEnded = dayjs().isAfter(dayjs(oldPromotionOffer.event.end_at));
 

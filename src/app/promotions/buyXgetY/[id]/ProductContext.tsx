@@ -5,6 +5,7 @@ import { createContext, useContext } from "react";
 const BuyXGetYContext = createContext<
   | (FormBuyXGetYProps["buyXgetY"] & {
       id: number;
+      disabled_at: Date | null;
     })
   | null
 >(null);
