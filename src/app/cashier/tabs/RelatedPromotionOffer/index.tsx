@@ -51,10 +51,14 @@ const RelatedPromotionOfferTab = () => {
           {relatedPromotionOffers.map((offer) => {
             return (
               <TableRow key={offer.id}>
-                <TableCell>
-                  <Stack>
-                    {offer.event.title}
-                    <Typography variant="caption" color={"text.secondary"}>
+                <TableCell width={400}>
+                  <Stack width={400}>
+                    <Typography noWrap={true}>{offer.event.title}</Typography>
+                    <Typography
+                      variant="caption"
+                      color={"text.secondary"}
+                      noWrap={true}
+                    >
                       {offer.event.description || "ไม่มีรายละเอียด"}
                     </Typography>
                   </Stack>
