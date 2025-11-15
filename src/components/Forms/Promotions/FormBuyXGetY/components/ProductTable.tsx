@@ -1,3 +1,4 @@
+import { FindProductByIdResult } from "@/actions/product/findById";
 import { DeleteTwoTone } from "@mui/icons-material";
 import {
   IconButton,
@@ -8,7 +9,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { ProductTableRow } from "../../../create/buyXgetY/page";
+
+export interface ProductTableRow {
+  product: FindProductByIdResult;
+  quantity: number;
+}
 
 interface ProductTableProps {
   products: {
@@ -19,6 +24,10 @@ interface ProductTableProps {
 }
 
 const ProductTable = ({ products, setProducts }: ProductTableProps) => {
+  const onRemoveProduct = (productId: number) => {
+    setProducts((prev) => prev.filter((item) => item.product.id !== productId));
+  };
+
   return (
     <Table size="small">
       <TableHead>
@@ -46,13 +55,7 @@ const ProductTable = ({ products, setProducts }: ProductTableProps) => {
               <TableCell>{p.product.label}</TableCell>
               <TableCell align="right">{p.quantity}</TableCell>
               <TableCell align="right">
-                <IconButton
-                  onClick={() => {
-                    setProducts((prev) =>
-                      prev.filter((item) => item.product.id !== p.product.id)
-                    );
-                  }}
-                >
+                <IconButton onClick={onRemoveProduct.bind(null, p.product.id)}>
                   <DeleteTwoTone />
                 </IconButton>
               </TableCell>
