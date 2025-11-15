@@ -5,7 +5,7 @@ import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { AddPromotionOfferValues } from "@/schema/Promotion/Offer";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
@@ -14,6 +14,7 @@ const PromotionOfferCreatePage = () => {
   const { setBackdrop } = useInterface();
   const [isCreated, setIsCreated] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const createPromotionOffer = useMutation({
     mutationFn: async (data: AddPromotionOfferValues) =>
@@ -24,6 +25,9 @@ const PromotionOfferCreatePage = () => {
     onSuccess: (resp) => {
       setIsCreated(true);
       enqueueSnackbar("บันทึกข้อเสนอเรียบร้อยแล้ว!", { variant: "success" });
+      queryClient.invalidateQueries({
+        queryKey: ["datatable:promotions"],
+      });
       router.push(Path("promotions").href);
     },
     onError: (error) => {
