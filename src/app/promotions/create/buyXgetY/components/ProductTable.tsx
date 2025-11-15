@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { ProductTableRow } from "../page";
+import { ProductTableRow } from "../../../create/buyXgetY/page";
 
 interface ProductTableProps {
   products: {

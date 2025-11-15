@@ -4,7 +4,6 @@ import findProductById, {
   FindProductByIdResult,
 } from "@/actions/product/findById";
 import CreatePromotionOffer from "@/actions/promotionOffer/create";
-import AddProductDialog from "@/app/promotions/offers/create/components/AddProductDialog";
 import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -40,9 +39,8 @@ import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import AddProductDialog from "./components/AddProductDialog";
 import ProductTable from "./components/ProductTable";
-
-interface PromotionOfferCreatePageProps {}
 
 export interface ProductTableRow {
   product: FindProductByIdResult;
@@ -54,9 +52,7 @@ enum PromotionStatus {
   IMMEDIATE = "immediate",
 }
 
-const PromotionOfferCreatePage: React.FC<
-  PromotionOfferCreatePageProps
-> = ({}) => {
+const PromotionOfferCreatePage = () => {
   const { setBackdrop } = useInterface();
   const [modalNeedOpen, setModalNeedOpen] = useState(false);
   const [modalOfferOpen, setModalOfferOpen] = useState(false);
@@ -212,7 +208,7 @@ const PromotionOfferCreatePage: React.FC<
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>สร้างข้อเสนอ</App.Header.Title>
+        <App.Header.Title>สร้างข้อเสนอ ซื้อ X แถม Y</App.Header.Title>
       </App.Header>
       <App.Main>
         <Stack spacing={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>

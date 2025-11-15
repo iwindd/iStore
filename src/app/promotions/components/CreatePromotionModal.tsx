@@ -31,7 +31,7 @@ const CreatePromotionModal = ({
 
     switch (promotionType) {
       case "offer":
-        return router.push(Path("promotions.offer.create").href);
+        return router.push(Path("promotions.create.buyXgetY").href);
       default:
         console.log("Unknown promotion type");
     }
@@ -62,7 +62,7 @@ const CreatePromotionModal = ({
                 label="ประเภทโปรโมชั่น"
                 onChange={(e) => setPromotionType(e.target.value)}
               >
-                <MenuItem value="offer">ข้อเสนอพิเศษ</MenuItem>
+                <MenuItem value="offer">ซื้อ X แถม Y</MenuItem>
               </Select>
             </FormControl>
           </Stack>

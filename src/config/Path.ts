@@ -136,10 +136,10 @@ const Paths = {
     icon: "promotion",
     matcher: { type: "startsWith", href: "/promotions" },
   },
-  ["promotions.offer.create"]: {
-    key: "promotions.offer.create",
-    title: "สร้างข้อเสนอ",
-    href: "/promotions/offers/create",
+  ["promotions.create.buyXgetY"]: {
+    key: "promotions.create.buyXgetY",
+    title: "ซื้อ X แถม Y",
+    href: "/promotions/create/buyXgetY",
     icon: "promotion",
   },
 } satisfies Record<string, PathType>;
