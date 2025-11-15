@@ -8,6 +8,7 @@ model Event {
   end_at      DateTime
   created_at  DateTime          @default(now())
   updated_at  DateTime          @updatedAt
+  disabled_at DateTime?
 
   offers      PromotionOffer[]
   store       Store            @relation(fields: [store_id], references: [id])

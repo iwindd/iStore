@@ -2,13 +2,23 @@
 import fetchPromotionDatatable, {
   PromotionDatatableInstance,
 } from "@/actions/promotion/fetchPromotionDatatable";
+import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import useDatatable from "@/hooks/useDatatable";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
-import { AddTwoTone, EditTwoTone, StopTwoTone } from "@mui/icons-material";
+import {
+  AddTwoTone,
+  StopTwoTone,
+  ViewAgendaTwoTone,
+} from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import { useCallback, useState } from "react";
 import CreatePromotionModal from "./components/CreatePromotionModal";
 
 const MAPPING_PRODUCT_LABEL = (
@@ -23,6 +33,43 @@ const MAPPING_PRODUCT_LABEL = (
 
 const PromotionPage = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const confirmation = useConfirm({
+    title: "แจ้งเตือน",
+    text: "คุณต้องการที่จะปิดใช้งานโปรโมชั่นหรือไม่",
+    confirmProps: {
+      color: "warning",
+      startIcon: <StopTwoTone />,
+    },
+    onConfirm: async (id: number) => {
+      try {
+        await DisablePromotionOffer(id);
+        confirmation.handleClose();
+        queryClient.invalidateQueries({
+          queryKey: ["datatable:promotions"],
+        });
+        enqueueSnackbar("ปิดใช้งานโปรโมชั่นเรียบร้อยแล้ว!", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.error("Error disabling promotion offer:", error);
+        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+          variant: "error",
+        });
+      }
+    },
+  });
+
+  const menu = {
+    disable: useCallback(
+      (promotion: PromotionDatatableInstance) => () => {
+        confirmation.with(promotion.id);
+        confirmation.handleOpen();
+      },
+      [confirmation]
+    ),
+  };
+
   const datatable = useDatatable<PromotionDatatableInstance>({
     name: "promotions",
     fetch: fetchPromotionDatatable,
@@ -83,16 +130,18 @@ const PromotionPage = () => {
         headerName: "เครื่องมือ",
         flex: 0,
         getActions: ({ row }) => [
-          <GridActionsCellItem
-            key="edit"
-            icon={<EditTwoTone />}
-            label="แก้ไข"
+          <GridLinkAction
+            key="view"
+            to={`${Path("promotions").href}/buyXgetY/${row.id}`}
+            icon={<ViewAgendaTwoTone />}
+            label="ดูรายละเอียด"
             showInMenu
           />,
           <GridActionsCellItem
-            key="delete"
+            key="disable"
             icon={<StopTwoTone />}
             label="ปิดใช้งาน"
+            onClick={menu.disable(row)}
             showInMenu
           />,
         ],
@@ -121,6 +170,7 @@ const PromotionPage = () => {
         isOpen={isOpen}
         handleClose={() => setIsOpen(false)}
       />
+      <Confirmation {...confirmation.props} />
     </Wrapper>
   );
 };
