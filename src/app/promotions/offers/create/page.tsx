@@ -1,4 +1,5 @@
 "use client";
+import generatePromotionOfferInfo from "@/actions/ai/generatePromotionOffer";
 import findProductById, {
   FindProductByIdResult,
 } from "@/actions/product/findById";
@@ -13,6 +14,7 @@ import {
   AddPromotionOfferValues,
 } from "@/schema/Promotion/Offer";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AutoAwesomeTwoTone } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import {
   Button,
@@ -22,11 +24,13 @@ import {
   Divider,
   FormControl,
   FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -161,6 +165,26 @@ const PromotionOfferCreatePage: React.FC<
     return mutate(data);
   };
 
+  const aiGeneratePromotionOfferInfo = useMutation({
+    mutationFn: async () => {
+      return await generatePromotionOfferInfo(
+        needProducts.map((p) => {
+          return { label: p.product.label, quantity: p.quantity };
+        }),
+        offerProducts.map((p) => {
+          return { label: p.product.label, quantity: p.quantity };
+        })
+      );
+    },
+    onSuccess: (data) => {
+      setValue("title", data.title);
+      setValue("description", data.description);
+    },
+    onError: (error) => {
+      console.log("error generating promotion offer info", error);
+    },
+  });
+
   useEffect(() => {
     setValue(
       "needProducts",
@@ -192,34 +216,6 @@ const PromotionOfferCreatePage: React.FC<
       </App.Header>
       <App.Main>
         <Stack spacing={2} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-          <Card>
-            <CardHeader title="ข้อมูลข้อเสนอ" />
-            <Divider />
-            <CardContent>
-              <Stack spacing={2}>
-                <TextField
-                  label="ชื่อข้อเสนอ"
-                  variant="outlined"
-                  fullWidth
-                  disabled={isPending || isCreated}
-                  error={errors.title != undefined}
-                  helperText={errors.title?.message}
-                  {...register("title")}
-                />
-                <TextField
-                  label="รายละเอียดข้อเสนอ"
-                  variant="outlined"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  disabled={isPending || isCreated}
-                  error={errors.description != undefined}
-                  helperText={errors.description?.message}
-                  {...register("description")}
-                />
-              </Stack>
-            </CardContent>
-          </Card>
           <Grid container spacing={2}>
             <Grid sm={12} md={6} lg={6}>
               <Card>
@@ -285,6 +281,61 @@ const PromotionOfferCreatePage: React.FC<
               </Card>
             </Grid>
           </Grid>
+          <Card>
+            <CardHeader
+              title="ข้อมูลข้อเสนอ"
+              action={
+                <Tooltip title="สร้างรายละเอียดข้อเสนออัตโนมัติ">
+                  <IconButton
+                    color="primary"
+                    disabled={
+                      needProducts.length === 0 ||
+                      offerProducts.length === 0 ||
+                      aiGeneratePromotionOfferInfo.isPending ||
+                      isPending ||
+                      isCreated
+                    }
+                    onClick={() => aiGeneratePromotionOfferInfo.mutate()}
+                  >
+                    <AutoAwesomeTwoTone />
+                  </IconButton>
+                </Tooltip>
+              }
+            />
+            <Divider />
+            <CardContent>
+              <Stack spacing={2}>
+                <TextField
+                  label="ชื่อข้อเสนอ"
+                  variant="outlined"
+                  fullWidth
+                  disabled={
+                    isPending ||
+                    isCreated ||
+                    aiGeneratePromotionOfferInfo.isPending
+                  }
+                  error={errors.title != undefined}
+                  helperText={errors.title?.message}
+                  {...register("title")}
+                />
+                <TextField
+                  label="รายละเอียดข้อเสนอ"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  disabled={
+                    isPending ||
+                    isCreated ||
+                    aiGeneratePromotionOfferInfo.isPending
+                  }
+                  error={errors.description != undefined}
+                  helperText={errors.description?.message}
+                  {...register("description")}
+                />
+              </Stack>
+            </CardContent>
+          </Card>
           <Card>
             <CardHeader title="อื่นๆ" />
             <Divider />
