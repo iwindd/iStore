@@ -7,9 +7,21 @@ import {
   AddPromotionOfferValues,
 } from "@/schema/Promotion/Offer";
 
+export type CreatedPromotionOffer = {
+  title: string;
+  description: string | null;
+  start_at: Date;
+  end_at: Date;
+  id: number;
+  created_at: Date;
+  updated_at: Date;
+  store_id: string;
+  creator_id: number | null;
+};
+
 const CreatePromotionOffer = async (
   payload: AddPromotionOfferValues
-): Promise<ActionResponse<null>> => {
+): Promise<ActionResponse<CreatedPromotionOffer>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -42,9 +54,9 @@ const CreatePromotionOffer = async (
       },
     });
 
-    return { success: true, data: null };
+    return { success: true, data: promotionOffer };
   } catch (error) {
-    return ActionError(error) as ActionResponse<null>;
+    return ActionError(error) as ActionResponse<CreatedPromotionOffer>;
   }
 };
 

@@ -6,6 +6,7 @@ import { AddProductDialogValues } from "@/schema/Promotion/AddProductToOffer";
 import {
   AddPromotionOfferSchema,
   AddPromotionOfferValues,
+  UpdatePromotionOfferSchema,
 } from "@/schema/Promotion/Offer";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddTwoTone, AutoAwesomeTwoTone } from "@mui/icons-material";
@@ -31,6 +32,7 @@ import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import z from "zod";
 import AddProductDialog from "./components/AddProductDialog";
 import ProductTable, { ProductTableRow } from "./components/ProductTable";
 
@@ -39,36 +41,58 @@ enum PromotionStatus {
   IMMEDIATE = "immediate",
 }
 
-interface FormBuyXGetYProps {
+export interface FormBuyXGetYProps {
   isLoading?: boolean;
   disabled?: boolean;
   onSubmit: (data: AddPromotionOfferValues) => void;
+  buyXgetY?: {
+    title: string;
+    description: string;
+    needProducts: ProductTableRow[];
+    offerProducts: ProductTableRow[];
+    start_at: Date;
+    end_at: Date;
+  };
 }
 
 const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
+  const startAt = dayjs(props.buyXgetY?.start_at);
+  const endAt = dayjs(props.buyXgetY?.end_at);
+  const isInProgress = dayjs().isBetween(startAt, endAt);
+  const isStarted = isInProgress || dayjs().isAfter(startAt);
+  const isEnded = dayjs().isAfter(endAt);
+
   const [modalNeedOpen, setModalNeedOpen] = useState(false);
   const [modalOfferOpen, setModalOfferOpen] = useState(false);
-  const [needProducts, setNeedProducts] = useState<ProductTableRow[]>([]);
-  const [offerProducts, setOfferProducts] = useState<ProductTableRow[]>([]);
+  const [needProducts, setNeedProducts] = useState<ProductTableRow[]>(
+    props.buyXgetY?.needProducts || []
+  );
+  const [offerProducts, setOfferProducts] = useState<ProductTableRow[]>(
+    props.buyXgetY?.offerProducts || []
+  );
   const [status, setStatus] = useState<PromotionStatus>(
-    PromotionStatus.SCHEDULED
+    props.buyXgetY ? PromotionStatus.SCHEDULED : PromotionStatus.IMMEDIATE
   );
   const { setBackdrop } = useInterface();
+  const schema = props.buyXgetY
+    ? UpdatePromotionOfferSchema
+    : AddPromotionOfferSchema;
+
   const {
     register,
     formState: { errors },
     handleSubmit,
     setValue,
     getValues,
-  } = useFormValidate<AddPromotionOfferValues>({
-    resolver: zodResolver(AddPromotionOfferSchema),
+  } = useFormValidate<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      title: "",
-      description: "",
-      needProducts: [],
-      offerProducts: [],
-      start_at: dayjs().toDate(),
-      end_at: dayjs().add(7, "day").toDate(),
+      title: props.buyXgetY?.title || "",
+      description: props.buyXgetY?.description || "",
+      needProducts: props.buyXgetY?.needProducts || [],
+      offerProducts: props.buyXgetY?.offerProducts || [],
+      start_at: props.buyXgetY?.start_at || dayjs().toDate(),
+      end_at: props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
     },
   });
 
@@ -189,7 +213,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     size="small"
                     variant="outlined"
                     onClick={() => setModalNeedOpen(true)}
-                    disabled={disabled}
+                    disabled={disabled || isStarted}
                   >
                     เพิ่ม
                   </Button>
@@ -202,9 +226,12 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     <ProductTable
                       products={needProducts}
                       setProducts={setNeedProducts}
+                      disabled={disabled || isStarted}
                     />
                     <FormHelperText>
-                      {errors.needProducts?.message}
+                      {errors.needProducts?.message ||
+                        (isStarted &&
+                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขสินค้าที่ต้องการได้")}
                     </FormHelperText>
                   </FormControl>
                 </Stack>
@@ -221,7 +248,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     size="small"
                     variant="outlined"
                     onClick={() => setModalOfferOpen(true)}
-                    disabled={disabled}
+                    disabled={disabled || isStarted}
                   >
                     เพิ่ม
                   </Button>
@@ -234,9 +261,12 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     <ProductTable
                       products={offerProducts}
                       setProducts={setOfferProducts}
+                      disabled={disabled || isStarted}
                     />
                     <FormHelperText>
-                      {errors.offerProducts?.message}
+                      {errors.offerProducts?.message ||
+                        (isStarted &&
+                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขสินค้าข้อเสนอได้")}
                     </FormHelperText>
                   </FormControl>
                 </Stack>
@@ -305,7 +335,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     labelId="status"
                     label="สถานะ"
                     value={status}
-                    disabled={disabled}
+                    disabled={disabled || isStarted}
                     onChange={(e) =>
                       setStatus(e.target.value as PromotionStatus)
                     }
@@ -321,13 +351,17 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                       format="DD/MM/YYYY"
                       label="วันเริ่มต้น"
                       value={dayjs(getValues().start_at)}
-                      disabled={disabled}
+                      disabled={disabled || isStarted}
                       onChange={(date) =>
                         setValue("start_at", new Date(date as any))
                       }
-                      disablePast
+                      disablePast={!props.buyXgetY}
                     />
-                    <FormHelperText>{errors.start_at?.message}</FormHelperText>
+                    <FormHelperText>
+                      {errors.start_at?.message ||
+                        (isStarted &&
+                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขวันเริ่มต้นได้")}
+                    </FormHelperText>
                   </FormControl>
                 )}
                 <FormControl error={!!errors.end_at}>
@@ -337,13 +371,17 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     label="สิ้นสุด"
                     minDate={dayjs(getValues().start_at).add(1, "day")}
                     value={dayjs(getValues().end_at)}
-                    disabled={disabled}
+                    disabled={disabled || isEnded}
                     onChange={(date) =>
                       setValue("end_at", new Date(date as any))
                     }
-                    disablePast
+                    disablePast={!props.buyXgetY}
                   />
-                  <FormHelperText>{errors.end_at?.message}</FormHelperText>
+                  <FormHelperText>
+                    {errors.end_at?.message ||
+                      (isEnded &&
+                        "ข้อเสนอนี้สิ้นสุดแล้ว ไม่สามารถแก้ไขวันสิ้นสุดได้")}
+                  </FormHelperText>
                 </FormControl>
               </Stack>
               <div>

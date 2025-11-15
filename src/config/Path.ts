@@ -142,6 +142,12 @@ const Paths = {
     href: "/promotions/create/buyXgetY",
     icon: "promotion",
   },
+  ["promotions.buyXgetY"]: {
+    key: "promotions.buyXgetY",
+    title: "ซื้อ X แถม Y",
+    href: "/promotions/buyXgetY/:id",
+    icon: "promotion",
+  },
 } satisfies Record<string, PathType>;
 
 export const HomePath = Paths.overview.href;

@@ -21,9 +21,14 @@ interface ProductTableProps {
     quantity: number;
   }[];
   setProducts: React.Dispatch<React.SetStateAction<ProductTableRow[]>>;
+  disabled?: boolean;
 }
 
-const ProductTable = ({ products, setProducts }: ProductTableProps) => {
+const ProductTable = ({
+  products,
+  setProducts,
+  disabled,
+}: ProductTableProps) => {
   const onRemoveProduct = (productId: number) => {
     setProducts((prev) => prev.filter((item) => item.product.id !== productId));
   };
@@ -55,7 +60,10 @@ const ProductTable = ({ products, setProducts }: ProductTableProps) => {
               <TableCell>{p.product.label}</TableCell>
               <TableCell align="right">{p.quantity}</TableCell>
               <TableCell align="right">
-                <IconButton onClick={onRemoveProduct.bind(null, p.product.id)}>
+                <IconButton
+                  onClick={onRemoveProduct.bind(null, p.product.id)}
+                  disabled={disabled}
+                >
                   <DeleteTwoTone />
                 </IconButton>
               </TableCell>
