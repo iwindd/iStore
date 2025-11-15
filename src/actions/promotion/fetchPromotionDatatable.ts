@@ -64,6 +64,7 @@ const fetchPromotionDatatable = async (
           store_id: user.store,
         },
       },
+      orderBy: [{ updated_at: "desc" }, { created_at: "desc" }],
       select: {
         id: true,
         event: {

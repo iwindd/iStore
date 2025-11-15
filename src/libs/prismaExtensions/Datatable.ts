@@ -28,8 +28,8 @@ export const datatableFetchExtension = Prisma.defineExtension((client) => {
             (this as any).findMany({
               skip,
               take,
-              orderBy,
               ...args,
+              orderBy: orderBy.length > 0 ? orderBy : args.orderBy,
               where: {
                 ...args.where,
                 ...filter(table.filter, columnFilter),
