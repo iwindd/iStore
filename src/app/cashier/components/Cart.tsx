@@ -1,7 +1,6 @@
 "use client";
 import { useAppSelector } from "@/hooks";
 import useObtainPromotionOffer from "@/hooks/useObtainPromotionOffer";
-import { getQuantityByItem } from "@/libs/promotion";
 import { CartProduct } from "@/reducers/cartReducer";
 import {
   Alert,
@@ -17,7 +16,7 @@ const Cart = () => {
   const hasSomeProductOverstock = useAppSelector(
     (state) => state.cart.hasSomeProductOverstock
   );
-  const { data: obtainPromotionOffers } = useObtainPromotionOffer({
+  const { mergedPromotionQuantities } = useObtainPromotionOffer({
     products: cart.map((p) => ({ id: p.id, quantity: p.quantity })),
   });
 
@@ -62,7 +61,7 @@ const Cart = () => {
         )}
       </Stack>
 
-      {obtainPromotionOffers && obtainPromotionOffers.length > 0 && (
+      {mergedPromotionQuantities.length > 0 && (
         <>
           <Typography variant="caption">ได้รับสินค้าจากโปรโมชั่น :</Typography>
           <Stack
@@ -72,28 +71,27 @@ const Cart = () => {
               overflowY: "auto",
             }}
           >
-            {obtainPromotionOffers.map((offer) =>
-              offer.getItems.map(({ id, quantity, product }) => (
-                <CartProductChild
-                  key={id}
-                  id={product.id}
-                  label={product.label}
-                  quantity={getQuantityByItem(
-                    product.id,
-                    offer.buyItems,
-                    offer.getItems,
-                    cart
-                  )}
-                  price={0}
-                  canOverstock={product.category?.overstock || false}
-                  stock={product.stock || 0}
-                  options={{
-                    canRemoveFromCart: false,
-                    canChangeQuantity: false,
-                  }}
-                />
-              ))
-            )}
+            {mergedPromotionQuantities.map((promotionQuantity) => (
+              <CartProductChild
+                key={
+                  promotionQuantity.id +
+                  "-" +
+                  promotionQuantity.promotion_offer_id.join("-")
+                }
+                id={promotionQuantity.id}
+                label={promotionQuantity.data.label}
+                quantity={promotionQuantity.quantity}
+                price={0}
+                canOverstock={
+                  promotionQuantity.data.category?.overstock || false
+                }
+                stock={promotionQuantity.data.stock || 0}
+                options={{
+                  canRemoveFromCart: false,
+                  canChangeQuantity: false,
+                }}
+              />
+            ))}
           </Stack>
         </>
       )}
