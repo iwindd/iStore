@@ -5,8 +5,9 @@ import fetchPromotionDatatable, {
 import useDatatable from "@/hooks/useDatatable";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
-import { AddTwoTone } from "@mui/icons-material";
+import { AddTwoTone, EditTwoTone, StopTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useState } from "react";
 import CreatePromotionModal from "./components/CreatePromotionModal";
 
@@ -75,6 +76,26 @@ const PromotionPage = () => {
         renderCell: ({ row }) => row.event.creator?.user.name || "ไม่ระบุ",
         headerName: "ผู้สร้างโปรโมชั่น",
         flex: 1,
+      },
+      {
+        field: "actions",
+        type: "actions",
+        headerName: "เครื่องมือ",
+        flex: 0,
+        getActions: ({ row }) => [
+          <GridActionsCellItem
+            key="edit"
+            icon={<EditTwoTone />}
+            label="แก้ไข"
+            showInMenu
+          />,
+          <GridActionsCellItem
+            key="delete"
+            icon={<StopTwoTone />}
+            label="ปิดใช้งาน"
+            showInMenu
+          />,
+        ],
       },
     ],
   });
