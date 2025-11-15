@@ -16,6 +16,7 @@ export type PromotionDatatableInstance = Prisma.PromotionOfferGetPayload<{
         description: true;
         start_at: true;
         end_at: true;
+        disabled_at: true;
         creator: {
           select: {
             user: {
@@ -82,6 +83,7 @@ const fetchPromotionDatatable = async (
             description: true,
             start_at: true,
             end_at: true,
+            disabled_at: true,
             creator: {
               select: {
                 user: {

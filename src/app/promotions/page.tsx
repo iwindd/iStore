@@ -17,6 +17,7 @@ import {
 import { Button } from "@mui/material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
+import dayjs from "dayjs";
 import { enqueueSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 import CreatePromotionModal from "./components/CreatePromotionModal";
@@ -140,9 +141,13 @@ const PromotionPage = () => {
           <GridActionsCellItem
             key="disable"
             icon={<StopTwoTone />}
-            label="ปิดใช้งาน"
+            label="ปิดใช้งานโปรโมชั่น"
             onClick={menu.disable(row)}
             showInMenu
+            disabled={
+              row.event.disabled_at !== null ||
+              dayjs(row.event.end_at).isBefore(dayjs())
+            }
           />,
         ],
       },
