@@ -17,11 +17,10 @@ export const parseJson = (text: string, schema: ZodSchema) => {
   return parsed.data;
 };
 
-export const getJsonPrompt = (
+export const getPromptStructure = (
   prompt: string,
   data: string[],
-  rules: string[],
-  jsonKey: string[]
+  rules: string[]
 ) => {
   return `
 ${prompt}
@@ -31,14 +30,6 @@ ${prompt}
 
 ข้อกำหนด:
 - ${rules.join("\n- ")}
-
-ให้ส่งผลลัพธ์เป็น JSON **ภายในแท็ก <json> เท่านั้น**
-ตัวอย่าง:
-<json>
-{${jsonKey.map((key) => `"${key}": "..."`).join(", ")}}
-</json>
-
-ตอนนี้ให้สร้างผลลัพธ์จริง โดยตอบเฉพาะ <json> เท่านั้น
 
     `.trim();
 };
