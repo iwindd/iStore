@@ -59,8 +59,8 @@ const UpdatePromotionOffer = async (
           update: {
             title: validated.title,
             description: validated.description,
-            start_at: validated.start_at,
-            end_at: validated.end_at,
+            start_at: dayjs(validated.start_at).startOf("day").toDate(),
+            end_at: dayjs(validated.end_at).endOf("day").toDate(),
           },
         },
         ...(!isStarted && {
