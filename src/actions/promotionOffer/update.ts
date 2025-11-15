@@ -13,12 +13,6 @@ const UpdatePromotionOffer = async (
   payload: UpdatePromotionOfferValues
 ): Promise<ActionResponse<unknown>> => {
   try {
-    console.warn(
-      "Updating promotion offer with id:",
-      id,
-      "and payload:",
-      payload
-    );
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     const validated = UpdatePromotionOfferSchema.parse(payload);
@@ -68,14 +62,14 @@ const UpdatePromotionOffer = async (
         },
         ...(!isStarted && {
           buyItems: {
-            set: [],
+            deleteMany: {},
             create: validated.needProducts.map((item) => ({
               product_id: item.product_id,
               quantity: item.quantity,
             })),
           },
           getItems: {
-            set: [],
+            deleteMany: {},
             create: validated.offerProducts.map((item) => ({
               product_id: item.product_id,
               quantity: item.quantity,
@@ -84,8 +78,6 @@ const UpdatePromotionOffer = async (
         }),
       },
     });
-
-    console.log("updated promotion offer", promotionOffer);
 
     return { success: true, data: promotionOffer };
   } catch (error) {
