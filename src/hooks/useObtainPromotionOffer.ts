@@ -26,6 +26,7 @@ const useObtainPromotionOffer = ({
       promotion_offer_id: number[];
       id: number;
       quantity: number;
+      possibleQuantity: number;
       data: ObtainPromotionOffer["getItems"][0]["product"];
     }[]
   >([]);
@@ -56,10 +57,23 @@ const useObtainPromotionOffer = ({
           }))
       );
 
-      const merged = mergePromotionQuantities(quantifiedOffers).map((item) => ({
-        ...item,
-        data: allProductData.find((p) => p.id === item.id)!,
-      }));
+      const merged = mergePromotionQuantities(quantifiedOffers).map((item) => {
+        const data = allProductData.find((p) => p.id === item.id)!;
+        const cartQuantity =
+          products.find((q) => q.id == item.id)?.quantity || 0;
+        const canOverstock = data.category?.overstock;
+        let possibleQuantity = item.quantity;
+
+        if (cartQuantity + item.quantity > data.stock && !canOverstock) {
+          possibleQuantity = data.stock - cartQuantity;
+        }
+
+        return {
+          ...item,
+          possibleQuantity: possibleQuantity,
+          data,
+        };
+      });
 
       setMergedPromotionQuantities(merged);
     }

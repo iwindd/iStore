@@ -80,7 +80,7 @@ const Cart = () => {
                 }
                 id={promotionQuantity.id}
                 label={promotionQuantity.data.label}
-                quantity={promotionQuantity.quantity}
+                quantity={promotionQuantity.possibleQuantity}
                 price={0}
                 canOverstock={
                   promotionQuantity.data.category?.overstock || false
