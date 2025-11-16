@@ -1,5 +1,12 @@
 "use client";
-import React from "react";
+import CreatePurchase from "@/actions/purchase/create";
+import { PurchasePermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { PurchaseSchema, PurchaseValues } from "@/schema/Purchase";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AddTwoTone, CreditCardTwoTone } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -9,17 +16,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
-import { AddTwoTone, CreditCardTwoTone } from "@mui/icons-material";
 import { useQueryClient } from "@tanstack/react-query";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { useDialog } from "@/hooks/use-dialog";
-import { PurchaseSchema, PurchaseValues } from "@/schema/Purchase";
-import CreatePurchase from "@/actions/purchase/create";
-import { PurchasePermissionEnum } from "@/enums/permission";
-import { useAuth } from "@/hooks/use-auth";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -36,14 +36,14 @@ export function PurchaseFormDialog({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<PurchaseValues>({ 
+  } = useForm<PurchaseValues>({
     resolver: zodResolver(PurchaseSchema),
     defaultValues: {
       label: "",
-      cost: null as any, // number | null 
+      cost: null as any, // number | null
       count: null as any, // number | null
       note: "",
-    }
+    },
   });
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
@@ -78,7 +78,7 @@ export function PurchaseFormDialog({
       open={open}
       onClose={(event, reason) => {
         if (reason === "backdropClick" || reason === "escapeKeyDown") {
-          return; 
+          return;
         }
         onClose();
       }}
@@ -129,7 +129,14 @@ export function PurchaseFormDialog({
         <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button color="success" variant="contained" startIcon={<CreditCardTwoTone/>} type="submit">ซื้อสินค้า</Button>
+        <Button
+          color="success"
+          variant="contained"
+          startIcon={<CreditCardTwoTone />}
+          type="submit"
+        >
+          ซื้อสินค้า
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -147,6 +154,7 @@ const AddController = () => {
       <Button
         startIcon={<AddTwoTone />}
         variant="contained"
+        size="small"
         onClick={dialog.handleOpen}
       >
         เพิ่มรายการ

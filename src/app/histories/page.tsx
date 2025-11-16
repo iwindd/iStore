@@ -1,18 +1,18 @@
-import { Stack, Typography } from "@mui/material"
-import HistoryDatatable from "./components/datatable"
+"use client";
+import App, { Wrapper } from "@/layouts/App";
+import HistoryDatatable from "./components/datatable";
 
-const HistoryPage = async () => {
+const HistoryPage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">ประวัติการซื้อขายสินค้า</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-      </Stack>
-      <HistoryDatatable/>
-    </Stack>
-  )
-}
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>ประวัติการซื้อขายสินค้า</App.Header.Title>
+      </App.Header>
+      <App.Main>
+        <HistoryDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-export default HistoryPage
+export default HistoryPage;

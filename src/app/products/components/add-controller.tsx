@@ -359,7 +359,12 @@ const AddController = () => {
 
   return (
     <>
-      <Button startIcon={<AddTwoTone />} variant="contained" onClick={onOpen}>
+      <Button
+        startIcon={<AddTwoTone />}
+        variant="contained"
+        onClick={onOpen}
+        size="small"
+      >
         เพิ่มรายการ
       </Button>
 

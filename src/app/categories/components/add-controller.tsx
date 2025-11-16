@@ -1,5 +1,13 @@
 "use client";
-import React from "react";
+import CreateCategory from "@/actions/category/create";
+import UpdateCategory from "@/actions/category/update";
+import { CategoryPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { CategorySchema, CategoryValues } from "@/schema/Category";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Checkbox,
@@ -13,19 +21,11 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
-import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
-import { useQueryClient } from "@tanstack/react-query";
 import { Category } from "@prisma/client";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { CategorySchema, CategoryValues } from "@/schema/Category";
-import { useDialog } from "@/hooks/use-dialog";
-import CreateCategory from "@/actions/category/create";
-import UpdateCategory from "@/actions/category/update";
-import { useAuth } from "@/hooks/use-auth";
-import { CategoryPermissionEnum } from "@/enums/permission";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface AddDialogProps {
   onClose: () => void;
@@ -79,7 +79,7 @@ export function CategoryFormDialog({
   };
 
   React.useEffect(() => {
-    if (category){
+    if (category) {
       setValue("label", category.label);
       setValue("overstock", category.overstock);
     }
@@ -111,7 +111,12 @@ export function CategoryFormDialog({
           <FormGroup sx={{ mt: 1 }}>
             <FormLabel component="legend">ตัวเลือก</FormLabel>
             <FormControlLabel
-              control={<Checkbox {...register("overstock")} defaultChecked={category?.overstock} />}
+              control={
+                <Checkbox
+                  {...register("overstock")}
+                  defaultChecked={category?.overstock}
+                />
+              }
               label="อณุญาตให้เบิกสินค้า"
             />
             <FormControlLabel
@@ -125,7 +130,14 @@ export function CategoryFormDialog({
         <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button variant="contained" color="success" startIcon={<SaveTwoTone/>} type="submit">บันทึก</Button>
+        <Button
+          variant="contained"
+          color="success"
+          startIcon={<SaveTwoTone />}
+          type="submit"
+        >
+          บันทึก
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -134,7 +146,7 @@ export function CategoryFormDialog({
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   if (!user?.hasPermission(CategoryPermissionEnum.CREATE)) return null;
 
@@ -144,6 +156,7 @@ const AddController = () => {
         startIcon={<AddTwoTone />}
         variant="contained"
         onClick={dialog.handleOpen}
+        size="small"
       >
         เพิ่มรายการ
       </Button>

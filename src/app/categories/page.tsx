@@ -1,22 +1,22 @@
-import { Stack, Typography } from "@mui/material"
-import CategoryDatatable from './components/datatable';
+"use client";
+import App, { Wrapper } from "@/layouts/App";
 import AddController from "./components/add-controller";
+import CategoryDatatable from "./components/datatable";
 
-const Categories = async () => {
+const CategoryPage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">ประเภทสินค้า</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-        <>
-          <AddController/>
-        </>
-      </Stack>
-      <CategoryDatatable />
-    </Stack>
-  )
-}
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>ประเภทสินค้า</App.Header.Title>
+        <App.Header.Actions>
+          <AddController />
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <CategoryDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-export default Categories
+export default CategoryPage;

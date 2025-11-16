@@ -1,23 +1,22 @@
-import { Stack, Typography } from "@mui/material"
-import AddController from "./components/add-controller"
-import EmployeeDatatable from "./components/datatable"
+"use client";
+import App, { Wrapper } from "@/layouts/App";
+import AddController from "./components/add-controller";
+import EmployeeDatatable from "./components/datatable";
 
-const Roles = async () => {
+const EmployeePage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">พนักงาน</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-        <>
-          <AddController/>
-        </>
-      </Stack>
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>พนักงาน</App.Header.Title>
+        <App.Header.Actions>
+          <AddController />
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <EmployeeDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-      <EmployeeDatatable/>
-    </Stack>
-  )
-}
-
-export default Roles
+export default EmployeePage;

@@ -30,8 +30,13 @@ AppHeader.Title = AppHeaderTitle;
 
 const AppHeaderActions = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Stack justifyContent={"center"} alignItems={"center"}>
-      <div>{children}</div>
+    <Stack
+      justifyContent={"center"}
+      alignItems={"center"}
+      direction={"row"}
+      spacing={2}
+    >
+      {children}
     </Stack>
   );
 };

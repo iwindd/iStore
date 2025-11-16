@@ -1,10 +1,9 @@
 "use client";
+import RoleFormDialog from "@/app/roles/components/roleFormDialog";
+import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import React from "react";
-import RoleFormDialog from "@/app/roles/components/roleFormDialog";
-import { useDialog } from "@/hooks/use-dialog";
 
 type AddRoleControllerProps = {
   role?: any;
@@ -20,6 +19,7 @@ const AddRoleController = ({ role }: AddRoleControllerProps) => {
         startIcon={<AddTwoTone />}
         variant="contained"
         onClick={dialog.handleOpen}
+        size="small"
       >
         เพิ่มตำแหน่ง
       </Button>

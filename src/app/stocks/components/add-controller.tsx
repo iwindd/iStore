@@ -1,5 +1,11 @@
 "use client";
-import React from "react";
+import Selector from "@/components/Selector";
+import { StockPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { useStock } from "@/hooks/use-stock";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Alert,
   Button,
@@ -10,14 +16,8 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { AddTwoTone, SaveTwoTone } from "@mui/icons-material";
-import { useDialog } from "@/hooks/use-dialog";
-import { useInterface } from "@/providers/InterfaceProvider";
-import Selector from "@/components/Selector";
-import { useStock } from "@/hooks/use-stock";
 import { Product } from "@prisma/client";
-import { useAuth } from "@/hooks/use-auth";
-import { StockPermissionEnum } from "@/enums/permission";
+import React from "react";
 
 interface StockDialogProps {
   onClose: () => void;
@@ -59,10 +59,14 @@ function StockFormDialog({
   };
 
   return (
-    <Dialog open={open} maxWidth="xs" onClose={Close} fullWidth disableRestoreFocus>
-      <DialogTitle>
-        เพิ่มรายการ
-      </DialogTitle>
+    <Dialog
+      open={open}
+      maxWidth="xs"
+      onClose={Close}
+      fullWidth
+      disableRestoreFocus
+    >
+      <DialogTitle>เพิ่มรายการ</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
           <Stack flexDirection={"column"} spacing={1}>
@@ -74,18 +78,28 @@ function StockFormDialog({
               fullWidth
               label="จำนวน"
             />
-            {
-              stocks.length >= 50 && (
-                <Alert color="error">การจัดการสต๊อกจำกัดสินค้าไว้ 50 รายการ</Alert>
-              )
-            }
+            {stocks.length >= 50 && (
+              <Alert color="error">
+                การจัดการสต๊อกจำกัดสินค้าไว้ 50 รายการ
+              </Alert>
+            )}
           </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button color="secondary" onClick={Close}>ปิด</Button>
-          <Button variant="contained" color="success" startIcon={<SaveTwoTone/>}  disabled={stocks.length >= 50} onClick={onConfirm}>บันทึก</Button>
+          <Button color="secondary" onClick={Close}>
+            ปิด
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<SaveTwoTone />}
+            disabled={stocks.length >= 50}
+            onClick={onConfirm}
+          >
+            บันทึก
+          </Button>
         </Stack>
       </DialogActions>
     </Dialog>
@@ -95,8 +109,8 @@ function StockFormDialog({
 const AddController = () => {
   const dialog = useDialog();
   const { isBackdrop } = useInterface();
-  const {user} = useAuth();
-  const { target  } = useStock();
+  const { user } = useAuth();
+  const { target } = useStock();
 
   if (!user?.hasPermission(StockPermissionEnum.CREATE)) return null;
 
@@ -107,6 +121,7 @@ const AddController = () => {
         variant="contained"
         onClick={dialog.handleOpen}
         disabled={target != null || isBackdrop}
+        size="small"
       >
         เพิ่มรายการ
       </Button>

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { AddTwoTone } from "@mui/icons-material";
@@ -15,6 +15,7 @@ const AddController = () => {
         startIcon={<AddTwoTone />}
         variant="contained"
         onClick={dialog.handleOpen}
+        size="small"
       >
         เพิ่มรายการ
       </Button>

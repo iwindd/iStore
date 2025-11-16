@@ -1,18 +1,18 @@
-import { Stack, Typography } from "@mui/material"
+"use client";
+import App, { Wrapper } from "@/layouts/App";
 import OverstockDatatable from "./components/datatable";
 
-const Categories = async () => {
+const OverstockPage = async () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">สินค้าค้าง</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-      </Stack>
-      <OverstockDatatable />
-    </Stack>
-  )
-}
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>สินค้าค้าง</App.Header.Title>
+      </App.Header>
+      <App.Main>
+        <OverstockDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-export default Categories
+export default OverstockPage;

@@ -1,26 +1,22 @@
-import { Stack, Typography } from "@mui/material";
+"use client";
+import App, { Wrapper } from "@/layouts/App";
 import AddRoleController from "./components/add-controller";
 import RoleDatatable from "./components/datatable";
 
-const Roles = () => {
+const RolePage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: "1 1 auto" }}>
-          <Typography variant="h4">ตำแหน่ง</Typography>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: "center" }}
-          ></Stack>
-        </Stack>
-        <>
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>ตำแหน่ง</App.Header.Title>
+        <App.Header.Actions>
           <AddRoleController />
-        </>
-      </Stack>
-      <RoleDatatable />
-    </Stack>
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <RoleDatatable />
+      </App.Main>
+    </Wrapper>
   );
 };
 
-export default Roles;
+export default RolePage;

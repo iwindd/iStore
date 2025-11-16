@@ -1,23 +1,22 @@
-import { Stack, Typography } from "@mui/material"
-import { Category } from "@prisma/client"
-import ProductDatatable from "./components/datatable";
+"use client";
+import App, { Wrapper } from "@/layouts/App";
 import AddController from "./components/add-controller";
+import ProductDatatable from "./components/datatable";
 
-const Products = async () => {
+const ProductPage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">สินค้า</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-        <>
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>สินค้า</App.Header.Title>
+        <App.Header.Actions>
           <AddController />
-        </>
-      </Stack>
-      <ProductDatatable/>
-    </Stack>
-  )
-}
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <ProductDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-export default Products
+export default ProductPage;

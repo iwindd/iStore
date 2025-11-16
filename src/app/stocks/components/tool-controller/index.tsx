@@ -1,5 +1,11 @@
 "use client";
-import React from "react";
+import ImportToolAction from "@/actions/stock/tool";
+import { StockPermissionEnum } from "@/enums/permission";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { useStock } from "@/hooks/use-stock";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { PanToolAlt } from "@mui/icons-material";
 import {
   Alert,
   Button,
@@ -16,16 +22,10 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useDialog } from "@/hooks/use-dialog";
-import { PanToolAlt } from "@mui/icons-material";
+import { enqueueSnackbar } from "notistack";
+import React from "react";
 import { ImportPayload, Imports, ImportType } from "../../import";
 import MinStockController from "./components/MinStockController";
-import { useInterface } from "@/providers/InterfaceProvider";
-import ImportToolAction from "@/actions/stock/tool";
-import { useStock } from "@/hooks/use-stock";
-import { enqueueSnackbar } from "notistack";
-import { useAuth } from "@/hooks/use-auth";
-import { StockPermissionEnum } from "@/enums/permission";
 
 interface SelecterDialogProps {
   onClose: () => void;
@@ -114,8 +114,18 @@ const SelecterDialog = ({
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button color="secondary" onClick={onClose}>ปิด</Button>
-          <Button color="success" variant="contained" startIcon={<PanToolAlt/>} disabled={stocks.length >= 50} onClick={onSubmit}>ยืนยัน</Button>
+          <Button color="secondary" onClick={onClose}>
+            ปิด
+          </Button>
+          <Button
+            color="success"
+            variant="contained"
+            startIcon={<PanToolAlt />}
+            disabled={stocks.length >= 50}
+            onClick={onSubmit}
+          >
+            ยืนยัน
+          </Button>
         </Stack>
       </DialogActions>
     </Dialog>
@@ -124,8 +134,8 @@ const SelecterDialog = ({
 
 const ToolController = () => {
   const dialogInfo = useDialog();
-  const {user} = useAuth();
-  const { target  } = useStock();
+  const { user } = useAuth();
+  const { target } = useStock();
 
   const onOpen = () => {
     dialogInfo.handleOpen();
@@ -139,12 +149,13 @@ const ToolController = () => {
 
   return (
     <>
-      <Button 
-        startIcon={<PanToolAlt />} 
-        variant="text" 
-        color="secondary" 
+      <Button
+        startIcon={<PanToolAlt />}
+        variant="text"
+        color="secondary"
         onClick={onOpen}
         disabled={target != null}
+        size="small"
       >
         เครื่องมือ
       </Button>

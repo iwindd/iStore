@@ -1,34 +1,26 @@
-import {Stack, Typography } from "@mui/material";
+"use client";
+import App, { Wrapper } from "@/layouts/App";
 import AddController from "./components/add-controller";
-import ToolController from "./components/tool-controller";
+import StockDatatable from "./components/datatable";
 import HistoryDatatable from "./components/histories";
-import dynamic from "next/dynamic";
+import ToolController from "./components/tool-controller";
 
-const StockDatatable = dynamic(() => import("./components/datatable"), {
-  ssr: false,
-});
-
-const Stocks = () => {
+const StockPage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" alignItems={"center"} spacing={3}>
-        <Stack spacing={1} sx={{ flex: "1 1 auto" }}>
-          <Typography variant="h4">สต๊อก</Typography>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ alignItems: "center" }}
-          ></Stack>
-        </Stack>
-        <>
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>สต๊อก</App.Header.Title>
+        <App.Header.Actions>
           <ToolController />
           <AddController />
-        </>
-      </Stack>
-      <StockDatatable />
-      <HistoryDatatable />
-    </Stack>
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <StockDatatable />
+        <HistoryDatatable />
+      </App.Main>
+    </Wrapper>
   );
 };
 
-export default Stocks;
+export default StockPage;

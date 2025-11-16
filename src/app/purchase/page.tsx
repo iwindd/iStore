@@ -1,22 +1,22 @@
-import { Stack, Typography } from "@mui/material"
-import AddController from "./components/add-controller"
-import PurchaseDatatable from "./components/datatable"
+"use client";
+import App, { Wrapper } from "@/layouts/App";
+import AddController from "./components/add-controller";
+import PurchaseDatatable from "./components/datatable";
 
-const Purchase = async () => {
+const PurchasePage = () => {
   return (
-    <Stack spacing={1}>
-      <Stack direction="row" spacing={3}>
-        <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-          <Typography variant="h4">ซื้อสินค้า</Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}></Stack>
-        </Stack>
-        <>
+    <Wrapper>
+      <App.Header>
+        <App.Header.Title>ซื้อสินค้า</App.Header.Title>
+        <App.Header.Actions>
           <AddController />
-        </>
-      </Stack>
-      <PurchaseDatatable />
-    </Stack>
-  )
-}
+        </App.Header.Actions>
+      </App.Header>
+      <App.Main>
+        <PurchaseDatatable />
+      </App.Main>
+    </Wrapper>
+  );
+};
 
-export default Purchase
+export default PurchasePage;
