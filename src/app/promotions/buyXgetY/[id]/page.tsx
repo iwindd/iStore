@@ -19,10 +19,11 @@ const BuyXGetYPage = () => {
     onMutate: () => {
       setBackdrop(true);
     },
-    onSuccess: (resp) => {
+    onSuccess: async (resp) => {
       enqueueSnackbar("บันทึกข้อเสนอเรียบร้อยแล้ว!", { variant: "success" });
-      queryClient.invalidateQueries({
+      await queryClient.refetchQueries({
         queryKey: ["datatable:promotions"],
+        type: "active",
       });
     },
     onError: (error) => {

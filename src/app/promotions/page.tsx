@@ -46,8 +46,9 @@ const PromotionPage = () => {
       try {
         await DisablePromotionOffer(id);
         confirmation.handleClose();
-        queryClient.invalidateQueries({
-          queryKey: ["datatable:promotions"],
+        await queryClient.refetchQueries({
+          queryKey: ["promotions"],
+          type: "active",
         });
         enqueueSnackbar("ปิดใช้งานโปรโมชั่นเรียบร้อยแล้ว!", {
           variant: "success",
