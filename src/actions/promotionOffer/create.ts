@@ -7,6 +7,7 @@ import {
   AddPromotionOfferValues,
 } from "@/schema/Promotion/Offer";
 import dayjs from "dayjs";
+import { sendEventNotification } from "./sendEventNotification";
 
 export type CreatedPromotionOffer = {
   title: string;
@@ -54,6 +55,8 @@ const CreatePromotionOffer = async (
         },
       },
     });
+
+    sendEventNotification(promotionOffer.id);
 
     return { success: true, data: promotionOffer };
   } catch (error) {
