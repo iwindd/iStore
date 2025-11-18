@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import { InterfaceProvider } from "@/providers/InterfaceProvider";
 import MainLayout from "@/providers/LayoutProvider";
 import LocalizationProvider from "@/providers/LocalizationProvider";
@@ -18,13 +19,15 @@ interface RootLayoutProps {
 export default async function RootLayout({
   children,
 }: Readonly<RootLayoutProps>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <body>
         <StoreProvider>
           <LocalizationProvider>
             <ThemeRegistry>
-              <SessionProvider session={null}>
+              <SessionProvider session={session}>
                 <QueryProvider>
                   <InterfaceProvider>
                     <MainLayout>{children}</MainLayout>

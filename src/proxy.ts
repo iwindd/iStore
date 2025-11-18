@@ -20,7 +20,5 @@ export const config = {
    * 5. Static files (e.g. /favicon.ico, /sitemap.xml, /robots.txt, etc.)
    * 6. /assets
    */
-  matcher: [
-    String.raw`/((?!api/|_next/|_static|_vercel|assets|[\w-]+\.\w+).*)`,
-  ],
+  matcher: ["/((?!api/|_next/|_static|_vercel|assets|[\\w-]+\\.\\w+).*)"],
 };

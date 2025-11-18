@@ -12,10 +12,8 @@ export async function AuthMiddleware(request: NextRequest) {
     } else {
       return NextResponse.next();
     }
-  } else {
-    if (!session) {
-      return NextResponse.redirect(new URL(Path("signin").href, request.url));
-    }
+  } else if (!session) {
+    return NextResponse.redirect(new URL(Path("signin").href, request.url));
   }
 
   return NextResponse.next();

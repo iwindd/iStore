@@ -7,9 +7,9 @@ import { MainNav } from "../layouts/mainnav";
 
 export default function MainLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const { user } = useAuth();
 
   if (!user) {

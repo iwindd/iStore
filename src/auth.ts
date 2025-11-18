@@ -8,7 +8,7 @@ import { AddressValues, FormatAddress } from "./schema/Address";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
-    signIn: "/",
+    signIn: "/auth/signin",
   },
   session: {
     ...AuthConfig.session,
@@ -46,7 +46,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
       async authorize(credentials, req) {
         try {
-          if (!credentials) throw new Error("no_credentails");
+          if (!credentials) throw new Error("no_credentials");
+          if (!credentials.email || !credentials.password)
+            throw new Error("missing_credentials");
+
           const user = await db.user.findFirst({
             where: {
               email: credentials.email,
