@@ -64,7 +64,6 @@
     "@types/react": "19.2.6",
     "@types/react-csv": "^1.1.10",
     "@types/react-dom": "19.2.3",
-    "@types/redux-persist": "^4.0.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.3",
     "prisma": "^6.19.0",
