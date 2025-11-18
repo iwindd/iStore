@@ -39,7 +39,6 @@ export const cashoutCart = createAsyncThunk(
   "cart/cashoutCart",
   async (data: CashoutInputValues, thunkAPI) => {
     const { cart } = thunkAPI.getState() as { cart: CartState };
-    console.log(data);
     const payload = CashoutSchema.safeParse({
       products: cart.products,
       ...data,

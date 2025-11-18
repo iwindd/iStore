@@ -235,9 +235,14 @@ const getTotalCost = (products: { cost: number; quantity: number }[]) => {
   return products.reduce((total, item) => total + item.cost * item.quantity, 0);
 };
 
+interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
+  created_at: string;
+  updated_at: string;
+}
+
 const Cashout = async (
   payload: CashoutValues
-): Promise<ActionResponse<Order>> => {
+): Promise<ActionResponse<CashoutResponse>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -282,9 +287,16 @@ const Cashout = async (
       products.map(({ id, quantity }) => ({ id, count: quantity }))
     );
 
-    return { success: true, data: order };
+    return {
+      success: true,
+      data: {
+        ...order,
+        created_at: order.created_at.toISOString(),
+        updated_at: order.updated_at.toISOString(),
+      },
+    };
   } catch (error) {
-    return ActionError(error) as ActionResponse<Order>;
+    return ActionError(error) as ActionResponse<CashoutResponse>;
   }
 };
 
