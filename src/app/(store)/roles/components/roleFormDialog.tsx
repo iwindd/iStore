@@ -112,9 +112,11 @@ const RoleFormDialog = ({ isOpen, onClose, role }: RoleFormDialogProps) => {
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        }
       }}
     >
       <DialogTitle>{role ? "แก้ไขตำแหน่ง" : "เพิ่มตำแหน่ง"}</DialogTitle>

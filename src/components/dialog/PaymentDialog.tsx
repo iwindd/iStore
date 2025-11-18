@@ -61,9 +61,11 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
       open={open && !isBackdrop}
       onClose={onClose}
       fullWidth
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        }
       }}
     >
       <DialogTitle>ชำระเงิน</DialogTitle>
@@ -78,18 +80,20 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
             fullWidth
             label="จำนวนเงิน"
             type="number"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">฿</InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  {money((moneyLeft || 0) - total)}฿
-                </InputAdornment>
-              ),
-            }}
             value={moneyLeft}
             onChange={(e) => setMoneyLeft(+e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">฿</InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    {money((moneyLeft || 0) - total)}฿
+                  </InputAdornment>
+                ),
+              }
+            }}
           />
           <TextField
             label="หมายเหตุ"

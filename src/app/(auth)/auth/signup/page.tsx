@@ -97,64 +97,68 @@ const SignIn = () => {
           <Divider />
           <Stack px={3} pt={1} spacing={1}>
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PeopleTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               fullWidth
               placeholder="ชื่อ"
               error={!!errors["name"]?.message}
               helperText={errors["name"]?.message}
               autoFocus
               {...register("name")}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PeopleTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }} />
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               fullWidth
               placeholder="อีเมล"
               error={!!errors["email"]?.message}
               helperText={errors["email"]?.message}
               {...register("email")}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }} />
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <NumbersTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               type="password"
               fullWidth
               placeholder="รหัสผ่าน"
               error={!!errors["password"]?.message}
               helperText={errors["password"]?.message}
               {...register("password")}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <NumbersTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }} />
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <NumbersTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               type="password"
               fullWidth
               placeholder="ยืนยันรหัสผ่าน"
               error={!!errors["password_confirmation"]?.message}
               helperText={errors["password_confirmation"]?.message}
               {...register("password_confirmation")}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <NumbersTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }} />
           </Stack>
 
           <Stack

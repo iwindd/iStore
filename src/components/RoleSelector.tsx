@@ -139,8 +139,10 @@ const RoleSelector = (props: SelectorProps) => {
           placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาตำแหน่ง"}
           error={props.error}
           helperText={props.helperText}
-          InputProps={
-            isLoading
+          // Handle key press events here
+          onKeyDown={handleKeyDown}
+          slotProps={{
+            input: isLoading
               ? {
                   startAdornment: (
                     <InputAdornment position="end" sx={{ mr: 1 }}>
@@ -149,8 +151,7 @@ const RoleSelector = (props: SelectorProps) => {
                   ),
                 }
               : { ...params.InputProps }
-          }
-          onKeyDown={handleKeyDown} // Handle key press events here
+          }}
         />
       )}
       renderOption={(props_, option) => {

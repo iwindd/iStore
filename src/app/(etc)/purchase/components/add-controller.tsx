@@ -84,9 +84,11 @@ export function PurchaseFormDialog({
       }}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        }
       }}
     >
       <DialogTitle>ซื้อสินค้า</DialogTitle>

@@ -84,9 +84,11 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(submitRole),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(submitRole),
+        }
       }}
     >
       <DialogTitle>{!user ? "เพิ่มพนักงาน" : "แก้ไขพนักงาน"}</DialogTitle>

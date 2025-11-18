@@ -45,9 +45,11 @@ const CreatePromotionModal = ({
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit,
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit,
+        }
       }}
     >
       <DialogTitle>สร้างโปรโมชั่นใหม่</DialogTitle>

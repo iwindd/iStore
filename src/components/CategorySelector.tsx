@@ -131,8 +131,10 @@ const CategorySelector = (props: SelectorProps) => {
           label="กรุณาเลือกประเภทสินค้า"
           fullWidth
           placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาประเภทสินค้า"}
-          InputProps={
-            isLoading
+          // Handle key press events here
+          onKeyDown={handleKeyDown}
+          slotProps={{
+            input: isLoading
               ? {
                   startAdornment: (
                     <InputAdornment position="end" sx={{ mr: 1 }}>
@@ -141,8 +143,7 @@ const CategorySelector = (props: SelectorProps) => {
                   ),
                 }
               : { ...params.InputProps }
-          }
-          onKeyDown={handleKeyDown} // Handle key press events here
+          }}
         />
       )}
       renderOption={(props_, option) => {

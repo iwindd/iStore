@@ -91,9 +91,11 @@ export function CategoryFormDialog({
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        }
       }}
     >
       <DialogTitle>

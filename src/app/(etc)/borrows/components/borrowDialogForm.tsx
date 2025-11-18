@@ -70,9 +70,11 @@ function BorrowDialogForm({
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        }
       }}
     >
       <DialogTitle>เบิกสินค้า</DialogTitle>

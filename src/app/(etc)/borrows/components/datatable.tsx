@@ -80,9 +80,11 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
       onClose={onClose}
       fullWidth
       maxWidth="xs"
-      PaperProps={{
-        component: "form",
-        onSubmit: onSubmit,
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: onSubmit,
+        }
       }}
     >
       <DialogTitle>อัพเดทรายการเบิก</DialogTitle>
@@ -94,8 +96,10 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
             value={count}
             onChange={(e) => setCount(Number(e.target.value))}
             fullWidth
-            InputProps={{ inputProps: { min: 1, max: productLeft } }}
             required
+            slotProps={{
+              input: { inputProps: { min: 1, max: productLeft } }
+            }}
           />
         </Stack>
       </DialogContent>

@@ -45,9 +45,11 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(onSubmit),
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(onSubmit),
+        },
       }}
     >
       <DialogTitle>{title}</DialogTitle>
@@ -65,10 +67,12 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
           <TextField
             label="จำนวน"
             type="number"
-            inputProps={{ min: 1 }}
             error={errors.quantity != undefined}
             helperText={errors.quantity?.message}
             {...register("quantity", { valueAsNumber: true })}
+            slotProps={{
+              htmlInput: { min: 1 },
+            }}
           />
         </Stack>
       </DialogContent>

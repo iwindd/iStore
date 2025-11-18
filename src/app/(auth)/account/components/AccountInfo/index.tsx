@@ -75,32 +75,35 @@ const AccountInfo = () => {
             }}
           >
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PeopleTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               label="ชื่อ"
               autoFocus
               disabled={!user?.hasPermission(AccountPermissionEnum.UPDATE)}
               {...register("name")}
               error={errors["name"] !== undefined}
               helperText={errors["name"]?.message}
-            />
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PeopleTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }} />
             <TextField
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailTwoTone />
-                  </InputAdornment>
-                ),
-              }}
               label="อีเมล"
               value={user?.email || ""}
               disabled
               aria-readonly
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailTwoTone />
+                    </InputAdornment>
+                  ),
+                }
+              }}
             />
             {
               user?.hasPermission(AccountPermissionEnum.UPDATE) && (

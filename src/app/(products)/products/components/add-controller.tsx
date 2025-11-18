@@ -110,13 +110,15 @@ function SearchDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(searchSubmit),
-      }}
       maxWidth="xs"
       fullWidth
       disableRestoreFocus
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(searchSubmit),
+        }
+      }}
     >
       <DialogTitle>ค้นหาสินค้า</DialogTitle>
       <DialogContent>
@@ -132,20 +134,22 @@ function SearchDialog({
               (isRandomSerial == watch("serial") &&
                 " สินค้าที่สร้างรหัสสินค้าจากระบบจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง")
             }
-            InputLabelProps={{ shrink: true }}
             fullWidth
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Tooltip title="สร้างรหัสสินค้า">
-                    <IconButton onClick={random}>
-                      <Rotate90DegreesCcw />
-                    </IconButton>
-                  </Tooltip>
-                </InputAdornment>
-              ),
-            }}
-          />
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Tooltip title="สร้างรหัสสินค้า">
+                      <IconButton onClick={random}>
+                        <Rotate90DegreesCcw />
+                      </IconButton>
+                    </Tooltip>
+                  </InputAdornment>
+                ),
+              },
+
+              inputLabel: { shrink: true }
+            }} />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -231,11 +235,13 @@ export function ProductFormDialog({
         }
         onClose();
       }}
-      PaperProps={{
-        component: "form",
-        onSubmit: handleSubmit(submitProduct),
-      }}
       disableAutoFocus
+      slotProps={{
+        paper: {
+          component: "form",
+          onSubmit: handleSubmit(submitProduct),
+        }
+      }}
     >
       <DialogTitle>
         {product?.label ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
