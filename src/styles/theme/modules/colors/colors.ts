@@ -1,4 +1,4 @@
-import type { PaletteRange } from "@mui/material/styles/createPalette";
+import type { PaletteRange } from "@mui/material/styles";
 
 export const california = {
   50: "#fffaea",

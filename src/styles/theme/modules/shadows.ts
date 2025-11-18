@@ -1,4 +1,4 @@
-import type { Shadows } from "@mui/material/styles/shadows";
+import { Shadows } from "@mui/material";
 
 export const shadows = [
   "none",

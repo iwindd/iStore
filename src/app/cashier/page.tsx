@@ -8,14 +8,14 @@ import usePayment from "@/hooks/use-payment";
 import { addProductToCartById, clearProductCart } from "@/reducers/cartReducer";
 import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
 import { Button, Divider, Stack } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2/Grid2";
-import dynamic from "next/dynamic";
+import Grid from "@mui/material/Grid";
 import React from "react";
+import CartContainer from "./components/Cart";
 import CashierTab from "./components/CashierTab";
 
-const CartContainer = dynamic(() => import("./components/Cart"), {
+/* const CartContainer = dynamic(() => import("./components/Cart"), {
   ssr: false,
-});
+}); */
 
 const CashierPage = () => {
   const [selectProduct, setSelectProduct] =
@@ -39,14 +39,14 @@ const CashierPage = () => {
   return (
     <>
       <Grid container spacing={1} direction={"row-reverse"}>
-        <Grid xs={12}>
+        <Grid size={12}>
           <Scanner
             onSubmit={(p) => {
               dispatch(addProductToCartById(p.id));
             }}
           />
         </Grid>
-        <Grid xs={12} lg={3}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <Stack direction={"row"} spacing={0.3}>
             <Selector
               onSubmit={(product) => setSelectProduct(product || null)}
@@ -87,7 +87,7 @@ const CashierPage = () => {
           </Stack>
           <Confirmation {...confirmation.props} />
         </Grid>
-        <Grid xs={12} lg={9}>
+        <Grid size={{ xs: 12, lg: 9 }}>
           <CashierTab />
         </Grid>
       </Grid>

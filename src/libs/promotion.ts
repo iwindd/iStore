@@ -1,3 +1,5 @@
+import { ObtainPromotionOffer } from "@/actions/cashier/fetchObtainPromotionOffers";
+import { UseObtainPromotionOfferProps } from "@/hooks/useObtainPromotionOffer";
 import { CartProduct } from "@/reducers/cartReducer";
 import { Prisma } from "@prisma/client";
 
@@ -95,4 +97,44 @@ export const mergePromotionQuantities = (
   }
 
   return Array.from(mergedMap.values());
+};
+
+export const getMergedPromotionQuantitiesFromOffers = (
+  offers: ObtainPromotionOffer[],
+  products: UseObtainPromotionOfferProps["products"]
+) => {
+  if (offers.length === 0) return [];
+
+  const allProductData = offers.flatMap((offer) =>
+    offer.getItems.map((item) => item.product)
+  );
+
+  const quantifiedOffers = offers.map((offer) =>
+    getPromotionQuantities(offer.buyItems, offer.getItems, products)
+      .filter((item) => item.quantity > 0)
+      .map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+        promotion_offer_id: offer.id,
+      }))
+  );
+
+  const merged = mergePromotionQuantities(quantifiedOffers).map((item) => {
+    const data = allProductData.find((p) => p.id === item.id)!;
+    const cartQuantity = products.find((q) => q.id == item.id)?.quantity || 0;
+    const canOverstock = data.category?.overstock;
+    let possibleQuantity = item.quantity;
+
+    if (cartQuantity + item.quantity > data.stock && !canOverstock) {
+      possibleQuantity = data.stock - cartQuantity;
+    }
+
+    return {
+      ...item,
+      possibleQuantity: possibleQuantity,
+      data,
+    };
+  });
+
+  return merged;
 };

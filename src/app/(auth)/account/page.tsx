@@ -1,6 +1,6 @@
 "use client";
 import App, { Wrapper } from "@/layouts/App";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid";
 import AccountInfo from "./components/AccountInfo";
 import PasswordChanger from "./components/PasswordChanger";
 
@@ -12,10 +12,10 @@ const Account = () => {
       </App.Header>
       <App.Main>
         <Grid container spacing={2}>
-          <Grid xs={12} lg={12}>
+          <Grid size={12}>
             <AccountInfo />
           </Grid>
-          <Grid xs={12} lg={12}>
+          <Grid size={12}>
             <PasswordChanger />
           </Grid>
         </Grid>

@@ -36,7 +36,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2/Grid2";
+import Grid from "@mui/material/Grid";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
@@ -243,7 +243,7 @@ export function ProductFormDialog({
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
           <Grid container spacing={1}>
-            <Grid xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 label="รหัสสินค้า"
@@ -252,7 +252,7 @@ export function ProductFormDialog({
                 hidden
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 label="ชื่อสินค้า"
@@ -262,13 +262,13 @@ export function ProductFormDialog({
                 autoFocus
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid size={6}>
               <CategorySelector
                 onSubmit={onSelectCategory}
                 defaultValue={defaultCategory}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 label="ราคาสินค้า"
@@ -277,7 +277,7 @@ export function ProductFormDialog({
                 {...register("price", { valueAsNumber: true })}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 label="ราคาต้นทุนสินค้า"
@@ -286,7 +286,7 @@ export function ProductFormDialog({
                 {...register("cost", { valueAsNumber: true })}
               />
             </Grid>
-            <Grid xs={6}>
+            <Grid size={6}>
               <TextField
                 fullWidth
                 label="สต๊อกขั้นต่ำ"
@@ -296,7 +296,7 @@ export function ProductFormDialog({
                 {...register("stock_min", { valueAsNumber: true })}
               />
             </Grid>
-            <Grid xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="คีย์เวิร์ด"

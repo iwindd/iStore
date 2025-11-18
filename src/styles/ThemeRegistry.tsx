@@ -1,23 +1,22 @@
 "use client";
+import { CssBaseline, ThemeProvider } from "@mui/material";
 import * as React from "react";
-import NextAppDirEmotionCacheProvider from "./theme/modules/EmotionCache";
-import { Experimental_CssVarsProvider as CssVarsProvider } from "@mui/material/styles";
 import { createTheme } from "./theme";
-import { CssBaseline } from "@mui/material";
+import NextAppDirEmotionCacheProvider from "./theme/modules/EmotionCache";
 
 export default function ThemeRegistry({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   const theme = createTheme();
 
   return (
     <NextAppDirEmotionCacheProvider options={{ key: "istore" }}>
-      <CssVarsProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
-      </CssVarsProvider>
+      </ThemeProvider>
     </NextAppDirEmotionCacheProvider>
   );
 }

@@ -1,17 +1,24 @@
 "use client";
-import * as React from 'react';
-import { CSVLink } from 'react-csv';
+import * as React from "react";
+import { CSVLink } from "react-csv";
 
 interface ExportHook<T> {
-  ExportHandler: JSX.Element;
+  ExportHandler: React.ReactNode;
   setItems: React.Dispatch<React.SetStateAction<T[]>>;
-  setHeaders: React.Dispatch<React.SetStateAction<{ label: string; key: string }[]>>;
+  setHeaders: React.Dispatch<
+    React.SetStateAction<{ label: string; key: string }[]>
+  >;
   Export(): void;
 }
 
-export function useExport<T>(defaultHeaders: { label: string; key: string }[], fileName = "export"): ExportHook<T> {
+export function useExport<T>(
+  defaultHeaders: { label: string; key: string }[],
+  fileName = "export"
+): ExportHook<T> {
   const [items, setItems] = React.useState<T[]>([]);
-  const [headers, setHeaders] = React.useState<{ label: string; key: string }[]>(defaultHeaders || []);
+  const [headers, setHeaders] = React.useState<
+    { label: string; key: string }[]
+  >(defaultHeaders || []);
   const [isDownload, setIsDownload] = React.useState<boolean>(false);
   const csvLinkRef = React.useRef<any & HTMLAnchorElement>(null);
 
@@ -22,12 +29,12 @@ export function useExport<T>(defaultHeaders: { label: string; key: string }[], f
   };
 
   React.useEffect(() => {
-    if (isDownload && csvLinkRef.current.link){
+    if (isDownload && csvLinkRef.current.link) {
       csvLinkRef.current.link.click();
       setIsDownload(false);
-      setItems([]) // clear mem
+      setItems([]); // clear mem
     }
-  }, [isDownload, csvLinkRef])
+  }, [isDownload, csvLinkRef]);
 
   return {
     ExportHandler: (
@@ -37,7 +44,7 @@ export function useExport<T>(defaultHeaders: { label: string; key: string }[], f
         headers={headers}
         filename={`${fileName}.csv`}
         target="_blank"
-        style={{ display: 'none' }} // Hide the link as it's not needed to be visible
+        style={{ display: "none" }} // Hide the link as it's not needed to be visible
       >
         Export
       </CSVLink>

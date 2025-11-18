@@ -1,15 +1,22 @@
 "use client";
-import { Autocomplete, Box, Grid, TextField, TextFieldProps, Typography } from "@mui/material";
-import React from "react";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
-import { debounce } from "@mui/material/utils";
 import SearchProducts, { SearchProduct } from "@/actions/product/search";
 import { useInterface } from "@/providers/InterfaceProvider";
+import {
+  Autocomplete,
+  Box,
+  Grid,
+  TextField,
+  TextFieldProps,
+  Typography,
+} from "@mui/material";
+import { debounce } from "@mui/material/utils";
+import match from "autosuggest-highlight/match";
+import parse from "autosuggest-highlight/parse";
+import React from "react";
 
 interface SelectorProps {
   onSubmit(Product: SearchProduct | null): void;
-  fieldProps?: TextFieldProps 
+  fieldProps?: TextFieldProps;
 }
 
 const Selector = (props: SelectorProps) => {
@@ -106,10 +113,7 @@ const Selector = (props: SelectorProps) => {
         return (
           <li key={key} {...optionProps}>
             <Grid container sx={{ alignItems: "center" }}>
-              <Grid
-                item
-                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-              >
+              <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                 {parts.map((part, index) => (
                   <Box
                     key={index}

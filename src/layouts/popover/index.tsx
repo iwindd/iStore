@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-import { StockState } from "@/atoms/stock";
 import { Path } from "@/config/Path";
 import { useAuth } from "@/hooks/use-auth";
 import { clearProductCart } from "@/reducers/cartReducer";
@@ -17,7 +16,6 @@ import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useSnackbar } from "notistack";
 import { useDispatch } from "react-redux";
-import { useRecoilState } from "recoil";
 
 export interface UserPopoverProps {
   anchorEl: Element | null;
@@ -33,7 +31,9 @@ function UserPopover({
   const router = useRouter();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
-  const [, setStocks] = useRecoilState(StockState);
+
+  /* TODO:: use redux instead of recoil */
+  const [, setStocks] = React.useState<any>([]);
   const dispatch = useDispatch();
 
   const onSignout = React.useCallback(async (): Promise<void> => {

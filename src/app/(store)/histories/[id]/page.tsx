@@ -3,7 +3,7 @@ import GetHistory from "@/actions/order/find";
 import * as ff from "@/libs/formatter";
 import { getServerSession } from "@/libs/session";
 import { Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2/Grid2";
+import Grid from "@mui/material/Grid";
 import { notFound } from "next/navigation";
 import { CostCard } from "./components/card/CostCard";
 import { NoteCard } from "./components/card/NoteCard";
@@ -29,7 +29,7 @@ const History = async ({ params }: { params: { id: string } }) => {
 
   return (
     <Grid container spacing={1}>
-      <Grid lg={12} md={12} xs={12}>
+      <Grid size={12}>
         <Stack direction="row" spacing={3} alignItems={"center"}>
           <Stack sx={{ flex: "1 1 auto" }}>
             <Typography variant="h4">ประวัติการทำรายการ</Typography>
@@ -44,28 +44,28 @@ const History = async ({ params }: { params: { id: string } }) => {
           </>
         </Stack>
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <NoteCard sx={{ height: "100%" }} value={ff.text(data.note)} />
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <PriceCard
           sx={{ height: "100%" }}
           value={ff.money(data.price) as string}
         />
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <CostCard
           sx={{ height: "100%" }}
           value={ff.money(data.cost) as string}
         />
       </Grid>
-      <Grid lg={3} sm={6} xs={12}>
+      <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <ProfitCard
           sx={{ height: "100%" }}
           value={ff.money(data.profit) as string}
         />
       </Grid>
-      <Grid xs={12}>
+      <Grid size={12}>
         <HistoryProductTable products={data.products} />
       </Grid>
     </Grid>

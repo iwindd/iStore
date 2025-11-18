@@ -1,16 +1,16 @@
 import bcrypt from "bcrypt";
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthConfig from "./config/AuthConfig";
 import { SuperPermissionEnum } from "./enums/permission";
 import db from "./libs/db";
 import { AddressValues, FormatAddress } from "./schema/Address";
 
-export const authOptions = {
+export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/",
   },
   session: {
-    jwt: true,
     ...AuthConfig.session,
   },
   callbacks: {
@@ -20,21 +20,19 @@ export const authOptions = {
       }
 
       return {
-        ...{
-          id: token.id,
-          store: token.store,
-          userStoreId: token.userStoreId,
-          name: token.name,
-          email: token.email,
-          line_token: token.line_token,
-          permissions: token.permissions,
-          address: token.address,
-        },
+        id: token.id,
+        store: token.store,
+        userStoreId: token.userStoreId,
+        name: token.name,
+        email: token.email,
+        line_token: token.line_token,
+        permissions: token.permissions,
+        address: token.address,
         ...user,
       };
     },
     async session({ session, token }: any) {
-      session.user = token as any;
+      session.user = token;
 
       return session;
     },
@@ -99,9 +97,10 @@ export const authOptions = {
             address: FormatAddress(userStore.store as AddressValues),
           };
         } catch (error) {
+          console.error("Authorize error:", error);
           return null;
         }
       },
     }),
   ],
-};
+});

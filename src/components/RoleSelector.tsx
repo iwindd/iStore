@@ -1,4 +1,6 @@
 "use client";
+import * as Actions from "@/actions/roles";
+import { useInterface } from "@/providers/InterfaceProvider";
 import {
   Autocomplete,
   Box,
@@ -9,12 +11,10 @@ import {
   TextFieldProps,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
 import { debounce } from "@mui/material/utils";
-import { useInterface } from "@/providers/InterfaceProvider";
-import * as Actions from "@/actions/roles";
+import match from "autosuggest-highlight/match";
+import parse from "autosuggest-highlight/parse";
+import React, { useEffect } from "react";
 
 interface SelectorProps {
   onSubmit(Product: Actions.RoleSelector | null): void;
@@ -27,7 +27,9 @@ interface SelectorProps {
 const RoleSelector = (props: SelectorProps) => {
   const [value, setValue] = React.useState<Actions.RoleSelector | null>(null);
   const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState<readonly Actions.RoleSelector[]>([]);
+  const [options, setOptions] = React.useState<readonly Actions.RoleSelector[]>(
+    []
+  );
   const [isLoading, setIsLoading] = React.useState(false);
   const { isBackdrop } = useInterface();
 
@@ -35,16 +37,16 @@ const RoleSelector = (props: SelectorProps) => {
     if (props.defaultValue && props.defaultValue > 0) {
       setIsLoading(true);
       Actions.find(props.defaultValue)
-        .then(resp => {
+        .then((resp) => {
           if (resp.success && resp.data) {
             setValue(resp.data);
           }
         })
         .finally(() => {
           setIsLoading(false);
-        })
+        });
     }
-  }, [props.defaultValue])
+  }, [props.defaultValue]);
 
   const fetch = React.useMemo(
     () =>
@@ -69,27 +71,30 @@ const RoleSelector = (props: SelectorProps) => {
   React.useEffect(() => {
     let active = true;
 
-    fetch({ input: inputValue }, (results?: readonly Actions.RoleSelector[]) => {
-      if (active) {
-        let newOptions: readonly Actions.RoleSelector[] = [];
+    fetch(
+      { input: inputValue },
+      (results?: readonly Actions.RoleSelector[]) => {
+        if (active) {
+          let newOptions: readonly Actions.RoleSelector[] = [];
 
-        if (value) {
-          newOptions = [value];
+          if (value) {
+            newOptions = [value];
+          }
+
+          if (results) {
+            newOptions = [...newOptions, ...results];
+          }
+
+          // delete duplicates
+          newOptions = newOptions.filter(
+            (option, index, self) =>
+              index === self.findIndex((t) => t.id === option.id)
+          );
+
+          setOptions(newOptions);
         }
-
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
-
-        // delete duplicates
-        newOptions = newOptions.filter(
-          (option, index, self) =>
-            index === self.findIndex((t) => t.id === option.id)
-        );
-
-        setOptions(newOptions);
       }
-    });
+    );
 
     return () => {
       active = false;
@@ -134,13 +139,17 @@ const RoleSelector = (props: SelectorProps) => {
           placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาตำแหน่ง"}
           error={props.error}
           helperText={props.helperText}
-          InputProps={isLoading ? ({
-            startAdornment: (
-              <InputAdornment position="end" sx={{ mr: 1 }}>
-                <CircularProgress size={20} />
-              </InputAdornment>
-            ),
-          }): {...params.InputProps}}
+          InputProps={
+            isLoading
+              ? {
+                  startAdornment: (
+                    <InputAdornment position="end" sx={{ mr: 1 }}>
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ),
+                }
+              : { ...params.InputProps }
+          }
           onKeyDown={handleKeyDown} // Handle key press events here
         />
       )}
@@ -151,10 +160,7 @@ const RoleSelector = (props: SelectorProps) => {
         return (
           <li key={key} {...optionProps}>
             <Grid container sx={{ alignItems: "center" }}>
-              <Grid
-                item
-                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-              >
+              <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                 {parts.map((part, index) => (
                   <Box
                     key={index}
@@ -165,7 +171,7 @@ const RoleSelector = (props: SelectorProps) => {
                   </Box>
                 ))}
                 <Typography variant="body2" color="text.secondary">
-                  {option.id == props.defaultValue ? "(เลือก) " : ""} 
+                  {option.id == props.defaultValue ? "(เลือก) " : ""}
                 </Typography>
               </Grid>
             </Grid>

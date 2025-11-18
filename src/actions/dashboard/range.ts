@@ -8,20 +8,39 @@ export const RangeChange = async (
   start: string | undefined,
   end: string | undefined
 ) => {
-  if (start) cookies().set("dashboard-start", start);
-  if (end) cookies().set("dashboard-end", end);
-  if (!start) cookies().delete("dashboard-start");
-  if (!end) cookies().delete("dashboard-end");
+  const cookie = await cookies();
 
-  revalidatePath(Path("overview").href)
+  if (start) {
+    cookie.set({
+      name: "dashboard-start",
+      value: start,
+    });
+  }
+  if (end) {
+    cookie.set({
+      name: "dashboard-end",
+      value: end,
+    });
+  }
+
+  if (!start) {
+    cookie.delete("dashboard-start");
+  }
+
+  if (!end) {
+    cookie.delete("dashboard-end");
+  }
+
+  revalidatePath(Path("overview").href);
 };
 
 export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
-  const startStr = cookies().get("dashboard-start")?.value;
-  const endStr = cookies().get("dashboard-end")?.value;
+  const cookie = await cookies();
+  const startStr = cookie.get("dashboard-start")?.value;
+  const endStr = cookie.get("dashboard-end")?.value;
 
-  const startDayjs = (startStr ? dayjs(startStr).startOf("day") : null)
-  const endDayjs = (endStr ? dayjs(endStr).endOf("day") : null)
+  const startDayjs = startStr ? dayjs(startStr).startOf("day") : null;
+  const endDayjs = endStr ? dayjs(endStr).endOf("day") : null;
 
   return [startDayjs, endDayjs];
 };
@@ -29,17 +48,16 @@ export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
 export const getFilterRange = async (key: string = "created_at") => {
   const [start, end] = await getRange();
 
-  if (start) start;
   if (end) end.endOf("day");
 
   return {
     [key]: {
       ...(start && {
-        gte: start.toDate()
+        gte: start.toDate(),
       }),
       ...(end && {
-        lte: end.toDate()
+        lte: end.toDate(),
       }),
-    }
-  }
-}
+    },
+  };
+};

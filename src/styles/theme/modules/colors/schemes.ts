@@ -1,5 +1,6 @@
 import type { ColorSystemOptions } from "@mui/material/styles";
 
+import type { ColorScheme } from "../../types";
 import {
   california,
   kepple,
@@ -9,10 +10,9 @@ import {
   shakespeare,
   stormGrey,
 } from "./colors";
-import type { ColorScheme } from "../../types";
 
 export const colorSchemes = {
-  dark: {
+  /*   dark: {
     palette: {
       action: { disabledBackground: "rgba(0, 0, 0, 0.12)" },
       background: {
@@ -77,7 +77,7 @@ export const colorSchemes = {
         contrastText: "var(--mui-palette-common-black)",
       },
     },
-  },
+  }, */
   light: {
     palette: {
       action: { disabledBackground: "rgba(0, 0, 0, 0.06)" },

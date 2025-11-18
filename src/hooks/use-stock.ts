@@ -1,9 +1,9 @@
 import CommitAction from "@/actions/stock/commit";
 import Create from "@/actions/stock/create";
-import { StockItem, StockState } from "@/atoms/stock";
-import { StockTargetState } from "@/atoms/stock-target";
+import { StockItem } from "@/atoms/stock";
 import { Product } from "@prisma/client";
-import { SetterOrUpdater, useRecoilState } from "recoil";
+import { useState } from "react";
+import { SetterOrUpdater } from "recoil";
 
 interface StockHook {
   stocks: StockItem[];
@@ -15,8 +15,9 @@ interface StockHook {
 }
 
 export function useStock(): StockHook {
-  const [stocks, setStocks] = useRecoilState(StockState);
-  const [target, setTarget] = useRecoilState(StockTargetState);
+  // TODO:: use redux instead of recoil;
+  const [stocks, setStocks] = useState<any[]>([]);
+  const [target, setTarget] = useState<any>(null);
 
   const addProduct = (product: Product, amount: number) => {
     setStocks((prev) => {
@@ -56,9 +57,10 @@ export function useStock(): StockHook {
       setTarget(null);
       return true;
     } catch (error) {
+      console.error(error);
       return false;
     }
-  }
+  };
 
   const update = async (note?: string) => {
     try {
@@ -70,14 +72,15 @@ export function useStock(): StockHook {
       setTarget(null);
       return true;
     } catch (error) {
-      return false;      
+      console.error(error);
+      return false;
     }
-  }
+  };
 
   const commit = async (instant?: boolean, note?: string) => {
     if (!target) {
       return await create(instant, note);
-    }else{
+    } else {
       return await update(note);
     }
   };

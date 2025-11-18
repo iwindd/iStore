@@ -9,9 +9,10 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import CartObtainProduct from "./childs/CartObtainProduct";
 import CartProductChild from "./childs/CartProduct";
 
-const Cart = () => {
+const CartContainer = () => {
   const cart: CartProduct[] = useAppSelector((state) => state.cart.products);
   const hasSomeProductOverstock = useAppSelector(
     (state) => state.cart.hasSomeProductOverstock
@@ -72,7 +73,7 @@ const Cart = () => {
             }}
           >
             {mergedPromotionQuantities.map((promotionQuantity) => (
-              <CartProductChild
+              <CartObtainProduct
                 key={
                   promotionQuantity.id +
                   "-" +
@@ -81,15 +82,10 @@ const Cart = () => {
                 id={promotionQuantity.id}
                 label={promotionQuantity.data.label}
                 quantity={promotionQuantity.possibleQuantity}
-                price={0}
                 canOverstock={
                   promotionQuantity.data.category?.overstock || false
                 }
                 stock={promotionQuantity.data.stock || 0}
-                options={{
-                  canRemoveFromCart: false,
-                  canChangeQuantity: false,
-                }}
               />
             ))}
           </Stack>
@@ -99,4 +95,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default CartContainer;

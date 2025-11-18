@@ -11,7 +11,7 @@ export default function StoreProvider({
   children: React.ReactNode;
 }>) {
   const storeRef = useRef<AppStore | null>(null);
-  const persistorRef = useRef<ReturnType<typeof persistStore>>();
+  const persistorRef = useRef<ReturnType<typeof persistStore> | null>(null);
 
   if (!storeRef.current) {
     const _store = store();

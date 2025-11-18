@@ -1,4 +1,7 @@
 "use client";
+import findCategory from "@/actions/category/find";
+import SearchCategories, { SearchCategory } from "@/actions/category/search";
+import { useInterface } from "@/providers/InterfaceProvider";
 import {
   Autocomplete,
   Box,
@@ -9,13 +12,10 @@ import {
   TextFieldProps,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
-import parse from "autosuggest-highlight/parse";
-import match from "autosuggest-highlight/match";
 import { debounce } from "@mui/material/utils";
-import { useInterface } from "@/providers/InterfaceProvider";
-import SearchCategories, { SearchCategory } from "@/actions/category/search";
-import findCategory from "@/actions/category/find";
+import match from "autosuggest-highlight/match";
+import parse from "autosuggest-highlight/parse";
+import React, { useEffect } from "react";
 
 interface SelectorProps {
   onSubmit(Product: SearchCategory | null): void;
@@ -34,16 +34,16 @@ const CategorySelector = (props: SelectorProps) => {
     if (props.defaultValue && props.defaultValue > 0) {
       setIsLoading(true);
       findCategory(props.defaultValue)
-        .then(resp => {
+        .then((resp) => {
           if (resp.success && resp.data) {
             setValue(resp.data);
           }
         })
         .finally(() => {
           setIsLoading(false);
-        })
+        });
     }
-  }, [props.defaultValue])
+  }, [props.defaultValue]);
 
   const fetch = React.useMemo(
     () =>
@@ -131,13 +131,17 @@ const CategorySelector = (props: SelectorProps) => {
           label="กรุณาเลือกประเภทสินค้า"
           fullWidth
           placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาประเภทสินค้า"}
-          InputProps={isLoading ? ({
-            startAdornment: (
-              <InputAdornment position="end" sx={{ mr: 1 }}>
-                <CircularProgress size={20} />
-              </InputAdornment>
-            ),
-          }): {...params.InputProps}}
+          InputProps={
+            isLoading
+              ? {
+                  startAdornment: (
+                    <InputAdornment position="end" sx={{ mr: 1 }}>
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ),
+                }
+              : { ...params.InputProps }
+          }
           onKeyDown={handleKeyDown} // Handle key press events here
         />
       )}
@@ -148,10 +152,7 @@ const CategorySelector = (props: SelectorProps) => {
         return (
           <li key={key} {...optionProps}>
             <Grid container sx={{ alignItems: "center" }}>
-              <Grid
-                item
-                sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}
-              >
+              <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                 {parts.map((part, index) => (
                   <Box
                     key={index}
@@ -162,8 +163,8 @@ const CategorySelector = (props: SelectorProps) => {
                   </Box>
                 ))}
                 <Typography variant="body2" color="text.secondary">
-                  {option.id == props.defaultValue ? "(กำลังใช้งาน) " : ""} 
-                  {option.overstock ? "อณุญาตการเบิก" : "ไม่อณุญาตการเบิก" } 
+                  {option.id == props.defaultValue ? "(กำลังใช้งาน) " : ""}
+                  {option.overstock ? "อณุญาตการเบิก" : "ไม่อณุญาตการเบิก"}
                 </Typography>
               </Grid>
             </Grid>

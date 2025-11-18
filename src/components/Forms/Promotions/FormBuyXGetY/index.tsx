@@ -26,7 +26,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
@@ -203,7 +203,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
         onSubmit={handleSubmit(props.onSubmit)}
       >
         <Grid container spacing={2}>
-          <Grid sm={12} md={6} lg={6}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
               <CardHeader
                 title="สินค้าที่ต้องการ"
@@ -238,7 +238,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid sm={12} md={6} lg={6}>
+          <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
               <CardHeader
                 title="ข้อเสนอ (ของที่จะได้)"

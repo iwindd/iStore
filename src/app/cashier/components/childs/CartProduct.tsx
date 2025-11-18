@@ -7,7 +7,7 @@ import {
 } from "@/reducers/cartReducer";
 import { DeleteTwoTone } from "@mui/icons-material";
 import { IconButton, Input, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid";
 import React from "react";
 import { useDispatch } from "react-redux";
 
@@ -18,10 +18,6 @@ interface CartProductChildProps {
   price: number;
   stock: number;
   canOverstock?: boolean;
-  options?: {
-    canRemoveFromCart?: boolean;
-    canChangeQuantity?: boolean;
-  };
 }
 
 const getBackgroundColor = (
@@ -86,50 +82,39 @@ const CartProductChild = (product: CartProductChildProps) => {
         background: getBackgroundColor(product, grow),
       }}
     >
-      <Grid xs={1}>
-        {product.options?.canChangeQuantity === false ? (
-          <Typography align="left">{product.quantity}</Typography>
-        ) : (
-          <Input
-            disableUnderline
-            sx={{ width: "100%" }}
-            inputProps={{ min: 0, style: { textAlign: "left" } }}
-            type="number"
-            value={product.quantity}
-            onChange={(e) => {
-              dispatch(
-                setProductQuantity({
-                  id: product.id,
-                  quantity: Number(e.target.value),
-                })
-              );
-            }}
-          />
-        )}
+      <Grid size={1}>
+        <Input
+          disableUnderline
+          sx={{ width: "100%" }}
+          inputProps={{ min: 0, style: { textAlign: "left" } }}
+          type="number"
+          value={product.quantity}
+          onChange={(e) => {
+            dispatch(
+              setProductQuantity({
+                id: product.id,
+                quantity: Number(e.target.value),
+              })
+            );
+          }}
+        />
       </Grid>
-      <Grid xs={7}>
+      <Grid size={7}>
         <Typography noWrap={true}>{product.label}</Typography>
       </Grid>
-      <Grid
-        xs={product.options?.canRemoveFromCart === false ? 4 : 2}
-        alignItems="right"
-      >
-        <Typography>
-          {product.price > 0 ? (
-            money(product.price * product.quantity)
-          ) : (
-            <Typography color={"green"}>ฟรี</Typography>
-          )}
-        </Typography>
+      <Grid size={2} alignItems="right">
+        {product.price > 0 ? (
+          <Typography>{money(product.price * product.quantity)}</Typography>
+        ) : (
+          <Typography color={"green"}>ฟรี</Typography>
+        )}
       </Grid>
-      {product.options?.canRemoveFromCart !== false && (
-        <Grid xs={2}>
-          <IconButton onClick={confirmation.handleOpen}>
-            <DeleteTwoTone />
-          </IconButton>
-          <Confirmation {...confirmation.props} />
-        </Grid>
-      )}
+      <Grid size={2}>
+        <IconButton onClick={confirmation.handleOpen}>
+          <DeleteTwoTone />
+        </IconButton>
+        <Confirmation {...confirmation.props} />
+      </Grid>
     </Grid>
   );
 };
