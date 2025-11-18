@@ -13,10 +13,6 @@ import React from "react";
 import CartContainer from "./components/Cart";
 import CashierTab from "./components/CashierTab";
 
-/* const CartContainer = dynamic(() => import("./components/Cart"), {
-  ssr: false,
-}); */
-
 const CashierPage = () => {
   const [selectProduct, setSelectProduct] =
     React.useState<SearchProduct | null>(null);
