@@ -1,6 +1,5 @@
 "use client";
 import * as RoleActions from "@/actions/roles";
-import RoleFormDialog from "@/app/roles/components/roleFormDialog";
 import Datatable from "@/components/Datatable";
 import { useDialog } from "@/hooks/use-dialog";
 import * as ff from "@/libs/formatter";
@@ -9,6 +8,7 @@ import { EditTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Role } from "@prisma/client";
 import React, { useState } from "react";
+import RoleFormDialog from "./roleFormDialog";
 
 const RoleDatatable = () => {
   const editDialog = useDialog();

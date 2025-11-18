@@ -2,7 +2,7 @@
 import App, { Wrapper } from "@/layouts/App";
 import OverstockDatatable from "./components/datatable";
 
-const OverstockPage = async () => {
+const OverstockPage = () => {
   return (
     <Wrapper>
       <App.Header>

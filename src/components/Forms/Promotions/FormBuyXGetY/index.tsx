@@ -184,14 +184,14 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
         quantity: p.quantity,
       }))
     );
-  }, [needProducts, offerProducts]);
+  }, [needProducts, offerProducts, setValue]);
 
   useEffect(() => {
     if (status === PromotionStatus.IMMEDIATE) {
       const now = new Date();
       setValue("start_at", now);
     }
-  }, [status]);
+  }, [status, setValue]);
 
   const disabled = isLoading || props.disabled;
 

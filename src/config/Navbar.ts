@@ -34,18 +34,22 @@ const navItems = [
     key: "etc",
     title: "อื่นๆ",
     items: [
-      { path: Path("promotions") },
       { path: Path("overstocks") },
       { path: Path("borrows") },
       { path: Path("purchase") },
-      { path: Path("histories") },
     ],
   },
   {
     type: "group",
     key: "store",
     title: "ร้านค้า",
-    items: [{ path: Path("roles") }, { path: Path("employees") }],
+    items: [
+      { path: Path("promotions") },
+      { path: Path("histories") },
+
+      { path: Path("roles") },
+      { path: Path("employees") },
+    ],
   },
   {
     type: "group",

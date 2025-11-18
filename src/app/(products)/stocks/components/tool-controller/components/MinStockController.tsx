@@ -1,6 +1,6 @@
-import { ImportControllerProps, ImportType } from "@/app/stocks/import";
 import { Checkbox, FormControlLabel, Stack, TextField } from "@mui/material";
 import React, { useEffect } from "react";
+import { ImportControllerProps, ImportType } from "../../../import";
 
 const MinStockController = ({ setPayload }: ImportControllerProps) => {
   const [isCheck, setIsCheck] = React.useState<boolean>(true);

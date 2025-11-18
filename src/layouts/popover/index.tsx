@@ -50,7 +50,7 @@ function UserPopover({
         variant: "error",
       });
     }
-  }, [router, enqueueSnackbar, onClose, dispatch, clearProductCart, setStocks]);
+  }, [router, enqueueSnackbar, onClose, dispatch, setStocks]);
 
   return (
     <Popover

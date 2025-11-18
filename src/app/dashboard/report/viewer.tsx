@@ -1,8 +1,7 @@
 "use client";
 import { ProductOrder } from "@/actions/dashboard/getProductOrder";
-import { DashboardDocument } from "@/app/report/dashboard";
+import DashboardDocument from "@/documents/DashboardDocument";
 import dynamic from "next/dynamic";
-import React from "react";
 
 interface DashboardReportViewerProps {
   products: ProductOrder[];

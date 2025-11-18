@@ -1,38 +1,27 @@
 "use client";
-import Receipt, { ReceiptProps } from "@/app/report/receipt";
+import Loading from "@/components/loading";
+import ReceiptDocument, {
+  ReceiptDocumentProps,
+} from "@/documents/ReceiptDocument";
 import { number } from "@/libs/formatter";
 import { ReceiptTwoTone } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  LinearProgress,
-  Typography,
-} from "@mui/material";
-import { OrderProduct } from "@prisma/client";
-import { PDFDownloadLink, PDFViewer } from "@react-pdf/renderer";
+import { Button } from "@mui/material";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 import { useParams } from "next/navigation";
-import React from "react";
 
-interface ReceiptControllerProps extends ReceiptProps{}
+interface ReceiptControllerProps extends ReceiptDocumentProps {}
 
 const ReceiptController = (props: ReceiptControllerProps) => {
   const { id } = useParams<{ id: string }>();
 
   return (
     <PDFDownloadLink
-      document={<Receipt {...props} />}
+      document={<ReceiptDocument {...props} />}
       fileName={`ใบเสร็จบิลที่ #${number(+id)}`}
     >
       {({ loading }) =>
         loading ? (
-          <Box
-            sx={{
-              width: "100px",
-            }}
-          >
-            <LinearProgress />
-          </Box>
+          <Loading centered />
         ) : (
           <Button startIcon={<ReceiptTwoTone />}>ใบเสร็จ</Button>
         )

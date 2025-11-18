@@ -77,7 +77,7 @@ const useObtainPromotionOffer = ({
 
       setMergedPromotionQuantities(merged);
     }
-  }, [data, isLoading]);
+  }, [data, isLoading, products]);
 
   return {
     data: obtainPromotionOffers,

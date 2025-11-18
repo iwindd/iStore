@@ -1,9 +1,9 @@
 "use client";
-import RoleFormDialog from "@/app/roles/components/roleFormDialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import RoleFormDialog from "./roleFormDialog";
 
 type AddRoleControllerProps = {
   role?: any;

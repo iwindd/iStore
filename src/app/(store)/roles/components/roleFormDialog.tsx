@@ -1,8 +1,5 @@
 import * as RoleActions from "@/actions/roles";
-import TreeViewPermissionItems, {
-  treeViewPermissionAllIds,
-  TreeViewPermissionDefaultItems,
-} from "@/app/roles/components/config/permissionItems";
+
 import { PermissionEnum } from "@/enums/permission";
 import { getRawPermissions } from "@/libs/permission";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -29,6 +26,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useForm } from "react-hook-form";
+import TreeViewPermissionItems, {
+  treeViewPermissionAllIds,
+  TreeViewPermissionDefaultItems,
+} from "./config/permissionItems";
 
 type RoleWithPermissions = Prisma.RoleGetPayload<{
   include: { permissions: true };

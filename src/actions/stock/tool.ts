@@ -4,7 +4,7 @@ import {
   ImportFromStockId,
   ImportPayload,
   ImportType,
-} from "@/app/stocks/import";
+} from "@/app/(products)/stocks/import";
 import { StockItem } from "@/atoms/stock";
 import { StockPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
