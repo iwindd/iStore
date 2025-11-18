@@ -1,16 +1,24 @@
-import cartReducer from "@/reducers/cartReducer";
+import cartReducer, { CartState } from "@/reducers/cartReducer";
+import dashboardReducer from "@/reducers/dashboardReducer";
 import { configureStore } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
+import persistReducer from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
+
 const persistConfig = {
   key: "root",
   storage,
 };
 
+const persistedCartReducer = persistReducer<CartState>(
+  persistConfig,
+  cartReducer
+);
+
 export const store = () => {
   return configureStore({
     reducer: {
-      cart: persistReducer(persistConfig, cartReducer),
+      cart: persistedCartReducer,
+      dashboard: dashboardReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

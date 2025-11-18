@@ -1,16 +1,23 @@
-import { number } from '@/libs/formatter'
-import { Card, CardContent, CardHeader, Chip, List, ListItem, ListItemText } from '@mui/material'
-import React from 'react'
+import { number } from "@/libs/formatter";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+} from "@mui/material";
 
-export interface OrderProduct{
-  id: number,
-  serial: string,
-  label: string,
-  orders: number,
+export interface OrderProduct {
+  id: number;
+  serial: string;
+  label: string;
+  orders: number;
 }
 
 interface BestSellerProductsProps {
-  products: OrderProduct[]
+  products: OrderProduct[];
 }
 
 const BestSellerProducts = ({ products }: BestSellerProductsProps) => {
@@ -18,14 +25,18 @@ const BestSellerProducts = ({ products }: BestSellerProductsProps) => {
     <Card>
       <CardHeader title="สินค้าขายดี" />
       <CardContent sx={{ p: 0 }}>
-        <List sx={{ width: '100%', px: 2 }}>
-          {products.map((product) => (
+        <List sx={{ width: "100%", px: 2 }}>
+          {products.slice(0, 7).map((product) => (
             <ListItem
               key={product.id}
               disableGutters
               disablePadding
               secondaryAction={
-                <Chip label={number(product.orders)} size='small' color='primary' />
+                <Chip
+                  label={number(product.orders)}
+                  size="small"
+                  color="primary"
+                />
               }
             >
               <ListItemText
@@ -37,7 +48,7 @@ const BestSellerProducts = ({ products }: BestSellerProductsProps) => {
         </List>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default BestSellerProducts
+export default BestSellerProducts;
