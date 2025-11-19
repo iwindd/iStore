@@ -155,7 +155,7 @@ const DashboardDocument = ({
           </View>
         </View>
         <Divider fixed />
-        {[...products, ...products].map((product) => (
+        {products.map((product) => (
           <View key={`${product.key}`} style={styles.itemRow}>
             <View style={styles.row2}>
               <Text style={styles.item}>{`${product.label} (${
