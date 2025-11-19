@@ -24,9 +24,7 @@ const getProductOrder = async (): Promise<ProductOrder[]> => {
       },
       where: {
         store_id: user.store,
-        creator_id: !user.hasPermission(HistoryPermissionEnum.READ)
-          ? user.userStoreId
-          : undefined,
+        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
         ...(await getFilterRange()),
       },
       select: {
@@ -67,6 +65,7 @@ const getProductOrder = async (): Promise<ProductOrder[]> => {
       a.serial.localeCompare(b.serial)
     );
   } catch (error) {
+    console.error("getProductOrder error:", error);
     return [];
   }
 };
