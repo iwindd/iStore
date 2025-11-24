@@ -1,6 +1,6 @@
 "use client";
+import { useInterface } from "@/providers/InterfaceProvider";
 import { SignInSchema, SignInValues } from "@/schema/Signin";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   LoginTwoTone,
@@ -10,10 +10,8 @@ import {
 import {
   Avatar,
   Button,
-  Checkbox,
   Container,
   Divider,
-  FormControlLabel,
   InputAdornment,
   Link,
   Paper,
@@ -21,11 +19,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import RouterLink from "next/link";
-import { useInterface } from "@/providers/InterfaceProvider";
+import { useRouter } from "next/navigation";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 const SignIn = () => {
   const { setBackdrop } = useInterface();
@@ -53,12 +50,11 @@ const SignIn = () => {
         redirect: false,
       });
 
-      if (resp && resp.ok) {
-        router.push("/");
-        router.refresh();
-      } else {
-        throw Error("no_response");
-      }
+      if (!resp || !resp.ok) throw Error("no_response");
+      if (resp.error != undefined) throw Error(resp.error);
+
+      router.push("/");
+      router.refresh();
     } catch (error) {
       resetField("password");
       setError(
@@ -114,8 +110,9 @@ const SignIn = () => {
                       <PeopleTwoTone />
                     </InputAdornment>
                   ),
-                }
-              }} />
+                },
+              }}
+            />
             <TextField
               type="password"
               fullWidth
@@ -130,8 +127,9 @@ const SignIn = () => {
                       <NumbersTwoTone />
                     </InputAdornment>
                   ),
-                }
-              }} />
+                },
+              }}
+            />
             {/* TODO:: Remember me, reset password        
             <Stack
               sx={{ width: "100%" }}
