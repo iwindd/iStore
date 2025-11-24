@@ -3,17 +3,14 @@ import { ButtonProps, Paper } from "@mui/material";
 import {
   DataGrid,
   DataGridProps,
-  GridCellParams,
   gridClasses,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
-  GridRowClassNameParams,
   GridSortModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
-import _ from "lodash";
 import React from "react";
 import thTHGrid from "./locale/datatable";
 
@@ -30,29 +27,23 @@ export interface TableFetch {
   filter: GridFilterModel;
 }
 
-export interface DatatableProps<T extends GridValidRowModel = any> {
+export interface DatatableProps<T extends GridValidRowModel = any>
+  extends DataGridProps {
   columns: GridColDef<T>[];
-  burger?: boolean;
-
-  loading?: boolean;
   name: string;
   height?: string | number;
-
   fetch: (payload: TableFetch, ...args: any) => any;
   bridge?: any[];
-
-  selectRow?: number;
-  setSelectRow?: React.Dispatch<React.SetStateAction<number>>;
-  processRowUpdate?: (newData: any, oldData: any) => void;
-  getRowClassName?: (params: GridRowClassNameParams) => string;
-  getCellClassName?: (params: GridCellParams) => string;
-
-  onDoubleClick?: (data: any) => void;
-  overwrite?: DataGridProps;
-  onExport?(): void;
 }
 
-const Datatable = (props: DatatableProps) => {
+const Datatable = ({
+  columns,
+  name,
+  height,
+  fetch,
+  bridge,
+  ...props
+}: DatatableProps) => {
   const [rows, setRows] = React.useState<any[]>([]);
   const [total, setTotal] = React.useState<number>(0);
   const [paginationModel, setPaginationModel] = React.useState({
@@ -66,21 +57,21 @@ const Datatable = (props: DatatableProps) => {
 
   const { data, isLoading } = useQuery({
     queryKey: [
-      props.name, // will be removed soon (use datatable:name instead)
-      `datatable:${props.name}`,
+      name, // will be removed soon (use datatable:name instead)
+      `datatable:${name}`,
       paginationModel,
       paginationModel,
       sortModel,
       filterModel,
     ],
     queryFn: async () => {
-      return await props.fetch(
+      return await fetch(
         {
           sort: sortModel,
           pagination: paginationModel,
           filter: filterModel,
         },
-        ...(props.bridge || [])
+        ...(bridge || [])
       );
     },
   });
@@ -102,31 +93,20 @@ const Datatable = (props: DatatableProps) => {
     }
   }, [data, setRows, setTotal]);
 
-  const processRowUpdateMiddleware = (newData: any, oldData: any) => {
-    if (!props.processRowUpdate) return oldData;
-    if (_.isEqual(newData, oldData)) return oldData;
-
-    return props.processRowUpdate(newData, oldData);
-  };
-
   return (
     <Paper
       sx={{
-        height: props.height ?? 700,
+        height: height ?? 700,
         width: "100%",
       }}
     >
       <DataGrid
         rows={rows}
-        columns={props.columns}
+        columns={columns}
         loading={isLoading || props.loading}
         rowCount={total}
         localeText={thTHGrid}
         pageSizeOptions={[15, 30, 50, 100]}
-        processRowUpdate={processRowUpdateMiddleware}
-        onRowDoubleClick={props.onDoubleClick}
-        getRowClassName={props.getRowClassName}
-        getCellClassName={props.getCellClassName}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
@@ -179,7 +159,7 @@ const Datatable = (props: DatatableProps) => {
         onPaginationModelChange={setPaginationModel}
         onSortModelChange={setSortModel}
         onFilterModelChange={setFilterModel}
-        {...props.overwrite}
+        {...props}
       />
     </Paper>
   );
