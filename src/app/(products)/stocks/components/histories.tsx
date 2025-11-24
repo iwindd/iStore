@@ -1,7 +1,9 @@
 "use client";
 import CancelStock from "@/actions/stock/cancel";
+import fetchStockDatatable, {
+  StockDatatableInstance,
+} from "@/actions/stock/fetchStockDatatable";
 import GetStock from "@/actions/stock/find";
-import GetStocks from "@/actions/stock/get";
 import ImportToolAction from "@/actions/stock/tool";
 import Datatable from "@/components/Datatable";
 import { StockPermissionEnum } from "@/enums/permission";
@@ -43,10 +45,10 @@ const HistoryDatatable = () => {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
-  const permissions = (stock: Stock) => ({
+  const permissions = (stock: StockDatatableInstance) => ({
     canCancelStock:
       user?.hasPermission(StockPermissionEnum.DELETE) ||
-      stock.creator_id === user?.userStoreId,
+      stock.creator?.id === user?.userStoreId,
     canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE),
   });
 
@@ -168,35 +170,35 @@ const HistoryDatatable = () => {
 
   const menu = {
     import: React.useCallback(
-      (row: Stock) => () => {
+      (row: StockDatatableInstance) => () => {
         importConfirmation.with(row.id);
         importConfirmation.handleOpen();
       },
       [importConfirmation]
     ),
     cancel: React.useCallback(
-      (row: Stock) => () => {
+      (row: StockDatatableInstance) => () => {
         cancelConfirmation.with(row.id);
         cancelConfirmation.handleOpen();
       },
       [cancelConfirmation]
     ),
     copy: React.useCallback(
-      (row: Stock) => () => {
+      (row: StockDatatableInstance) => () => {
         copyConfirmation.with(row.id);
         copyConfirmation.handleOpen();
       },
       [copyConfirmation]
     ),
     export: React.useCallback(
-      (row: Stock) => () => {
+      (row: StockDatatableInstance) => () => {
         onExport(row.id);
       },
       [onExport]
     ),
   };
 
-  const columns = (): GridColDef[] => {
+  const columns = (): GridColDef<StockDatatableInstance>[] => {
     return [
       {
         field: "action_at",
@@ -204,14 +206,14 @@ const HistoryDatatable = () => {
         headerName: "วันที่ทำรายการ",
         flex: 2,
         editable: false,
-        renderCell: (data: any) => ff.date(data.value),
+        renderCell: ({ row }) => ff.date(row.action_at),
       },
       {
         field: "creator",
         sortable: true,
         headerName: "ผู้สร้างรายการ",
         flex: 2,
-        renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
+        renderCell: ({ row }) => ff.text(row.creator?.user.name || "ไม่ระบุ"),
       },
       {
         field: "_count",
@@ -219,7 +221,7 @@ const HistoryDatatable = () => {
         headerName: "จำนวนสินค้า",
         flex: 2,
         editable: false,
-        renderCell: ({ value }) => `${ff.number(value.items)} รายการ`,
+        renderCell: ({ row }) => `${ff.number(row._count.products)} รายการ`,
       },
       {
         field: "note",
@@ -227,7 +229,7 @@ const HistoryDatatable = () => {
         headerName: "หมายเหตุ",
         flex: 3,
         editable: false,
-        renderCell: (data: any) => ff.text(data.value),
+        renderCell: ({ row }) => ff.text(row.note),
       },
       {
         field: "state",
@@ -235,14 +237,14 @@ const HistoryDatatable = () => {
         headerName: "สถานะ",
         flex: 2,
         editable: false,
-        renderCell: (data: any) => ff.stockState(data.value),
+        renderCell: ({ row }) => ff.stockState(row.state),
       },
       {
         field: "actions",
         type: "actions",
         headerName: "เครื่องมือ",
         flex: 1,
-        getActions: ({ row }: { row: Stock }) => [
+        getActions: ({ row }) => [
           <GridActionsCellItem
             key="import"
             icon={<UploadTwoTone />}
@@ -290,7 +292,7 @@ const HistoryDatatable = () => {
       <Datatable
         name={"stocks_histories"}
         columns={columns()}
-        fetch={GetStocks}
+        fetch={fetchStockDatatable}
         height={700}
         getCellClassName={(params) =>
           params.field == "state"
