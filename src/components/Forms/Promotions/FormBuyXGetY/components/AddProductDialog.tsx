@@ -5,6 +5,7 @@ import {
   AddProductDialogValues,
 } from "@/schema/Promotion/AddProductToOffer";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronRight } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -78,8 +79,13 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>ยกเลิก</Button>
-        <Button variant="contained" type="submit">
-          เพิ่ม
+        <Button
+          variant="contained"
+          type="submit"
+          color="success"
+          endIcon={<ChevronRight />}
+        >
+          เพิ่มสินค้านี้
         </Button>
       </DialogActions>
     </Dialog>
