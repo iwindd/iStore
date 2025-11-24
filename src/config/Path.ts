@@ -129,6 +129,13 @@ const Paths = {
     icon: "employee",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.EMPLOYEE),
   },
+  ["store"]: {
+    key: "store",
+    title: "ร้านค้า",
+    href: "/store",
+    icon: "store",
+    matcher: { type: "startsWith", href: "/store" },
+  },
   ["promotions"]: {
     key: "promotions",
     title: "โปรโมชั่น",

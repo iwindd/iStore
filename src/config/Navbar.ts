@@ -46,9 +46,9 @@ const navItems = [
     items: [
       { path: Path("promotions") },
       { path: Path("histories") },
-
       { path: Path("roles") },
       { path: Path("employees") },
+      { path: Path("store") },
     ],
   },
   {

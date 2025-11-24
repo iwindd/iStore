@@ -15,7 +15,8 @@ model Store {
   district   String?
   area       String?
   province   String?
-  postalcode String?
+  postalcode    String?
+  lineBotConfig LineBotConfig?
 
   @@map("stores")
 }

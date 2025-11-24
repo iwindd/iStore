@@ -1,0 +1,12 @@
+model LineBotConfig {
+  id                     String   @id @default(cuid())
+  lineUserId             String
+  lineChannelAccessToken String
+  lineChannelSecret      String
+  store_id               String   @unique
+  store                  Store    @relation(fields: [store_id], references: [id])
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+
+  @@map("line_bot_configs")
+}
