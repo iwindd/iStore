@@ -11,8 +11,9 @@ import { PriceCard } from "./components/card/PriceCard";
 import { ProfitCard } from "./components/card/ProfitCard";
 import { HistoryProductTable } from "./components/table/table-product";
 
-const History = async ({ params }: { params: { id: string } }) => {
-  const history = await GetHistory(Number(params.id));
+const History = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
+  const history = await GetHistory(+id);
   const session = await getServerSession();
 
   if (!history.success || !session) throw new Error("ERROR");
