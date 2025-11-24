@@ -51,8 +51,6 @@
     "react-dom": "19.2.0",
     "react-hook-form": "^7.47.0",
     "react-redux": "^9.2.0",
-    "recoil": "^0.7.7",
-    "recoil-persist": "^5.1.0",
     "redux-persist": "^6.0.0",
     "zod": "^3.23.8"
   },
