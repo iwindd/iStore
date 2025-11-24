@@ -128,11 +128,7 @@ const OverstockDatatable = () => {
             icon={<CheckTwoTone />}
             onClick={menu.patch(row.id)}
             label="สำเร็จรายการ"
-            sx={{
-              display: !permissions(row).canUpdateOverstock
-                ? "none"
-                : undefined,
-            }}
+            disabled={!permissions(row).canUpdateOverstock}
             showInMenu
           />,
         ],

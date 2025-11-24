@@ -20,7 +20,7 @@ import {
   TextField,
 } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Borrow } from "@prisma/client";
+import { Borrow, BorrowState } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React, { useEffect } from "react";
@@ -84,7 +84,7 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
         paper: {
           component: "form",
           onSubmit: onSubmit,
-        }
+        },
       }}
     >
       <DialogTitle>อัพเดทรายการเบิก</DialogTitle>
@@ -98,7 +98,7 @@ const BorrowUpdateDialog = ({ open, onClose, borrow }: BorrowUpdateProps) => {
             fullWidth
             required
             slotProps={{
-              input: { inputProps: { min: 1, max: productLeft } }
+              input: { inputProps: { min: 1, max: productLeft } },
             }}
           />
         </Stack>
@@ -175,7 +175,7 @@ const BorrowDatatable = () => {
     ),
   };
 
-  const columns = (): GridColDef[] => {
+  const columns = (): GridColDef<Borrow>[] => {
     return [
       {
         field: "created_at",
@@ -199,7 +199,7 @@ const BorrowDatatable = () => {
         headerName: "สินค้า",
         flex: 3,
         editable: false,
-        renderCell: ({ row }) => row.product.label,
+        renderCell: ({ row }: { row: any }) => row.product.label,
       },
       {
         field: "note",
@@ -241,34 +241,28 @@ const BorrowDatatable = () => {
         headerName: "เครื่องมือ",
         flex: 1,
         getActions: ({ row }: { row: Borrow }) => [
-          ...(row.status == "PROGRESS"
-            ? [
-                <GridActionsCellItem
-                  key="edit"
-                  icon={<EditTwoTone />}
-                  onClick={menu.edit(row)}
-                  label="อัพเดท"
-                  sx={{
-                    display: !permissions(row).canUpdateBorrow
-                      ? "none"
-                      : undefined,
-                  }}
-                  showInMenu
-                />,
-                <GridActionsCellItem
-                  key="cancel"
-                  icon={<CancelTwoTone />}
-                  onClick={menu.cancel(row)}
-                  label="ยกเลิก"
-                  sx={{
-                    display: !permissions(row).canCancelBorrow
-                      ? "none"
-                      : undefined,
-                  }}
-                  showInMenu
-                />,
-              ]
-            : []),
+          <GridActionsCellItem
+            key="edit"
+            icon={<EditTwoTone />}
+            onClick={menu.edit(row)}
+            label="อัพเดท"
+            disabled={
+              row.status != BorrowState.PROGRESS ||
+              !permissions(row).canUpdateBorrow
+            }
+            showInMenu
+          />,
+          <GridActionsCellItem
+            key="cancel"
+            icon={<CancelTwoTone />}
+            onClick={menu.cancel(row)}
+            label="ยกเลิก"
+            disabled={
+              row.status != BorrowState.PROGRESS ||
+              !permissions(row).canCancelBorrow
+            }
+            showInMenu
+          />,
         ],
       },
     ];

@@ -131,9 +131,7 @@ const CategoryDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
-            sx={{
-              display: !permissions(row).canUpdateCategory ? "none" : undefined,
-            }}
+            disabled={!permissions(row).canUpdateCategory}
             showInMenu
           />,
           <GridActionsCellItem

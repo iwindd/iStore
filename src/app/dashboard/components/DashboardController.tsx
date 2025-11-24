@@ -84,7 +84,7 @@ const DashboardController = ({
       dispatch(setOrders(data.orders));
       dispatch(setBorrowCount(data.borrows as number));
       dispatch(setProducts(data.products));
-      dispatch(setStocks(data.stocks));
+      dispatch(setStocks(+data.stocks));
     }
   }, [data]);
 

@@ -159,9 +159,6 @@ const thTHGrid: Partial<GridLocaleText> = {
   expandDetailPanel: "Expand",
   collapseDetailPanel: "Collapse",
 
-  // Used core components translation keys
-  MuiTablePagination: {},
-
   // Row reordering text
   rowReorderingHeaderName: "Row reordering",
 
