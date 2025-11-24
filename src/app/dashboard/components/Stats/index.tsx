@@ -127,16 +127,22 @@ const Stats = () => {
   return (
     <Grid container spacing={1}>
       {StatConfig.map((stat) => (
-        <Grid key={stat.name} size={{ xs: 12, sm: 6, lg: 3 }}>
-          {(!stat.permission || user.hasPermission(stat.permission)) && (
-            <TotalStat
-              href={stat.path ? stat.path.href : undefined}
-              label={stat.label}
-              color={stat.color || "primary"}
-              icon={stat.icon}
-              value={stat.render(stats[stat.value])}
-            />
-          )}
+        <Grid
+          key={stat.name}
+          size={{ xs: 12, sm: 6, lg: 3 }}
+          display={
+            stat.permission && !user.hasPermission(stat.permission)
+              ? "none"
+              : undefined
+          }
+        >
+          <TotalStat
+            href={stat.path ? stat.path.href : undefined}
+            label={stat.label}
+            color={stat.color || "primary"}
+            icon={stat.icon}
+            value={stat.render(stats[stat.value])}
+          />
         </Grid>
       ))}
     </Grid>
