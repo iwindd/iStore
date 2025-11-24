@@ -1,95 +1,132 @@
 "use server";
-import { StockItem } from "@/atoms/stock";
+import STOCK_CONFIG from "@/config/Stock";
 import { StockPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
+import { StockProduct } from "@/reducers/stockReducer";
+import { StockState } from "@prisma/client";
+import _ from "lodash";
 
-interface StockItemMinimal {
-  changed_by: number;
-  product_id: number;
-  stock_id?: number;
-}
-
-export const UpdateStockProducts = async (
-  payload: StockItemMinimal[],
-  batchSize = 20
+export const updateStockProducts = async (
+  products: {
+    product_id: number;
+    quantity: number;
+  }[],
+  CHUNK_SIZE = STOCK_CONFIG.UPDATE_STOCK_CHUNK_SIZE
 ) => {
-  for (let i = 0; i < payload.length; i += batchSize) {
-    const batch = payload.slice(i, i + batchSize);
-    await db.$transaction(
-      batch.map((product) => {
-        return db.product.update({
+  const chunks = _.chunk(products, CHUNK_SIZE);
+  const start_time = Date.now();
+
+  for (const [_, chunk] of chunks.entries()) {
+    await db.$transaction(async () => {
+      for (const payload of chunk) {
+        await db.product.update({
           where: {
-            id: product.product_id,
+            id: payload.product_id,
             deleted_at: null,
           },
-          data: { stock: { increment: product.changed_by } },
+          data: {
+            stock:
+              payload.quantity < 0
+                ? { decrement: Math.abs(payload.quantity) }
+                : { increment: payload.quantity },
+          },
         });
-      })
-    );
+      }
+    });
   }
+
+  const end_time = Date.now();
+  console.warn(
+    `${products.length} products updated in ${end_time - start_time} ms`
+  );
 };
 
-export const validateProducts = async (
-  payload: StockItem[],
-  storeId: string
+const stockCommit = async (
+  products: StockProduct[],
+  stockId?: number,
+  options?: {
+    note?: string;
+    updateStock?: boolean;
+  }
 ) => {
-  const rawProducts = await db.product.findMany({
-    where: {
-      store_id: storeId,
-      id: { in: payload.map((p) => p.id) },
-      deleted_at: null,
-    },
-    select: {
-      id: true,
-    },
-  });
-
-  const validated = rawProducts.map((product) => {
-    const data = payload.find((p) => p.id == product.id) as StockItem;
-    return {
-      changed_by: data.payload,
-      product_id: product.id,
-    };
-  }) as StockItemMinimal[];
-
-  return validated;
-};
-
-const Commit = async (
-  payload: StockItem[],
-  stockId: number,
-  note?: string
-): Promise<ActionResponse<StockItem[]>> => {
+  options = options || {};
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.UPDATE))
+    if (!user.hasPermission(StockPermissionEnum.CREATE))
       throw new Error("Forbidden");
-    payload = payload.slice(0, 50);
+    if (options.updateStock && !user.hasPermission(StockPermissionEnum.UPDATE))
+      throw new Error("Forbidden");
 
-    const data = await db.stock.update({
+    const stockState = options.updateStock
+      ? StockState.SUCCESS
+      : StockState.PROGRESS;
+
+    const stock = await db.stock.upsert({
       where: {
-        id: stockId,
+        id: stockId || 0,
+        store_id: user.store,
+        state: StockState.PROGRESS,
       },
-      data: {
-        note: note || "",
-        state: "SUCCESS",
+      create: {
+        note: options.note || "",
+        state: stockState,
+        store_id: user.store,
+        creator_id: user.userStoreId,
+        products: {
+          create: products.map((product) => ({
+            changed_by: product.quantity,
+            product: {
+              connect: {
+                id: product.id,
+              },
+            },
+          })),
+        },
+      },
+      update: {
+        note: options.note,
+        state: stockState,
+        ...(stockState != StockState.SUCCESS && {
+          products: {
+            deleteMany: {},
+            create: products.map((product) => ({
+              changed_by: product.quantity,
+              product: {
+                connect: {
+                  id: product.id,
+                },
+              },
+            })),
+          },
+        }),
       },
       select: {
-        id: true,
         products: {
-          select: { product_id: true, changed_by: true },
+          select: {
+            product_id: true,
+            changed_by: true,
+          },
         },
       },
     });
 
-    await UpdateStockProducts(data.products);
-    return { success: true, data: payload };
+    if (options.updateStock)
+      await updateStockProducts(
+        stock.products.map((p) => {
+          return {
+            product_id: p.product_id,
+            quantity: p.changed_by,
+          };
+        })
+      );
+
+    return true;
   } catch (error) {
-    return ActionError(error) as ActionResponse<StockItem[]>;
+    console.error(error);
+    return null;
   }
 };
 
-export default Commit;
+export default stockCommit;

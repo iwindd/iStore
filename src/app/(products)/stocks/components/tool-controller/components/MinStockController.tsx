@@ -1,3 +1,4 @@
+"use client";
 import { Checkbox, FormControlLabel, Stack, TextField } from "@mui/material";
 import React, { useEffect } from "react";
 import { ImportControllerProps, ImportType } from "../../../import";
@@ -14,7 +15,7 @@ const MinStockController = ({ setPayload }: ImportControllerProps) => {
     setPayload({
       type: ImportType.FromMinStock,
       product_min_stock: isCheck,
-      value: +(value || 0),
+      value: +(value || 10),
     });
   }, [isCheck, value, setPayload]);
 

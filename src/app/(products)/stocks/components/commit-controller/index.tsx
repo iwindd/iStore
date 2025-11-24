@@ -1,5 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
+import { StockPermissionEnum } from "@/enums/permission";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useAuth } from "@/hooks/use-auth";
+import { useDialog } from "@/hooks/use-dialog";
+import { number } from "@/libs/formatter";
+import { useInterface } from "@/providers/InterfaceProvider";
+import { commitStock, resetStock } from "@/reducers/stockReducer";
+import { SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -14,42 +21,50 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useDialog } from "@/hooks/use-dialog";
-import { SaveTwoTone } from "@mui/icons-material";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { useStock } from "@/hooks/use-stock";
-import { enqueueSnackbar } from "notistack";
-import { number } from "@/libs/formatter";
-import GetStock from "@/actions/stock/find";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/use-auth";
-import { StockPermissionEnum } from "@/enums/permission";
+import { enqueueSnackbar } from "notistack";
+import React from "react";
 
 interface CommitDialogProps {
   onClose: () => void;
   open: boolean;
 }
 
+enum CommitActionType {
+  COMMIT = 1,
+  SAVE = 0,
+}
+
 const CommitDialog = ({
   open,
   onClose,
 }: CommitDialogProps): React.JSX.Element => {
-  const [type, setType] = React.useState<0 | 1>(0);
+  const [actionType, setActionType] = React.useState<CommitActionType>(
+    CommitActionType.SAVE
+  );
   const [note, setNote] = React.useState<string>("");
   const { isBackdrop, setBackdrop } = useInterface();
-  const { commit, target, setStocks, setTarget } = useStock();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const dispatch = useAppDispatch();
+  const currentStockId = useAppSelector((state) => state.stock.id);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setType(+event.target.value >= 1 ? 1 : 0);
+  const handleChange = (event: SelectChangeEvent<CommitActionType>) => {
+    const {
+      target: { value },
+    } = event;
+    setActionType(value);
   };
 
   const onSubmit = async () => {
     setBackdrop(true);
     try {
-      const state = await commit(target ? true : type == 1, note);
-      if (!state) throw Error("error");
+      dispatch(
+        commitStock({
+          note: note,
+          updateStock: actionType == CommitActionType.COMMIT,
+        })
+      );
       await queryClient.refetchQueries({
         queryKey: ["stocks_histories"],
         type: "active",
@@ -68,12 +83,11 @@ const CommitDialog = ({
   };
 
   const onClear = React.useCallback(() => {
-    setStocks([]);
-    setTarget(null);
+    dispatch(resetStock());
     onClose();
-  }, [setStocks, setTarget, onClose]);
+  }, [onClose]);
 
-  const fetchData = React.useCallback(() => {
+  /*   const fetchData = React.useCallback(() => {
     if (target) {
       setType(1);
       GetStock(target)
@@ -93,7 +107,7 @@ const CommitDialog = ({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
+ */
   return (
     <Dialog
       open={open && !isBackdrop}
@@ -103,7 +117,7 @@ const CommitDialog = ({
       disableRestoreFocus
     >
       <DialogTitle>
-        จัดการสต๊อก{target && `หมายเลข #${number(target)}`}
+        จัดการสต๊อก{currentStockId && `หมายเลข #${number(currentStockId)}`}
       </DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
@@ -112,13 +126,17 @@ const CommitDialog = ({
               <InputLabel id="selector-label">รูปแบบ</InputLabel>
               <Select
                 labelId="selector-label"
-                value={String(type)}
+                value={actionType}
                 label="รูปแบบ"
                 onChange={handleChange}
-                disabled={target != null}
               >
-                <MenuItem value={0}>บันทึก</MenuItem>
-                <MenuItem value={1} disabled={!user?.hasPermission(StockPermissionEnum.UPDATE)}>จัดการทันที</MenuItem>
+                <MenuItem value={CommitActionType.SAVE}>บันทึก</MenuItem>
+                <MenuItem
+                  value={CommitActionType.COMMIT}
+                  disabled={!user?.hasPermission(StockPermissionEnum.UPDATE)}
+                >
+                  จัดการทันที
+                </MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -132,8 +150,17 @@ const CommitDialog = ({
       </DialogContent>
       <DialogActions>
         <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
-          <Button color="secondary" onClick={onClose}>ปิด</Button>
-          <Button color="success" variant="contained" startIcon={<SaveTwoTone/>} onClick={onSubmit}>ตกลง</Button>
+          <Button color="secondary" onClick={onClose}>
+            ปิด
+          </Button>
+          <Button
+            color="success"
+            variant="contained"
+            startIcon={<SaveTwoTone />}
+            onClick={onSubmit}
+          >
+            ตกลง
+          </Button>
         </Stack>
       </DialogActions>
     </Dialog>

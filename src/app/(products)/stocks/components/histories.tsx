@@ -5,12 +5,13 @@ import GetStocks from "@/actions/stock/get";
 import ImportToolAction from "@/actions/stock/tool";
 import Datatable from "@/components/Datatable";
 import { StockPermissionEnum } from "@/enums/permission";
+import { useAppDispatch } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useExport } from "@/hooks/use-export";
-import { useStock } from "@/hooks/use-stock";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { setStockId, setStockProducts } from "@/reducers/stockReducer";
 import {
   CancelTwoTone,
   DownloadTwoTone,
@@ -18,7 +19,7 @@ import {
   UploadTwoTone,
 } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Stock } from "@prisma/client";
+import { Stock, StockState } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
@@ -26,11 +27,11 @@ import { ImportFromStockId, ImportType } from "../import";
 
 const formatCellColor = (status: Stock["state"]) => {
   switch (status) {
-    case "PROGRESS":
+    case StockState.PROGRESS:
       return "warning";
-    case "SUCCESS":
+    case StockState.SUCCESS:
       return "success";
-    case "CANCEL":
+    case StockState.CANCEL:
       return "secondary";
     default:
       return "secondary";
@@ -39,9 +40,9 @@ const formatCellColor = (status: Stock["state"]) => {
 
 const HistoryDatatable = () => {
   const { setBackdrop } = useInterface();
-  const { setStocks, setTarget } = useStock();
-  const queryClient = useQueryClient();
   const { user } = useAuth();
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const permissions = (stock: Stock) => ({
     canCancelStock:
       user?.hasPermission(StockPermissionEnum.DELETE) ||
@@ -96,8 +97,7 @@ const HistoryDatatable = () => {
           id: id,
         };
         const resp = await ImportToolAction(payload);
-        if (!resp.success) throw Error(resp.message);
-        setStocks(resp.data);
+        dispatch(setStockProducts(resp));
         enqueueSnackbar(`สร้างรายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
           variant: "success",
         });
@@ -119,14 +119,13 @@ const HistoryDatatable = () => {
     confirm: "นำเข้า",
     onConfirm: async (id: number) => {
       try {
-        const payload: ImportFromStockId = {
+        const resp = await ImportToolAction({
           type: ImportType.FromStockId,
           id: id,
-        };
-        const resp = await ImportToolAction(payload);
-        if (!resp.success) throw Error(resp.message);
-        setTarget(payload.id);
-        setStocks(resp.data);
+        });
+
+        dispatch(setStockProducts(resp));
+        dispatch(setStockId(id));
         enqueueSnackbar(`นำเข้ารายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
           variant: "success",
         });
@@ -244,42 +243,36 @@ const HistoryDatatable = () => {
         headerName: "เครื่องมือ",
         flex: 1,
         getActions: ({ row }: { row: Stock }) => [
-          ...(row.state == "PROGRESS"
-            ? [
-                <GridActionsCellItem
-                  key="import"
-                  icon={<UploadTwoTone />}
-                  onClick={menu.import(row)}
-                  label="นำเข้า"
-                  showInMenu
-                />,
-                <GridActionsCellItem
-                  key="cancel"
-                  icon={<CancelTwoTone />}
-                  onClick={menu.cancel(row)}
-                  label="ยกเลิก"
-                  sx={{
-                    display: !permissions(row).canCancelStock
-                      ? "none"
-                      : undefined,
-                  }}
-                  showInMenu
-                />,
-              ]
-            : [
-                <GridActionsCellItem
-                  key="copy"
-                  icon={<RecyclingTwoTone />}
-                  onClick={menu.copy(row)}
-                  label="สร้างรายการอีกครั้ง"
-                  sx={{
-                    display: !permissions(row).canCreateStock
-                      ? "none"
-                      : undefined,
-                  }}
-                  showInMenu
-                />,
-              ]),
+          <GridActionsCellItem
+            key="import"
+            icon={<UploadTwoTone />}
+            onClick={menu.import(row)}
+            label="นำเข้า"
+            disabled={row.state != StockState.PROGRESS}
+            showInMenu
+          />,
+          <GridActionsCellItem
+            key="cancel"
+            icon={<CancelTwoTone />}
+            onClick={menu.cancel(row)}
+            disabled={
+              !permissions(row).canCancelStock ||
+              row.state != StockState.PROGRESS
+            }
+            label="ยกเลิกรายการนี้"
+            showInMenu
+          />,
+          <GridActionsCellItem
+            key="copy"
+            icon={<RecyclingTwoTone />}
+            onClick={menu.copy(row)}
+            label="สร้างรายการอีกครั้ง"
+            disabled={
+              !permissions(row).canCreateStock ||
+              row.state == StockState.PROGRESS
+            }
+            showInMenu
+          />,
           <GridActionsCellItem
             key="export"
             icon={<DownloadTwoTone />}

@@ -5,18 +5,18 @@ import {
   ImportPayload,
   ImportType,
 } from "@/app/(products)/stocks/import";
-import { StockItem } from "@/atoms/stock";
+import STOCK_CONFIG from "@/config/Stock";
 import { StockPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
+import { StockProduct } from "@/reducers/stockReducer";
 
 const ImportMinStock = async (
   payload: ImportFromMinStockPayload,
   user: User
-): Promise<StockItem[]> => {
-  const data = await db.product.findMany({
+) => {
+  const products = await db.product.findMany({
     where: {
       store_id: user.store,
       stock: {
@@ -30,69 +30,85 @@ const ImportMinStock = async (
       id: true,
       serial: true,
       label: true,
+      price: true,
+      cost: true,
       stock: true,
+      stock_min: true,
+      category: {
+        select: {
+          label: true,
+          overstock: true,
+        },
+      },
     },
-    take: 50,
+    take: STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK,
     orderBy: {
       sold: "desc",
     },
   });
 
-  return data.map((p) => ({ ...p, payload: 0 })) as StockItem[];
+  return products.map((p) => ({
+    id: p.id,
+    quantity: payload.changedBy || p.stock_min,
+    data: p,
+  }));
 };
 
-const ImportStockId = async (
-  payload: ImportFromStockId,
-  user: User
-): Promise<StockItem[]> => {
-  const validated = await db.stock.count({
+const ImportStockId = async (payload: ImportFromStockId, user: User) => {
+  const validated = await db.stock.findFirstOrThrow({
     where: { id: payload.id, store_id: user.store },
-  });
-  if (!validated) throw Error("not_found_stock");
-  const data = await db.stockProduct.findMany({
-    where: {
-      stock_id: payload.id,
-      product: {
-        deleted_at: null,
-      },
-    },
     select: {
-      changed_by: true,
-      product: {
+      products: {
         select: {
-          id: true,
-          serial: true,
-          label: true,
-          stock: true,
+          changed_by: true,
+          product: {
+            select: {
+              id: true,
+              serial: true,
+              label: true,
+              price: true,
+              cost: true,
+              stock: true,
+              category: {
+                select: {
+                  label: true,
+                  overstock: true,
+                },
+              },
+            },
+          },
         },
       },
     },
   });
 
-  return data.map((p) => ({
-    payload: p.changed_by,
-    ...p.product,
-  })) as StockItem[];
+  return validated.products.map((p) => ({
+    id: p.product.id,
+    quantity: p.changed_by,
+    data: p.product,
+  }));
 };
 
 const ImportToolAction = async (
   payload: ImportPayload
-): Promise<ActionResponse<StockItem[]>> => {
+): Promise<StockProduct[]> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(StockPermissionEnum.CREATE))
       throw new Error("Forbidden");
-    let resp: StockItem[] = [];
 
-    if (payload.type == ImportType.FromMinStock)
-      resp = await ImportMinStock(payload, user);
-    if (payload.type == ImportType.FromStockId)
-      resp = await ImportStockId(payload, user);
-
-    return { success: true, data: resp };
+    switch (payload.type) {
+      case ImportType.FromStockId:
+        return await ImportStockId(payload, user);
+      case ImportType.FromMinStock:
+        return await ImportMinStock(payload, user);
+      default:
+        throw new Error("Invalid payload");
+    }
   } catch (error) {
-    return ActionError(error) as ActionResponse<StockItem[]>;
+    console.error(error);
+    return [];
   }
 };
 

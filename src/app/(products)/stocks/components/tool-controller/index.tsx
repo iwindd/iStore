@@ -1,10 +1,13 @@
 "use client";
 import ImportToolAction from "@/actions/stock/tool";
+import STOCK_CONFIG from "@/config/Stock";
 import { StockPermissionEnum } from "@/enums/permission";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
-import { useStock } from "@/hooks/use-stock";
+import { number } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { setStockProducts } from "@/reducers/stockReducer";
 import { PanToolAlt } from "@mui/icons-material";
 import {
   Alert,
@@ -24,7 +27,12 @@ import {
 } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
-import { ImportPayload, Imports, ImportType } from "../../import";
+import {
+  ImportFromMinStockPayload,
+  ImportPayload,
+  Imports,
+  ImportType,
+} from "../../import";
 import MinStockController from "./components/MinStockController";
 
 interface SelecterDialogProps {
@@ -38,9 +46,10 @@ const SelecterDialog = ({
 }: SelecterDialogProps): React.JSX.Element => {
   const [type, setType] = React.useState<ImportType>(ImportType.FromMinStock);
   const [payload, setPayload] = React.useState<ImportPayload | null>(null);
-  const [changedBy, setChangedBy] = React.useState<string>("10");
+  const [changedBy, setChangedBy] = React.useState<number>(10);
   const { isBackdrop, setBackdrop } = useInterface();
-  const { stocks, setStocks } = useStock();
+  const dispatch = useAppDispatch();
+  const stockProducts = useAppSelector((state) => state.stock.products);
 
   const handleChange = (event: SelectChangeEvent) => {
     setType(+event.target.value);
@@ -53,13 +62,15 @@ const SelecterDialog = ({
     setBackdrop(true);
 
     try {
-      const resp = await ImportToolAction(payload);
-      if (!resp.success) throw Error(resp.message);
-
-      setStocks(resp.data.map((p) => ({ ...p, payload: +changedBy })));
+      const resp = await ImportToolAction({
+        ...payload,
+        changedBy,
+      } as ImportFromMinStockPayload);
+      dispatch(setStockProducts(resp));
       enqueueSnackbar("เพิ่มสินค้าสำเร็จ!", { variant: "success" });
       onClose();
     } catch (error) {
+      console.error(error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
@@ -99,7 +110,7 @@ const SelecterDialog = ({
           <TextField
             type="number"
             value={changedBy}
-            onChange={(e) => setChangedBy(e.target.value)}
+            onChange={(e) => setChangedBy(+e.target.value)}
             fullWidth
             label="เปลี่ยนแปลงโดย"
           />
@@ -107,8 +118,11 @@ const SelecterDialog = ({
           {type == ImportType.FromMinStock && (
             <MinStockController payload={payload} setPayload={setPayload} />
           )}
-          {stocks.length >= 50 && (
-            <Alert color="error">การจัดการสต๊อกจำกัดสินค้าไว้ 50 รายการ</Alert>
+          {stockProducts.length >= STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK && (
+            <Alert color="error">
+              การจัดการสต๊อกจำกัดสินค้าไว้{" "}
+              {number(STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK)} รายการ
+            </Alert>
           )}
         </Stack>
       </DialogContent>
@@ -121,7 +135,9 @@ const SelecterDialog = ({
             color="success"
             variant="contained"
             startIcon={<PanToolAlt />}
-            disabled={stocks.length >= 50}
+            disabled={
+              stockProducts.length >= STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK
+            }
             onClick={onSubmit}
           >
             ยืนยัน
@@ -135,7 +151,6 @@ const SelecterDialog = ({
 const ToolController = () => {
   const dialogInfo = useDialog();
   const { user } = useAuth();
-  const { target } = useStock();
 
   const onOpen = () => {
     dialogInfo.handleOpen();
@@ -154,7 +169,6 @@ const ToolController = () => {
         variant="text"
         color="secondary"
         onClick={onOpen}
-        disabled={target != null}
         size="small"
       >
         เครื่องมือ
