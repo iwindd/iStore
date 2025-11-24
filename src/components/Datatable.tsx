@@ -9,15 +9,12 @@ import {
   GridFilterModel,
   GridPaginationModel,
   GridRowClassNameParams,
-  GridSortDirection,
   GridSortModel,
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import _ from "lodash";
-import { useSearchParams } from "next/navigation";
 import React from "react";
-import CustomToolbar from "./DatatableCustomToolbar";
 import thTHGrid from "./locale/datatable";
 
 export interface TableOption {
@@ -56,28 +53,15 @@ export interface DatatableProps<T extends GridValidRowModel = any> {
 }
 
 const Datatable = (props: DatatableProps) => {
-  const params = useSearchParams();
   const [rows, setRows] = React.useState<any[]>([]);
   const [total, setTotal] = React.useState<number>(0);
-
-  const fField = params.get("fSort") as string;
-  const fSort = params.get("fFormat") as GridSortDirection;
-  const fStatus = params.get("fStatus") as string;
-  const fSearch = params.get("search") as string;
-
-  const [sortModel, setSortModel] = React.useState<GridSortModel>(
-    fField && fSort ? [{ field: fField, sort: fSort }] : []
-  );
-  const [paginationModel, setPaginationModel] =
-    React.useState<GridPaginationModel>({ pageSize: 15, page: 0 });
+  const [paginationModel, setPaginationModel] = React.useState({
+    page: 0,
+    pageSize: 15,
+  });
+  const [sortModel, setSortModel] = React.useState<GridSortModel>([]);
   const [filterModel, setFilterModel] = React.useState<GridFilterModel>({
-    items: [
-      ...(fStatus
-        ? [{ field: "status", operator: "equals", value: Number(fStatus) }]
-        : []),
-    ],
-    quickFilterExcludeHiddenColumns: true,
-    quickFilterValues: fSearch ? fSearch.split(" ") : [],
+    items: [],
   });
 
   const { data, isLoading } = useQuery({
@@ -104,7 +88,6 @@ const Datatable = (props: DatatableProps) => {
   React.useEffect(() => {
     let isSuccess = data?.success || data?.state;
 
-    // Migration to new datatable fetch result format
     if (
       !isSuccess &&
       data?.success === undefined &&
@@ -126,10 +109,6 @@ const Datatable = (props: DatatableProps) => {
     return props.processRowUpdate(newData, oldData);
   };
 
-  const customToolbar = () => {
-    return <CustomToolbar onExport={props.onExport} />;
-  };
-
   return (
     <Paper
       sx={{
@@ -144,21 +123,10 @@ const Datatable = (props: DatatableProps) => {
         rowCount={total}
         localeText={thTHGrid}
         pageSizeOptions={[15, 30, 50, 100]}
-        paginationModel={paginationModel}
-        paginationMode="server"
-        onPaginationModelChange={setPaginationModel}
-        sortingMode="server"
-        onSortModelChange={setSortModel}
         processRowUpdate={processRowUpdateMiddleware}
         onRowDoubleClick={props.onDoubleClick}
         getRowClassName={props.getRowClassName}
         getCellClassName={props.getCellClassName}
-        filterMode="server"
-        filterModel={filterModel}
-        onFilterModelChange={(newModel: any) => setFilterModel(newModel)}
-        slots={{
-          toolbar: customToolbar,
-        }}
         slotProps={{
           toolbar: {
             showQuickFilter: true,
@@ -204,6 +172,13 @@ const Datatable = (props: DatatableProps) => {
           },
           [`& .text-color-error`]: { color: "var(--mui-palette-error-main)" },
         }}
+        showToolbar
+        paginationMode="server"
+        sortingMode="server"
+        filterMode="server"
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
+        onFilterModelChange={setFilterModel}
         {...props.overwrite}
       />
     </Paper>
