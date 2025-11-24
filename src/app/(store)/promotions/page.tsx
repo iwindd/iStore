@@ -3,6 +3,7 @@ import fetchPromotionDatatable, {
   PromotionDatatableInstance,
 } from "@/actions/promotion/fetchPromotionDatatable";
 import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
+import { sendEventNotification } from "@/actions/promotionOffer/sendEventNotification";
 import GridLinkAction from "@/components/GridLinkAction";
 import { Path } from "@/config/Path";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
@@ -11,6 +12,7 @@ import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
 import {
   AddTwoTone,
+  NotificationsTwoTone,
   StopTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
@@ -35,7 +37,7 @@ const MAPPING_PRODUCT_LABEL = (
 const PromotionPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
-  const confirmation = useConfirm({
+  const disableConfirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการที่จะปิดใช้งานโปรโมชั่นหรือไม่",
     confirmProps: {
@@ -45,7 +47,7 @@ const PromotionPage = () => {
     onConfirm: async (id: number) => {
       try {
         await DisablePromotionOffer(id);
-        confirmation.handleClose();
+        disableConfirmation.handleClose();
         await queryClient.refetchQueries({
           queryKey: ["promotions"],
           type: "active",
@@ -62,13 +64,43 @@ const PromotionPage = () => {
     },
   });
 
+  const notificationConfirmation = useConfirm({
+    title: "แจ้งเตือน",
+    text: "คุณต้องการจะส่งแจ้งเตือนประชาสัมพันธ์หรือไม่",
+    confirmProps: {
+      color: "warning",
+      startIcon: <NotificationsTwoTone />,
+    },
+    onConfirm: async (id: number) => {
+      try {
+        notificationConfirmation.handleClose();
+        await sendEventNotification(id);
+        enqueueSnackbar("ส่งแจ้งเตือนประชาสัมพันธ์เรียบร้อยแล้ว!", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.error("Error disabling promotion offer:", error);
+        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+          variant: "error",
+        });
+      }
+    },
+  });
+
   const menu = {
     disable: useCallback(
       (promotion: PromotionDatatableInstance) => () => {
-        confirmation.with(promotion.id);
-        confirmation.handleOpen();
+        disableConfirmation.with(promotion.id);
+        disableConfirmation.handleOpen();
       },
-      [confirmation]
+      [disableConfirmation]
+    ),
+    notification: useCallback(
+      (promotion: PromotionDatatableInstance) => () => {
+        notificationConfirmation.with(promotion.id);
+        notificationConfirmation.handleOpen();
+      },
+      [notificationConfirmation]
     ),
   };
 
@@ -150,6 +182,17 @@ const PromotionPage = () => {
               dayjs(row.event.end_at).isBefore(dayjs())
             }
           />,
+          <GridActionsCellItem
+            key="notification"
+            icon={<NotificationsTwoTone />}
+            label="ส่งประชาสัมพันธ์"
+            onClick={menu.notification(row)}
+            showInMenu
+            disabled={
+              row.event.disabled_at !== null ||
+              dayjs(row.event.end_at).isBefore(dayjs())
+            }
+          />,
         ],
       },
     ],
@@ -176,7 +219,8 @@ const PromotionPage = () => {
         isOpen={isOpen}
         handleClose={() => setIsOpen(false)}
       />
-      <Confirmation {...confirmation.props} />
+      <Confirmation {...disableConfirmation.props} />
+      <Confirmation {...notificationConfirmation.props} />
     </Wrapper>
   );
 };

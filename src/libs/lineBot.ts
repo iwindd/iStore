@@ -1,11 +1,15 @@
 import * as line from "@line/bot-sdk";
 
-class LineBot {
+export class LineBot {
   private readonly messagingApi: line.messagingApi.MessagingApiClient;
+  private readonly channelAccessToken: string;
+  private readonly lineUserId: string;
 
-  constructor() {
+  constructor(lineConfig: { channelAccessToken: string; lineUserId: string }) {
+    this.channelAccessToken = lineConfig.channelAccessToken;
+    this.lineUserId = lineConfig.lineUserId;
     this.messagingApi = new line.messagingApi.MessagingApiClient({
-      channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN!,
+      channelAccessToken: this.channelAccessToken,
     });
   }
 
@@ -17,30 +21,10 @@ class LineBot {
     }
   ) {
     return this.messagingApi.pushMessage({
-      to: process.env.LINE_USER_ID!,
+      to: this.lineUserId,
       messages: messages,
       notificationDisabled: options?.notificationDisabled,
       customAggregationUnits: options?.customAggregationUnits,
     });
   }
 }
-
-line.middleware({
-  channelSecret: process.env.LINE_CHANNEL_SECRET!,
-});
-
-const lineBotClientSingleton = () => {
-  const lineBot = new LineBot();
-
-  return lineBot;
-};
-
-declare const globalThis: {
-  lineBotGlobal: ReturnType<typeof lineBotClientSingleton>;
-} & typeof global;
-
-const lineBot = globalThis.lineBotGlobal ?? lineBotClientSingleton();
-
-export default lineBot;
-
-if (process.env.NODE_ENV !== "production") globalThis.lineBotGlobal = lineBot;
