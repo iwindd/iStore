@@ -142,9 +142,7 @@ const ProductDatatable = () => {
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
             label="แก้ไข"
-            sx={{
-              display: !permissions(row).canEditProduct ? "none" : undefined,
-            }}
+            disabled={!permissions(row).canEditProduct}
             showInMenu
           />,
           <GridActionsCellItem
@@ -152,9 +150,7 @@ const ProductDatatable = () => {
             icon={<DeleteTwoTone />}
             onClick={menu.delete(row)}
             label="ลบ"
-            sx={{
-              display: !permissions(row).canRemoveProduct ? "none" : undefined,
-            }}
+            disabled={!permissions(row).canRemoveProduct}
             showInMenu
           />,
           <GridActionsCellItem

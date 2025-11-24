@@ -185,6 +185,7 @@ export function ProductFormDialog({
   const { enqueueSnackbar } = useSnackbar();
   const [defaultCategory, setDefaultCategory] = React.useState<number>(0);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const submitProduct: SubmitHandler<ProductValues> = async (
     payload: ProductValues
@@ -338,6 +339,12 @@ export function ProductFormDialog({
           startIcon={<SaveTwoTone />}
           color="success"
           type="submit"
+          sx={{
+            display:
+              product?.id && !user?.hasPermission(ProductPermissionEnum.UPDATE)
+                ? "none"
+                : "",
+          }}
         >
           {product && product?.deleted_at ? "กู้คืนและบันทึก" : "บันทึก"}
         </Button>
