@@ -10,8 +10,9 @@ const BuyXGetYLayout = async ({
   params,
 }: {
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) => {
+  const { id } = await params;
   const user = await getUser();
   if (!user) return notFound();
   const productSelect = {
@@ -36,7 +37,7 @@ const BuyXGetYLayout = async ({
 
   const offer = await db.promotionOffer.findFirst({
     where: {
-      id: Number(params.id),
+      id: Number(id),
       event: {
         store_id: user.store,
       },
