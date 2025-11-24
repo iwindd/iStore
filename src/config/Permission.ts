@@ -9,9 +9,11 @@ import {
   OverStockPermissionEnum,
   PermissionEnum,
   ProductPermissionEnum,
+  PromotionPermissionEnum,
   PurchasePermissionEnum,
   RolePermissionEnum,
   StockPermissionEnum,
+  StorePermissionEnum,
   SuperPermissionEnum,
 } from "@/enums/permission";
 
@@ -65,7 +67,18 @@ const ALL_PERMISSIONS: Record<SuperPermissionEnum, PermissionEnum[]> = {
     EmployeePermissionEnum.UPDATE,
     EmployeePermissionEnum.DELETE,
   ],
-  [SuperPermissionEnum.STORE]: [],
+  [SuperPermissionEnum.STORE]: [
+    StorePermissionEnum.READ,
+    StorePermissionEnum.CREATE,
+    StorePermissionEnum.UPDATE,
+    StorePermissionEnum.DELETE,
+  ],
+  [SuperPermissionEnum.PROMOTION]: [
+    PromotionPermissionEnum.READ,
+    PromotionPermissionEnum.CREATE,
+    PromotionPermissionEnum.UPDATE,
+    PromotionPermissionEnum.DELETE,
+  ],
 };
 
 ALL_PERMISSIONS[SuperPermissionEnum.ALL] =

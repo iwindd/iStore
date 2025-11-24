@@ -135,6 +135,7 @@ const Paths = {
     href: "/store",
     icon: "store",
     matcher: { type: "startsWith", href: "/store" },
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.STORE),
   },
   ["promotions"]: {
     key: "promotions",
@@ -142,6 +143,7 @@ const Paths = {
     href: "/promotions",
     icon: "promotion",
     matcher: { type: "startsWith", href: "/promotions" },
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PROMOTION),
   },
   ["promotions.create.buyXgetY"]: {
     key: "promotions.create.buyXgetY",

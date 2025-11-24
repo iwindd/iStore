@@ -45,5 +45,15 @@
   "Employee.Read",
   "Employee.Create",
   "Employee.Update",
-  "Employee.Delete"
+  "Employee.Delete",
+  "Promotion.*",
+  "Promotion.Read",
+  "Promotion.Create",
+  "Promotion.Update",
+  "Promotion.Delete",
+  "Store.*",
+  "Store.Read",
+  "Store.Create",
+  "Store.Update",
+  "Store.Delete"
 ]

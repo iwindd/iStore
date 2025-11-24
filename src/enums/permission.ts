@@ -12,6 +12,7 @@ export enum SuperPermissionEnum {
   ACCOUNT = "ACCOUNT.*",
   ROLE = "ROLE.*",
   EMPLOYEE = "EMPLOYEE.*",
+  PROMOTION = "PROMOTION.*",
   STORE = "STORE.*",
 }
 
@@ -95,17 +96,35 @@ export enum EmployeePermissionEnum {
   DELETE = "EMPLOYEE.DELETE",
 }
 
+export enum PromotionPermissionEnum {
+  ALL = SuperPermissionEnum.PROMOTION,
+  READ = "PROMOTION.READ",
+  CREATE = "PROMOTION.CREATE",
+  UPDATE = "PROMOTION.UPDATE",
+  DELETE = "PROMOTION.DELETE",
+}
+
+export enum StorePermissionEnum {
+  ALL = SuperPermissionEnum.STORE,
+  READ = "STORE.READ",
+  CREATE = "STORE.CREATE",
+  UPDATE = "STORE.UPDATE",
+  DELETE = "STORE.DELETE",
+}
+
 export type PermissionEnum =
-  SuperPermissionEnum |
-  CashierPermissionEnum |
-  DashboardPermissionEnum |
-  ProductPermissionEnum | 
-  CategoryPermissionEnum | 
-  StockPermissionEnum | 
-  OverStockPermissionEnum | 
-  BorrowPermissionEnum | 
-  PurchasePermissionEnum | 
-  HistoryPermissionEnum | 
-  AccountPermissionEnum | 
-  RolePermissionEnum | 
-  EmployeePermissionEnum;
+  | SuperPermissionEnum
+  | CashierPermissionEnum
+  | DashboardPermissionEnum
+  | ProductPermissionEnum
+  | CategoryPermissionEnum
+  | StockPermissionEnum
+  | OverStockPermissionEnum
+  | BorrowPermissionEnum
+  | PurchasePermissionEnum
+  | HistoryPermissionEnum
+  | AccountPermissionEnum
+  | RolePermissionEnum
+  | EmployeePermissionEnum
+  | PromotionPermissionEnum
+  | StorePermissionEnum;
