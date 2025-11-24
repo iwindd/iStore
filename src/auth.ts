@@ -19,6 +19,56 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return { ...token, ...session.user };
       }
 
+      const now = Math.floor(Date.now() / 1000);
+      const REVALIDATE_TIMEOUT =
+        process.env.NODE_ENV !== "production" ? 10 : 90;
+
+      const shouldRevalidate =
+        !token.lastChecked || now - token.lastChecked > REVALIDATE_TIMEOUT;
+
+      if (shouldRevalidate && token.id) {
+        try {
+          const updatedUser = await db.user.findUnique({
+            where: { id: Number(token.id) },
+            select: {
+              name: true,
+              email: true,
+              userStores: {
+                take: 1,
+                select: {
+                  id: true,
+                  store: true,
+                  role: {
+                    select: {
+                      permissions: true,
+                      is_super_admin: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (updatedUser && updatedUser.userStores?.[0]) {
+            const userStore = updatedUser.userStores[0];
+            const role = userStore.role;
+
+            token.name = updatedUser.name;
+            token.email = updatedUser.email;
+            token.store = userStore.store.id;
+            token.userStoreId = userStore.id;
+            token.line_token = userStore.store.line_token;
+            token.permissions = role.is_super_admin
+              ? [SuperPermissionEnum.ALL]
+              : role.permissions.flatMap((p) => p.name);
+            token.address = FormatAddress(userStore.store as AddressValues);
+            token.lastChecked = now;
+          }
+        } catch (error) {
+          console.error("Error revalidating session:", error);
+        }
+      }
+
       return {
         id: token.id,
         store: token.store,
@@ -28,6 +78,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         line_token: token.line_token,
         permissions: token.permissions,
         address: token.address,
+        lastChecked: token.lastChecked || now,
         ...user,
       };
     },
@@ -77,7 +128,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
           if (
             !user ||
-            !(await bcrypt.compare(credentials.password, user.password))
+            !(await bcrypt.compare(
+              credentials.password as string,
+              user.password
+            ))
           )
             throw new Error("not_found_user");
 

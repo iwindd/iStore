@@ -10,7 +10,7 @@ const SessionProvider = (
   }
 ) => {
   return (
-    <NextAuthSessionProvider {...props}>
+    <NextAuthSessionProvider {...props} refetchInterval={90}>
       {props.children}
     </NextAuthSessionProvider>
   );
