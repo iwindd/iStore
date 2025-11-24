@@ -142,7 +142,7 @@ const CategorySelector = (props: SelectorProps) => {
                     </InputAdornment>
                   ),
                 }
-              : { ...params.InputProps }
+              : { ...params.InputProps },
           }}
         />
       )}
@@ -152,7 +152,7 @@ const CategorySelector = (props: SelectorProps) => {
         const parts = parse(option.label, match(option.label, inputValue));
         return (
           <li key={key} {...optionProps}>
-            <Grid container sx={{ alignItems: "center" }}>
+            <Grid container sx={{ alignItems: "center", width: "100%" }}>
               <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                 {parts.map((part, index) => (
                   <Box
