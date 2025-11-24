@@ -2,6 +2,7 @@
 import { SearchCategory } from "@/actions/category/search";
 import CreateProduct from "@/actions/product/create";
 import GetProduct from "@/actions/product/find";
+import recoveryProduct from "@/actions/product/recoveryProduct";
 import UpdateProduct from "@/actions/product/update";
 import CategorySelector from "@/components/CategorySelector";
 import { ProductPermissionEnum } from "@/enums/permission";
@@ -117,7 +118,7 @@ function SearchDialog({
         paper: {
           component: "form",
           onSubmit: handleSubmit(searchSubmit),
-        }
+        },
       }}
     >
       <DialogTitle>ค้นหาสินค้า</DialogTitle>
@@ -148,8 +149,9 @@ function SearchDialog({
                 ),
               },
 
-              inputLabel: { shrink: true }
-            }} />
+              inputLabel: { shrink: true },
+            }}
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -188,10 +190,16 @@ export function ProductFormDialog({
     payload: ProductValues
   ) => {
     try {
-      const resp = await (!product?.id
-        ? CreateProduct(payload)
-        : UpdateProduct(payload, product.id));
-      if (!resp.success) throw Error(resp.message);
+      if (product?.deleted_at) {
+        const resp = await recoveryProduct(product.id);
+        if (!resp.success) throw Error("error");
+      } else {
+        const resp = await (!product?.id
+          ? CreateProduct(payload)
+          : UpdateProduct(payload, product.id));
+        if (!resp.success) throw Error(resp.message);
+      }
+
       reset();
       await queryClient.refetchQueries({
         queryKey: ["products"],
@@ -240,7 +248,7 @@ export function ProductFormDialog({
         paper: {
           component: "form",
           onSubmit: handleSubmit(submitProduct),
-        }
+        },
       }}
     >
       <DialogTitle>

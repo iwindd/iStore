@@ -12,14 +12,14 @@ const UpdateProduct = async (
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(ProductPermissionEnum.UPDATE))
+      throw new Error("Unauthorized");
     const validated = ProductSchema.parse(payload);
+
     await db.product.update({
       where: {
         id: id,
         store_id: user.store,
-        creator_id: !user.hasPermission(ProductPermissionEnum.UPDATE)
-          ? user.userStoreId
-          : undefined,
       },
       data: {
         label: validated.label,
@@ -28,7 +28,6 @@ const UpdateProduct = async (
         stock_min: validated.stock_min,
         category_id: validated.category_id,
         keywords: validated.keywords,
-        deleted_at: null,
       },
     });
 
