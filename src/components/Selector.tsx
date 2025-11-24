@@ -111,8 +111,8 @@ const Selector = (props: SelectorProps) => {
 
         const parts = parse(option.label, match(option.label, inputValue));
         return (
-          <li key={key} {...optionProps}>
-            <Grid container sx={{ alignItems: "center" }}>
+          <li key={`${key}-${option.id}-${Math.random()}`} {...optionProps}>
+            <Grid container sx={{ alignItems: "center", width: "100%" }}>
               <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
                 {parts.map((part, index) => (
                   <Box
@@ -123,9 +123,11 @@ const Selector = (props: SelectorProps) => {
                     {part.text}
                   </Box>
                 ))}
-                <Typography variant="body2" color="text.secondary">
-                  จำนวน: {option.stock} | รหัส: {option.serial}
-                </Typography>
+                <div>
+                  <Typography variant="caption" color="text.secondary">
+                    จำนวน: {option.stock} | รหัส: {option.serial}
+                  </Typography>
+                </div>
               </Grid>
             </Grid>
           </li>
