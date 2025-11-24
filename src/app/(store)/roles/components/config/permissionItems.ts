@@ -3,7 +3,6 @@ import {
   BorrowPermissionEnum,
   CashierPermissionEnum,
   CategoryPermissionEnum,
-  DashboardPermissionEnum,
   HistoryPermissionEnum,
   OverStockPermissionEnum,
   ProductPermissionEnum,
@@ -33,15 +32,13 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
   {
     id: AccountPermissionEnum.ALL,
     label: "บัญชี",
-    children: [
-      { id: AccountPermissionEnum.UPDATE, label: "แก้ไขบัญชี" },
-    ],
+    children: [{ id: AccountPermissionEnum.UPDATE, label: "แก้ไขบัญชี" }],
   },
-  {
+  /*   {
     id: DashboardPermissionEnum.ALL,
     label: "แดชบอร์ดร้านค้า",
     children: [{ id: DashboardPermissionEnum.READ, label: "เข้าถึงข้อมูลแดชบอร์ดทั้งหมด" }],
-  },
+  }, */
   {
     id: ProductPermissionEnum.ALL,
     label: "จัดการสินค้า",
@@ -56,7 +53,10 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
     id: CategoryPermissionEnum.ALL,
     label: "หมวดหมู่สินค้า",
     children: [
-      { id: CategoryPermissionEnum.READ, label: "เข้าถึงหมวดหมู่สินค้าทั้งหมด" },
+      {
+        id: CategoryPermissionEnum.READ,
+        label: "เข้าถึงหมวดหมู่สินค้าทั้งหมด",
+      },
       { id: CategoryPermissionEnum.CREATE, label: "เพิ่มหมวดหมู่สินค้า" },
       { id: CategoryPermissionEnum.UPDATE, label: "แก้ไขหมวดหมู่สินค้า" },
       { id: CategoryPermissionEnum.DELETE, label: "ลบหมวดหมู่สินค้า" },
@@ -97,7 +97,7 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
       { id: PurchasePermissionEnum.READ, label: "เข้าถึงการสั่งซื้อทั้งหมด" },
       { id: PurchasePermissionEnum.CREATE, label: "เพิ่มรายการสั่งซื้อ" },
     ],
-  }
+  },
 ];
 
 export const TreeViewPermissionDefaultItems = [
@@ -107,14 +107,17 @@ export const TreeViewPermissionDefaultItems = [
   HistoryPermissionEnum.READ,
   AccountPermissionEnum.ALL,
   AccountPermissionEnum.UPDATE,
-]
+];
 
-export const treeViewPermissionAllIds = TreeViewPermissionItems.reduce((acc: string[], item) => {
-  acc.push(item.id);
-  if (item.children) {
-    item.children.forEach(child => acc.push(child.id));
-  }
-  return acc;
-}, []);
+export const treeViewPermissionAllIds = TreeViewPermissionItems.reduce(
+  (acc: string[], item) => {
+    acc.push(item.id);
+    if (item.children) {
+      item.children.forEach((child) => acc.push(child.id));
+    }
+    return acc;
+  },
+  []
+);
 
 export default TreeViewPermissionItems;

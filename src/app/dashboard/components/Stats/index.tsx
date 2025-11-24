@@ -2,7 +2,6 @@
 import { Path } from "@/config/Path";
 import {
   BorrowPermissionEnum,
-  DashboardPermissionEnum,
   OverStockPermissionEnum,
   PermissionEnum,
   ProductPermissionEnum,
@@ -56,7 +55,6 @@ const StatConfig: StatConfig[] = [
     icon: <AttachMoney />,
     render: (v) => `${money(v)} รายการ`,
     color: "success",
-    permission: DashboardPermissionEnum.READ,
   },
   {
     name: "borrows",
