@@ -26,7 +26,6 @@ import {
   GridActionsCellItem,
   gridClasses,
   GridColDef,
-  GridToolbar,
 } from "@mui/x-data-grid";
 import { enqueueSnackbar } from "notistack";
 import React, { useCallback, useEffect } from "react";
@@ -79,21 +78,21 @@ const StockDatatable = () => {
         flex: 1,
         sortable: true,
         headerName: "#",
-        renderCell: ({ row }) => row.data?.serial,
+        valueGetter: (_, row) => row.data?.serial,
       },
       {
         field: "label",
         flex: 1,
         sortable: true,
         headerName: "ชื่อสินค้า",
-        renderCell: ({ row }) => row.data?.label,
+        valueGetter: (_, row) => row.data?.label,
       },
       {
         field: "stock",
         flex: 1,
         sortable: true,
         headerName: "คงเหลือ",
-        renderCell: ({ row }) => `${ff.number(row.data?.stock || 0)} รายการ`,
+        valueGetter: (_, row) => `${row.data?.stock} รายการ`,
       },
       {
         field: "quantity",
@@ -201,9 +200,7 @@ const StockDatatable = () => {
               columns={columns()}
               rows={stockProducts}
               processRowUpdate={onUpdate}
-              slots={{
-                toolbar: GridToolbar,
-              }}
+              showToolbar
               slotProps={{
                 toolbar: {
                   showQuickFilter: true,
