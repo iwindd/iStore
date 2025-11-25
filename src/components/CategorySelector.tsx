@@ -165,7 +165,7 @@ const CategorySelector = (props: SelectorProps) => {
                 ))}
                 <Typography variant="body2" color="text.secondary">
                   {option.id == props.defaultValue ? "(กำลังใช้งาน) " : ""}
-                  {option.overstock ? "อณุญาตการเบิก" : "ไม่อณุญาตการเบิก"}
+                  {option.overstock ? "อณุญาตการค้าง" : "ไม่อณุญาตการค้าง"}
                 </Typography>
               </Grid>
             </Grid>
