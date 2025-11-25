@@ -119,7 +119,7 @@ export function CategoryFormDialog({
                   defaultChecked={category?.overstock}
                 />
               }
-              label="อณุญาตให้เบิกสินค้า"
+              label="อณุญาตให้ค้างสินค้า"
             />
             <FormControlLabel
               control={<Checkbox {...register("active", {})} />}
