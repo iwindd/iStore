@@ -1,22 +1,23 @@
 model Store {
-  id         String       @id @default(cuid())
-  name       String
-  categories Category[]
-  product    Product[]
-  orders     Order[]
-  borrows    Borrow[]
-  stocks     Stock[]
-  users      UserStore[]
-  roles      Role[]
-  events     Event[]
+  id            String         @id @default(cuid())
+  name          String
+  categories    Category[]
+  product       Product[]
+  orders        Order[]
+  borrows       Borrow[]
+  stocks        Stock[]
+  users         UserStore[]
+  roles         Role[]
+  events        Event[]
   //         Address
-  line_token String?
-  address    String?
-  district   String?
-  area       String?
-  province   String?
+  line_token    String?
+  address       String?
+  district      String?
+  area          String?
+  province      String?
   postalcode    String?
   lineBotConfig LineBotConfig?
+  api_key       String?        @unique
 
   @@map("stores")
 }

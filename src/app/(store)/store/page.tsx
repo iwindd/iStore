@@ -1,6 +1,7 @@
 "use client";
 import App, { Wrapper } from "@/layouts/App";
 import Grid from "@mui/material/Grid";
+import ApiKeyPartial from "./components/ApiKey";
 import LineBotPartial from "./components/LineBot";
 
 const StoreSettingPage = () => {
@@ -11,6 +12,9 @@ const StoreSettingPage = () => {
       </App.Header>
       <App.Main>
         <Grid container spacing={2}>
+          <Grid size={12}>
+            <ApiKeyPartial />
+          </Grid>
           <Grid size={12}>
             <LineBotPartial />
           </Grid>
