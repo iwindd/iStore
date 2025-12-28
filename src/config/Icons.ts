@@ -3,6 +3,7 @@ import {
   BackHand,
   Badge,
   Business,
+  Campaign,
   Category,
   Group,
   History,
@@ -35,4 +36,5 @@ export default {
   group: Group,
   employee: Badge,
   promotion: LocalOffer,
+  broadcast: Campaign,
 } as Record<string, ElementType>;

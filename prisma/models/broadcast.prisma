@@ -1,0 +1,44 @@
+enum BroadcastStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+  CANCELLED
+  FAILED
+}
+
+model Broadcast {
+  id           Int             @id @default(autoincrement())
+  event_id     Int
+  store_id     String
+  title        String
+  message      String
+  image_url    String?
+  scheduled_at DateTime
+  sent_at      DateTime?
+  status       BroadcastStatus @default(DRAFT)
+  creator_id   Int?
+  created_at   DateTime        @default(now())
+  updated_at   DateTime        @updatedAt
+
+  event   Event          @relation(fields: [event_id], references: [id])
+  store   Store          @relation(fields: [store_id], references: [id])
+  creator UserStore?     @relation(fields: [creator_id], references: [id])
+  logs    BroadcastLog[]
+
+  @@index([scheduled_at, status])
+  @@index([store_id, status])
+  @@map("broadcasts")
+}
+
+model BroadcastLog {
+  id              Int      @id @default(autoincrement())
+  broadcast_id    Int
+  status          String
+  error_message   String?
+  recipient_count Int?
+  created_at      DateTime @default(now())
+
+  broadcast Broadcast @relation(fields: [broadcast_id], references: [id], onDelete: Cascade)
+
+  @@map("broadcast_logs")
+}

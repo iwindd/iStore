@@ -6,19 +6,51 @@ import {
   AddPromotionOfferSchema,
   AddPromotionOfferValues,
 } from "@/schema/Promotion/Offer";
+import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 
-export type CreatedPromotionOffer = {
-  title: string;
-  description: string | null;
-  start_at: Date;
-  end_at: Date;
-  id: number;
-  created_at: Date;
-  updated_at: Date;
-  store_id: string;
-  creator_id: number | null;
-};
+export type CreatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
+  select: {
+    id: true;
+    note: true;
+    start_at: true;
+    end_at: true;
+    disabled_at: true;
+    creator: {
+      select: {
+        user: {
+          select: {
+            name: true;
+          };
+        };
+      };
+    };
+    offers: {
+      select: {
+        buyItems: {
+          select: {
+            quantity: true;
+            product: {
+              select: {
+                label: true;
+              };
+            };
+          };
+        };
+        getItems: {
+          select: {
+            quantity: true;
+            product: {
+              select: {
+                label: true;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}>;
 
 const CreatePromotionOffer = async (
   payload: AddPromotionOfferValues
@@ -30,8 +62,7 @@ const CreatePromotionOffer = async (
 
     const promotionOffer = await db.event.create({
       data: {
-        title: validated.title,
-        description: validated.description,
+        note: validated.note,
         start_at: dayjs(validated.start_at).startOf("day").toDate(),
         end_at: dayjs(validated.end_at).endOf("day").toDate(),
         creator_id: user.id,
@@ -53,9 +84,49 @@ const CreatePromotionOffer = async (
           },
         },
       },
+      select: {
+        id: true,
+        note: true,
+        start_at: true,
+        end_at: true,
+        disabled_at: true,
+        creator: {
+          select: {
+            user: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        offers: {
+          select: {
+            buyItems: {
+              select: {
+                quantity: true,
+                product: {
+                  select: {
+                    label: true,
+                  },
+                },
+              },
+            },
+            getItems: {
+              select: {
+                quantity: true,
+                product: {
+                  select: {
+                    label: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
-    return { success: true, data: promotionOffer };
+    return { success: true, data: promotionOffer as CreatedPromotionOffer };
   } catch (error) {
     return ActionError(error) as ActionResponse<CreatedPromotionOffer>;
   }

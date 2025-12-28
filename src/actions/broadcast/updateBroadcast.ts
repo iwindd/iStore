@@ -1,0 +1,77 @@
+"use server";
+import { ActionError } from "@/libs/action";
+import db from "@/libs/db";
+import { getUser } from "@/libs/session";
+import {
+  UpdateBroadcastSchema,
+  UpdateBroadcastValues,
+} from "@/schema/Broadcast";
+
+export const updateBroadcast = async (
+  id: number,
+  values: UpdateBroadcastValues
+) => {
+  try {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    // Validate input
+    const validated = UpdateBroadcastSchema.safeParse(values);
+    if (!validated.success) {
+      throw new Error(validated.error.errors[0].message);
+    }
+
+    // Verify broadcast exists and belongs to the store
+    const existingBroadcast = await db.broadcast.findFirst({
+      where: {
+        id,
+        store_id: user.store,
+      },
+    });
+
+    if (!existingBroadcast) {
+      throw new Error("ไม่พบ Broadcast ที่ต้องการแก้ไข");
+    }
+
+    // Only allow editing DRAFT or SCHEDULED broadcasts
+    if (!["DRAFT", "SCHEDULED"].includes(existingBroadcast.status)) {
+      throw new Error("ไม่สามารถแก้ไข Broadcast ที่ส่งไปแล้วหรือถูกยกเลิก");
+    }
+
+    // Verify event exists and belongs to the store
+    const event = await db.event.findFirst({
+      where: {
+        id: values.event_id,
+        store_id: user.store,
+      },
+    });
+
+    if (!event) {
+      throw new Error("ไม่พบโปรโมชั่นที่เลือก");
+    }
+
+    // Validate scheduled_at is within event dates
+    const scheduledAt = new Date(values.scheduled_at);
+    if (scheduledAt < event.start_at || scheduledAt > event.end_at) {
+      throw new Error("วันเวลา Broadcast ต้องอยู่ในช่วงของโปรโมชั่น");
+    }
+
+    // Update broadcast
+    const broadcast = await db.broadcast.update({
+      where: { id },
+      data: {
+        event_id: values.event_id,
+        title: values.title,
+        message: values.message,
+        image_url: values.image_url || null,
+        scheduled_at: scheduledAt,
+        status: "SCHEDULED",
+      },
+    });
+
+    return broadcast;
+  } catch (error) {
+    console.error(error);
+    throw ActionError(error);
+  }
+};

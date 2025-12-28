@@ -1,9 +1,7 @@
 "use server";
-import db from "@/libs/db";
-import { LineBot } from "@/libs/lineBot";
 
 export const sendEventNotification = async (eventId: number) => {
-  const event = await db.event.findUniqueOrThrow({
+  /*   const event = await db.event.findUniqueOrThrow({
     where: { id: eventId },
     select: {
       title: true,
@@ -43,5 +41,5 @@ export const sendEventNotification = async (eventId: number) => {
       type: "text",
       text: `${event.description}`,
     },
-  ]);
+  ]); */
 };

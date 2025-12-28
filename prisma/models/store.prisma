@@ -9,6 +9,7 @@ model Store {
   users         UserStore[]
   roles         Role[]
   events        Event[]
+  broadcasts    Broadcast[]
   //         Address
   line_token    String?
   address       String?

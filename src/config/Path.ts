@@ -157,6 +157,14 @@ const Paths = {
     href: "/promotions/buyXgetY/:id",
     icon: "promotion",
   },
+  ["broadcasts"]: {
+    key: "broadcasts",
+    title: "ประชาสัมพันธ์",
+    href: "/broadcasts",
+    icon: "broadcast",
+    matcher: { type: "startsWith", href: "/broadcasts" },
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PROMOTION),
+  },
 } satisfies Record<string, PathType>;
 
 export const HomePath = Paths.overview.href;

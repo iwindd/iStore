@@ -1,23 +1,23 @@
 model User {
-  id         Int          @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   name       String
-  email      String       @unique
+  email      String      @unique
   password   String
-  created_at DateTime     @default(now())
-  updated_at DateTime     @updatedAt
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
   userStores UserStore[]
 
   @@map("users")
 }
 
 model UserStore {
-  id             Int             @id @default(autoincrement())
-  user_id        Int
-  created_at     DateTime        @default(now())
-  updated_at     DateTime        @updatedAt
-  role_id        Int
-  store_id       String
-  creator_id     Int?
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  role_id    Int
+  store_id   String
+  creator_id Int?
 
   user           User           @relation(fields: [user_id], references: [id])
   role           Role           @relation("UserStoreRole", fields: [role_id], references: [id])
@@ -32,6 +32,7 @@ model UserStore {
   creator        UserStore?     @relation("UserStoreToUserStore", fields: [creator_id], references: [id])
   userStores     UserStore[]    @relation("UserStoreToUserStore")
   events         Event[]
+  broadcasts     Broadcast[]
 
   @@unique([user_id, store_id])
   @@map("user_stores")

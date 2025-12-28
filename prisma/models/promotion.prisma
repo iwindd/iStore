@@ -1,26 +1,27 @@
 model Event {
-  id          Int               @id @default(autoincrement())
-  title       String
-  description String?
+  id          Int       @id @default(autoincrement())
+  note        String?
   store_id    String
   creator_id  Int?
   start_at    DateTime
   end_at      DateTime
-  created_at  DateTime          @default(now())
-  updated_at  DateTime          @updatedAt
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
   disabled_at DateTime?
 
-  offers      PromotionOffer[]
-  store       Store            @relation(fields: [store_id], references: [id])
-  creator     UserStore?       @relation(fields: [creator_id], references: [id])
+  offers     PromotionOffer[]
+  broadcasts Broadcast[]
+  store      Store            @relation(fields: [store_id], references: [id])
+  creator    UserStore?       @relation(fields: [creator_id], references: [id])
+
   @@map("events")
 }
 
 model PromotionOffer {
-  id            Int                      @id @default(autoincrement())
-  event_id      Int
-  created_at    DateTime                 @default(now())
-  updated_at    DateTime                 @updatedAt
+  id         Int      @id @default(autoincrement())
+  event_id   Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   buyItems      PromotionOfferBuyItem[] @relation("BuyItems")
   getItems      PromotionOfferGetItem[] @relation("GetItems")
@@ -31,25 +32,25 @@ model PromotionOffer {
 }
 
 model PromotionOfferBuyItem {
-  id         Int             @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   product_id Int
-  quantity   Int             @default(1)
+  quantity   Int @default(1)
   offer_id   Int
 
-  product    Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  offer      PromotionOffer @relation("BuyItems", fields: [offer_id], references: [id])
+  product Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  offer   PromotionOffer @relation("BuyItems", fields: [offer_id], references: [id])
 
   @@map("promotion_offer_buy_items")
 }
 
 model PromotionOfferGetItem {
-  id         Int             @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   product_id Int
-  quantity   Int             @default(1)
+  quantity   Int @default(1)
   offer_id   Int
 
-  product    Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  offer      PromotionOffer @relation("GetItems", fields: [offer_id], references: [id])
+  product Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  offer   PromotionOffer @relation("GetItems", fields: [offer_id], references: [id])
 
   @@map("promotion_offer_get_items")
 }

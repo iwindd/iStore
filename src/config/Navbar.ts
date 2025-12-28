@@ -45,6 +45,7 @@ const navItems = [
     title: "ร้านค้า",
     items: [
       { path: Path("promotions") },
+      { path: Path("broadcasts") },
       { path: Path("histories") },
       { path: Path("roles") },
       { path: Path("employees") },

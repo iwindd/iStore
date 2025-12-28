@@ -125,29 +125,21 @@ const PromotionPage = () => {
       },
 
       {
-        field: "event.title",
-        headerName: "ชื่อโปรโมชั่น",
+        field: "event.note",
+        headerName: "หมายเหตุ",
         flex: 1,
         renderCell: ({ row }) => {
-          return row.event.title;
+          return row.event.note || "-";
         },
       },
       {
-        field: "event.description",
-        headerName: "คำอธิบาย",
-        flex: 1,
-        renderCell: ({ row }) => {
-          return row.event.description;
-        },
-      },
-      {
-        flex: 1,
+        flex: 2,
         field: "buyItems._count",
         renderCell: ({ row }) => MAPPING_PRODUCT_LABEL(row.buyItems),
         headerName: "จำนวนสินค้าที่ซื้อ",
       },
       {
-        flex: 1,
+        flex: 2,
         field: "getItems._count",
         renderCell: ({ row }) => MAPPING_PRODUCT_LABEL(row.getItems),
         headerName: "จำนวนสินค้าที่ได้รับ",

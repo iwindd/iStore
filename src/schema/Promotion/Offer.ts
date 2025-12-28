@@ -7,8 +7,7 @@ const ProductQuantitySchema = z.object({
 
 export const AddPromotionOfferSchema = z
   .object({
-    title: z.string().min(1),
-    description: z.string().optional(),
+    note: z.string().optional(),
     start_at: z.date(),
     end_at: z.date(),
     needProducts: z

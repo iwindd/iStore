@@ -1,4 +1,3 @@
-import generatePromotionOfferInfo from "@/actions/ai/generatePromotionOffer";
 import findProductById from "@/actions/product/findById";
 import useFormValidate from "@/hooks/useFormValidate";
 import { useInterface } from "@/providers/InterfaceProvider";
@@ -9,7 +8,7 @@ import {
   UpdatePromotionOfferSchema,
 } from "@/schema/Promotion/Offer";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AddTwoTone, AutoAwesomeTwoTone } from "@mui/icons-material";
+import { AddTwoTone } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -18,17 +17,14 @@ import {
   Divider,
   FormControl,
   FormHelperText,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
-  Tooltip,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers";
-import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
@@ -46,8 +42,7 @@ export interface FormBuyXGetYProps {
   disabled?: boolean;
   onSubmit: (data: AddPromotionOfferValues) => void;
   buyXgetY?: {
-    title: string;
-    description: string;
+    note?: string;
     needProducts: ProductTableRow[];
     offerProducts: ProductTableRow[];
     start_at: Date;
@@ -87,32 +82,11 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
   } = useFormValidate<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      title: props.buyXgetY?.title || "",
-      description: props.buyXgetY?.description || "",
+      note: props.buyXgetY?.note || "",
       needProducts: props.buyXgetY?.needProducts || [],
       offerProducts: props.buyXgetY?.offerProducts || [],
       start_at: props.buyXgetY?.start_at || dayjs().toDate(),
       end_at: props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
-    },
-  });
-
-  const aiGeneratePromotionOfferInfo = useMutation({
-    mutationFn: async () => {
-      return await generatePromotionOfferInfo(
-        needProducts.map((p) => {
-          return { label: p.product.label, quantity: p.quantity };
-        }),
-        offerProducts.map((p) => {
-          return { label: p.product.label, quantity: p.quantity };
-        })
-      );
-    },
-    onSuccess: (data) => {
-      setValue("title", data.title);
-      setValue("description", data.description);
-    },
-    onError: (error) => {
-      console.log("error generating promotion offer info", error);
     },
   });
 
@@ -275,45 +249,20 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           </Grid>
         </Grid>
         <Card>
-          <CardHeader
-            title="ข้อมูลข้อเสนอ"
-            action={
-              <Tooltip title="สร้างรายละเอียดข้อเสนออัตโนมัติ">
-                <IconButton
-                  color="primary"
-                  disabled={
-                    needProducts.length === 0 ||
-                    offerProducts.length === 0 ||
-                    aiGeneratePromotionOfferInfo.isPending ||
-                    disabled
-                  }
-                  onClick={() => aiGeneratePromotionOfferInfo.mutate()}
-                >
-                  <AutoAwesomeTwoTone />
-                </IconButton>
-              </Tooltip>
-            }
-          />
+          <CardHeader title="หมายเหตุ" />
           <Divider />
           <CardContent>
             <Stack spacing={2}>
               <TextField
-                label="ชื่อข้อเสนอ"
-                variant="outlined"
-                fullWidth
-                disabled={disabled || aiGeneratePromotionOfferInfo.isPending}
-                {...register("title")}
-              />
-              <TextField
-                label="รายละเอียดข้อเสนอ"
+                label="หมายเหตุ (Note)"
                 variant="outlined"
                 fullWidth
                 multiline
                 rows={4}
-                disabled={disabled || aiGeneratePromotionOfferInfo.isPending}
-                error={errors.description != undefined}
-                helperText={errors.description?.message}
-                {...register("description")}
+                disabled={disabled}
+                error={errors.note != undefined}
+                helperText={errors.note?.message}
+                {...register("note")}
               />
             </Stack>
           </CardContent>
