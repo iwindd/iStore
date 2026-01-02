@@ -35,5 +35,6 @@
   "typescript.preferences.importModuleSpecifier": "shortest",
   "typescript.preferences.quoteStyle": "single",
   // css
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "prisma-smart-formatter.typescript.defaultFormatter": "esbenp.prettier-vscode"
 }
