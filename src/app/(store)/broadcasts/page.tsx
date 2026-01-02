@@ -4,6 +4,7 @@ import { deleteBroadcast } from "@/actions/broadcast/deleteBroadcast";
 import fetchBroadcastDatatable, {
   BroadcastDatatableInstance,
 } from "@/actions/broadcast/fetchBroadcastDatatable";
+import { sendBroadcast } from "@/actions/broadcast/sendBroadcast";
 import GridLinkAction from "@/components/GridLinkAction";
 import { Path } from "@/config/Path";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
@@ -15,6 +16,8 @@ import {
   CancelTwoTone,
   DeleteTwoTone,
   EditTwoTone,
+  NotificationsTwoTone,
+  SendTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
 import { Button, Chip, ChipProps } from "@mui/material";
@@ -92,6 +95,33 @@ const BroadcastPage = () => {
     },
   });
 
+  const sendConfirmation = useConfirm({
+    title: "แจ้งเตือน",
+    text: "คุณต้องการจะส่ง Broadcast นี้หรือไม่",
+    confirmProps: {
+      color: "warning",
+      startIcon: <NotificationsTwoTone />,
+    },
+    onConfirm: async (id: number) => {
+      try {
+        await sendBroadcast(id);
+        sendConfirmation.handleClose();
+        await queryClient.refetchQueries({
+          queryKey: ["datatable:broadcasts"],
+          type: "active",
+        });
+        enqueueSnackbar("ส่งแจ้งเตือนประชาสัมพันธ์เรียบร้อยแล้ว!", {
+          variant: "success",
+        });
+      } catch (error) {
+        console.error("Error disabling promotion offer:", error);
+        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+          variant: "error",
+        });
+      }
+    },
+  });
+
   const menu = {
     cancel: useCallback(
       (broadcast: BroadcastDatatableInstance) => () => {
@@ -106,6 +136,13 @@ const BroadcastPage = () => {
         deleteConfirmation.handleOpen();
       },
       [deleteConfirmation]
+    ),
+    sendBroadcast: useCallback(
+      (broadcast: BroadcastDatatableInstance) => () => {
+        sendConfirmation.with(broadcast.id);
+        sendConfirmation.handleOpen();
+      },
+      [sendConfirmation]
     ),
   };
 
@@ -175,6 +212,7 @@ const BroadcastPage = () => {
           const canEdit = ["DRAFT", "SCHEDULED"].includes(row.status);
           const canCancel = ["DRAFT", "SCHEDULED"].includes(row.status);
           const canDelete = ["DRAFT", "CANCELLED"].includes(row.status);
+          const canSend = ["SCHEDULED"].includes(row.status);
 
           return [
             <GridLinkAction
@@ -208,6 +246,14 @@ const BroadcastPage = () => {
               showInMenu
               disabled={!canDelete}
             />,
+            <GridActionsCellItem
+              key="send"
+              icon={<SendTwoTone />}
+              label="ส่ง"
+              onClick={menu.sendBroadcast(row)}
+              showInMenu
+              disabled={!canSend}
+            />,
           ];
         },
       },
@@ -234,6 +280,7 @@ const BroadcastPage = () => {
 
       <Confirmation {...cancelConfirmation.props} />
       <Confirmation {...deleteConfirmation.props} />
+      <Confirmation {...sendConfirmation.props} />
     </Wrapper>
   );
 };
