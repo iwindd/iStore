@@ -46,7 +46,7 @@ const BroadcastNewPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>สร้าง Broadcast ใหม่</App.Header.Title>
+        <App.Header.Title>สร้างประกาศใหม</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBroadcast

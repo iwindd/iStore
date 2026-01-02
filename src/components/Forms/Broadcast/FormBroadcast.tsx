@@ -120,7 +120,7 @@ const FormBroadcast = ({
       </Card>
 
       <Card>
-        <CardHeader title="ข้อมูล Broadcast" />
+        <CardHeader title="ข้อมูล" />
         <Divider />
         <CardContent>
           <Stack spacing={2}>
@@ -155,7 +155,7 @@ const FormBroadcast = ({
       </Card>
 
       <Card>
-        <CardHeader title="ตั้งเวลา Broadcast" />
+        <CardHeader title="ตั้งเวลา" />
         <Divider />
         <CardContent>
           <Grid container spacing={2} alignItems="flex-end">

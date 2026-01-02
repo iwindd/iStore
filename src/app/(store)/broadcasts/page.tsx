@@ -263,7 +263,7 @@ const BroadcastPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>Broadcast ประชาสัมพันธ์</App.Header.Title>
+        <App.Header.Title>ประชาสัมพันธ์</App.Header.Title>
         <App.Header.Actions>
           <Button
             component={Link}
@@ -272,7 +272,7 @@ const BroadcastPage = () => {
             variant="contained"
             size="small"
           >
-            สร้าง Broadcast
+            สร้างประชาสัมพันธ์
           </Button>
         </App.Header.Actions>
       </App.Header>
