@@ -6,6 +6,7 @@ import {
   UpdateBroadcastSchema,
   UpdateBroadcastValues,
 } from "@/schema/Broadcast";
+import dayjs from "dayjs";
 
 export const updateBroadcast = async (
   id: number,
@@ -51,8 +52,8 @@ export const updateBroadcast = async (
     }
 
     // Validate scheduled_at is within event dates
-    const scheduledAt = new Date(values.scheduled_at);
-    if (scheduledAt < event.start_at || scheduledAt > event.end_at) {
+    const scheduledAt = dayjs(values.scheduled_at);
+    if (!scheduledAt.isBetween(event.start_at, event.end_at)) {
       throw new Error("วันเวลา Broadcast ต้องอยู่ในช่วงของโปรโมชั่น");
     }
 
@@ -64,7 +65,7 @@ export const updateBroadcast = async (
         title: values.title,
         message: values.message,
         image_url: values.image_url || null,
-        scheduled_at: scheduledAt,
+        scheduled_at: scheduledAt.toDate(),
         status: "SCHEDULED",
       },
     });
