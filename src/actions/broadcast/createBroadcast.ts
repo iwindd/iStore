@@ -31,9 +31,32 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
       throw new Error("ไม่พบโปรโมชั่นที่เลือก");
     }
 
-    // Validate scheduled_at is within event dates
-    const scheduledAt = dayjs(values.scheduled_at);
-    if (!scheduledAt.isBetween(event.start_at, event.end_at)) {
+    // Determine status and scheduled_at based on type
+    let scheduledAt: dayjs.Dayjs;
+    let status: "DRAFT" | "SCHEDULED" = "SCHEDULED";
+
+    if (values.type === "DRAFT") {
+      status = "DRAFT";
+      scheduledAt = values.scheduled_at
+        ? dayjs(values.scheduled_at)
+        : dayjs(event.start_at);
+    } else if (values.type === "INSTANT") {
+      scheduledAt = dayjs();
+    } else {
+      if (!values.scheduled_at) {
+        throw new Error("กรุณาระบุเวลาที่ต้องการประกาศ");
+      }
+      scheduledAt = dayjs(values.scheduled_at);
+    }
+
+    // Validate scheduled_at is within event dates (Skip for DRAFT)
+    if (
+      status !== "DRAFT" &&
+      !scheduledAt.isBetween(event.start_at, event.end_at, null, "[]")
+    ) {
+      // Allow slight margin for INSTANT or strict?
+      // If INSTANT (now), and now is not within [start, end], we error.
+      // This implies we can only broadcast active events.
       throw new Error("วันเวลา Broadcast ต้องอยู่ในช่วงของโปรโมชั่น");
     }
 
@@ -46,7 +69,7 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
         message: values.message,
         image_url: values.image_url || null,
         scheduled_at: scheduledAt.toDate(),
-        status: "SCHEDULED",
+        status: status,
         creator_id: user.userStoreId,
       },
     });
