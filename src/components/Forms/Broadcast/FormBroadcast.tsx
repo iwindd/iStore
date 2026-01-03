@@ -1,5 +1,7 @@
 import { EventSelectorItem } from "@/actions/broadcast/eventActions";
+import { getPresignedUrl } from "@/actions/upload/getPresignedUrl";
 import EventSelector from "@/components/EventSelector";
+import ImageUpload from "@/components/Input/ImageUpload";
 import useFormValidate from "@/hooks/useFormValidate";
 import {
   CreateBroadcastSchema,
@@ -8,6 +10,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
 import {
+  Box,
   Button,
   Card,
   CardContent,
@@ -22,6 +25,9 @@ import {
 import Grid from "@mui/material/Grid";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { enqueueSnackbar } from "notistack";
+import React, { useState } from "react";
+import { Controller } from "react-hook-form";
 
 export interface FormBroadcastProps {
   broadcast?: {
@@ -48,6 +54,7 @@ const FormBroadcast = ({
     handleSubmit,
     setValue,
     watch,
+    control,
   } = useFormValidate<CreateBroadcastValues>({
     resolver: zodResolver(CreateBroadcastSchema),
     defaultValues: {
@@ -59,6 +66,47 @@ const FormBroadcast = ({
     },
   });
 
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFormSubmit = async (data: CreateBroadcastValues) => {
+    let finalImageUrl = data.image_url;
+
+    if (selectedImageFile) {
+      setIsUploading(true);
+      try {
+        const { signedUrl, publicUrl } = await getPresignedUrl(
+          selectedImageFile.name,
+          selectedImageFile.type
+        );
+
+        const uploadResponse = await fetch(signedUrl, {
+          method: "PUT",
+          body: selectedImageFile,
+          headers: {
+            "Content-Type": selectedImageFile.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Upload failed");
+        }
+
+        finalImageUrl = publicUrl;
+      } catch (error) {
+        console.error("Upload error:", error);
+        enqueueSnackbar("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ", {
+          variant: "error",
+        });
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
+    onSubmit({ ...data, image_url: finalImageUrl });
+  };
+
   const selectedEventId = watch("event_id");
   const scheduledAt = watch("scheduled_at");
 
@@ -66,7 +114,7 @@ const FormBroadcast = ({
   const [selectedEvent, setSelectedEvent] =
     React.useState<EventSelectorItem | null>(null);
 
-  const disabled = isLoading || propsDisabled;
+  const disabled = isLoading || propsDisabled || isUploading;
 
   const handleEventChange = (event: EventSelectorItem | null) => {
     if (event) {
@@ -95,7 +143,11 @@ const FormBroadcast = ({
   };
 
   return (
-    <Stack spacing={2} component="form" onSubmit={handleSubmit(onSubmit)}>
+    <Stack
+      spacing={2}
+      component="form"
+      onSubmit={handleSubmit(handleFormSubmit)}
+    >
       <Card>
         <CardHeader title="เลือกโปรโมชั่น" />
         <Divider />
@@ -142,13 +194,33 @@ const FormBroadcast = ({
               helperText={errors.message?.message}
               {...register("message")}
             />
-            <TextField
-              label="URL รูปภาพ (ถ้ามี)"
-              fullWidth
-              disabled={disabled}
-              error={!!errors.image_url}
-              helperText={errors.image_url?.message}
-              {...register("image_url")}
+            <Controller
+              name="image_url"
+              control={control}
+              render={({ field }) => (
+                <FormControl fullWidth error={!!errors.image_url}>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      รูปภาพประกอบ (ถ้ามี)
+                    </Typography>
+                  </Box>
+                  <ImageUpload
+                    value={selectedImageFile || field.value}
+                    onChange={(val) => {
+                      if (val instanceof File) {
+                        setSelectedImageFile(val);
+                      } else {
+                        setSelectedImageFile(null);
+                        field.onChange(val || "");
+                      }
+                    }}
+                    disabled={disabled}
+                  />
+                  {errors.image_url && (
+                    <FormHelperText>{errors.image_url.message}</FormHelperText>
+                  )}
+                </FormControl>
+              )}
             />
           </Stack>
         </CardContent>
@@ -205,8 +277,5 @@ const FormBroadcast = ({
     </Stack>
   );
 };
-
-// Add React import for useState
-import React from "react";
 
 export default FormBroadcast;
