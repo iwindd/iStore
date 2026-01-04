@@ -88,7 +88,7 @@ const BroadcastViewPage = () => {
     return (
       <Wrapper>
         <App.Header>
-          <App.Header.Title>ไม่พบ Broadcast</App.Header.Title>
+          <App.Header.Title>ไม่พบประกาศ</App.Header.Title>
         </App.Header>
       </Wrapper>
     );

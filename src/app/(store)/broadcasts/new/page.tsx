@@ -25,7 +25,7 @@ const BroadcastNewPage = () => {
     },
     onSuccess: async () => {
       setIsCreated(true);
-      enqueueSnackbar("สร้าง Broadcast เรียบร้อยแล้ว!", { variant: "success" });
+      enqueueSnackbar("สร้างประกาศใหม่เรียบร้อยแล้ว!", { variant: "success" });
       await queryClient.refetchQueries({
         queryKey: ["datatable:broadcasts"],
         type: "active",
@@ -46,7 +46,7 @@ const BroadcastNewPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>สร้างประกาศใหม</App.Header.Title>
+        <App.Header.Title>สร้างประกาศใหม่</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBroadcast

@@ -34,7 +34,7 @@ const BroadcastEditPage = () => {
     },
     onSuccess: async () => {
       setIsUpdated(true);
-      enqueueSnackbar("อัปเดต Broadcast เรียบร้อยแล้ว!", {
+      enqueueSnackbar("อัปเดตประกาศเรียบร้อยแล้ว!", {
         variant: "success",
       });
       await queryClient.refetchQueries({
@@ -81,7 +81,7 @@ const BroadcastEditPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>แก้ไข Broadcast: {broadcast.title}</App.Header.Title>
+        <App.Header.Title>แก้ไขประกาศ: {broadcast.title}</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBroadcast

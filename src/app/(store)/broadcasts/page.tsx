@@ -43,7 +43,7 @@ const BroadcastPage = () => {
 
   const cancelConfirmation = useConfirm({
     title: "ยืนยันการยกเลิก",
-    text: "คุณต้องการยกเลิก Broadcast นี้หรือไม่?",
+    text: "คุณต้องการยกเลิกประกาศนี้หรือไม่?",
     confirmProps: {
       color: "warning",
       startIcon: <CancelTwoTone />,
@@ -70,7 +70,7 @@ const BroadcastPage = () => {
 
   const deleteConfirmation = useConfirm({
     title: "ยืนยันการลบ",
-    text: "คุณต้องการลบ Broadcast นี้หรือไม่?",
+    text: "คุณต้องการลบประกาศนี้หรือไม่?",
     confirmProps: {
       color: "error",
       startIcon: <DeleteTwoTone />,
@@ -83,7 +83,7 @@ const BroadcastPage = () => {
           queryKey: ["datatable:broadcasts"],
           type: "active",
         });
-        enqueueSnackbar("ลบ Broadcast เรียบร้อยแล้ว!", {
+        enqueueSnackbar("ลบประกาศเรียบร้อยแล้ว!", {
           variant: "success",
         });
       } catch (error) {
@@ -97,7 +97,7 @@ const BroadcastPage = () => {
 
   const sendConfirmation = useConfirm({
     title: "แจ้งเตือน",
-    text: "คุณต้องการจะส่ง Broadcast นี้หรือไม่",
+    text: "คุณต้องการจะส่งประกาศนี้หรือไม่",
     confirmProps: {
       color: "warning",
       startIcon: <NotificationsTwoTone />,
