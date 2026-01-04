@@ -4,16 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pnpm prisma generate --no-engine && next build",
+    "build": "npm prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "validate": "next lint && tsc --noEmit",
-    "db:generate": "pnpm prisma generate",
-    "db:push": "pnpm prisma db push",
-    "db:seed": "pnpm prisma db seed",
-    "db:migrate": "pnpm prisma migrate dev",
-    "db:reset": "pnpm prisma migrate reset"
+    "db:generate": "npm prisma generate",
+    "db:push": "npm prisma db push",
+    "db:seed": "npm prisma db seed",
+    "db:migrate": "npm prisma migrate dev",
+    "db:reset": "npm prisma migrate reset"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.962.0",
