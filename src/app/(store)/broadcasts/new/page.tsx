@@ -27,7 +27,7 @@ const BroadcastNewPage = () => {
       setIsCreated(true);
       enqueueSnackbar("สร้างประกาศใหม่เรียบร้อยแล้ว!", { variant: "success" });
       await queryClient.refetchQueries({
-        queryKey: ["datatable:broadcasts"],
+        queryKey: ["broadcasts"],
         type: "active",
       });
       router.push(Path("broadcasts").href);

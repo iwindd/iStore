@@ -1,16 +1,16 @@
 "use client";
-import { getBroadcast } from "@/actions/broadcast/getBroadcast";
+import {getBroadcast} from "@/actions/broadcast/getBroadcast";
 
-import { updateBroadcast } from "@/actions/broadcast/updateBroadcast";
+import {updateBroadcast} from "@/actions/broadcast/updateBroadcast";
 import FormBroadcast from "@/components/Forms/Broadcast/FormBroadcast";
-import { Path } from "@/config/Path";
-import App, { Wrapper } from "@/layouts/App";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { UpdateBroadcastValues } from "@/schema/Broadcast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
-import { enqueueSnackbar } from "notistack";
-import { useState } from "react";
+import {Path} from "@/config/Path";
+import App, {Wrapper} from "@/layouts/App";
+import {useInterface} from "@/providers/InterfaceProvider";
+import {UpdateBroadcastValues} from "@/schema/Broadcast";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useParams, useRouter} from "next/navigation";
+import {enqueueSnackbar} from "notistack";
+import {useState} from "react";
 
 const BroadcastEditPage = () => {
   const params = useParams<{ id: string }>();
@@ -38,7 +38,7 @@ const BroadcastEditPage = () => {
         variant: "success",
       });
       await queryClient.refetchQueries({
-        queryKey: ["datatable:broadcasts"],
+        queryKey: ["broadcasts"],
         type: "active",
       });
       router.push(Path("broadcasts").href);

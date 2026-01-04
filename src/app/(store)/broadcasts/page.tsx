@@ -53,7 +53,7 @@ const BroadcastPage = () => {
         await cancelBroadcast(id);
         cancelConfirmation.handleClose();
         await queryClient.refetchQueries({
-          queryKey: ["datatable:broadcasts"],
+          queryKey: ["broadcasts"],
           type: "active",
         });
         enqueueSnackbar("ยกเลิก Broadcast เรียบร้อยแล้ว!", {
@@ -80,7 +80,7 @@ const BroadcastPage = () => {
         await deleteBroadcast(id);
         deleteConfirmation.handleClose();
         await queryClient.refetchQueries({
-          queryKey: ["datatable:broadcasts"],
+          queryKey: ["broadcasts"],
           type: "active",
         });
         enqueueSnackbar("ลบประกาศเรียบร้อยแล้ว!", {
@@ -107,7 +107,7 @@ const BroadcastPage = () => {
         await sendBroadcast(id);
         sendConfirmation.handleClose();
         await queryClient.refetchQueries({
-          queryKey: ["datatable:broadcasts"],
+          queryKey: ["broadcasts"],
           type: "active",
         });
         enqueueSnackbar("ส่งแจ้งเตือนประชาสัมพันธ์เรียบร้อยแล้ว!", {

@@ -60,7 +60,7 @@ const BroadcastViewPage = () => {
           queryKey: ["broadcast", broadcastId],
         });
         await queryClient.refetchQueries({
-          queryKey: ["datatable:broadcasts"],
+          queryKey: ["broadcasts"],
         });
         enqueueSnackbar("ยกเลิก Broadcast เรียบร้อยแล้ว!", {
           variant: "success",
