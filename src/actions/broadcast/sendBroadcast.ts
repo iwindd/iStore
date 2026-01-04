@@ -21,10 +21,15 @@ export const sendBroadcast = async (id: number) => {
         status: BroadcastStatus.SENT,
         sent_at: new Date(),
       },
+      select: {
+        message: true,
+        image_url: true,
+      },
     });
 
     await BotApp.post(`/broadcast/sendAll`, {
       text: broadcast.message,
+      image: broadcast.image_url,
     });
 
     return broadcast;

@@ -22,6 +22,11 @@ export async function GET(req: Request) {
           lte: now.toDate(),
         },
       },
+      select: {
+        id: true,
+        message: true,
+        image_url: true,
+      },
     });
 
     const results = [];
@@ -30,6 +35,7 @@ export async function GET(req: Request) {
       try {
         await BotApp.post(`/broadcast/sendAll`, {
           text: broadcast.message,
+          image: broadcast.image_url,
         });
 
         await db.broadcast.update({
