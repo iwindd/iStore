@@ -5,13 +5,12 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 const getPromotionOffers = async (storeId: string) => {
+  // TODO:: Refactor select fields to constant
   const now = new Date();
-  const select = {
+  const select: Prisma.PromotionOfferSelect = {
     id: true,
     event: {
       select: {
-        title: true,
-        description: true,
         start_at: true,
         end_at: true,
       },
@@ -65,7 +64,6 @@ const getPromotionOffers = async (storeId: string) => {
   }>[];
 
   return result.map((promotion) => ({
-    id: promotion.id,
     ...promotion.event,
     type: "buyXgetY",
     buy: promotion.buyItems,
