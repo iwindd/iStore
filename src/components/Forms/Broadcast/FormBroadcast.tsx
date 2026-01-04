@@ -1,4 +1,5 @@
 import { EventSelectorItem } from "@/actions/broadcast/eventActions";
+import { generateAdMessage } from "@/actions/broadcast/generateMessage";
 import { getPresignedUrl } from "@/actions/upload/getPresignedUrl";
 import EventSelector from "@/components/EventSelector";
 import ImageUpload from "@/components/Input/ImageUpload";
@@ -8,7 +9,7 @@ import {
   CreateBroadcastValues,
 } from "@/schema/Broadcast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SaveTwoTone } from "@mui/icons-material";
+import { AutoAwesomeTwoTone, SaveTwoTone } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -18,15 +19,18 @@ import {
   Divider,
   FormControl,
   FormHelperText,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { DateTimePicker } from "@mui/x-date-pickers";
+import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { enqueueSnackbar } from "notistack";
 import React, { useState } from "react";
@@ -111,6 +115,18 @@ const FormBroadcast = ({
     onSubmit({ ...data, image_url: finalImageUrl });
   };
 
+  const aiGeneratePromotionOfferInfo = useMutation({
+    mutationFn: async (eventId: number) => {
+      return await generateAdMessage(eventId);
+    },
+    onSuccess: (message) => {
+      setValue("message", message);
+    },
+    onError: (error) => {
+      console.log("error generating promotion offer info", error);
+    },
+  });
+
   const selectedEventId = watch("event_id");
   const scheduledAt = watch("scheduled_at");
   const type = watch("type");
@@ -157,30 +173,23 @@ const FormBroadcast = ({
         <CardHeader title="เลือกโปรโมชั่น" />
         <Divider />
         <CardContent>
-          <FormControl fullWidth error={!!errors.event_id}>
-            <EventSelector
-              onSubmit={handleEventChange}
-              defaultValue={broadcast?.event_id}
-              error={!!errors.event_id}
-              helperText={errors.event_id?.message}
-              fieldProps={{
-                disabled,
-              }}
-            />
-          </FormControl>
-          {selectedEvent && (
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              {selectedEvent.note}
-            </Typography>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader title="ข้อมูล" />
-        <Divider />
-        <CardContent>
           <Stack spacing={2}>
+            <FormControl fullWidth error={!!errors.event_id}>
+              <EventSelector
+                onSubmit={handleEventChange}
+                defaultValue={broadcast?.event_id}
+                error={!!errors.event_id}
+                helperText={errors.event_id?.message}
+                fieldProps={{
+                  disabled,
+                }}
+              />
+            </FormControl>
+            {selectedEvent && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {selectedEvent.note}
+              </Typography>
+            )}
             <TextField
               label="หัวข้อประกาศ"
               fullWidth
@@ -189,14 +198,48 @@ const FormBroadcast = ({
               helperText={errors.title?.message}
               {...register("title")}
             />
+          </Stack>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader
+          title="ข้อมูล"
+          action={
+            <Tooltip title="สร้างรายละเอียดข้อเสนออัตโนมัติ">
+              <IconButton
+                color="primary"
+                disabled={
+                  aiGeneratePromotionOfferInfo.isPending ||
+                  disabled ||
+                  !selectedEventId
+                }
+                onClick={() =>
+                  aiGeneratePromotionOfferInfo.mutate(selectedEventId)
+                }
+              >
+                <AutoAwesomeTwoTone />
+              </IconButton>
+            </Tooltip>
+          }
+        />
+        <Divider />
+        <CardContent>
+          <Stack spacing={2}>
             <TextField
               label="ข้อความประกาศ"
               fullWidth
               multiline
               rows={4}
-              disabled={disabled}
+              disabled={disabled || aiGeneratePromotionOfferInfo.isPending}
               error={!!errors.message}
               helperText={errors.message?.message}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+              placeholder="ข้อความแจ้งเตือน eg.โปรเด็ด! ซื้อโค้ก 2 ขวด แถมฟรีอีก 1 ขวดทันที คุ้มสองต่อ รสชาติซ่าที่คุณรักในราคาเกินคุ้ม หมดเขตเร็วๆ นี้"
               {...register("message")}
             />
             <Controller
