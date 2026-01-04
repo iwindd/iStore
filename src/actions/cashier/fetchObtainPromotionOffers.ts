@@ -36,8 +36,6 @@ export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
     event: {
       select: {
         id: true;
-        title: true;
-        description: true;
         start_at: true;
         end_at: true;
       };
@@ -107,8 +105,6 @@ const fetchObtainPromotionOffer = async (
         event: {
           select: {
             id: true,
-            title: true,
-            description: true,
             start_at: true,
             end_at: true,
           },
