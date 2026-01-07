@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Features
 
-## Getting Started
+# Auth
 
-First, run the development server:
+- การเข้าสู่ระบบ
+- การสมัครสมาชิก
+- การออกจากระบบ
+- การแก้ไขข้อมูลส่วนตัว
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# Product
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ใช้ในการนำไปค้าขาย
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- สามารถ Generate barcode ได้
+- สามารถ Export barcode ได้
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+# Category ของ Product
 
-## Learn More
+ประเภทของสินค้า
+เมื่อสร้าง: - สามารถกำหนดได้ว่าอนุญาติให้ Overstock สินค้า Category นี้รึป่าว - สามารถกำหนดได้ว่าเมื่อสร้างแล้วให้นำไปใช้กับสินค้าทั้งหมดที่ไม่มี Category
 
-To learn more about Next.js, take a look at the following resources:
+# Stock Management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Stock Management คือการจัดการ Stock ของสินค้า เมื่อสร้างรายการ การจัดการสต๊อกขึ้นมา 1 รายการ
+เราสามารถเพิ่มสินค้าอะไรก็ได้เข้าไปในรายการ Stock, 1 รายการ Stock สามารถเพิ่มสินค้าได้หลายชิ้น
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# Cashier การขาย
 
-## Deploy on Vercel
+ทำงานโดยการสแกน barcode ของสินค้า แล้วจะเพิ่มไปยังตะกร้า เมื่อสแกนสินค้าครบแล้วและต้องการ
+เช็คบิลจะเลือกได้ว่าชำระผ่าน ธนาคาร หรือ เงินสด และเมื่อเช็คบิลแล้ว จะหักจำนวน Stock ของสินค้า
+และบันทึกการขาย (จะไม่สามารถขายสินค้าตามจำนวนที่มีได้ นอกจากสินค้านั้นอยู่ในประเภทที่สามารถ Overstock ได้)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Overstock การค้างสินค้า
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+คือการขายสินค้าหรือ Pre-order สินค้านั้น เราสามารถขายสินค้าประเภทนี้ได้โดยไม่จำเป็นต้องมี Stock ของสินค้านั้นก่อน
+และเมื่อมีสินค้าใน Stock แล้วจะสามารถ สำเร็จรายการ Overstock ได้และจะหักลบไปยัง Stock สินค้า
+
+# Borrow ยืมสินค้า
+
+การยืมสินค้าคือการหัก Stock สินค้าชั่วคราว สำหรับการนำไปขายข้างนอก Cashier และเมื่อนำสินค้ากลับมา
+หรือขายไม่หมด เราจะนำ Stock ที่เหลือหรือจำนวนสินค้าที่เหลือกลับเข้าสู่ระบบ
+
+# History
+
+การดูประวัติการขายย้อนหลัง ว่าได้กำไรเท่าไหร่ สินค้าอะไร จำนวนเท่าไหร่ ใครเป็นคนทำรายการนี้เป็นต้น
+
+# Role & Permission
+
+การสร้าง Role หรือตำแหน่งของ Employee โดยจะมีสิทธิ์การใช้งานต่างๆ ที่ไม่เหมือนกันตามที่กำหนดว่า
+ต้องการให้ตำแหน่งนี้ทำอะไรได้บ้าง
+
+# Employee
+
+การสร้าง Account สำหรับพนักงาน เพื่อ Login เข้ามาในระบบเดียวกันแต่ต่าง Account
+โดยจะมีสิทธิ์การใช้งานต่างๆ ที่ไม่เหมือนกันตามที่กำหนดว่า ต้องการให้ Employee Role นี้ทำอะไรได้บ้าง
+
+# Promotion
+
+การสร้างโปรโมชั่นต่างๆ เช่น การซื้อ 2 แถม 1(BuyXGetY) เป็นต้น
+โดยเมื่อขายสินค้าจะทำการคำนวนโปรโมชั่นนั้นๆ ให้อัตโนมัติ
+
+# Broadcast
+
+การตั้งเวลา Broadcast สำหรับโปรโมชั่นๆต่างเพื่อประชาสัมพันธ์ไปยังกลุ่ม Facebook หรือ
+Fanpage อัตโนมัติ
+
+# Member
+
+การสร้างสมาชิกเพื่อเก็บแต้มสะสมไว้ใช้เป็นส่วนลดหรือโปรโมชั่นต่างๆ
