@@ -3,18 +3,18 @@ import { ProductPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { ProductSchema, ProductValues } from "@/schema/Product";
+import { ProductUpdateSchema, ProductUpdateValues } from "@/schema/Product";
 
 const UpdateProduct = async (
-  payload: ProductValues,
+  payload: ProductUpdateValues,
   id: number
-): Promise<ActionResponse<ProductValues>> => {
+): Promise<ActionResponse<ProductUpdateValues>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(ProductPermissionEnum.UPDATE))
       throw new Error("Unauthorized");
-    const validated = ProductSchema.parse(payload);
+    const validated = ProductUpdateSchema.parse(payload);
 
     await db.product.update({
       where: {
@@ -33,7 +33,7 @@ const UpdateProduct = async (
 
     return { success: true, data: validated };
   } catch (error) {
-    return ActionError(error) as ActionResponse<ProductValues>;
+    return ActionError(error) as ActionResponse<ProductUpdateValues>;
   }
 };
 

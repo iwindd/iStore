@@ -5,11 +5,6 @@ export const ProductSchema = z
   .object({
     serial: z.string().min(10).max(15),
     label: z.string().min(3).max(60),
-    price: z.number(),
-    cost: z.number(),
-    stock_min: z.number(),
-    keywords: z.string(),
-    category_id: z.number().nullable().transform((val) => val == null || val <= 0 ? null : val),
   })
   .required();
 
@@ -25,3 +20,17 @@ export const ProductFindSchema = z
   });
 
 export type ProductFindValues = z.infer<typeof ProductFindSchema>;
+
+export const ProductUpdateSchema = z.object({
+  label: z.string().min(3).max(60),
+  price: z.number().min(0),
+  cost: z.number().min(0),
+  stock_min: z.number().min(0),
+  keywords: z.string().optional(),
+  category_id: z
+    .number()
+    .nullable()
+    .transform((val) => (val == null || val <= 0 ? null : val)),
+});
+
+export type ProductUpdateValues = z.infer<typeof ProductUpdateSchema>;

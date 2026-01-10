@@ -1,5 +1,5 @@
-import findProductById from "@/actions/product/findById";
 import App, { Wrapper } from "@/layouts/App";
+import db from "@/libs/db";
 import { notFound } from "next/navigation";
 import ProductTabs from "./components/ProductTabs";
 import { ProductProvider } from "./ProductContext";
@@ -11,11 +11,13 @@ interface ProductLayoutProps {
 
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
   const { id } = await params;
-  const response = await findProductById(+id);
+  const product = await db.product.findFirst({
+    where: {
+      id: +id,
+    },
+  });
 
-  if (!response.success || !response.data) notFound();
-
-  const product = response.data;
+  if (!product) notFound();
 
   return (
     <ProductProvider value={{ ...product }}>

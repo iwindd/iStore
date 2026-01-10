@@ -1,10 +1,8 @@
 "use client";
-import { FindProductByIdResult } from "@/actions/product/findById";
+import { Product } from "@prisma/client";
 import { createContext, useContext } from "react";
 
-type ProductContextType = FindProductByIdResult & {
-  id: number;
-};
+type ProductContextType = Product;
 
 const ProductContext = createContext<ProductContextType | null>(null);
 

@@ -1,12 +1,13 @@
 "use client";
-import { Box, Card, CardContent, CardHeader } from "@mui/material";
+import { Card, CardContent, CardHeader, Stack } from "@mui/material";
 import { useProduct } from "../../ProductContext";
+import ProductUpdateForm from "./components/ProductUpdateForm";
 
 const ProductInformationPage = () => {
   const product = useProduct();
 
   return (
-    <Box>
+    <Stack spacing={1}>
       <Card>
         <CardHeader
           title={product.label}
@@ -14,7 +15,8 @@ const ProductInformationPage = () => {
         />
         <CardContent>...</CardContent>
       </Card>
-    </Box>
+      <ProductUpdateForm />
+    </Stack>
   );
 };
 

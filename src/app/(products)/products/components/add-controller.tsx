@@ -1,15 +1,12 @@
 "use client";
-import { SearchCategory } from "@/actions/category/search";
 import CreateProduct from "@/actions/product/create";
 import GetProduct from "@/actions/product/find";
 import recoveryProduct from "@/actions/product/recoveryProduct";
-import UpdateProduct from "@/actions/product/update";
-import CategorySelector from "@/components/CategorySelector";
+import { Path } from "@/config/Path";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
 import { randomEan } from "@/libs/ean";
-import { removeWhiteSpace } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
 import {
   ProductFindSchema,
@@ -37,9 +34,9 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -171,21 +168,29 @@ export function ProductFormDialog({
   setLoading,
   onClose,
   product,
-}: ProductFormDialogProps): React.JSX.Element {
+}: Readonly<ProductFormDialogProps>): React.JSX.Element {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
   } = useForm<ProductValues>({
     resolver: zodResolver(ProductSchema),
   });
 
   const { enqueueSnackbar } = useSnackbar();
-  const [defaultCategory, setDefaultCategory] = React.useState<number>(0);
   const queryClient = useQueryClient();
+  const router = useRouter();
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (product) {
+      reset({
+        serial: product.serial,
+        label: product.label,
+      });
+    }
+  }, [product]);
 
   const submitProduct: SubmitHandler<ProductValues> = async (
     payload: ProductValues
@@ -193,12 +198,12 @@ export function ProductFormDialog({
     try {
       if (product?.deleted_at) {
         const resp = await recoveryProduct(product.id);
-        if (!resp.success) throw Error("error");
+        if (!resp.success) throw new Error("error");
+        router.push(`${Path("products").href}/${product.id}`);
       } else {
-        const resp = await (!product?.id
-          ? CreateProduct(payload)
-          : UpdateProduct(payload, product.id));
-        if (!resp.success) throw Error(resp.message);
+        const resp = await CreateProduct(payload);
+        if (!resp.success) throw new Error(resp.message);
+        router.push(`${Path("products").href}/${resp?.data?.id}`);
       }
 
       reset();
@@ -209,30 +214,13 @@ export function ProductFormDialog({
       enqueueSnackbar("บันทึกสินค้าเรียบร้อยแล้ว!", { variant: "success" });
       onClose();
     } catch (error) {
+      console.error(error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    setValue(
-      "serial",
-      (product?.serial && removeWhiteSpace(product.serial)) || ""
-    );
-    setValue("label", product?.label || "");
-    setValue("price", product?.price || 0);
-    setValue("stock_min", product?.stock_min || 0);
-    setValue("cost", product?.cost || 0);
-    setValue("keywords", product?.keywords || "");
-    setValue("category_id", product?.category_id || 0);
-    setDefaultCategory(product?.category_id || 0);
-  }, [product, setValue]);
-
-  const onSelectCategory = (category: SearchCategory) => {
-    setValue("category_id", category?.id || 0);
   };
 
   return (
@@ -245,6 +233,8 @@ export function ProductFormDialog({
         onClose();
       }}
       disableAutoFocus
+      fullWidth
+      maxWidth="xs"
       slotProps={{
         paper: {
           component: "form",
@@ -257,76 +247,25 @@ export function ProductFormDialog({
       </DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
-          <Grid container spacing={1}>
-            <Grid size={6}>
-              <TextField
-                fullWidth
-                label="รหัสสินค้า"
-                {...register("serial")}
-                disabled
-                hidden
-              />
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                fullWidth
-                label="ชื่อสินค้า"
-                error={errors["label"] !== undefined}
-                helperText={errors["label"]?.message ?? ""}
-                {...register("label")}
-                autoFocus
-              />
-            </Grid>
-            <Grid size={6}>
-              <CategorySelector
-                onSubmit={onSelectCategory}
-                defaultValue={defaultCategory}
-              />
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                fullWidth
-                label="ราคาสินค้า"
-                error={errors["price"] !== undefined}
-                helperText={errors["price"]?.message}
-                {...register("price", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                fullWidth
-                label="ราคาต้นทุนสินค้า"
-                error={errors["cost"] !== undefined}
-                helperText={errors["cost"]?.message}
-                {...register("cost", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={6}>
-              <TextField
-                fullWidth
-                label="สต๊อกขั้นต่ำ"
-                error={errors["stock_min"] !== undefined}
-                helperText={errors["stock_min"]?.message}
-                placeholder="สำหรับจัดการสต๊อกหรือแจ้งเตือน"
-                {...register("stock_min", { valueAsNumber: true })}
-              />
-            </Grid>
-            <Grid size={12}>
-              <TextField
-                fullWidth
-                label="คีย์เวิร์ด"
-                placeholder="เช่น รหัสสินค้าจากเว็บสั่งซื้อ ชื่ออื่นสำหรับค้นหา เป็นต้น"
-                error={errors["keywords"] !== undefined}
-                helperText={errors["keywords"]?.message}
-                {...register("keywords")}
-              />
-            </Grid>
-          </Grid>
+          <TextField
+            fullWidth
+            label="ชื่อสินค้า"
+            slotProps={{
+              inputLabel: {
+                shrink: true,
+              },
+            }}
+            disabled={product?.deleted_at != null}
+            placeholder={`ชื่อของสินค้าที่ต้องการเพิ่ม`}
+            error={errors["label"] !== undefined}
+            helperText={
+              errors["label"]?.message ?? `รหัสสินค้า: ${product?.serial}`
+            }
+            {...register("label")}
+            autoFocus
+          />
           {product?.id && product?.deleted_at != null && (
-            <Alert color="error">
-              สินค้านี้ถูกลบไปแล้ว! หากคุณบันทึกสินค้านี้จะถูกกู้คืน{" "}
-              {product.label}{" "}
-            </Alert>
+            <Alert color="error">สินค้านี้ถูกลบไปแล้ว!</Alert>
           )}
         </Stack>
       </DialogContent>
@@ -346,7 +285,7 @@ export function ProductFormDialog({
                 : "",
           }}
         >
-          {product && product?.deleted_at ? "กู้คืนและบันทึก" : "บันทึก"}
+          {product?.deleted_at ? "กู้คืน" : "เพิ่มสินค้าใหม่"}
         </Button>
       </DialogActions>
     </Dialog>
@@ -371,7 +310,7 @@ const AddController = () => {
   };
 
   const onSubmit = (foundProduct?: Product) => {
-    setProduct(foundProduct ? foundProduct : null);
+    setProduct(foundProduct ?? null);
     setIsSearch(false);
   };
 

@@ -39,6 +39,13 @@ const Paths = {
     icon: "product",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
   },
+  ["products.create"]: {
+    key: "products.create",
+    title: "เพิ่มสินค้า",
+    href: "/products/create",
+    icon: "product",
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
+  },
   ["products.product"]: {
     key: "products.product",
     title: "รายละเอียดสินค้า",

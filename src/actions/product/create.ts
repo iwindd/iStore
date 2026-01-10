@@ -5,10 +5,11 @@ import db from "@/libs/db";
 import { removeWhiteSpace } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
 import { ProductSchema, ProductValues } from "@/schema/Product";
+import { Product } from "@prisma/client";
 
 const CreateProduct = async (
   payload: ProductValues
-): Promise<ActionResponse<ProductValues>> => {
+): Promise<ActionResponse<Product>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -16,25 +17,18 @@ const CreateProduct = async (
       throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
 
-    await db.product.create({
+    const product = await db.product.create({
       data: {
         serial: removeWhiteSpace(validated.serial),
         label: validated.label,
-        price: validated.price,
-        cost: validated.cost,
-        stock: 0,
-        stock_min: validated.stock_min,
-        sold: 0,
         store_id: user.store,
-        category_id: validated.category_id,
         creator_id: user.employeeId,
-        keywords: validated.keywords,
       },
     });
 
-    return { success: true, data: validated };
+    return { success: true, data: product };
   } catch (error) {
-    return ActionError(error) as ActionResponse<ProductValues>;
+    return ActionError(error) as ActionResponse<Product>;
   }
 };
 
