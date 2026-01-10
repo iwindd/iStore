@@ -1,138 +1,57 @@
 "use client";
+import findProductById from "@/actions/product/findById";
 import SearchProducts, { SearchProduct } from "@/actions/product/search";
-import { useInterface } from "@/providers/InterfaceProvider";
-import {
-  Autocomplete,
-  Box,
-  Grid,
-  TextField,
-  TextFieldProps,
-  Typography,
-} from "@mui/material";
-import { debounce } from "@mui/material/utils";
-import match from "autosuggest-highlight/match";
-import parse from "autosuggest-highlight/parse";
-import React from "react";
+import { TextFieldProps, Typography } from "@mui/material";
+import { useCallback } from "react";
+import BaseSelector from "./BaseSelector";
 
 interface SelectorProps {
   onSubmit(Product: SearchProduct | null): void;
   fieldProps?: TextFieldProps;
+  defaultValue?: number;
 }
 
 const Selector = (props: SelectorProps) => {
-  const [value, setValue] = React.useState<SearchProduct | null>(null);
-  const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState<readonly SearchProduct[]>([]);
-  const { isBackdrop } = useInterface();
-
-  const fetch = React.useMemo(
-    () =>
-      debounce(
-        (
-          request: { input: string },
-          callback: (results?: readonly SearchProduct[]) => void
-        ) => {
-          SearchProducts(request.input)
-            .then((resp) => {
-              callback(resp.data);
-            })
-            .catch(() => {
-              callback();
-            });
-        },
-        400
-      ),
-    []
-  );
-
-  React.useEffect(() => {
-    let active = true;
-
-    fetch({ input: inputValue }, (results?: readonly SearchProduct[]) => {
-      if (active) {
-        let newOptions: readonly SearchProduct[] = [];
-
-        if (value) {
-          newOptions = [value];
-        }
-
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
-
-        setOptions(newOptions);
-      }
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [value, inputValue, fetch]);
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" && inputValue) {
-      event.preventDefault();
+  const fetchItem = useCallback(async (id: number) => {
+    const resp = await findProductById(id);
+    if (resp.success && resp.data) {
+      // Map to SearchProduct type
+      return {
+        id: resp.data.id,
+        serial: resp.data.serial,
+        label: resp.data.label,
+        stock: resp.data.stock,
+      };
     }
-  };
+    return null;
+  }, []);
+
+  const searchItems = useCallback(async (query: string) => {
+    const resp = await SearchProducts(query);
+    return resp.data || [];
+  }, []);
 
   return (
-    <Autocomplete
+    <BaseSelector
       id="product-selector"
-      sx={{ width: "100%" }}
-      getOptionLabel={(option) =>
+      label="กรุณาเลือกสินค้า"
+      placeholder="ค้นหาสินค้า (ชื่อ, รหัส, Keyword)"
+      defaultValue={props.defaultValue}
+      fieldProps={props.fieldProps}
+      onSubmit={props.onSubmit}
+      fetchItem={fetchItem}
+      searchItems={searchItems}
+      getItemLabel={(option) =>
         typeof option === "string" ? option : option.label
       }
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      filterSelectedOptions
-      value={value}
-      noOptionsText="ไม่พบสินค้า"
-      readOnly={isBackdrop}
-      onChange={(_: any, newValue: SearchProduct | null) => {
-        setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-        props.onSubmit(newValue);
-      }}
-      onInputChange={(_, newInputValue) => {
-        setInputValue(newInputValue);
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          {...props.fieldProps}
-          label="กรุณาเลือกสินค้า"
-          fullWidth
-          onKeyDown={handleKeyDown} // Handle key press events here
-        />
+      getItemKey={(option) => option.id}
+      renderCustomOption={(option) => (
+        <div>
+          <Typography variant="caption" color="text.secondary">
+            จำนวน: {option.stock} | รหัส: {option.serial}
+          </Typography>
+        </div>
       )}
-      renderOption={(props, option) => {
-        const { key, ...optionProps } = props;
-
-        const parts = parse(option.label, match(option.label, inputValue));
-        return (
-          <li key={`${key}-${option.id}-${Math.random()}`} {...optionProps}>
-            <Grid container sx={{ alignItems: "center", width: "100%" }}>
-              <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
-                {parts.map((part, index) => (
-                  <Box
-                    key={index}
-                    component="span"
-                    sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
-                  >
-                    {part.text}
-                  </Box>
-                ))}
-                <div>
-                  <Typography variant="caption" color="text.secondary">
-                    จำนวน: {option.stock} | รหัส: {option.serial}
-                  </Typography>
-                </div>
-              </Grid>
-            </Grid>
-          </li>
-        );
-      }}
     />
   );
 };

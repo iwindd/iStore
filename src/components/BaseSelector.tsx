@@ -1,4 +1,5 @@
 "use client";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { useInterface } from "@/providers/InterfaceProvider";
 import {
   Autocomplete,
@@ -11,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { createFilterOptions } from "@mui/material/Autocomplete";
-import { debounce } from "@mui/material/utils";
+import { useQuery } from "@tanstack/react-query";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
 import React, { useEffect } from "react";
@@ -41,77 +42,48 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
   const [options, setOptions] = React.useState<readonly T[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const { isBackdrop } = useInterface();
+  const debouncedInput = useDebouncedValue(inputValue, 400);
+
+  const { data: defaultItem, isLoading: defaultItemLoading } = useQuery({
+    queryKey: [`${props.id}-default-item`, props.defaultValue],
+    queryFn: () => props.fetchItem(props.defaultValue!),
+    enabled: !!props.defaultValue || props.defaultValue == 0,
+  });
 
   useEffect(() => {
-    if (props.defaultValue && props.defaultValue > 0) {
-      setIsLoading(true);
-      props
-        .fetchItem(props.defaultValue)
-        .then((resp) => {
-          if (resp) {
-            setValue(resp);
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+    if (defaultItem) {
+      setValue(defaultItem);
     }
-  }, [props.defaultValue, props.fetchItem]);
+  }, [defaultItem, defaultItemLoading]);
 
-  const fetch = React.useMemo(
-    () =>
-      debounce(
-        (
-          request: { input: string },
-          callback: (results?: readonly T[]) => void
-        ) => {
-          props
-            .searchItems(request.input)
-            .then((resp) => {
-              callback(resp);
-            })
-            .catch(() => {
-              callback();
-            });
-        },
-        400
-      ),
-    [props.searchItems]
-  );
+  const { data: results } = useQuery({
+    queryKey: [`${props.id}-search-items`, debouncedInput],
+    queryFn: () => props.searchItems(debouncedInput),
+  });
 
   React.useEffect(() => {
-    let active = true;
+    setOptions((prev) => {
+      let newOptions: readonly T[] = [];
 
-    fetch({ input: inputValue }, (results?: readonly T[]) => {
-      if (active) {
-        let newOptions: readonly T[] = [];
-
-        if (value) {
-          newOptions = [value];
-        }
-
-        if (results) {
-          newOptions = [...newOptions, ...results];
-        }
-
-        // delete duplicates
-        // Note: This relies on getItemKey returning a unique identifier
-        const seen = new Set();
-        newOptions = newOptions.filter((option) => {
-          const key = props.getItemKey(option);
-          const duplicate = seen.has(key);
-          seen.add(key);
-          return !duplicate;
-        });
-
-        setOptions(newOptions);
+      if (value) {
+        newOptions = [value];
       }
-    });
 
-    return () => {
-      active = false;
-    };
-  }, [value, inputValue, fetch, props.getItemKey]);
+      if (results) {
+        newOptions = [...newOptions, ...prev, ...results];
+      }
+
+      // delete duplicates
+      const seen = new Set<string | number>();
+      newOptions = newOptions.filter((option) => {
+        const key = props.getItemKey(option);
+        const duplicate = seen.has(key);
+        seen.add(key);
+        return !duplicate;
+      });
+      return newOptions;
+    });
+  }, [value, results, props.getItemKey]);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter" && inputValue) {
@@ -129,7 +101,7 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
         }
         return props.getItemLabel(option);
       }}
-      disabled={isLoading}
+      disabled={isLoading || defaultItemLoading}
       filterOptions={(options, params) => {
         const filtered = createFilterOptions<T>()(options, params);
 
@@ -187,7 +159,7 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           label={props.label}
           fullWidth
           placeholder={
-            isLoading
+            isLoading || defaultItemLoading
               ? "กรุณารอสักครู่"
               : props.placeholder || `ค้นหา${props.label}`
           }
@@ -195,15 +167,16 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           helperText={props.helperText}
           onKeyDown={handleKeyDown}
           slotProps={{
-            input: isLoading
-              ? {
-                  startAdornment: (
-                    <InputAdornment position="end" sx={{ mr: 1 }}>
-                      <CircularProgress size={20} />
-                    </InputAdornment>
-                  ),
-                }
-              : { ...params.InputProps },
+            input:
+              isLoading || defaultItemLoading
+                ? {
+                    startAdornment: (
+                      <InputAdornment position="end" sx={{ mr: 1 }}>
+                        <CircularProgress size={20} />
+                      </InputAdornment>
+                    ),
+                  }
+                : { ...params.InputProps },
           }}
         />
       )}
@@ -239,7 +212,11 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
                   </Box>
                 ))}
                 {props.renderCustomOption && (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    component="div"
+                  >
                     {props.renderCustomOption(option)}
                   </Typography>
                 )}
