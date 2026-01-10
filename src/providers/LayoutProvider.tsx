@@ -2,7 +2,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import DesktopNav from "@/layouts/sidenav/DesktopNav";
 import { Box, GlobalStyles, Stack } from "@mui/material";
-import Breadcrumb from "../layouts/breadcrumb";
 import { MainNav } from "../layouts/mainnav";
 
 export default function MainLayout({
@@ -50,7 +49,6 @@ export default function MainLayout({
         >
           <MainNav />
           <Stack p={2} spacing={1}>
-            <Breadcrumb />
             {children}
           </Stack>
         </Box>

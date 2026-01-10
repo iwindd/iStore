@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { MenuTwoTone } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
+import Breadcrumb from "../breadcrumb";
 import UserPopover from "../popover";
 import MobileNav from "../sidenav/MobileNav";
 
@@ -53,6 +54,7 @@ export function MainNav(): React.JSX.Element {
             >
               <MenuTwoTone />
             </IconButton>
+            <Breadcrumb />
           </Stack>
           <Stack
             direction="row"
@@ -62,7 +64,7 @@ export function MainNav(): React.JSX.Element {
             ref={userPopover.anchorRef}
             sx={{ cursor: "pointer" }}
           >
-            <Stack>
+            <Stack sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography align="right" variant="subtitle2">
                 {user?.session.user.name}
               </Typography>
