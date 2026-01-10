@@ -12,8 +12,11 @@ const AppFooter = ({
         bottom: 0,
         left: 0,
         right: 0,
+        maxHeight: "var(--Footer-height)",
         pl: { lg: "var(--SideNav-width)" },
         borderTop: "1px solid var(--mui-palette-divider)",
+        bgcolor: "var(--mui-palette-background-paper)",
+        zIndex: "var(--Footer-zIndex)",
       }}
     >
       <Stack direction="row" spacing={3} p={2} {...props}>

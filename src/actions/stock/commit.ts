@@ -42,27 +42,10 @@ export const updateStockProducts = async (
   );
 };
 
-const stockCommit = async (
-  products: StockProduct[],
-  stockId?: number,
-  options?: {
-    note?: string;
-    updateStock?: boolean;
-  }
-) => {
-  options = options || {};
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.CREATE))
-      throw new Error("Forbidden");
-    if (options.updateStock && !user.hasPermission(StockPermissionEnum.UPDATE))
-      throw new Error("Forbidden");
+const successAction = () => {};
 
-    const stockState = options.updateStock
-      ? StockState.SUCCESS
-      : StockState.PROGRESS;
-    /* 
+const progressAction = () => {
+  /* 
     const stock = await db.stock.upsert({
       where: {
         id: stockId || 0,
@@ -112,8 +95,7 @@ const stockCommit = async (
         },
       },
     });
- */
-    if (options.updateStock)
+
       /*       await updateStockProducts(
         stock.products.map((p) => {
           return {
@@ -122,11 +104,32 @@ const stockCommit = async (
           };
         })
       ); */
+};
 
-      return true;
+const stockCommit = async (
+  products: StockProduct[],
+  stockId?: number,
+  options?: {
+    note?: string;
+    updateStock?: boolean;
+  }
+) => {
+  options = options || {};
+  try {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+    if (!user.hasPermission(StockPermissionEnum.CREATE))
+      throw new Error("Forbidden");
+    if (options.updateStock && !user.hasPermission(StockPermissionEnum.UPDATE))
+      throw new Error("Forbidden");
+
+    const stockState = options.updateStock
+      ? StockState.SUCCESS
+      : StockState.PROGRESS;
+
+    await progressAction(products, user, options);
   } catch (error) {
     console.error(error);
-    return null;
   }
 };
 

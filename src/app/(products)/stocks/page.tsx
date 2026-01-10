@@ -1,9 +1,9 @@
 "use client";
 import App, { Wrapper } from "@/layouts/App";
-import AddController from "./components/add-controller";
-import StockDatatable from "./components/datatable";
+import { Add } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import Link from "next/link";
 import HistoryDatatable from "./components/histories";
-import ToolController from "./components/tool-controller";
 
 const StockPage = () => {
   return (
@@ -11,12 +11,14 @@ const StockPage = () => {
       <App.Header>
         <App.Header.Title>สต๊อก</App.Header.Title>
         <App.Header.Actions>
-          <ToolController />
-          <AddController />
+          <Link href="/stocks/create" passHref>
+            <Button startIcon={<Add />} variant="contained" size="small">
+              เพิ่มรายการ
+            </Button>
+          </Link>
         </App.Header.Actions>
       </App.Header>
       <App.Main>
-        <StockDatatable />
         <HistoryDatatable />
       </App.Main>
     </Wrapper>

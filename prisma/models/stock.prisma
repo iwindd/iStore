@@ -1,7 +1,7 @@
 model Stock {
   id         Int             @id @default(autoincrement())
   note       String?
-  state      StockState
+  state      StockState      @default(DRAFT)
   action_at  DateTime        @default(now())
   created_at DateTime        @default(now())
   updated_at DateTime        @updatedAt
@@ -29,7 +29,9 @@ model StockProduct {
 }
 
 enum StockState {
-  PROGRESS
-  SUCCESS
+  CREATING
+  DRAFT
+  PROCESSING
+  COMPLETED
   CANCEL
 }

@@ -10,7 +10,7 @@ import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
-import { StockProduct } from "@/reducers/stockReducer";
+import { StockValues } from "@/schema/Stock";
 
 const ImportMinStock = async (
   payload: ImportFromMinStockPayload,
@@ -48,9 +48,8 @@ const ImportMinStock = async (
   });
 
   return products.map((p) => ({
-    id: p.id,
-    quantity: payload.changedBy || p.stock_min,
-    data: p,
+    product_id: p.id,
+    delta: payload.changedBy || p.stock_min,
   }));
 };
 
@@ -60,38 +59,23 @@ const ImportStockId = async (payload: ImportFromStockId, user: User) => {
     select: {
       products: {
         select: {
-          delta: true,
-          product: {
-            select: {
-              id: true,
-              serial: true,
-              label: true,
-              price: true,
-              cost: true,
-              stock: true,
-              category: {
-                select: {
-                  label: true,
-                  overstock: true,
-                },
-              },
-            },
-          },
+          product_id: true,
+          stock_after: true,
+          stock_before: true,
         },
       },
     },
   });
 
   return validated.products.map((p) => ({
-    id: p.product.id,
-    quantity: p.delta,
-    data: p.product,
+    product_id: p.product_id,
+    delta: Math.abs(p.stock_after - p.stock_before),
   }));
 };
 
 const ImportToolAction = async (
   payload: ImportPayload
-): Promise<StockProduct[]> => {
+): Promise<StockValues["products"]> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");

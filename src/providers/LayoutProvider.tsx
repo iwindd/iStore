@@ -26,6 +26,8 @@ export default function MainLayout({
             "--SideNav-zIndex": 1100,
             "--MobileNav-width": "320px",
             "--MobileNav-zIndex": 1100,
+            "--Footer-height": "100px",
+            "--Footer-zIndex": 1000,
           },
         }}
       />

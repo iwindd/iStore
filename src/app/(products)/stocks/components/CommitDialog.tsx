@@ -2,10 +2,9 @@
 import { StockPermissionEnum } from "@/enums/permission";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
-import { useDialog } from "@/hooks/use-dialog";
 import { number } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { commitStock, resetStock } from "@/reducers/stockReducer";
+import { commitStock } from "@/reducers/stockReducer";
 import { SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -73,6 +72,7 @@ const CommitDialog = ({
         variant: "success",
       });
     } catch (error) {
+      console.error(error);
       enqueueSnackbar("ไม่สามารถทำรายการได้ กรุณาลองอีกครั้งภายหลัง!", {
         variant: "error",
       });
@@ -82,32 +82,6 @@ const CommitDialog = ({
     }
   };
 
-  const onClear = React.useCallback(() => {
-    dispatch(resetStock());
-    onClose();
-  }, [onClose]);
-
-  /*   const fetchData = React.useCallback(() => {
-    if (target) {
-      setType(1);
-      GetStock(target)
-        .then((resp) => {
-          if (resp.success && resp.data) {
-            setNote(resp.data.note);
-          } else {
-            onClear();
-          }
-        })
-        .catch((error) => {
-          onClear();
-        });
-    }
-  }, [target, onClear]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
- */
   return (
     <Dialog
       open={open && !isBackdrop}
@@ -167,32 +141,4 @@ const CommitDialog = ({
   );
 };
 
-const CommitController = () => {
-  const dialogInfo = useDialog();
-
-  const onOpen = () => {
-    dialogInfo.handleOpen();
-  };
-
-  const onClose = () => {
-    dialogInfo.handleClose();
-  };
-
-  return (
-    <>
-      <Button
-        color="warning"
-        endIcon={<SaveTwoTone />}
-        onClick={onOpen}
-        sx={{ ml: "auto" }}
-        variant="contained"
-      >
-        จัดการสต๊อก
-      </Button>
-
-      <CommitDialog open={dialogInfo.open} onClose={onClose} />
-    </>
-  );
-};
-
-export default CommitController;
+export default CommitDialog;
