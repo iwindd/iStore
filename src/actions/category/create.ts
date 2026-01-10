@@ -4,10 +4,11 @@ import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { CategorySchema, CategoryValues } from "@/schema/Category";
+import { SearchCategory } from "./search";
 
 const CreateCategory = async (
   payload: CategoryValues
-): Promise<ActionResponse<CategoryValues>> => {
+): Promise<ActionResponse<SearchCategory>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -34,9 +35,16 @@ const CreateCategory = async (
       });
     }
 
-    return { success: true, data: validated };
+    return {
+      success: true,
+      data: {
+        id: category.id,
+        label: category.label,
+        overstock: category.overstock,
+      },
+    };
   } catch (error) {
-    return ActionError(error) as ActionResponse<CategoryValues>;
+    return ActionError(error) as ActionResponse<SearchCategory>;
   }
 };
 

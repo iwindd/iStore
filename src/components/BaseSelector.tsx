@@ -10,6 +10,7 @@ import {
   TextFieldProps,
   Typography,
 } from "@mui/material";
+import { createFilterOptions } from "@mui/material/Autocomplete";
 import { debounce } from "@mui/material/utils";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
@@ -30,6 +31,8 @@ export interface BaseSelectorProps<T> {
   fieldProps?: TextFieldProps;
   error?: boolean;
   helperText?: string;
+  canCreate?: boolean;
+  onCreate?: (label: string) => Promise<T | null>;
 }
 
 const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
@@ -120,22 +123,62 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
     <Autocomplete
       id={props.id}
       sx={{ width: "100%" }}
-      getOptionLabel={(option) => props.getItemLabel(option)}
+      getOptionLabel={(option) => {
+        if (option._is_create_option) {
+          return option._create_label;
+        }
+        return props.getItemLabel(option);
+      }}
       disabled={isLoading}
-      filterOptions={(x) => x}
+      filterOptions={(options, params) => {
+        const filtered = createFilterOptions<T>()(options, params);
+
+        const { inputValue } = params;
+        const exists = options.some(
+          (option) => props.getItemLabel(option) === inputValue
+        );
+
+        if (inputValue !== "" && !exists && props.canCreate) {
+          // Add a temporary option for creation
+          // We need to cast it to T to satisfy the type system,
+          // but we'll handle it specially in onChange
+          filtered.push({
+            _create_label: inputValue,
+            _is_create_option: true,
+          } as any);
+        }
+
+        return filtered;
+      }}
       options={options}
       autoComplete
       filterSelectedOptions
       value={value}
       noOptionsText={props.noOptionsText || "ไม่พบข้อมูล"}
       readOnly={isBackdrop}
-      onChange={(_: any, newValue: T | null) => {
-        setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-        props.onSubmit(newValue);
+      onChange={(_: any, newValue: any | null) => {
+        if (newValue?._is_create_option) {
+          if (props.onCreate) {
+            setIsLoading(true);
+            props.onCreate(newValue._create_label).then((createdItem) => {
+              setIsLoading(false);
+              if (createdItem) {
+                setOptions([createdItem, ...options]);
+                setValue(createdItem);
+                props.onSubmit(createdItem);
+              }
+            });
+          }
+        } else {
+          setOptions(newValue ? [newValue, ...options] : options);
+          setValue(newValue);
+          props.onSubmit(newValue);
+        }
       }}
-      onInputChange={(_, newInputValue) => {
-        setInputValue(newInputValue);
+      onInputChange={(_, newInputValue, reason) => {
+        if (reason === "input") {
+          setInputValue(newInputValue);
+        }
       }}
       renderInput={(params) => (
         <TextField
@@ -164,8 +207,21 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           }}
         />
       )}
-      renderOption={(props_, option) => {
+      renderOption={(props_, option: any) => {
         const { key, ...optionProps } = props_;
+
+        if (option._is_create_option) {
+          return (
+            <li key={key} {...optionProps}>
+              <Grid container sx={{ alignItems: "center", width: "100%" }}>
+                <Typography color="primary">
+                  สร้าง "{option._create_label}" ใหม่
+                </Typography>
+              </Grid>
+            </li>
+          );
+        }
+
         const label = props.getItemLabel(option);
         const parts = parse(label, match(label, inputValue));
 

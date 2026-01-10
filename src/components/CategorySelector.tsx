@@ -1,4 +1,5 @@
 "use client";
+import CreateCategory from "@/actions/category/create";
 import findCategory from "@/actions/category/find";
 import SearchCategories, { SearchCategory } from "@/actions/category/search";
 import { TextFieldProps } from "@mui/material";
@@ -38,6 +39,18 @@ const CategorySelector = (props: SelectorProps) => {
           {option.overstock ? "อณุญาตการค้าง" : "ไม่อณุญาตการค้าง"}
         </>
       )}
+      canCreate
+      onCreate={async (label) => {
+        const resp = await CreateCategory({
+          label,
+          active: true,
+          overstock: false,
+        });
+        if (resp.success && resp.data) {
+          return resp.data;
+        }
+        return null;
+      }}
     />
   );
 };
