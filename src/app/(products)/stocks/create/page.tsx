@@ -1,30 +1,38 @@
-import StockForm, { StockFormActions } from "@/components/Forms/Stock";
-import App, { Wrapper } from "@/layouts/App";
-import AppFooter from "@/layouts/App/Footer";
-import AddController from "../components/add-controller";
-import ToolController from "../components/tool-controller";
+"use client";
+import createStock from "@/actions/stock/createStock";
+import StockForm from "@/components/Forms/Stock";
+import { Path } from "@/config/Path";
+import { StockValues } from "@/schema/Stock";
+import { Stock } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { enqueueSnackbar } from "notistack";
 
 const CreateStockPage = () => {
+  const router = useRouter();
+
+  const createStockMutation = useMutation({
+    mutationFn: async (data: StockValues) => createStock(data),
+    onSuccess: (data: Stock) => {
+      enqueueSnackbar({
+        message: "สร้างสต๊อกสำเร็จแล้ว!",
+        variant: "success",
+      });
+      router.push(`${Path("stocks").href}/${data.id}`);
+    },
+    onError: (error) => {
+      enqueueSnackbar({
+        message: "ไม่สามารถสร้างสต๊อกได้! กรุณาลองใหม่อีกครั้งในภายหลัง",
+        variant: "error",
+      });
+    },
+  });
+
   return (
-    <Wrapper>
-      <App.Header>
-        <App.Header.Title>สร้างรายการสต๊อก</App.Header.Title>
-        <App.Header.Actions>
-          <ToolController />
-          <AddController />
-        </App.Header.Actions>
-      </App.Header>
-      <App.Main>
-        <StockForm />
-      </App.Main>
-      <AppFooter
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <StockFormActions />
-      </AppFooter>
-    </Wrapper>
+    <StockForm
+      onSubmit={createStockMutation.mutate}
+      isLoading={createStockMutation.isPending}
+    />
   );
 };
 

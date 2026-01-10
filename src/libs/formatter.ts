@@ -2,7 +2,7 @@ import dayjs from "@/libs/dayjs";
 import { SortDirection } from "@mui/material";
 import { GridFilterModel, GridSortModel } from "@mui/x-data-grid";
 
-import { Borrow, Stock } from "@prisma/client";
+import { Borrow, StockState } from "@prisma/client";
 
 export const money = (val: number) => {
   try {
@@ -209,13 +209,17 @@ export const borrowStatus = (status: Borrow["status"]): string => {
   }
 };
 
-export const stockState = (status: Stock["state"]): string => {
-  switch (status) {
-    case "PROGRESS":
-      return "กำลังรอ";
-    case "SUCCESS":
-      return "สำเร็จ";
-    case "CANCEL":
+export const stockState = (state: StockState): string => {
+  switch (state) {
+    case StockState.CREATING:
+      return "กำลังสร้าง...";
+    case StockState.DRAFT:
+      return "แบบร่าง";
+    case StockState.PROCESSING:
+      return "กำลังดำเนินการ";
+    case StockState.COMPLETED:
+      return "เสร็จสิ้นแล้ว";
+    case StockState.CANCEL:
       return "ยกเลิกแล้ว";
     default:
       return "ไม่ทราบ";

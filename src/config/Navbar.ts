@@ -26,7 +26,7 @@ const navItems = [
     items: [
       { path: Path("products") },
       { path: Path("categories") },
-      { path: Path("stock") },
+      { path: Path("stocks") },
     ],
   },
   {

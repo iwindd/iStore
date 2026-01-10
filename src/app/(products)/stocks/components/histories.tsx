@@ -4,46 +4,30 @@ import fetchStockDatatable, {
   StockDatatableInstance,
 } from "@/actions/stock/fetchStockDatatable";
 import GetStock from "@/actions/stock/find";
-import ImportToolAction from "@/actions/stock/tool";
 import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
 import { StockPermissionEnum } from "@/enums/permission";
-import { useAppDispatch } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useExport } from "@/hooks/use-export";
+import { Colorization } from "@/libs/colorization";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { setStockId, setStockProducts } from "@/reducers/stockReducer";
 import {
   CancelTwoTone,
   DownloadTwoTone,
-  RecyclingTwoTone,
-  UploadTwoTone,
+  ViewAgendaTwoTone,
 } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Stock, StockState } from "@prisma/client";
+import { StockState } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
-import { ImportFromStockId, ImportType } from "../import";
-
-const formatCellColor = (status: Stock["state"]) => {
-  switch (status) {
-    case StockState.PROGRESS:
-      return "warning";
-    case StockState.SUCCESS:
-      return "success";
-    case StockState.CANCEL:
-      return "secondary";
-    default:
-      return "secondary";
-  }
-};
 
 const HistoryDatatable = () => {
   const { setBackdrop } = useInterface();
   const { user } = useAuth();
-  const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
   const permissions = (stock: StockDatatableInstance) => ({
     canCancelStock:
@@ -68,7 +52,7 @@ const HistoryDatatable = () => {
       try {
         const resp = await CancelStock(id);
 
-        if (!resp.success) throw Error(resp.message);
+        if (!resp.success) throw new Error(resp.message);
         enqueueSnackbar(`ยกเลิกรายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
           variant: "success",
         });
@@ -77,61 +61,7 @@ const HistoryDatatable = () => {
           type: "active",
         });
       } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
-          variant: "error",
-        });
-      }
-    },
-  });
-
-  const copyConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการสร้างรายการนี้อีกครั้งหรือไม่?",
-    confirmProps: {
-      color: "primary",
-      startIcon: <RecyclingTwoTone />,
-    },
-    confirm: "สร้างรายการอีกครั้ง",
-    onConfirm: async (id: number) => {
-      try {
-        const payload: ImportFromStockId = {
-          type: ImportType.FromStockId,
-          id: id,
-        };
-        const resp = await ImportToolAction(payload);
-        dispatch(setStockProducts(resp));
-        enqueueSnackbar(`สร้างรายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
-          variant: "success",
-        });
-      } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
-          variant: "error",
-        });
-      }
-    },
-  });
-
-  const importConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการนำเข้ารายการนี้หรือไม่?",
-    confirmProps: {
-      color: "warning",
-      startIcon: <UploadTwoTone />,
-    },
-    confirm: "นำเข้า",
-    onConfirm: async (id: number) => {
-      try {
-        const resp = await ImportToolAction({
-          type: ImportType.FromStockId,
-          id: id,
-        });
-
-        dispatch(setStockProducts(resp));
-        dispatch(setStockId(id));
-        enqueueSnackbar(`นำเข้ารายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
-          variant: "success",
-        });
-      } catch (error) {
+        console.error(error);
         enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
           variant: "error",
         });
@@ -144,7 +74,7 @@ const HistoryDatatable = () => {
       try {
         setBackdrop(true);
         const resp = await GetStock(stockId, true);
-        if (!resp.success || !resp.data || !resp.data.products)
+        if (!resp.success || !resp.data?.products)
           throw new Error(resp.message);
         setItems(
           resp.data.products.map((item) => ({
@@ -152,12 +82,13 @@ const HistoryDatatable = () => {
             label: item.product.label,
             price: item.product.price,
             cost: item.product.cost,
-            delta: item.delta,
+            delta: Math.abs(item.stock_after - item.stock_before),
             keywords: item.product.keywords,
           }))
         );
         Export();
       } catch (error) {
+        console.error(error);
         enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
           variant: "error",
         });
@@ -169,26 +100,12 @@ const HistoryDatatable = () => {
   );
 
   const menu = {
-    import: React.useCallback(
-      (row: StockDatatableInstance) => () => {
-        importConfirmation.with(row.id);
-        importConfirmation.handleOpen();
-      },
-      [importConfirmation]
-    ),
     cancel: React.useCallback(
       (row: StockDatatableInstance) => () => {
         cancelConfirmation.with(row.id);
         cancelConfirmation.handleOpen();
       },
       [cancelConfirmation]
-    ),
-    copy: React.useCallback(
-      (row: StockDatatableInstance) => () => {
-        copyConfirmation.with(row.id);
-        copyConfirmation.handleOpen();
-      },
-      [copyConfirmation]
     ),
     export: React.useCallback(
       (row: StockDatatableInstance) => () => {
@@ -229,7 +146,7 @@ const HistoryDatatable = () => {
         headerName: "หมายเหตุ",
         flex: 3,
         editable: false,
-        renderCell: ({ row }) => ff.text(row.note),
+        renderCell: ({ row }) => ff.text(row.note || "ไม่ระบุ"),
       },
       {
         field: "state",
@@ -245,12 +162,11 @@ const HistoryDatatable = () => {
         headerName: "เครื่องมือ",
         flex: 1,
         getActions: ({ row }) => [
-          <GridActionsCellItem
-            key="import"
-            icon={<UploadTwoTone />}
-            onClick={menu.import(row)}
-            label="นำเข้า"
-            disabled={row.state != StockState.PROGRESS}
+          <GridLinkAction
+            key="view"
+            to={`${Path("stocks").href}/${row.id}`}
+            icon={<ViewAgendaTwoTone />}
+            label="ดูรายละเอียด"
             showInMenu
           />,
           <GridActionsCellItem
@@ -258,21 +174,9 @@ const HistoryDatatable = () => {
             icon={<CancelTwoTone />}
             onClick={menu.cancel(row)}
             disabled={
-              !permissions(row).canCancelStock ||
-              row.state != StockState.PROGRESS
+              !permissions(row).canCancelStock || row.state !== StockState.DRAFT
             }
             label="ยกเลิกรายการนี้"
-            showInMenu
-          />,
-          <GridActionsCellItem
-            key="copy"
-            icon={<RecyclingTwoTone />}
-            onClick={menu.copy(row)}
-            label="สร้างรายการอีกครั้ง"
-            disabled={
-              !permissions(row).canCreateStock ||
-              row.state == StockState.PROGRESS
-            }
             showInMenu
           />,
           <GridActionsCellItem
@@ -294,17 +198,11 @@ const HistoryDatatable = () => {
         columns={columns()}
         fetch={fetchStockDatatable}
         height={700}
-        getCellClassName={(params) =>
-          params.field == "state"
-            ? `text-color-${formatCellColor(params.value as Stock["state"])}`
-            : ""
-        }
+        getCellClassName={Colorization.getGridCellColorForStockState}
       />
 
       {ExportHandler}
       <Confirmation {...cancelConfirmation.props} />
-      <Confirmation {...copyConfirmation.props} />
-      <Confirmation {...importConfirmation.props} />
     </>
   );
 };

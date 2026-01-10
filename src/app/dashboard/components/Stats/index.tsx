@@ -99,7 +99,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "stocks",
     value: "stocks",
-    path: Path("stock"),
+    path: Path("stocks"),
     label: "จัดการสต๊อก",
     icon: <AllInbox />,
     render: (v) => `${number(v)} รายการ`,

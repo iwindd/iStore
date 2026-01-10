@@ -1,5 +1,9 @@
 "use server";
 
+import {
+  StockLayoutSelect,
+  StockLayoutValue,
+} from "@/app/(products)/stocks/[id]/layout";
 import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
@@ -8,14 +12,21 @@ import { StockState } from "@prisma/client";
 import { setStockProduct } from "./setStockProduct";
 import { updateProductStock } from "./updateProductStock";
 
-const createStock = async (payload: StockValues) => {
+const updateStock = async (
+  payload: StockValues,
+  stockId: number
+): Promise<StockLayoutValue> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.CREATE))
+    if (!user.hasPermission(StockPermissionEnum.UPDATE))
       throw new Error("Forbidden");
 
-    const stock = await db.stock.create({
+    const stock = await db.stock.update({
+      where: {
+        id: stockId,
+        state: StockState.DRAFT,
+      },
       data: {
         note: payload.note,
         state: StockState.CREATING,
@@ -24,11 +35,12 @@ const createStock = async (payload: StockValues) => {
       },
     });
 
-    await setStockProduct(stock.id, payload.products);
+    await setStockProduct(stock.id, payload.products, true);
 
     const drafted = await db.stock.update({
       where: { id: stock.id },
       data: { state: StockState.DRAFT },
+      select: StockLayoutSelect,
     });
 
     if (payload.update) {
@@ -42,4 +54,4 @@ const createStock = async (payload: StockValues) => {
   }
 };
 
-export default createStock;
+export default updateStock;

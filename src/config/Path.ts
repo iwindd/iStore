@@ -68,10 +68,25 @@ const Paths = {
     icon: "category",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.CATEGORY),
   },
-  ["stock"]: {
-    key: "stock",
-    title: "จัดการสต๊อก",
+  ["stocks"]: {
+    key: "stocks",
+    title: "สต๊อก",
     href: "/stocks",
+    icon: "stock",
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.STOCK),
+    matcher: { type: "startsWith", href: "/stocks" },
+  },
+  ["stocks.create"]: {
+    key: "stocks.create",
+    title: "เพิ่มสต๊อก",
+    href: "/stocks/create",
+    icon: "stock",
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.STOCK),
+  },
+  ["stocks.stock"]: {
+    key: "stocks.stock",
+    title: "จัดการสต๊อก",
+    href: "/stocks/:id",
     icon: "stock",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.STOCK),
   },
