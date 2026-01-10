@@ -17,7 +17,6 @@ declare module "next-auth" {
       store: string;
       name: string;
       email: string;
-      line_token: string;
       address: StoreAddress | null;
       permissions: PermissionEnum[];
     };

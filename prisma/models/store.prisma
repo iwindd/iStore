@@ -11,7 +11,6 @@ model Store {
   events        Event[]
   broadcasts    Broadcast[]
   //         Address
-  line_token    String?
   address       String?
   district      String?
   area          String?

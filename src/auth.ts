@@ -57,7 +57,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             token.email = updatedUser.email;
             token.store = employee.store.id;
             token.employeeId = employee.id;
-            token.line_token = employee.store.line_token;
             token.permissions = role.is_super_admin
               ? [SuperPermissionEnum.ALL]
               : role.permissions.flatMap((p) => p.name);
@@ -75,7 +74,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         employeeId: token.employeeId,
         name: token.name,
         email: token.email,
-        line_token: token.line_token,
         permissions: token.permissions,
         address: token.address,
         lastChecked: token.lastChecked || now,
@@ -147,7 +145,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             store: employee.store.id,
             name: user.name,
             email: user.email,
-            line_token: employee.store.line_token,
             permissions: role.is_super_admin
               ? [SuperPermissionEnum.ALL]
               : role.permissions.flatMap((p) => p.name),

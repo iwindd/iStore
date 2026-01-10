@@ -143,7 +143,6 @@ CREATE TABLE "stock_products" (
 CREATE TABLE "stores" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "line_token" TEXT,
     "address" TEXT,
     "district" TEXT,
     "area" TEXT,
