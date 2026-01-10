@@ -20,7 +20,12 @@ const selectProduct = {
   label: true,
   price: true,
   cost: true,
-};
+  category: {
+    select: {
+      id: true,
+    },
+  },
+} satisfies Prisma.ProductSelect;
 
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
   const { id } = await params;

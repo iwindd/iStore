@@ -25,8 +25,6 @@ export const ProductUpdateSchema = z.object({
   label: z.string().min(3).max(60),
   price: z.number().min(0),
   cost: z.number().min(0),
-  stock_min: z.number().min(0),
-  keywords: z.string().optional(),
   category_id: z
     .number()
     .nullable()

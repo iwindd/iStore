@@ -13,7 +13,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { SearchCategory } from "@/actions/category/search";
@@ -25,7 +25,9 @@ const ProductUpdateForm = () => {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [defaultCategory, setDefaultCategory] = useState<number>(0);
+  const [defaultCategory, setDefaultCategory] = useState<number>(
+    product.category?.id || 0
+  );
 
   const {
     register,
@@ -36,28 +38,10 @@ const ProductUpdateForm = () => {
   } = useForm<ProductUpdateValues>({
     resolver: zodResolver(ProductUpdateSchema),
     defaultValues: {
-      label: "",
-      price: 0,
-      cost: 0,
-      stock_min: 0,
-      keywords: "",
-      category_id: 0,
+      ...product,
+      category_id: product.category?.id || 0,
     },
   });
-
-  useEffect(() => {
-    if (product) {
-      reset({
-        label: product.label,
-        price: product.price,
-        cost: product.cost,
-        stock_min: product.stock_min,
-        keywords: product.keywords,
-        category_id: product.category_id,
-      });
-      setDefaultCategory(product.category_id || 0);
-    }
-  }, [product, reset]);
 
   const onSelectCategory = (category: SearchCategory) => {
     setValue("category_id", category?.id || 0, { shouldDirty: true });
