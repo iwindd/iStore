@@ -1,20 +1,7 @@
 "use client";
 import * as Actions from "@/actions/roles";
-import { useInterface } from "@/providers/InterfaceProvider";
-import {
-  Autocomplete,
-  Box,
-  CircularProgress,
-  Grid,
-  InputAdornment,
-  TextField,
-  TextFieldProps,
-  Typography,
-} from "@mui/material";
-import { debounce } from "@mui/material/utils";
-import match from "autosuggest-highlight/match";
-import parse from "autosuggest-highlight/parse";
-import React, { useEffect } from "react";
+import { TextFieldProps } from "@mui/material";
+import BaseSelector from "./BaseSelector";
 
 interface SelectorProps {
   onSubmit(Product: Actions.RoleSelector | null): void;
@@ -25,160 +12,32 @@ interface SelectorProps {
 }
 
 const RoleSelector = (props: SelectorProps) => {
-  const [value, setValue] = React.useState<Actions.RoleSelector | null>(null);
-  const [inputValue, setInputValue] = React.useState("");
-  const [options, setOptions] = React.useState<readonly Actions.RoleSelector[]>(
-    []
-  );
-  const [isLoading, setIsLoading] = React.useState(false);
-  const { isBackdrop } = useInterface();
-
-  useEffect(() => {
-    if (props.defaultValue && props.defaultValue > 0) {
-      setIsLoading(true);
-      Actions.find(props.defaultValue)
-        .then((resp) => {
-          if (resp.success && resp.data) {
-            setValue(resp.data);
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [props.defaultValue]);
-
-  const fetch = React.useMemo(
-    () =>
-      debounce(
-        (
-          request: { input: string },
-          callback: (results?: readonly Actions.RoleSelector[]) => void
-        ) => {
-          Actions.selector(request.input)
-            .then((resp) => {
-              callback(resp.data);
-            })
-            .catch(() => {
-              callback();
-            });
-        },
-        400
-      ),
-    []
-  );
-
-  React.useEffect(() => {
-    let active = true;
-
-    fetch(
-      { input: inputValue },
-      (results?: readonly Actions.RoleSelector[]) => {
-        if (active) {
-          let newOptions: readonly Actions.RoleSelector[] = [];
-
-          if (value) {
-            newOptions = [value];
-          }
-
-          if (results) {
-            newOptions = [...newOptions, ...results];
-          }
-
-          // delete duplicates
-          newOptions = newOptions.filter(
-            (option, index, self) =>
-              index === self.findIndex((t) => t.id === option.id)
-          );
-
-          setOptions(newOptions);
-        }
-      }
-    );
-
-    return () => {
-      active = false;
-    };
-  }, [value, inputValue, fetch]);
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" && inputValue) {
-      event.preventDefault();
-    }
-  };
-
   return (
-    <Autocomplete
+    <BaseSelector<Actions.RoleSelector>
       id="role-selector"
-      sx={{ width: "100%" }}
-      getOptionLabel={(option) =>
+      label="กรุณาเลือกตำแหน่ง"
+      placeholder="ค้นหาตำแหน่ง"
+      noOptionsText="ไมพบตำแหน่ง"
+      defaultValue={props.defaultValue}
+      fieldProps={props.fieldProps}
+      error={props.error}
+      helperText={props.helperText}
+      onSubmit={props.onSubmit}
+      fetchItem={async (id) => {
+        const resp = await Actions.find(id);
+        return resp.success && resp.data ? resp.data : null;
+      }}
+      searchItems={async (query) => {
+        const resp = await Actions.selector(query);
+        return resp.data || [];
+      }}
+      getItemLabel={(option) =>
         typeof option === "string" ? option : option.label
       }
-      disabled={isLoading}
-      filterOptions={(x) => x}
-      options={options}
-      autoComplete
-      filterSelectedOptions
-      value={value}
-      noOptionsText="ไมพบตำแหน่ง"
-      readOnly={isBackdrop}
-      onChange={(_: any, newValue: Actions.RoleSelector | null) => {
-        setOptions(newValue ? [newValue, ...options] : options);
-        setValue(newValue);
-        props.onSubmit(newValue);
-      }}
-      onInputChange={(_, newInputValue) => {
-        setInputValue(newInputValue);
-      }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          {...props.fieldProps}
-          label="กรุณาเลือกตำแหน่ง"
-          fullWidth
-          placeholder={isLoading ? "กรุณารอสักครู่" : "ค้นหาตำแหน่ง"}
-          error={props.error}
-          helperText={props.helperText}
-          // Handle key press events here
-          onKeyDown={handleKeyDown}
-          slotProps={{
-            input: isLoading
-              ? {
-                  startAdornment: (
-                    <InputAdornment position="end" sx={{ mr: 1 }}>
-                      <CircularProgress size={20} />
-                    </InputAdornment>
-                  ),
-                }
-              : { ...params.InputProps }
-          }}
-        />
+      getItemKey={(option) => option.id}
+      renderCustomOption={(option) => (
+        <>{option.id == props.defaultValue ? "(เลือก) " : ""}</>
       )}
-      renderOption={(props_, option) => {
-        const { key, ...optionProps } = props_;
-
-        const parts = parse(option.label, match(option.label, inputValue));
-        return (
-          <li key={key} {...optionProps}>
-            <Grid container sx={{ alignItems: "center" }}>
-              <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
-                {parts.map((part, index) => (
-                  <Box
-                    key={index}
-                    component="span"
-                    sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
-                  >
-                    {part.text}
-                  </Box>
-                ))}
-                <Typography variant="body2" color="text.secondary">
-                  {option.id == props.defaultValue ? "(เลือก) " : ""}
-                </Typography>
-              </Grid>
-            </Grid>
-          </li>
-        );
-      }}
     />
   );
 };
