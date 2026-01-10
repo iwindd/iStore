@@ -38,6 +38,7 @@ model Product {
   stockProducts          StockProduct[]
   promotionOfferBuyItems PromotionOfferBuyItem[]
   promotionOfferGetItems PromotionOfferGetItem[]
+  orderProduct           OrderProduct[]
 
   @@unique([serial,      store_id])
   @@map("products")

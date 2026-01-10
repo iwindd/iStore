@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import _ from "lodash";
 import orders from "./data/orders.json";
 import permissions from "./data/permissions.json";
 import products from "./data/products.json";
@@ -17,7 +18,12 @@ const getOrders = async () => {
     where: {
       serial: { in: uniqueProductSerials },
     },
-    include: {
+    select: {
+      id: true,
+      label: true,
+      serial: true,
+      price: true,
+      cost: true,
       category: {
         select: {
           label: true,
@@ -60,7 +66,8 @@ const getOrders = async () => {
             cost: data?.cost || product.cost,
             category: product.category?.label || "-",
             count: data?.count || 1,
-          };
+            ...(product.id && { product_id: product.id }),
+          } as Prisma.OrderProductCreateInput;
         }),
       },
     });
@@ -155,15 +162,14 @@ async function main() {
     }
   });
 
-  /*   const ordersData = await getOrders();
+  const ordersData = await getOrders();
+  const chunks = _.chunk(ordersData, 500);
 
-  const chunks = _.chunk(ordersData, 500); */
-
-  /*   console.log(
+  console.log(
     `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`
-  ); */
+  );
 
-  /*   for (const [i, chunk] of chunks.entries()) {
+  for (const [i, chunk] of chunks.entries()) {
     await prisma.$transaction(async () => {
       for (const order of chunk) {
         const castedOrder = order as any;
@@ -176,7 +182,6 @@ async function main() {
     });
     console.log(`✅ Seeded chunk ${i + 1}/${chunks.length}`);
   }
- */
   console.log(
     `✅ Seed completed successfully!\n`,
     `--------------------------------\n`,

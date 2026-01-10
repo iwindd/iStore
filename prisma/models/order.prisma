@@ -32,7 +32,9 @@ model OrderProduct {
   overstock_at    DateTime?
   creator_id      Int?
 
-  creator         Employee?       @relation(fields: [creator_id], references: [id])
+  product_id      Int?
+  product         Product?         @relation(fields: [product_id], references: [id])
+  creator         Employee?        @relation(fields: [creator_id], references: [id])
   order           Order            @relation(fields: [order_id], references: [id])
   promotionOffers PromotionOffer[]
 

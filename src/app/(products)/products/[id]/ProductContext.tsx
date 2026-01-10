@@ -1,8 +1,8 @@
 "use client";
-import { Product } from "@prisma/client";
 import { createContext, useContext } from "react";
+import { ProductLayoutValue } from "./layout";
 
-type ProductContextType = Product;
+type ProductContextType = ProductLayoutValue;
 
 const ProductContext = createContext<ProductContextType | null>(null);
 

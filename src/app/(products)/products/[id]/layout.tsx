@@ -1,5 +1,6 @@
 import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
+import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import ProductTabs from "./components/ProductTabs";
 import { ProductProvider } from "./ProductContext";
@@ -9,12 +10,25 @@ interface ProductLayoutProps {
   params: Promise<{ id: string }>;
 }
 
+export type ProductLayoutValue = Prisma.ProductGetPayload<{
+  select: typeof selectProduct;
+}>;
+
+const selectProduct = {
+  id: true,
+  serial: true,
+  label: true,
+  price: true,
+  cost: true,
+};
+
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
   const { id } = await params;
   const product = await db.product.findFirst({
     where: {
       id: +id,
     },
+    select: selectProduct,
   });
 
   if (!product) notFound();
