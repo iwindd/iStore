@@ -1,6 +1,9 @@
-import { Stack } from "@mui/material";
+import { Stack, StackProps } from "@mui/material";
 
-const AppFooter = ({ children }: { children: React.ReactNode }) => {
+const AppFooter = ({
+  children,
+  ...props
+}: { children: React.ReactNode } & StackProps) => {
   return (
     <Stack
       spacing={1}
@@ -13,7 +16,7 @@ const AppFooter = ({ children }: { children: React.ReactNode }) => {
         borderTop: "1px solid var(--mui-palette-divider)",
       }}
     >
-      <Stack direction="row" spacing={3} p={2}>
+      <Stack direction="row" spacing={3} p={2} {...props}>
         {children}
       </Stack>
     </Stack>
