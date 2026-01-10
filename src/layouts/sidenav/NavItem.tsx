@@ -1,9 +1,9 @@
 "use client";
-import { NavItemConfig } from "@/config/Navbar";
-import { isNavItemActive } from "../utils";
 import Icons from "@/config/Icons";
+import { NavItemConfig } from "@/config/Navbar";
 import { Box, Typography } from "@mui/material";
 import RouterLink from "next/link";
+import { isNavItemActive } from "../utils";
 
 interface NavItemProps extends Omit<NavItemConfig, "items"> {
   pathname: string;
@@ -17,7 +17,7 @@ function NavItem({
   matcher,
   pathname,
   title,
-}: NavItemProps): React.JSX.Element {
+}: Readonly<NavItemProps>): React.JSX.Element {
   const active = isNavItemActive({
     disabled,
     external,

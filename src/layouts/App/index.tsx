@@ -1,3 +1,4 @@
+import AppFooter from "./Footer";
 import AppHeader from "./Header";
 import AppMain from "./Main";
 
@@ -13,5 +14,6 @@ export const Wrapper = ({ children }: { children: React.ReactNode }) => {
 
 App.Header = AppHeader;
 App.Main = AppMain;
+App.Footer = AppFooter;
 
 export default App;
