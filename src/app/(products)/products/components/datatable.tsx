@@ -2,13 +2,20 @@
 import DeleteProduct from "@/actions/product/delete";
 import GetProducts from "@/actions/product/get";
 import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { Path } from "@/config/Path";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { DeleteTwoTone, EditTwoTone, QrCodeTwoTone } from "@mui/icons-material";
+import {
+  DeleteTwoTone,
+  EditTwoTone,
+  QrCodeTwoTone,
+  ViewAgendaTwoTone,
+} from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
@@ -137,6 +144,13 @@ const ProductDatatable = () => {
         headerName: "เครื่องมือ",
         flex: 1,
         getActions: ({ row }: { row: Product }) => [
+          <GridLinkAction
+            key="view"
+            to={`${Path("products").href}/${row.id}`}
+            icon={<ViewAgendaTwoTone />}
+            label="ดูรายละเอียด"
+            showInMenu
+          />,
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoTone />}

@@ -1,18 +1,12 @@
-"use client";
 import { Stack, Typography } from "@mui/material";
-import { createContext } from "react";
-
-const AppHeaderContext = createContext<null>(null);
 
 const AppHeader = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AppHeaderContext.Provider value={null}>
-      <Stack spacing={1}>
-        <Stack direction="row" spacing={3}>
-          {children}
-        </Stack>
+    <Stack spacing={1}>
+      <Stack direction="row" spacing={3}>
+        {children}
       </Stack>
-    </AppHeaderContext.Provider>
+    </Stack>
   );
 };
 

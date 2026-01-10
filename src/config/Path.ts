@@ -39,6 +39,21 @@ const Paths = {
     icon: "product",
     somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
   },
+  ["products.product"]: {
+    key: "products.product",
+    title: "รายละเอียดสินค้า",
+    href: "/products/:id",
+    icon: "product",
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
+    matcher: { type: "startsWith", href: "/products" },
+  },
+  ["products.product.history"]: {
+    key: "products.product.history",
+    title: "ประวัติการขายสินค้า",
+    href: "/products/:id/history",
+    icon: "product",
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PRODUCT),
+  },
   ["categories"]: {
     key: "categories",
     title: "ประเภทสินค้า",
