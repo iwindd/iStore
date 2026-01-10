@@ -19,7 +19,7 @@ const CreateCategory = async (
         label: validated.label,
         store_id: user.store,
         overstock: validated.overstock,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
       },
     });
 

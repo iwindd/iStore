@@ -73,7 +73,7 @@ const stockCommit = async (
         note: options.note || "",
         state: stockState,
         store_id: user.store,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
         products: {
           create: products.map((product) => ({
             changed_by: product.quantity,

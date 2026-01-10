@@ -22,7 +22,7 @@ model Broadcast {
 
   event   Event          @relation(fields: [event_id], references: [id])
   store   Store          @relation(fields: [store_id], references: [id])
-  creator UserStore?     @relation(fields: [creator_id], references: [id])
+  creator Employee?     @relation(fields: [creator_id], references: [id])
   logs    BroadcastLog[]
 
   @@index([scheduled_at, status])

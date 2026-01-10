@@ -17,7 +17,7 @@ const CancelBorrow = async (
         id: borrowId,
         store_id: user.store,
         creator_id: !user.hasPermission(BorrowPermissionEnum.DELETE)
-          ? user.userStoreId
+          ? user.employeeId
           : undefined,
       },
       data: {

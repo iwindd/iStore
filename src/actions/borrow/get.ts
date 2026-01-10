@@ -21,7 +21,7 @@ const GetBorrows = async (
         where: {
           store_id: user.store,
           creator_id: !user.hasPermission(BorrowPermissionEnum.READ)
-            ? user.userStoreId
+            ? user.employeeId
             : undefined,
         },
         include: {

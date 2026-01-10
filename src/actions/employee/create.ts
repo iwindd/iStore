@@ -22,7 +22,7 @@ export const create = async (
         name: validated.name,
         email: validated.email,
         password: await bcrypt.hash("password", 15),
-        userStores: {
+        employees: {
           create: {
             store: {
               connect: { id: user.store },
@@ -31,7 +31,7 @@ export const create = async (
               connect: { id: validated.role },
             },
             creator: {
-              connect: { id: user.userStoreId },
+              connect: { id: user.employeeId },
             },
           },
         },

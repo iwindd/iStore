@@ -13,7 +13,7 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      userStoreId: number;
+      employeeId: number;
       store: string;
       name: string;
       email: string;

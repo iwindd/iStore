@@ -18,7 +18,7 @@ const UpdateCategory = async (
         id: id,
         store_id: user.store,
         creator_id: !user.hasPermission(CategoryPermissionEnum.UPDATE)
-          ? user.userStoreId
+          ? user.employeeId
           : undefined,
       },
       data: { label: validated.label, overstock: validated.overstock },

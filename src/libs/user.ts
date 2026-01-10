@@ -22,7 +22,11 @@ export class User {
   }
 
   get userStoreId() {
-    return this.session?.user.userStoreId;
+    return this.session?.user.employeeId;
+  }
+
+  get employeeId() {
+    return this.session?.user.employeeId;
   }
 
   get displayName() {
@@ -35,7 +39,7 @@ export class User {
 
   public onPermission<T = number>(permission: PermissionEnum, returnValue?: T) {
     if (this.hasPermission(permission)) {
-      return returnValue || this.userStoreId;
+      return returnValue ?? this.employeeId;
     }
 
     return undefined;
@@ -46,8 +50,9 @@ export class User {
     returnValue?: T
   ) {
     if (!this.hasPermission(permission)) {
-      return returnValue || this.userStoreId;
+      return returnValue ?? this.employeeId;
     }
+
     return undefined;
   }
 

@@ -70,7 +70,7 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
         image_url: values.image_url || null,
         scheduled_at: scheduledAt.toDate(),
         status: status,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
       },
     });
 

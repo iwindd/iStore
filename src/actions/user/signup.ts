@@ -44,7 +44,7 @@ const Signup = async (
         name: validated.name,
         email: validated.email,
         password: await bcrypt.hash(validated.password, 15),
-        userStores: {
+        employees: {
           create: {
             store: {
               connect: { id: store.id },

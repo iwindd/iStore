@@ -14,7 +14,7 @@ const CreateBorrow = async (
     if (!user.hasPermission(BorrowPermissionEnum.CREATE))
       throw new Error("Forbidden");
     BorrowsSchema.parse(payload);
-    if (!payload.product) throw Error("not_found_product");
+    if (!payload.product) throw new Error("not_found_product");
     const product = await db.product.findFirst({
       where: {
         id: payload.product,
@@ -23,7 +23,7 @@ const CreateBorrow = async (
       },
     });
     const validated = BorrowsSchema.parse(payload); // revalidate
-    if (!product) throw Error("not_found_product");
+    if (!product) throw new Error("not_found_product");
 
     await db.borrow.create({
       data: {
@@ -32,7 +32,7 @@ const CreateBorrow = async (
         status: "PROGRESS",
         product_id: product.id,
         store_id: user.store,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
       },
     });
 

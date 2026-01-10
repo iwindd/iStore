@@ -21,7 +21,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       const now = Math.floor(Date.now() / 1000);
       const REVALIDATE_TIMEOUT =
-        process.env.NODE_ENV !== "production" ? 10 : 90;
+        process.env.NODE_ENV === "production" ? 90 : 10;
 
       const shouldRevalidate =
         !token.lastChecked || now - token.lastChecked > REVALIDATE_TIMEOUT;
@@ -33,7 +33,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             select: {
               name: true,
               email: true,
-              userStores: {
+              employees: {
                 take: 1,
                 select: {
                   id: true,
@@ -49,19 +49,19 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
           });
 
-          if (updatedUser && updatedUser.userStores?.[0]) {
-            const userStore = updatedUser.userStores[0];
-            const role = userStore.role;
+          if (updatedUser?.employees?.[0]) {
+            const employee = updatedUser.employees[0];
+            const role = employee.role;
 
             token.name = updatedUser.name;
             token.email = updatedUser.email;
-            token.store = userStore.store.id;
-            token.userStoreId = userStore.id;
-            token.line_token = userStore.store.line_token;
+            token.store = employee.store.id;
+            token.employeeId = employee.id;
+            token.line_token = employee.store.line_token;
             token.permissions = role.is_super_admin
               ? [SuperPermissionEnum.ALL]
               : role.permissions.flatMap((p) => p.name);
-            token.address = FormatAddress(userStore.store as AddressValues);
+            token.address = FormatAddress(employee.store as AddressValues);
             token.lastChecked = now;
           }
         } catch (error) {
@@ -72,7 +72,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return {
         id: token.id,
         store: token.store,
-        userStoreId: token.userStoreId,
+        employeeId: token.employeeId,
         name: token.name,
         email: token.email,
         line_token: token.line_token,
@@ -110,7 +110,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
               email: true,
               password: true,
               name: true,
-              userStores: {
+              employees: {
                 take: 1,
                 select: {
                   id: true,
@@ -135,23 +135,23 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           )
             throw new Error("not_found_user");
 
-          const userStore = user?.userStores?.[0];
+          const employee = user?.employees?.[0];
 
-          if (!user || !userStore) throw new Error("no_store");
+          if (!user || !employee) throw new Error("no_store");
 
-          const role = userStore.role;
+          const role = employee.role;
 
           return {
             id: String(user.id),
-            userStoreId: userStore.id,
-            store: userStore.store.id,
+            employeeId: employee.id,
+            store: employee.store.id,
             name: user.name,
             email: user.email,
-            line_token: userStore.store.line_token,
+            line_token: employee.store.line_token,
             permissions: role.is_super_admin
               ? [SuperPermissionEnum.ALL]
               : role.permissions.flatMap((p) => p.name),
-            address: FormatAddress(userStore.store as AddressValues),
+            address: FormatAddress(employee.store as AddressValues),
           };
         } catch (error) {
           console.error("Authorize error:", error);

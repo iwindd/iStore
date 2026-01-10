@@ -6,8 +6,8 @@ model Category {
   creator_id Int?
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
-  store      Store      @relation(fields: [store_id], references: [id])
-  creator    UserStore? @relation(fields: [creator_id], references: [id])
+  store      Store       @relation(fields: [store_id], references: [id])
+  creator    Employee?   @relation(fields: [creator_id], references: [id])
   product    Product[]
 
   @@unique([label, store_id])
@@ -33,7 +33,7 @@ model Product {
 
   store                  Store                   @relation(fields: [store_id], references: [id])
   category               Category?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  creator                UserStore?              @relation(fields: [creator_id], references: [id])
+  creator                Employee?              @relation(fields: [creator_id], references: [id])
   borrows                Borrow[]
   stockProducts          StockProduct[]
   promotionOfferBuyItems PromotionOfferBuyItem[]

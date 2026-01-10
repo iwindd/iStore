@@ -26,7 +26,7 @@ const CreatePurchase = async (
         note: payload.note,
         text: payload.label,
         store_id: user.store,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
         products: {
           create: [
             {

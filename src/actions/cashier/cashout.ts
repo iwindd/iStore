@@ -265,7 +265,7 @@ const Cashout = async (
         note: validated.note || "",
         text: products.map((item) => item.label).join(", "),
         store_id: user.store,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
         products: {
           create: products.map(({ id, ...product }) => ({
             serial: product.serial,

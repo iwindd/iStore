@@ -27,7 +27,7 @@ const CreateProduct = async (
         sold: 0,
         store_id: user.store,
         category_id: validated.category_id,
-        creator_id: user.userStoreId,
+        creator_id: user.employeeId,
         keywords: validated.keywords,
       },
     });

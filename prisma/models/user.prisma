@@ -5,12 +5,12 @@ model User {
   password   String
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
-  userStores UserStore[]
+  employees Employee[]
 
   @@map("users")
 }
 
-model UserStore {
+model Employee {
   id         Int      @id @default(autoincrement())
   user_id    Int
   created_at DateTime @default(now())
@@ -20,7 +20,7 @@ model UserStore {
   creator_id Int?
 
   user           User           @relation(fields: [user_id], references: [id])
-  role           Role           @relation("UserStoreRole", fields: [role_id], references: [id])
+  role           Role           @relation("EmployeeRole", fields: [role_id], references: [id])
   categories     Category[]
   products       Product[]
   orders         Order[]
@@ -29,11 +29,11 @@ model UserStore {
   roles          Role[]
   order_products OrderProduct[]
   store          Store          @relation(fields: [store_id], references: [id])
-  creator        UserStore?     @relation("UserStoreToUserStore", fields: [creator_id], references: [id])
-  userStores     UserStore[]    @relation("UserStoreToUserStore")
+  creator        Employee?      @relation("EmployeeToEmployee", fields: [creator_id], references: [id])
+  employees      Employee[]     @relation("EmployeeToEmployee")
   events         Event[]
   broadcasts     Broadcast[]
 
   @@unique([user_id, store_id])
-  @@map("user_stores")
+  @@map("employees")
 }

@@ -13,7 +13,7 @@ model Order {
   updated_at DateTime        @updatedAt
 
   store      Store          @relation(fields: [store_id], references: [id])
-  creator    UserStore?     @relation(fields: [creator_id], references: [id])
+  creator    Employee?      @relation(fields: [creator_id], references: [id])
   products   OrderProduct[]
 
   @@map("orders")
@@ -32,7 +32,7 @@ model OrderProduct {
   overstock_at    DateTime?
   creator_id      Int?
 
-  creator         UserStore?       @relation(fields: [creator_id], references: [id])
+  creator         Employee?       @relation(fields: [creator_id], references: [id])
   order           Order            @relation(fields: [order_id], references: [id])
   promotionOffers PromotionOffer[]
 

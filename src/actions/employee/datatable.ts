@@ -27,7 +27,7 @@ export const datatable = async (
         take: table.pagination.pageSize,
         orderBy: order(table.sort),
         where: {
-          userStores: {
+          employees: {
             some: {
               store_id: user.store,
             },
@@ -37,7 +37,7 @@ export const datatable = async (
           id: true,
           name: true,
           email: true,
-          userStores: {
+          employees: {
             take: 1,
             where: {
               store_id: user.store,
@@ -65,7 +65,7 @@ export const datatable = async (
       }),
       db.user.count({
         where: {
-          userStores: {
+          employees: {
             some: {
               store_id: user.store,
             },

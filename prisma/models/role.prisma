@@ -8,8 +8,8 @@ model Role {
   creator_id     Int?
 
   store          Store        @relation(fields: [store_id], references: [id])
-  creator        UserStore?   @relation(fields: [creator_id], references: [id])
-  users          UserStore[]  @relation("UserStoreRole")
+  creator        Employee?    @relation(fields: [creator_id], references: [id])
+  employees      Employee[]   @relation("EmployeeRole")
   permissions    Permission[] @relation("RolePermission")
 
   @@unique([store_id, label])

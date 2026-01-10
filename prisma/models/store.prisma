@@ -6,7 +6,7 @@ model Store {
   orders        Order[]
   borrows       Borrow[]
   stocks        Stock[]
-  users         UserStore[]
+  employees     Employee[]
   roles         Role[]
   events        Event[]
   broadcasts    Broadcast[]

@@ -21,7 +21,7 @@ export const update = async (
       where: { id: id },
       data: {
         name: validated.name,
-        userStores: {
+        employees: {
           update: {
             where: {
               user_id_store_id: {
