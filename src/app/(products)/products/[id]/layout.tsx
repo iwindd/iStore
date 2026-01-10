@@ -1,5 +1,6 @@
 import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
+import { Stack } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import ProductTabs from "./components/ProductTabs";
@@ -46,8 +47,10 @@ const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
           <App.Header.Title>{product.label}</App.Header.Title>
         </App.Header>
         <App.Main>
-          <ProductTabs productId={id} />
-          {children}
+          <Stack spacing={1}>
+            <ProductTabs productId={id} />
+            {children}
+          </Stack>
         </App.Main>
       </Wrapper>
     </ProductProvider>
