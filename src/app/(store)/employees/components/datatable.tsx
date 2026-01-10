@@ -45,7 +45,7 @@ const EmployeeDatatable = () => {
         flex: 2,
         editable: false,
         renderCell: ({ row }) =>
-          row?.userStores[0]?.creator?.user?.name || "ไม่ระบุ",
+          row?.employees[0]?.creator?.user?.name || "ไม่ระบุ",
       },
       {
         field: "email",
@@ -55,13 +55,12 @@ const EmployeeDatatable = () => {
         editable: false,
       },
       {
-        field: "userStores",
+        field: "employees",
         sortable: false,
         headerName: "ตำแหน่ง",
         flex: 3,
         editable: false,
-        renderCell: ({ row }: any) =>
-          row.userStores[0]?.role.label || "ไม่ระบุ",
+        renderCell: ({ row }: any) => row.employees[0]?.role.label || "ไม่ระบุ",
       },
       {
         field: "actions",

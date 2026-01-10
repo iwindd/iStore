@@ -1,6 +1,10 @@
-'use client';
+"use client";
+import * as Actions from "@/actions/employee";
+import RoleSelector from "@/components/RoleSelector";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveTwoTone } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -11,14 +15,10 @@ import {
   TextField,
 } from "@mui/material";
 import { Role, User } from "@prisma/client";
-import React, { useEffect } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useSnackbar } from "notistack";
 import { useQueryClient } from "@tanstack/react-query";
-import { SaveTwoTone } from "@mui/icons-material";
-import RoleSelector from "@/components/RoleSelector";
-import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
-import * as Actions from "@/actions/employee";
+import { useSnackbar } from "notistack";
+import React from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 interface UserFormDialogProps {
   onClose: () => void;
@@ -31,7 +31,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const [defaultRole, setDefaultRole] = React.useState<number>(0);
-  
+
   const {
     register,
     handleSubmit,
@@ -47,13 +47,21 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
     },
   });
 
-  const submitRole: SubmitHandler<EmployeeValues> = async (payload: EmployeeValues) => {
+  const submitRole: SubmitHandler<EmployeeValues> = async (
+    payload: EmployeeValues
+  ) => {
     setBackdrop(true);
     try {
-      const resp = await (!user ? Actions.create(payload) : Actions.update(payload, (user as User).id));
-      if (!resp || !resp.success) throw Error(resp?.message || "Unknown error occurred");
+      const resp = await (!user
+        ? Actions.create(payload)
+        : Actions.update(payload, (user as User).id));
+      if (!resp || !resp.success)
+        throw Error(resp?.message || "Unknown error occurred");
       reset();
-      await queryClient.refetchQueries({ queryKey: ["employees"], type: "active" });
+      await queryClient.refetchQueries({
+        queryKey: ["employees"],
+        type: "active",
+      });
       enqueueSnackbar("บันทึกตำแหน่งเรียบร้อยแล้ว!", { variant: "success" });
       onClose();
     } catch (error) {
@@ -72,11 +80,11 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
     if (user) {
       setValue("name", user.name);
       setValue("email", user.email);
-      const roleId : number = (user as any).userStores?.[0]?.role?.id || null;
+      const roleId: number = (user as any).employees?.[0]?.role?.id || null;
       setValue("role", roleId || 0);
       setDefaultRole(roleId || 0);
     }
-  }, [user, setValue])
+  }, [user, setValue]);
 
   return (
     <Dialog
@@ -88,7 +96,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
         paper: {
           component: "form",
           onSubmit: handleSubmit(submitRole),
-        }
+        },
       }}
     >
       <DialogTitle>{!user ? "เพิ่มพนักงาน" : "แก้ไขพนักงาน"}</DialogTitle>
@@ -112,8 +120,8 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
               helperText={errors["email"]?.message}
               {...register("email")}
             />
-            <RoleSelector 
-              onSubmit={onSelectRole} 
+            <RoleSelector
+              onSubmit={onSelectRole}
               defaultValue={defaultRole}
               error={!!errors["role"]?.message}
               helperText={errors["role"]?.message}
