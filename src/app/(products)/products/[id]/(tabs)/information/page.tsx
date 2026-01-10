@@ -6,7 +6,7 @@ import SoldCount from "./stats/SoldCount";
 import TotalProfit from "./stats/TotalProfit";
 
 const ProductInformationPage = () => {
-  const product = useProduct();
+  const { product } = useProduct();
 
   return (
     <Stack spacing={1}>

@@ -14,7 +14,8 @@ const ProductTabs = ({ productId }: ProductTabsProps) => {
 
   // Determine active tab based on current path
   const isHistoryTab = pathname.includes("/history");
-  const currentTab = isHistoryTab ? 1 : 0;
+  const isStockTab = pathname.includes("/stock");
+  const currentTab = isHistoryTab ? 2 : isStockTab ? 1 : 0;
 
   return (
     <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -23,6 +24,12 @@ const ProductTabs = ({ productId }: ProductTabsProps) => {
           label="ข้อมูลสินค้า"
           component={Link}
           href={`/products/${productId}`}
+          sx={{ px: 2 }}
+        />
+        <Tab
+          label="สต็อกสินค้า"
+          component={Link}
+          href={`/products/${productId}/stock`}
           sx={{ px: 2 }}
         />
         <Tab

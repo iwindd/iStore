@@ -25,6 +25,7 @@ const selectProduct = {
       id: true,
     },
   },
+  stock: true,
 } satisfies Prisma.ProductSelect;
 
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
@@ -39,7 +40,7 @@ const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
   if (!product) notFound();
 
   return (
-    <ProductProvider value={{ ...product }}>
+    <ProductProvider value={product}>
       <Wrapper>
         <App.Header>
           <App.Header.Title>{product.label}</App.Header.Title>

@@ -60,7 +60,7 @@ const ImportStockId = async (payload: ImportFromStockId, user: User) => {
     select: {
       products: {
         select: {
-          changed_by: true,
+          delta: true,
           product: {
             select: {
               id: true,
@@ -84,7 +84,7 @@ const ImportStockId = async (payload: ImportFromStockId, user: User) => {
 
   return validated.products.map((p) => ({
     id: p.product.id,
-    quantity: p.changed_by,
+    quantity: p.delta,
     data: p.product,
   }));
 };

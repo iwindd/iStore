@@ -3,7 +3,7 @@ import { Box, Card, CardContent, CardHeader, Typography } from "@mui/material";
 import { useProduct } from "../../ProductContext";
 
 const ProductHistoryPage = () => {
-  const product = useProduct();
+  const { product } = useProduct();
 
   return (
     <Box>

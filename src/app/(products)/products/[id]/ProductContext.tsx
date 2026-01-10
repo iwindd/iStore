@@ -1,8 +1,11 @@
 "use client";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { ProductLayoutValue } from "./layout";
 
-type ProductContextType = ProductLayoutValue;
+type ProductContextType = {
+  product: ProductLayoutValue;
+  updateStock: (stock: number) => void;
+};
 
 const ProductContext = createContext<ProductContextType | null>(null);
 
@@ -11,10 +14,23 @@ export const ProductProvider = ({
   value,
 }: {
   children: React.ReactNode;
-  value: ProductContextType;
+  value: ProductLayoutValue;
 }) => {
+  const [product, setProduct] = useState<ProductLayoutValue>(value);
+
+  const updateStock = (stock: number) => {
+    setProduct({ ...product, stock: stock });
+  };
+
+  const ctxValue = useMemo(
+    () => ({ product, updateStock }),
+    [product, updateStock]
+  );
+
   return (
-    <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
+    <ProductContext.Provider value={ctxValue}>
+      {children}
+    </ProductContext.Provider>
   );
 };
 

@@ -32,3 +32,10 @@ export const ProductUpdateSchema = z.object({
 });
 
 export type ProductUpdateValues = z.infer<typeof ProductUpdateSchema>;
+
+export const ProductUpdateStockSchema = z.object({
+  stock: z.number().min(0),
+  note: z.string().max(255),
+});
+
+export type ProductUpdateStockValues = z.infer<typeof ProductUpdateStockSchema>;

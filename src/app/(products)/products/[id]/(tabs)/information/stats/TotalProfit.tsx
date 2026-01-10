@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useProduct } from "../../../ProductContext";
 
 const TotalProfit = () => {
-  const product = useProduct();
+  const { product } = useProduct();
 
   const productOrderData = useQuery({
     queryKey: ["product-order-data", product.id],

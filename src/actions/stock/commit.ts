@@ -62,7 +62,7 @@ const stockCommit = async (
     const stockState = options.updateStock
       ? StockState.SUCCESS
       : StockState.PROGRESS;
-
+    /* 
     const stock = await db.stock.upsert({
       where: {
         id: stockId || 0,
@@ -76,7 +76,8 @@ const stockCommit = async (
         creator_id: user.employeeId,
         products: {
           create: products.map((product) => ({
-            changed_by: product.quantity,
+            delta: product.quantity,
+            total: product.quantity,
             product: {
               connect: {
                 id: product.id,
@@ -92,7 +93,7 @@ const stockCommit = async (
           products: {
             deleteMany: {},
             create: products.map((product) => ({
-              changed_by: product.quantity,
+              delta: product.quantity,
               product: {
                 connect: {
                   id: product.id,
@@ -106,23 +107,23 @@ const stockCommit = async (
         products: {
           select: {
             product_id: true,
-            changed_by: true,
+            delta: true,
           },
         },
       },
     });
-
+ */
     if (options.updateStock)
-      await updateStockProducts(
+      /*       await updateStockProducts(
         stock.products.map((p) => {
           return {
             product_id: p.product_id,
-            quantity: p.changed_by,
+            quantity: p.delta,
           };
         })
-      );
+      ); */
 
-    return true;
+      return true;
   } catch (error) {
     console.error(error);
     return null;

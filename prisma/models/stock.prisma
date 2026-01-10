@@ -1,6 +1,6 @@
 model Stock {
   id         Int             @id @default(autoincrement())
-  note       String
+  note       String?
   state      StockState
   action_at  DateTime        @default(now())
   created_at DateTime        @default(now())
@@ -17,7 +17,8 @@ model Stock {
 
 model StockProduct {
   id         Int      @id @default(autoincrement())
-  changed_by Int
+  stock_after      Int
+  stock_before     Int
   stock_id   Int
   product_id Int
 

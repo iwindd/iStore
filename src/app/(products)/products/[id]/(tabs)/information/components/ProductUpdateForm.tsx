@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateForm = () => {
-  const product = useProduct();
+  const { product } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [loading, setLoading] = useState(false);

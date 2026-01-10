@@ -57,7 +57,7 @@ const HistoryDatatable = () => {
     { label: "ชื่อสินค้า", key: "label" },
     { label: "ราคา", key: "price" },
     { label: "ต้นทุน", key: "cost" },
-    { label: "จำนวน", key: "changed_by" },
+    { label: "จำนวน", key: "delta" },
     { label: "อื่นๆ", key: "keywords" },
   ]);
 
@@ -152,7 +152,7 @@ const HistoryDatatable = () => {
             label: item.product.label,
             price: item.product.price,
             cost: item.product.cost,
-            changed_by: item.changed_by,
+            delta: item.delta,
             keywords: item.product.keywords,
           }))
         );
