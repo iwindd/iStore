@@ -213,7 +213,7 @@ const Paths = {
   ["applications.create.line"]: {
     key: "applications.create.line",
     title: "ไลน์",
-    href: "/applications/create/line",
+    href: "/applications/line/create",
     icon: "application",
   },
   ["applications.line"]: {

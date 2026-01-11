@@ -1,6 +1,6 @@
 "use client";
 
-import { upsertLineApplication } from "@/actions/application/upsertLineApplication";
+import { createLineApplication } from "@/actions/application/createLineApplication";
 import FormLineApplication from "@/components/Forms/Application/FormLineApplication";
 import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
@@ -13,10 +13,11 @@ const LineApplicationCreatePage = () => {
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
     try {
-      const result = await upsertLineApplication(data);
+      const result = await createLineApplication(data);
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
         router.push(Path("applications").href);
+        return true;
       } else {
         enqueueSnackbar(result.message, { variant: "error" });
       }

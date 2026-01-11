@@ -18,28 +18,41 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { LineApplication } from "@prisma/client";
 import { useForm } from "react-hook-form";
 
 type FormLineApplicationProps = {
-  onSubmit?: (data: LineApplicationSchemaType) => void;
+  onSubmit?: (
+    data: LineApplicationSchemaType
+  ) => void | Promise<boolean | void>;
+  application?: LineApplication;
 };
 
-const FormLineApplication = ({ onSubmit }: FormLineApplicationProps) => {
+const FormLineApplication = ({
+  onSubmit,
+  application,
+}: FormLineApplicationProps) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+    getValues,
   } = useForm<LineApplicationSchemaType>({
     resolver: zodResolver(LineApplicationSchema),
     defaultValues: {
-      useAsChatbot: false,
-      useAsBroadcast: false,
+      useAsChatbot: application?.useAsChatbot || false,
+      useAsBroadcast: application?.useAsBroadcast || false,
+      name: application?.name || "",
+      channelAccessToken: application?.channelAccessToken || "",
+      channelSecret: application?.channelSecret || "",
     },
   });
 
   const handleFormSubmit = (data: LineApplicationSchemaType) => {
     if (onSubmit) {
-      onSubmit(data);
+      const result = onSubmit(data);
+      if (result) reset(getValues(), { keepValues: true });
     } else {
       console.log("Form Data:", data);
     }
@@ -64,7 +77,6 @@ const FormLineApplication = ({ onSubmit }: FormLineApplicationProps) => {
           />
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader title="ข้อมูลแอพพลิเคชั่น" />
         <CardContent>
@@ -88,7 +100,6 @@ const FormLineApplication = ({ onSubmit }: FormLineApplicationProps) => {
           </Stack>
         </CardContent>
       </Card>
-
       <Card>
         <CardHeader title="อื่นๆ" />
         <CardContent>
@@ -117,23 +128,25 @@ const FormLineApplication = ({ onSubmit }: FormLineApplicationProps) => {
         </CardContent>
       </Card>
 
-      <AppFooter
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Typography variant="subtitle1" color="secondary">
-          จัดการแอพพลิเคชั่น
-        </Typography>
-        <Button
-          variant="contained"
-          endIcon={<ArrowForwardTwoTone />}
-          type="submit"
-          disabled={isSubmitting}
+      {!application || isDirty ? (
+        <AppFooter
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
         >
-          บันทึก
-        </Button>
-      </AppFooter>
+          <Typography variant="subtitle1" color="secondary">
+            จัดการแอพพลิเคชั่น
+          </Typography>
+          <Button
+            variant="contained"
+            endIcon={<ArrowForwardTwoTone />}
+            type="submit"
+            disabled={isSubmitting}
+          >
+            บันทึก
+          </Button>
+        </AppFooter>
+      ) : null}
     </Stack>
   );
 };
