@@ -1,7 +1,55 @@
 import { getMessagingApiByKey } from "@/libs/line";
+import { mastra } from "@/mastra";
 import * as line from "@line/bot-sdk";
+import { LineApplication } from "@prisma/client";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+
+const onMessageEvent = async (
+  application: LineApplication,
+  event: line.MessageEvent,
+  messagingApi: line.messagingApi.MessagingApiClient
+) => {
+  if (event.message.type != "text")
+    return console.error("event.message.type is not text");
+
+  if (event.source.type != "user")
+    return console.error("event.source.type is not user");
+
+  const agent = mastra.getAgent("assistantAgent");
+  const result = await agent.generate(
+    [
+      {
+        role: "system",
+        content: `**เมื่อ Actions ถูกเรียกใช้แล้วต้องการค่า ApplicationId ให้ระบุ "${application.id}" เท่านั้น**`,
+      },
+      {
+        role: "user",
+        content: event.message.text,
+      },
+    ],
+    event.source.userId
+      ? {
+          memory: {
+            thread: `LINE-APPLICATION-${application.id}`,
+            resource: event.source.userId,
+          },
+        }
+      : undefined
+  );
+
+  if (!result.text) return console.error("result.text is empty");
+
+  messagingApi.replyMessage({
+    replyToken: event.replyToken,
+    messages: [
+      {
+        type: "textV2",
+        text: result.text,
+      },
+    ],
+  });
+};
 
 export async function POST(
   req: Request,
@@ -32,15 +80,9 @@ export async function POST(
     await Promise.all(
       body.events.map(async (event) => {
         if (event.type === "message") {
-          messagingApi.replyMessage({
-            replyToken: event.replyToken,
-            messages: [
-              {
-                type: "textV2",
-                text: "pong!",
-              },
-            ],
-          });
+          await onMessageEvent(application, event, messagingApi);
+        } else {
+          console.error("event.type is not message", event);
         }
       })
     );
