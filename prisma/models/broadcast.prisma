@@ -1,9 +1,10 @@
 model LineApplication{
   id Int @id @default(autoincrement())
-  name String @unique
+  name String
 
   channelAccessToken String
   channelSecret String
+  key String @unique
   
   useAsChatbot   Boolean @default(false)
   useAsBroadcast Boolean @default(false)

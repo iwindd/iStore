@@ -6,6 +6,7 @@ import {
   LineApplicationSchemaType,
 } from "@/schema/Application";
 import { revalidatePath } from "next/cache";
+import crypto from "node:crypto";
 
 export const createLineApplication = async (
   data: LineApplicationSchemaType
@@ -17,11 +18,13 @@ export const createLineApplication = async (
   }
 
   try {
+    const apiKey = `iSL-${crypto.randomBytes(16).toString("hex")}`;
     await db.lineApplication.create({
       data: {
         name: data.name,
         channelAccessToken: data.channelAccessToken,
         channelSecret: data.channelSecret,
+        key: apiKey,
         useAsChatbot: data.useAsChatbot,
         useAsBroadcast: data.useAsBroadcast,
       },
