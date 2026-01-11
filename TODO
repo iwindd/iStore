@@ -1,3 +1,15 @@
+UX/UI:
+  ☐ Redesign theme modern
+
+Optimization:
+  ☐ ปรับปรุงระบบ Cache
+  ☐ สร้าง Loading Skeleton
+  ☐ จัดการ Error Boundary
+
+Route Refactor:
+  ☐ สร้างระบบ Routing เว็บไซต์ใหม่
+  ☐ แก้ไขการแสดงผล Breadcrumb
+
 Multi Store:
   ☐ ลบการ Register
   ☐ เพิ่มการ Auth แบบ 1 User ได้หลายร้าน
