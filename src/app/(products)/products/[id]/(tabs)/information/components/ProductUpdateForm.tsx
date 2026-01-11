@@ -1,6 +1,6 @@
 "use client";
 import UpdateProduct from "@/actions/product/update";
-import CategorySelector from "@/components/CategorySelector";
+import CategorySelector from "@/components/Selector/CategorySelector";
 import { ProductUpdateSchema, ProductUpdateValues } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";

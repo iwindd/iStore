@@ -1,7 +1,7 @@
 "use client";
 import { SearchProduct } from "@/actions/product/search";
 import Scanner from "@/components/Scanner";
-import Selector from "@/components/Selector";
+import ProductSelector from "@/components/Selector/ProductSelector";
 import { useAppDispatch } from "@/hooks";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import usePayment from "@/hooks/use-payment";
@@ -44,7 +44,7 @@ const CashierPage = () => {
         </Grid>
         <Grid size={{ xs: 12, lg: 3 }}>
           <Stack direction={"row"} spacing={0.3}>
-            <Selector
+            <ProductSelector
               onSubmit={(product) => setSelectProduct(product || null)}
             />
             <Button

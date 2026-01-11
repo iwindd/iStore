@@ -1,8 +1,8 @@
 import { EventSelectorItem } from "@/actions/broadcast/eventActions";
 import { generateAdMessage } from "@/actions/broadcast/generateMessage";
 import { getPresignedUrl } from "@/actions/upload/getPresignedUrl";
-import EventSelector from "@/components/EventSelector";
 import ImageUpload from "@/components/Input/ImageUpload";
+import EventSelector from "@/components/Selector/EventSelector";
 import useFormValidate from "@/hooks/useFormValidate";
 import {
   CreateBroadcastSchema,

@@ -1,6 +1,6 @@
 "use client";
 import { StockLayoutValue } from "@/app/(products)/stocks/[id]/layout";
-import Selector from "@/components/Selector";
+import ProductSelector from "@/components/Selector/ProductSelector";
 import STOCK_CONFIG from "@/config/Stock";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
@@ -184,7 +184,7 @@ const StockForm = ({
                       <TableRow key={product.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
-                          <Selector
+                          <ProductSelector
                             defaultValue={product.product_id}
                             fieldProps={{
                               fullWidth: true,

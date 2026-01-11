@@ -158,6 +158,7 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           {...props.fieldProps}
           label={props.label}
           fullWidth
+          disabled={true}
           placeholder={
             isLoading || defaultItemLoading
               ? "กรุณารอสักครู่"

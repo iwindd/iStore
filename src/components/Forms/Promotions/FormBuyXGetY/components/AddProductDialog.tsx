@@ -1,5 +1,5 @@
 "use client";
-import Selector from "@/components/Selector";
+import ProductSelector from "@/components/Selector/ProductSelector";
 import {
   AddProductDialogSchema,
   AddProductDialogValues,
@@ -56,7 +56,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <Selector
+          <ProductSelector
             onSubmit={(product) => {
               setValue("product_id", product?.id as number);
             }}

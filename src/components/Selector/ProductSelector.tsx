@@ -11,7 +11,7 @@ interface SelectorProps {
   defaultValue?: number;
 }
 
-const Selector = (props: SelectorProps) => {
+const ProductSelector = (props: SelectorProps) => {
   const fetchItem = useCallback(async (id: number) => {
     const resp = await findProductById(id);
     if (resp.success && resp.data) {
@@ -56,4 +56,4 @@ const Selector = (props: SelectorProps) => {
   );
 };
 
-export default Selector;
+export default ProductSelector;

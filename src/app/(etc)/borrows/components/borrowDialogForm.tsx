@@ -1,10 +1,18 @@
 import CreateBorrow from "@/actions/borrow/create";
-import Selector from "@/components/Selector";
+import ProductSelector from "@/components/Selector/ProductSelector";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { BorrowsSchema, BorrowsValues } from "@/schema/Borrows";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddTwoTone } from "@mui/icons-material";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
@@ -25,14 +33,14 @@ function BorrowDialogForm({
     handleSubmit,
     formState: { errors },
     reset,
-    setValue
-  } = useForm<BorrowsValues>({ 
+    setValue,
+  } = useForm<BorrowsValues>({
     resolver: zodResolver(BorrowsSchema),
     defaultValues: {
       product: 0,
       count: null as any, // Use null to allow empty input
       note: "",
-    }
+    },
   });
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
@@ -62,7 +70,8 @@ function BorrowDialogForm({
     }
   };
 
-  const onSelect = (product: Product) => setValue("product", product ? product.id : 0);
+  const onSelect = (product: Product) =>
+    setValue("product", product ? product.id : 0);
 
   return (
     <Dialog
@@ -74,14 +83,14 @@ function BorrowDialogForm({
         paper: {
           component: "form",
           onSubmit: handleSubmit(onSubmit),
-        }
+        },
       }}
     >
       <DialogTitle>เบิกสินค้า</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 1 }} spacing={1}>
-          <Selector
-            onSubmit={onSelect} 
+          <ProductSelector
+            onSubmit={onSelect}
             fieldProps={{
               error: errors["product"] !== undefined,
               helperText: errors["product"]?.message,
@@ -106,7 +115,14 @@ function BorrowDialogForm({
         <Button color="secondary" type="button" onClick={onClose}>
           ปิด
         </Button>
-        <Button color="success" variant="contained" startIcon={<AddTwoTone/>} type="submit">เบิกสินค้า</Button>
+        <Button
+          color="success"
+          variant="contained"
+          startIcon={<AddTwoTone />}
+          type="submit"
+        >
+          เบิกสินค้า
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -1,6 +1,6 @@
 "use client";
 import * as Actions from "@/actions/employee";
-import RoleSelector from "@/components/RoleSelector";
+import RoleSelector from "@/components/Selector/RoleSelector";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
 import { zodResolver } from "@hookform/resolvers/zod";
