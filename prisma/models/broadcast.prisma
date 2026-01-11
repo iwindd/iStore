@@ -12,6 +12,9 @@ model LineApplication{
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  store_id String
+  store Store @relation(fields: [store_id], references: [id])
+
   @@map("line_applications")
 }
 

@@ -7,8 +7,8 @@ import crypto from "node:crypto";
 
 const onMessageEvent = async (
   application: LineApplication,
-  event: line.MessageEvent,
-  messagingApi: line.messagingApi.MessagingApiClient
+  messagingApi: line.messagingApi.MessagingApiClient,
+  event: line.MessageEvent
 ) => {
   if (event.message.type != "text")
     return console.error("event.message.type is not text");
@@ -21,7 +21,7 @@ const onMessageEvent = async (
     [
       {
         role: "system",
-        content: `**เมื่อ Actions ถูกเรียกใช้แล้วต้องการค่า ApplicationId ให้ระบุ "${application.id}" เท่านั้น**`,
+        content: `**เมื่อ Tools ถูกเรียกใช้แล้วต้องการค่า storeId ให้ระบุ "${application.store_id}" เท่านั้น**`,
       },
       {
         role: "user",
@@ -80,7 +80,7 @@ export async function POST(
     await Promise.all(
       body.events.map(async (event) => {
         if (event.type === "message") {
-          await onMessageEvent(application, event, messagingApi);
+          await onMessageEvent(application, messagingApi, event);
         } else {
           console.error("event.type is not message", event);
         }

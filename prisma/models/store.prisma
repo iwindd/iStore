@@ -10,6 +10,7 @@ model Store {
   roles         Role[]
   events        Event[]
   broadcasts    Broadcast[]
+  applications  LineApplication[]
   //         Address
   address       String?
   district      String?

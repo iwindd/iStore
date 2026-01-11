@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/libs/db";
+import { getUser } from "@/libs/session";
 import {
   LineApplicationSchema,
   LineApplicationSchemaType,
@@ -11,6 +12,8 @@ import crypto from "node:crypto";
 export const createLineApplication = async (
   data: LineApplicationSchemaType
 ) => {
+  const user = await getUser();
+  if (!user) throw new Error("User not found");
   const validation = LineApplicationSchema.safeParse(data);
 
   if (!validation.success) {
@@ -27,6 +30,7 @@ export const createLineApplication = async (
         key: apiKey,
         useAsChatbot: data.useAsChatbot,
         useAsBroadcast: data.useAsBroadcast,
+        store_id: user.store,
       },
     });
 

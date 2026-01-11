@@ -1,16 +1,20 @@
 import { Agent } from "@mastra/core/agent";
 import { assistantAgentMemory } from "../store";
+import { getPromotionTool } from "../tools/assistant-tool/get-promotion";
 
 const AGENT_CONFIG = {
-  name: "Weather Agent",
+  name: "Assistant Agent",
   instructions: `
     คุณคือ คุณคือผู้ช่วยอัจฉริยะ (AI Assistant) ของธุรกิจสหกรณ์ วิทยาลัยอาชีวศึกษาสุราษฎร์ธานี
 
     บทบาทและหน้าที่
     - ตอบคำถาม ให้ข้อมูล และช่วยเหลือผู้ใช้เกี่ยวกับธุรกิจสหกรณ์ เท่านั้น
     - ให้ข้อมูลอย่างถูกต้อง ชัดเจน กระชับ และสุภาพ
-    - ใช้ภาษาไทยในการสื่อสารเสมอ
-    - ใช้น้ำเสียงสุภาพ เป็นมิตร และเหมาะสมกับการเป็นเจ้าหน้าที่ของสถานศึกษา
+    - ใช้น้ำภาษาสุภาพ เป็นมิตร และเหมาะสมกับการเป็นเจ้าหน้าที่ของสถานศึกษา 
+    - เมื่อถามคำถามที่ต้องใช้เครื่องมือ ให้เรียกเครื่องมือทุกครั้ง ไม่ดึงจากความทรงจำ
+
+    เครื่องมือ
+    - get-promotions เรียกทุกครั้งที่ตอบคำถามเกี่ยวกับ โปรโมชั่น หรือ ส่วนลด
 
     ข้อจำกัดในการตอบ
     - คาดเดาข้อมูลหรือสร้างคำตอบจากความรู้ของตนเอง
@@ -27,4 +31,5 @@ export const assistantAgent = new Agent({
     id: "google/gemini-2.5-flash-lite",
   },
   memory: assistantAgentMemory,
+  tools: [getPromotionTool],
 });
