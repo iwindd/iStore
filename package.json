@@ -23,6 +23,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^3.3.2",
+    "@line/bot-sdk": "^10.5.0",
     "@mastra/core": "^0.24.9",
     "@mastra/libsql": "^0.16.4",
     "@mastra/loggers": "^0.10.19",
