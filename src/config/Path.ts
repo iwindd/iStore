@@ -202,6 +202,26 @@ const Paths = {
     matcher: { type: "startsWith", href: "/broadcasts" },
     somePermissions: getPermissionInGroup(SuperPermissionEnum.PROMOTION),
   },
+  ["applications"]: {
+    key: "applications",
+    title: "แอพพลิเคชั่น",
+    href: "/applications",
+    icon: "application",
+    matcher: { type: "startsWith", href: "/applications" },
+    somePermissions: getPermissionInGroup(SuperPermissionEnum.PROMOTION), // TODO:: Permission
+  },
+  ["applications.create.line"]: {
+    key: "applications.create.line",
+    title: "ไลน์",
+    href: "/applications/create/line",
+    icon: "application",
+  },
+  ["applications.line"]: {
+    key: "applications.line",
+    title: "ไลน์",
+    href: "/applications/line/:id",
+    icon: "application",
+  },
 } satisfies Record<string, PathType>;
 
 export const HomePath = Paths.overview.href;

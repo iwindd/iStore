@@ -1,3 +1,19 @@
+model LineApplication{
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  channelAccessToken String
+  channelSecret String
+  
+  useAsChatbot   Boolean @default(false)
+  useAsBroadcast Boolean @default(false)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("line_applications")
+}
+
 enum BroadcastStatus {
   DRAFT
   SCHEDULED
