@@ -1,13 +1,9 @@
 "use client";
 import ImportToolAction from "@/actions/stock/tool";
-import STOCK_CONFIG from "@/config/Stock";
-import { useAppSelector } from "@/hooks";
-import { number } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { StockValues } from "@/schema/Stock";
 import { PanToolAlt } from "@mui/icons-material";
 import {
-  Alert,
   Button,
   Dialog,
   DialogActions,
@@ -48,7 +44,6 @@ const ToolDialog = ({
   const [payload, setPayload] = React.useState<ImportPayload | null>(null);
   const [changedBy, setChangedBy] = React.useState<number>(10);
   const { isBackdrop, setBackdrop } = useInterface();
-  const stockProducts = useAppSelector((state) => state.stock.products);
 
   const handleChange = (event: SelectChangeEvent) => {
     setType(+event.target.value);
@@ -117,12 +112,6 @@ const ToolDialog = ({
           {type == ImportType.FromMinStock && (
             <MinStockController payload={payload} setPayload={setPayload} />
           )}
-          {stockProducts.length >= STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK && (
-            <Alert color="error">
-              การจัดการสต๊อกจำกัดสินค้าไว้{" "}
-              {number(STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK)} รายการ
-            </Alert>
-          )}
         </Stack>
       </DialogContent>
       <DialogActions>
@@ -134,9 +123,6 @@ const ToolDialog = ({
             color="success"
             variant="contained"
             startIcon={<PanToolAlt />}
-            disabled={
-              stockProducts.length >= STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK
-            }
             onClick={onSubmit}
           >
             ยืนยัน
