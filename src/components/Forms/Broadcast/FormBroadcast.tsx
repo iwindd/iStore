@@ -6,28 +6,21 @@ import {
   CreateBroadcastValues,
 } from "@/schema/Broadcast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SaveTwoTone } from "@mui/icons-material";
 import {
-  Button,
   Card,
   CardContent,
   CardHeader,
   Divider,
   FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { DateTimePicker } from "@mui/x-date-pickers";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import ImageCard from "./Partials/ImageCard";
 
 export interface FormBroadcastProps {
@@ -127,75 +120,76 @@ const FormBroadcast = ({
   return (
     <Grid container spacing={1}>
       <Grid size={8}>
-        <Stack
-          spacing={2}
-          component="form"
-          onSubmit={handleSubmit(handleFormSubmit)}
-        >
-          <Card>
-            <CardHeader title="เลือกโปรโมชั่น" />
-            <Divider />
-            <CardContent>
-              <Stack spacing={1}>
-                <Grid container spacing={1}>
-                  <Grid size={6}>
-                    <FormControl fullWidth error={!!errors.event_id}>
-                      <EventSelector
-                        onSubmit={handleEventChange}
-                        defaultValue={broadcast?.event_id}
-                        error={!!errors.event_id}
-                        helperText={errors.event_id?.message}
-                        fieldProps={{
-                          disabled,
-                        }}
-                      />
-                    </FormControl>
-                    {selectedEvent?.note && (
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ mt: 1 }}
-                      >
-                        {selectedEvent.note}
-                      </Typography>
-                    )}
+        <Stack spacing={1}>
+          <Stack
+            spacing={2}
+            component="form"
+            onSubmit={handleSubmit(handleFormSubmit)}
+          >
+            <Card>
+              <CardHeader title="เลือกโปรโมชั่น" />
+              <Divider />
+              <CardContent>
+                <Stack spacing={1}>
+                  <Grid container spacing={1}>
+                    <Grid size={6}>
+                      <FormControl fullWidth error={!!errors.event_id}>
+                        <EventSelector
+                          onSubmit={handleEventChange}
+                          defaultValue={broadcast?.event_id}
+                          error={!!errors.event_id}
+                          helperText={errors.event_id?.message}
+                          fieldProps={{
+                            disabled,
+                          }}
+                        />
+                      </FormControl>
+                      {selectedEvent?.note && (
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ mt: 1 }}
+                        >
+                          {selectedEvent.note}
+                        </Typography>
+                      )}
+                    </Grid>
+                    <Grid size={6}>
+                      <FormControl fullWidth error={!!errors.event_id}>
+                        <TextField
+                          label="ชื่อประกาศ"
+                          fullWidth
+                          disabled={disabled}
+                          error={!!errors.title}
+                          helperText={errors.title?.message}
+                          {...register("title")}
+                        />
+                      </FormControl>
+                    </Grid>
                   </Grid>
-                  <Grid size={6}>
-                    <FormControl fullWidth error={!!errors.event_id}>
-                      <TextField
-                        label="ชื่อประกาศ"
-                        fullWidth
-                        disabled={disabled}
-                        error={!!errors.title}
-                        helperText={errors.title?.message}
-                        {...register("title")}
-                      />
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                <TextField
-                  label="ข้อความประกาศ"
-                  fullWidth
-                  multiline
-                  rows={4}
-                  disabled={disabled || aiGeneratePromotionOfferInfo.isPending}
-                  error={!!errors.message}
-                  helperText={errors.message?.message}
-                  slotProps={{
-                    inputLabel: {
-                      shrink: true,
-                    },
-                  }}
-                  placeholder="เขียนข้อความประกาศ..."
-                  {...register("message")}
-                />
-              </Stack>
-            </CardContent>
-          </Card>
+                  <TextField
+                    label="ข้อความประกาศ"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    disabled={
+                      disabled || aiGeneratePromotionOfferInfo.isPending
+                    }
+                    error={!!errors.message}
+                    helperText={errors.message?.message}
+                    slotProps={{
+                      inputLabel: {
+                        shrink: true,
+                      },
+                    }}
+                    placeholder="เขียนข้อความประกาศ..."
+                    {...register("message")}
+                  />
+                </Stack>
+              </CardContent>
+            </Card>
 
-          <ImageCard form={form} disabled={disabled} />
-
-          <Card>
+            {/*    <Card>
             <CardHeader title="การเผยแพร่" />
             <Divider />
             <CardContent>
@@ -283,7 +277,9 @@ const FormBroadcast = ({
                 </Grid>
               </Grid>
             </CardContent>
-          </Card>
+          </Card> */}
+          </Stack>
+          <ImageCard form={form} disabled={disabled} />
         </Stack>
       </Grid>
       <Grid size={4}>

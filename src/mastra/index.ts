@@ -2,10 +2,13 @@ import { Mastra } from "@mastra/core/mastra";
 import { PinoLogger } from "@mastra/loggers";
 
 import { assistantAgent } from "./agents/assistant-agent";
+import { brochureAgent } from "./agents/brochure-agent";
 import { mastraStorage } from "./store";
+import { generateBrochureWorkflow } from "./workflows/brochure-generate-workflow";
 
 export const mastra = new Mastra({
-  agents: { assistantAgent },
+  agents: { assistantAgent, brochureAgent },
+  workflows: { generateBrochureWorkflow },
   storage: mastraStorage,
   logger: new PinoLogger({
     name: "Mastra",
