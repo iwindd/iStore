@@ -1,28 +1,23 @@
 "use client";
 import * as Actions from "@/actions/roles";
-import { TextFieldProps } from "@mui/material";
-import BaseSelector from "./BaseSelector";
+import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
-interface SelectorProps {
-  onSubmit(Product: Actions.RoleSelector | null): void;
-  fieldProps?: TextFieldProps;
-  defaultValue?: number;
-  error?: boolean;
-  helperText?: string;
-}
+type RoleSelectorProps = Omit<
+  BaseSelectorProps<Actions.RoleSelector>,
+  "canCreate"
+>;
 
-const RoleSelector = (props: SelectorProps) => {
+const RoleSelector = (props_: RoleSelectorProps) => {
+  const props = {
+    ...props_,
+    label: props_.label || "กรุณาเลือกตำแหน่ง",
+    placeholder: props_.placeholder || "ค้นหาตำแหน่ง",
+  };
+
   return (
     <BaseSelector<Actions.RoleSelector>
       id="role-selector"
-      label="กรุณาเลือกตำแหน่ง"
-      placeholder="ค้นหาตำแหน่ง"
       noOptionsText="ไมพบตำแหน่ง"
-      defaultValue={props.defaultValue}
-      fieldProps={props.fieldProps}
-      error={props.error}
-      helperText={props.helperText}
-      onSubmit={props.onSubmit}
       fetchItem={async (id) => {
         const resp = await Actions.find(id);
         return resp.success && resp.data ? resp.data : null;
@@ -38,6 +33,7 @@ const RoleSelector = (props: SelectorProps) => {
       renderCustomOption={(option) => (
         <>{option.id == props.defaultValue ? "(เลือก) " : ""}</>
       )}
+      {...props}
     />
   );
 };

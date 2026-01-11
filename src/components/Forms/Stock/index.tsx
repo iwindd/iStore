@@ -191,8 +191,8 @@ const StockForm = ({
                               error: !!errors.products?.[index]?.product_id,
                               helperText:
                                 errors.products?.[index]?.product_id?.message,
-                              disabled: isLoading || disabled,
                             }}
+                            disabled={disabled || isLoading}
                             onSubmit={(product) => {
                               setValue(
                                 `products.${index}.product_id`,

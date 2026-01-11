@@ -18,25 +18,38 @@ import parse from "autosuggest-highlight/parse";
 import React, { useEffect } from "react";
 
 export interface BaseSelectorProps<T> {
-  onSubmit(item: T | null): void;
+  label?: string;
+  placeholder?: string;
+  fieldProps?: Omit<
+    TextFieldProps,
+    | "label"
+    | "fullWidth"
+    | "placeholder"
+    | "error"
+    | "helperText"
+    | "onKeyDown"
+    | "slotProps"
+  >;
+  defaultValue?: number;
+  helperText?: string;
+  error?: boolean;
+  disabled?: boolean;
+  canCreate?: boolean;
+  onSubmit?: (Product: T | null) => void;
+}
+
+export interface BuildSelectorProps<T> extends BaseSelectorProps<T> {
+  id: string;
+  noOptionsText?: string;
   fetchItem(id: number): Promise<T | null>;
   searchItems(query: string): Promise<readonly T[]>;
   getItemLabel(item: T | string): string;
   getItemKey(item: T): string | number;
   renderCustomOption?: (item: T) => React.ReactNode;
-  label: string;
-  placeholder?: string;
-  id: string;
-  noOptionsText?: string;
-  defaultValue?: number;
-  fieldProps?: TextFieldProps;
-  error?: boolean;
-  helperText?: string;
-  canCreate?: boolean;
   onCreate?: (label: string) => Promise<T | null>;
 }
 
-const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
+const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
   const [value, setValue] = React.useState<T | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly T[]>([]);
@@ -59,6 +72,7 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
   const { data: results } = useQuery({
     queryKey: [`${props.id}-search-items`, debouncedInput],
     queryFn: () => props.searchItems(debouncedInput),
+    enabled: !props.disabled,
   });
 
   React.useEffect(() => {
@@ -101,7 +115,7 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
         }
         return props.getItemLabel(option);
       }}
-      disabled={isLoading || defaultItemLoading}
+      disabled={isLoading || defaultItemLoading || props.disabled}
       filterOptions={(options, params) => {
         const filtered = createFilterOptions<T>()(options, params);
 
@@ -137,14 +151,14 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
               if (createdItem) {
                 setOptions([createdItem, ...options]);
                 setValue(createdItem);
-                props.onSubmit(createdItem);
+                props?.onSubmit?.(createdItem);
               }
             });
           }
         } else {
           setOptions(newValue ? [newValue, ...options] : options);
           setValue(newValue);
-          props.onSubmit(newValue);
+          props?.onSubmit?.(newValue);
         }
       }}
       onInputChange={(_, newInputValue, reason) => {
@@ -158,7 +172,6 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           {...props.fieldProps}
           label={props.label}
           fullWidth
-          disabled={true}
           placeholder={
             isLoading || defaultItemLoading
               ? "กรุณารอสักครู่"
@@ -203,9 +216,9 @@ const BaseSelector = <T,>(props: BaseSelectorProps<T>) => {
           <li key={key} {...optionProps}>
             <Grid container sx={{ alignItems: "center", width: "100%" }}>
               <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
-                {parts.map((part, index) => (
+                {parts.map((part) => (
                   <Box
-                    key={index}
+                    key={part.text}
                     component="span"
                     sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
                   >

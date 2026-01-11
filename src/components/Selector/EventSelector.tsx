@@ -1,29 +1,24 @@
 "use client";
 import * as EventActions from "@/actions/broadcast/eventActions";
-import { TextFieldProps } from "@mui/material";
 import dayjs from "dayjs";
-import BaseSelector from "./BaseSelector";
+import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
-interface SelectorProps {
-  onSubmit(event: EventActions.EventSelectorItem | null): void;
-  fieldProps?: TextFieldProps;
-  defaultValue?: number;
-  error?: boolean;
-  helperText?: string;
-}
+type EventSelectorProps = Omit<
+  BaseSelectorProps<EventActions.EventSelectorItem>,
+  "canCreate"
+>;
 
-const EventSelector = (props: SelectorProps) => {
+const EventSelector = (props_: EventSelectorProps) => {
+  const props = {
+    ...props_,
+    label: props_.label || "กรุณาเลือกโปรโมชั่น",
+    placeholder: props_.placeholder || "ค้นหาโปรโมชั่น",
+  };
+
   return (
     <BaseSelector<EventActions.EventSelectorItem>
       id="event-selector"
-      label="กรุณาเลือกโปรโมชั่น"
-      placeholder="ค้นหาโปรโมชั่น (Note)"
       noOptionsText="ไม่พบโปรโมชั่น"
-      defaultValue={props.defaultValue}
-      fieldProps={props.fieldProps}
-      error={props.error}
-      helperText={props.helperText}
-      onSubmit={props.onSubmit}
       fetchItem={async (id) => {
         const resp = await EventActions.findEvent(id);
         return resp || null;
@@ -45,6 +40,7 @@ const EventSelector = (props: SelectorProps) => {
           {dayjs(option.end_at).format("DD/MM/YY")}
         </>
       )}
+      {...props}
     />
   );
 };

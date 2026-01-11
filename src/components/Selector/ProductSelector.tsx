@@ -1,17 +1,19 @@
 "use client";
 import findProductById from "@/actions/product/findById";
 import SearchProducts, { SearchProduct } from "@/actions/product/search";
-import { TextFieldProps, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { useCallback } from "react";
-import BaseSelector from "./BaseSelector";
+import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
-interface SelectorProps {
-  onSubmit(Product: SearchProduct | null): void;
-  fieldProps?: TextFieldProps;
-  defaultValue?: number;
-}
+type ProductSelectorProps = Omit<BaseSelectorProps<SearchProduct>, "canCreate">;
 
-const ProductSelector = (props: SelectorProps) => {
+const ProductSelector = (props_: ProductSelectorProps) => {
+  const props = {
+    ...props_,
+    label: props_.label || "กรุณาเลือกสินค้า",
+    placeholder: props_.placeholder || "ค้นหาสินค้า",
+  };
+
   const fetchItem = useCallback(async (id: number) => {
     const resp = await findProductById(id);
     if (resp.success && resp.data) {
@@ -32,13 +34,9 @@ const ProductSelector = (props: SelectorProps) => {
   }, []);
 
   return (
-    <BaseSelector
+    <BaseSelector<SearchProduct>
       id="product-selector"
-      label="กรุณาเลือกสินค้า"
-      placeholder="ค้นหาสินค้า (ชื่อ, รหัส, Keyword)"
-      defaultValue={props.defaultValue}
-      fieldProps={props.fieldProps}
-      onSubmit={props.onSubmit}
+      noOptionsText="ไม่พบสินค้า"
       fetchItem={fetchItem}
       searchItems={searchItems}
       getItemLabel={(option) =>
@@ -52,6 +50,7 @@ const ProductSelector = (props: SelectorProps) => {
           </Typography>
         </div>
       )}
+      {...props}
     />
   );
 };
