@@ -1,8 +1,8 @@
 "use server";
-import BotApp from "@/libs/botapp";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { BroadcastStatus } from "@prisma/client";
+import sendBroadcastToApplications from "../application/sendBroadcastToApplications";
 
 export const sendBroadcast = async (id: number) => {
   try {
@@ -27,9 +27,9 @@ export const sendBroadcast = async (id: number) => {
       },
     });
 
-    await BotApp.post(`/broadcast/sendAll`, {
-      text: broadcast.message,
-      image: broadcast.image_url,
+    sendBroadcastToApplications(user.store, {
+      message: broadcast.message,
+      image_url: (broadcast?.image_url && broadcast.image_url) || undefined,
     });
 
     return broadcast;
