@@ -6,7 +6,9 @@ import {
   CreateBroadcastSchema,
   CreateBroadcastValues,
 } from "@/schema/Broadcast";
+import { BroadcastStatus } from "@prisma/client";
 import dayjs from "dayjs";
+import sendBroadcastToApplications from "../application/sendBroadcastToApplications";
 
 export const createBroadcast = async (values: CreateBroadcastValues) => {
   try {
@@ -33,14 +35,15 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
 
     // Determine status and scheduled_at based on type
     let scheduledAt: dayjs.Dayjs;
-    let status: "DRAFT" | "SCHEDULED" = "SCHEDULED";
+    let status: BroadcastStatus = BroadcastStatus.SCHEDULED;
 
     if (values.type === "DRAFT") {
-      status = "DRAFT";
+      status = BroadcastStatus.DRAFT;
       scheduledAt = values.scheduled_at
         ? dayjs(values.scheduled_at)
         : dayjs(event.start_at);
     } else if (values.type === "INSTANT") {
+      status = BroadcastStatus.SENT;
       scheduledAt = dayjs();
     } else {
       if (!values.scheduled_at) {
@@ -71,8 +74,16 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
         scheduled_at: scheduledAt.toDate(),
         status: status,
         creator_id: user.employeeId,
+        sent_at: status === BroadcastStatus.SENT ? dayjs().toDate() : null,
       },
     });
+
+    if (status === BroadcastStatus.SENT) {
+      sendBroadcastToApplications(user.store, {
+        message: broadcast.message,
+        image_url: (broadcast?.image_url && broadcast.image_url) || undefined,
+      });
+    }
 
     return broadcast;
   } catch (error) {
