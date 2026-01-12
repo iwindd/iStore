@@ -1,10 +1,10 @@
 "use client";
 import { cancelBroadcast } from "@/actions/broadcast/cancelBroadcast";
 import { getBroadcast } from "@/actions/broadcast/getBroadcast";
-import { Path } from "@/config/Path";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
+import { getPath } from "@/router";
 import { CancelTwoTone, EditTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -107,7 +107,9 @@ const BroadcastViewPage = () => {
           {canEdit && (
             <Button
               component={Link}
-              href={`${Path("broadcasts").href}/${broadcast.id}/edit`}
+              href={getPath("broadcasts.broadcast.edit", {
+                id: broadcast.id.toString(),
+              })}
               startIcon={<EditTwoTone />}
               variant="outlined"
               size="small"

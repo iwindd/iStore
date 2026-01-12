@@ -3,13 +3,13 @@ import DeleteProduct from "@/actions/product/delete";
 import GetProducts from "@/actions/product/get";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { getPath } from "@/router";
 import {
   DeleteTwoTone,
   EditTwoTone,
@@ -146,7 +146,7 @@ const ProductDatatable = () => {
         getActions: ({ row }: { row: Product }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("products").href}/${row.id}`}
+            to={getPath("products.product", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu

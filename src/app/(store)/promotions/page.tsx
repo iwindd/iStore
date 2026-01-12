@@ -4,11 +4,11 @@ import fetchPromotionDatatable, {
 } from "@/actions/promotion/fetchPromotionDatatable";
 import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import useDatatable from "@/hooks/useDatatable";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
+import { getPath } from "@/router";
 import {
   AddTwoTone,
   StopTwoTone,
@@ -126,7 +126,7 @@ const PromotionPage = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("promotions").href}/buyXgetY/${row.id}`}
+            to={`${getPath("promotions.buyXgetY", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu

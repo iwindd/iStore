@@ -2,11 +2,10 @@
 import GetPurchase, { Purchase } from "@/actions/purchase/get";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import * as ff from "@/libs/formatter";
+import { getPath } from "@/router";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
-import { Category } from "@prisma/client";
 
 const PurchaseDatatable = () => {
   const columns = (): GridColDef[] => {
@@ -58,10 +57,10 @@ const PurchaseDatatable = () => {
         type: "actions",
         headerName: "เครื่องมือ",
         flex: 1,
-        getActions: ({ row }: { row: Category }) => [
+        getActions: ({ row }: { row: Purchase }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("purchase").href}/${row.id}`}
+            to={getPath("purchase.purchase", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu
@@ -72,14 +71,12 @@ const PurchaseDatatable = () => {
   };
 
   return (
-    <>
-      <Datatable
-        name={"purchase"}
-        columns={columns()}
-        fetch={GetPurchase}
-        height={700}
-      />
-    </>
+    <Datatable
+      name={"purchase"}
+      columns={columns()}
+      fetch={GetPurchase}
+      height={700}
+    />
   );
 };
 

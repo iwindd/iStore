@@ -1,5 +1,6 @@
 import { PermissionEnum } from "@/enums/permission";
-import { Path } from "./Path";
+import { Route } from "@/libs/route/route";
+import { getRoute } from "@/router";
 
 /**
  *
@@ -15,83 +16,48 @@ import { Path } from "./Path";
  *          - key ของ item จะใช้ key ของ path และ group key merge กัน
  */
 
-const navItems = [
-  { type: "item", path: Path("overview") },
-  { type: "item", path: Path("cashier") },
-
+const NavbarItems = [
+  getRoute("overview"),
+  getRoute("cashier"),
   {
-    type: "group",
     key: "product",
     title: "สินค้า",
-    items: [
-      { path: Path("products") },
-      { path: Path("categories") },
-      { path: Path("stocks") },
-    ],
+    routes: [getRoute("products"), getRoute("categories"), getRoute("stocks")],
   },
   {
-    type: "group",
     key: "etc",
     title: "อื่นๆ",
-    items: [
-      { path: Path("overstocks") },
-      { path: Path("borrows") },
-      { path: Path("purchase") },
-    ],
+    routes: [getRoute("overstocks"), getRoute("borrows"), getRoute("purchase")],
   },
   {
-    type: "group",
     key: "store",
     title: "ร้านค้า",
-    items: [
-      { path: Path("promotions") },
-      { path: Path("broadcasts") },
-      { path: Path("histories") },
-      { path: Path("roles") },
-      { path: Path("employees") },
-      { path: Path("store") },
+    routes: [
+      getRoute("applications"),
+      getRoute("promotions"),
+      getRoute("broadcasts"),
+      getRoute("histories"),
+      getRoute("roles"),
+      getRoute("employees"),
+      getRoute("store"),
     ],
   },
   {
-    type: "group",
     key: "store",
     title: "บัญชีของฉัน",
-    items: [{ path: Path("account") }],
+    routes: [getRoute("account")],
   },
-] as const satisfies NavItemType[];
+] as const satisfies NavbarItem[];
 
-interface PathConfig {
-  key: string;
-  title: string;
-  href: string;
-  icon: string;
-  somePermissions?: PermissionEnum[];
-}
+export type NavbarItem = (
+  | Route
+  | {
+      key: string;
+      title: string;
+      routes: Route[];
+    }
+) & {
+  needSomePermissions?: PermissionEnum[];
+};
 
-interface NavTypeItem {
-  type: "item";
-  path: PathConfig;
-}
-
-interface NavTypeGroup {
-  type: "group";
-  key: string;
-  title: string;
-  items: { path: PathConfig }[];
-}
-
-export type NavItemType = NavTypeItem | NavTypeGroup;
-export interface NavItemConfig {
-  key: string;
-  title?: string;
-  disabled?: boolean;
-  external?: boolean;
-  label?: string;
-  icon?: string;
-  href?: string;
-  items?: NavItemConfig[];
-  matcher?: { type: "startsWith" | "equals"; href: string };
-  somePermissions?: PermissionEnum[];
-}
-
-export default navItems;
+export default NavbarItems;

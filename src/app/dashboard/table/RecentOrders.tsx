@@ -1,7 +1,7 @@
 "use client";
-import { Path } from "@/config/Path";
 import { useMenu } from "@/hooks/use-menu";
 import * as formatter from "@/libs/formatter";
+import { getPath } from "@/router";
 import { ArrowOutward, ArrowRightTwoTone } from "@mui/icons-material";
 import { IconButton, Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -63,7 +63,11 @@ export function RecentOrderTable({
                   <TableCell>{formatter.money(order.price)}</TableCell>
                   <TableCell>
                     <Tooltip title="ดูรายละเอียด">
-                      <Link href={Path("histories").href + "/" + order.id}>
+                      <Link
+                        href={getPath("histories.history", {
+                          id: order.id.toString(),
+                        })}
+                      >
                         <IconButton>
                           <ArrowOutward />
                         </IconButton>
@@ -84,7 +88,7 @@ export function RecentOrderTable({
           size="small"
           variant="text"
           component={RouterLink}
-          href={Path("histories").href}
+          href={getPath("histories")}
         >
           ดูทั้งหมด
         </Button>

@@ -6,16 +6,15 @@ import fetchBroadcastDatatable, {
 } from "@/actions/broadcast/fetchBroadcastDatatable";
 import { sendBroadcast } from "@/actions/broadcast/sendBroadcast";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import useDatatable from "@/hooks/useDatatable";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
+import { getPath } from "@/router";
 import {
   AddTwoTone,
   CancelTwoTone,
   DeleteTwoTone,
-  EditTwoTone,
   NotificationsTwoTone,
   SendTwoTone,
   ViewAgendaTwoTone,
@@ -209,7 +208,6 @@ const BroadcastPage = () => {
         headerName: "เครื่องมือ",
         flex: 0,
         getActions: ({ row }) => {
-          const canEdit = ["DRAFT", "SCHEDULED"].includes(row.status);
           const canCancel = ["DRAFT", "SCHEDULED"].includes(row.status);
           const canDelete = ["DRAFT", "CANCELLED"].includes(row.status);
           const canSend = ["SCHEDULED"].includes(row.status);
@@ -217,18 +215,10 @@ const BroadcastPage = () => {
           return [
             <GridLinkAction
               key="view"
-              to={`${Path("broadcasts").href}/${row.id}`}
+              to={`${getPath("broadcasts.broadcast", { id: row.id.toString() })}`}
               icon={<ViewAgendaTwoTone />}
               label="ดูรายละเอียด"
               showInMenu
-            />,
-            <GridLinkAction
-              key="edit"
-              to={`${Path("broadcasts").href}/${row.id}/edit`}
-              icon={<EditTwoTone />}
-              label="แก้ไข"
-              showInMenu
-              disabled={!canEdit}
             />,
             <GridActionsCellItem
               key="cancel"
@@ -267,7 +257,7 @@ const BroadcastPage = () => {
         <App.Header.Actions>
           <Button
             component={Link}
-            href={`${Path("broadcasts").href}/new`}
+            href={getPath("broadcasts.create")}
             startIcon={<AddTwoTone />}
             variant="contained"
             size="small"

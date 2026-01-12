@@ -2,12 +2,12 @@
 import CreateProduct from "@/actions/product/create";
 import GetProduct from "@/actions/product/find";
 import recoveryProduct from "@/actions/product/recoveryProduct";
-import { Path } from "@/config/Path";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
 import { randomEan } from "@/libs/ean";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { getPath } from "@/router";
 import {
   ProductFindSchema,
   ProductFindValues,
@@ -60,7 +60,7 @@ function SearchDialog({
   onClose,
   onSubmit,
   setLoading,
-}: SearchDialogProps): React.JSX.Element {
+}: Readonly<SearchDialogProps>): React.JSX.Element {
   const [isRandomSerial, setIsRandomSerial] = React.useState<string>();
   const {
     register,
@@ -81,9 +81,10 @@ function SearchDialog({
 
     try {
       const resp = await GetProduct(payload.serial, true);
-      if (!resp.success) throw Error("not_found");
+      if (!resp.success) throw new Error("not_found");
       onSubmit(resp?.data || ({ serial: payload.serial } as Product));
     } catch (error) {
+      console.error(error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
@@ -199,11 +200,11 @@ export function ProductFormDialog({
       if (product?.deleted_at) {
         const resp = await recoveryProduct(product.id);
         if (!resp.success) throw new Error("error");
-        router.push(`${Path("products").href}/${product.id}`);
+        router.push(getPath("products.product", { id: product.id }));
       } else {
         const resp = await CreateProduct(payload);
         if (!resp.success) throw new Error(resp.message);
-        router.push(`${Path("products").href}/${resp?.data?.id}`);
+        router.push(getPath("products.product", { id: resp?.data?.id }));
       }
 
       reset();

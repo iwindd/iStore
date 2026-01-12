@@ -1,5 +1,5 @@
 "use client";
-import { Path } from "@/config/Path";
+import { getPath } from "@/router";
 import { ArrowForwardIosTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -31,7 +31,7 @@ const CreatePromotionModal = ({
 
     switch (promotionType) {
       case "offer":
-        return router.push(Path("promotions.create.buyXgetY").href);
+        return router.push(getPath("promotions.create.buyXgetY"));
       default:
         console.log("Unknown promotion type");
     }
@@ -49,7 +49,7 @@ const CreatePromotionModal = ({
         paper: {
           component: "form",
           onSubmit: handleSubmit,
-        }
+        },
       }}
     >
       <DialogTitle>สร้างโปรโมชั่นใหม่</DialogTitle>

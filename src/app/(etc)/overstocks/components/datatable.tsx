@@ -3,11 +3,11 @@ import GetOverstocks from "@/actions/overstock/get";
 import PatchOverstock from "@/actions/overstock/patch";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import { OverStockPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { date, number, text } from "@/libs/formatter";
+import { getPath } from "@/router";
 import { CheckTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
@@ -118,7 +118,7 @@ const OverstockDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("histories").href}/${row.order.id}`}
+            to={getPath("histories.history", { id: row.order.id.toString() })}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu

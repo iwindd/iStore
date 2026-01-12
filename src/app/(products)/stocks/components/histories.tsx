@@ -6,7 +6,6 @@ import fetchStockDatatable, {
 import GetStock from "@/actions/stock/find";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import { StockPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
@@ -14,6 +13,7 @@ import { useExport } from "@/hooks/use-export";
 import { Colorization } from "@/libs/colorization";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { getPath } from "@/router";
 import {
   CancelTwoTone,
   DownloadTwoTone,
@@ -164,7 +164,7 @@ const HistoryDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("stocks").href}/${row.id}`}
+            to={getPath("stocks.stock", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu

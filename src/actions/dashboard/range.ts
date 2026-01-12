@@ -1,5 +1,5 @@
 "use server";
-import { Path } from "@/config/Path";
+import { getPath } from "@/router";
 import dayjs, { Dayjs } from "dayjs";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -31,7 +31,7 @@ export const RangeChange = async (
     cookie.delete("dashboard-end");
   }
 
-  revalidatePath(Path("overview").href);
+  revalidatePath(getPath("overview"));
 };
 
 export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {

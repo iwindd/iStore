@@ -1,9 +1,9 @@
 "use client";
 import CreatePromotionOffer from "@/actions/promotionOffer/create";
 import FormBuyXGetY from "@/components/Forms/Promotions/FormBuyXGetY";
-import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { getPath } from "@/router";
 import { AddPromotionOfferValues } from "@/schema/Promotion/Offer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -29,7 +29,7 @@ const PromotionOfferCreatePage = () => {
         queryKey: ["datatable:promotions"],
         type: "active",
       });
-      router.push(Path("promotions").href);
+      router.push(getPath("promotions"));
     },
     onError: (error) => {
       console.log("error creating promotion offer", error);

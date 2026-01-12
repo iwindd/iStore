@@ -2,9 +2,9 @@
 import { createBroadcast } from "@/actions/broadcast/createBroadcast";
 
 import FormBroadcast from "@/components/Forms/Broadcast/FormBroadcast";
-import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { getPath } from "@/router";
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ const BroadcastNewPage = () => {
         queryKey: ["broadcasts"],
         type: "active",
       });
-      router.push(Path("broadcasts").href);
+      router.push(getPath("broadcasts"));
     },
     onError: (error) => {
       console.log("error creating broadcast", error);

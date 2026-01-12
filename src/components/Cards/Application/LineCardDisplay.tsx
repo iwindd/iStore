@@ -1,4 +1,4 @@
-import { Path } from "@/config/Path";
+import { getPath } from "@/router";
 import { ChatBubbleTwoTone, RssFeedTwoTone } from "@mui/icons-material";
 import {
   Avatar,
@@ -22,10 +22,7 @@ const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
         component={Link}
-        href={Path("applications.line").href.replace(
-          ":id",
-          application.id.toString()
-        )}
+        href={getPath("applications.line", { id: application.id.toString() })}
         sx={{
           flexGrow: 1,
           display: "flex",

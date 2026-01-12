@@ -2,8 +2,8 @@
 
 import { createLineApplication } from "@/actions/application/createLineApplication";
 import FormLineApplication from "@/components/Forms/Application/FormLineApplication";
-import { Path } from "@/config/Path";
 import App, { Wrapper } from "@/layouts/App";
+import { getPath } from "@/router";
 import { LineApplicationSchemaType } from "@/schema/Application";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
@@ -16,7 +16,7 @@ const LineApplicationCreatePage = () => {
       const result = await createLineApplication(data);
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
-        router.push(Path("applications").href);
+        router.push(getPath("applications"));
         return true;
       } else {
         enqueueSnackbar(result.message, { variant: "error" });

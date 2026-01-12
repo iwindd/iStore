@@ -1,47 +1,26 @@
 "use client";
-import Icons from "@/config/Icons";
-import { NavItemConfig } from "@/config/Navbar";
+import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
+import { Route } from "@/libs/route/route";
+import { getPath } from "@/router";
 import { Box, Typography } from "@mui/material";
 import RouterLink from "next/link";
-import { isNavItemActive } from "../utils";
 
-interface NavItemProps extends Omit<NavItemConfig, "items"> {
-  pathname: string;
-}
-
-function NavItem({
-  disabled,
-  external,
-  href,
-  icon,
-  matcher,
-  pathname,
-  title,
-}: Readonly<NavItemProps>): React.JSX.Element {
-  const active = isNavItemActive({
-    disabled,
-    external,
-    href,
-    matcher,
-    pathname,
-  });
-  const Icon = icon ? Icons[icon] : null;
+function NavItem(route: Readonly<Route>): React.JSX.Element {
+  const activeRouteTrail = useActiveRouteTrail();
+  const isActive = activeRouteTrail.some((item) => item.name === route.name);
 
   return (
     <li>
       <Box
-        {...(href
+        {...(route.path
           ? {
-              component: external ? "a" : RouterLink,
-              href,
-              target: external ? "_blank" : undefined,
-              rel: external ? "noreferrer" : undefined,
+              component: RouterLink,
+              href: getPath(route.name),
             }
           : { role: "button" })}
         sx={{
           alignItems: "center",
           borderRadius: 0.3,
-          color: "var(--NavItem-color)",
           cursor: "pointer",
           display: "flex",
           flex: "0 0 auto",
@@ -51,15 +30,22 @@ function NavItem({
           textDecoration: "none",
           whiteSpace: "nowrap",
           transition: "0.1s background ease",
-          ...(disabled && {
+          ...(route.disabled && {
             bgcolor: "var(--NavItem-disabled-background)",
             color: "var(--NavItem-disabled-color)",
             cursor: "not-allowed",
           }),
-          ...(active && {
-            bgcolor: "var(--NavItem-active-background)",
-            color: "var(--NavItem-active-color)",
-          }),
+          ...(isActive
+            ? {
+                bgcolor: "var(--NavItem-active-background)",
+                color: "var(--NavItem-active-color)",
+              }
+            : {
+                color: "var(--NavItem-color)",
+                "&:hover": {
+                  bgcolor: "var(--NavItem-hover-background)",
+                },
+              }),
         }}
       >
         <Box
@@ -68,12 +54,12 @@ function NavItem({
             display: "flex",
             justifyContent: "center",
             flex: "0 0 auto",
-            opacity: active ? 1 : 0.4,
+            opacity: isActive ? 1 : 0.4,
             mr: 0.5,
             ml: 0.5,
           }}
         >
-          {Icon ? <Icon /> : null}
+          {route.icon ? <route.icon /> : null}
         </Box>
         <Box sx={{ flex: "1 1 auto" }}>
           <Typography
@@ -85,7 +71,7 @@ function NavItem({
               lineHeight: "28px",
             }}
           >
-            {title}
+            {route.label}
           </Typography>
         </Box>
       </Box>

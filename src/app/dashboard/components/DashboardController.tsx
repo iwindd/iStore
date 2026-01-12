@@ -1,7 +1,6 @@
 "use client";
 import fetchDashboard from "@/actions/dashboard/fetchDashboard";
 import { RangeChange } from "@/actions/dashboard/range";
-import Paths from "@/config/Path";
 import { usePopover } from "@/hooks/use-popover";
 import { date2 as date } from "@/libs/formatter";
 import {
@@ -10,6 +9,7 @@ import {
   setProducts,
   setStocks,
 } from "@/reducers/dashboardReducer";
+import { getPath } from "@/router";
 import { AnalyticsTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -102,7 +102,7 @@ const DashboardController = ({
               <Button
                 color="inherit"
                 component={Link}
-                href={Paths["overview.report"].href}
+                href={getPath("overview.dashboard.report")}
               >
                 พิมพ์
               </Button>

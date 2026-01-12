@@ -8,9 +8,9 @@ import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
-import { Path } from "@/config/Path";
 import { useAuth } from "@/hooks/use-auth";
 import { clearProductCart } from "@/reducers/cartReducer";
+import { getPath } from "@/router";
 import { LogoutTwoTone, Settings } from "@mui/icons-material";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -71,7 +71,7 @@ function UserPopover({
         disablePadding
         sx={{ p: "8px", "& .MuiMenuItem-root": { borderRadius: 1 } }}
       >
-        <MenuItem component={Link} href={Path("account").href}>
+        <MenuItem component={Link} href={getPath("account")}>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

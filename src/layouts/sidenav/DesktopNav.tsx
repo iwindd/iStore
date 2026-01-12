@@ -1,6 +1,6 @@
 "use client";
 import Logo from "@/components/core/logo";
-import { HomePath } from "@/config/Path";
+import { getPath } from "@/router";
 import { Box, Divider, Stack } from "@mui/material";
 import RouterLink from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,7 +16,7 @@ const DesktopNav = () => {
         "--SideNav-background": "var(--mui-palette-background-paper)",
         "--MobileNav-color": "var(--mui-palette-common-white)",
         "--NavItem-color": "var(--mui-palette-text-primary)",
-        "--NavItem-hover-background": "rgba(255, 255, 255, 0.04)",
+        "--NavItem-hover-background": "rgba(0, 0, 0, 0.04)",
         "--NavItem-active-background": "var(--mui-palette-primary-main)",
         "--NavItem-active-color": "var(--mui-palette-primary-contrastText)",
         "--NavItem-disabled-color": "var(--mui-palette-neutral-500)",
@@ -43,14 +43,14 @@ const DesktopNav = () => {
       <Stack spacing={2} sx={{ p: 3 }}>
         <Box
           component={RouterLink}
-          href={HomePath}
+          href={getPath("overview")}
           sx={{ display: "inline-flex", textDecoration: "none" }}
         >
           <Logo />
         </Box>
       </Stack>
       <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
-        {NavItems({ pathname })}
+        {NavItems()}
       </Box>
       <Divider sx={{ borderColor: "var(--mui-palette-neutral-700)" }} />
     </Box>

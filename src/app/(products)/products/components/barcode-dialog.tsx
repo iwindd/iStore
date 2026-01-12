@@ -1,3 +1,4 @@
+import { DownloadTwoTone } from "@mui/icons-material";
 import {
   Button,
   Dialog,
@@ -7,9 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Product } from "@prisma/client";
-import Barcode from "react-barcode";
 import React from "react";
-import { DownloadTwoTone } from "@mui/icons-material";
+import Barcode from "react-barcode";
 
 const BarcodeDialog = ({
   product,
@@ -38,8 +38,16 @@ const BarcodeDialog = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth disableRestoreFocus>
-      <DialogTitle>{product && product.label ? `${product.label}` : "บาร์โค้ดของสินค้า"}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="xs"
+      fullWidth
+      disableRestoreFocus
+    >
+      <DialogTitle>
+        {product?.label ? `${product.label}` : "บาร์โค้ดของสินค้า"}
+      </DialogTitle>
       <DialogContent
         sx={{
           display: "flex",
@@ -49,18 +57,16 @@ const BarcodeDialog = ({
       >
         <div ref={barcodeRef}>
           {product && product.serial ? (
-            <Barcode 
-              value={product?.serial} 
-              format="EAN13" 
-              renderer="canvas"
-            />
+            <Barcode value={product?.serial} format="EAN13" renderer="canvas" />
           ) : (
             <Typography>ไม่มีข้อมูลบาร์โค้ดสำหรับสินค้านี้</Typography>
           )}
         </div>
       </DialogContent>
       <DialogActions>
-        <Button color="secondary" size="small" onClick={handleClose}>ปิด</Button>
+        <Button color="secondary" size="small" onClick={handleClose}>
+          ปิด
+        </Button>
         <Button
           variant="contained"
           color="primary"
@@ -68,7 +74,7 @@ const BarcodeDialog = ({
           size="small"
           disabled={!product || !product.serial}
           autoFocus
-          startIcon={<DownloadTwoTone/>}
+          startIcon={<DownloadTwoTone />}
         >
           ดาวน์โหลด
         </Button>

@@ -1,5 +1,4 @@
 "use server";
-import { StockLayoutSelect } from "@/app/(products)/stocks/[id]/layout";
 import STOCK_CONFIG from "@/config/Stock";
 import db from "@/libs/db";
 import { StockState } from "@prisma/client";
@@ -74,6 +73,8 @@ export const updateProductStock = async (stock_id: number) => {
     data: {
       state: StockState.COMPLETED,
     },
-    select: StockLayoutSelect,
+    include: {
+      products: true,
+    },
   });
 };

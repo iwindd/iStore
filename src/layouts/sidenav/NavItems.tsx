@@ -1,22 +1,14 @@
 "use client";
-import navItems, { NavItemType } from "@/config/Navbar";
+import NavbarItems, { NavbarItem } from "@/config/Navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { Stack, Typography } from "@mui/material";
 import NavItem from "./NavItem";
 
-interface RenderNavItemsProps {
-  pathname: string;
-}
-
-const NavItems = ({ pathname }: RenderNavItemsProps) => {
+const NavItems = () => {
   const { user } = useAuth();
-  const renderNormalItem = (navItem: NavItemType) => {
-    if (navItem.type == "group") return;
-    const {
-      key,
-      somePermissions: needSomePermissions,
-      ...restPath
-    } = navItem.path;
+  const renderNormalItem = (navItem: NavbarItem) => {
+    if ("routes" in navItem) return;
+    const { needSomePermissions, ...restPath } = navItem;
 
     if (
       needSomePermissions &&
@@ -24,34 +16,15 @@ const NavItems = ({ pathname }: RenderNavItemsProps) => {
     )
       return;
 
-    return (
-      <NavItem
-        key={`item-${navItem.path.key}`}
-        pathname={pathname}
-        {...restPath}
-      />
-    );
+    return <NavItem key={`navbar-item-${restPath.name}`} {...restPath} />;
   };
 
   return (
     <Stack component="ul" spacing={1} sx={{ listStyle: "none", m: 0, p: 0 }}>
-      {navItems.map((navItem: NavItemType) => {
-        if (navItem.type == "item") {
-          const item = renderNormalItem(navItem);
-          if (!item) return null;
-          return item;
-        } else {
-          const items = navItem.items
-            .map((item) =>
-              renderNormalItem({
-                ...item,
-                path: {
-                  ...item.path,
-                  key: `group-${navItem.key}-${item.path.key}`,
-                },
-                type: "item",
-              })
-            )
+      {NavbarItems.map((navItem: NavbarItem) => {
+        if ("routes" in navItem) {
+          const items = navItem.routes
+            .map((item) => renderNormalItem(item))
             .filter((item) => item !== undefined);
 
           if (items.length === 0) return null;
@@ -71,6 +44,10 @@ const NavItems = ({ pathname }: RenderNavItemsProps) => {
           );
 
           return items;
+        } else {
+          const item = renderNormalItem(navItem);
+          if (!item) return null;
+          return item;
         }
       })}
     </Stack>

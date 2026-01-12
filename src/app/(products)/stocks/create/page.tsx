@@ -1,9 +1,8 @@
 "use client";
 import createStock from "@/actions/stock/createStock";
 import StockForm from "@/components/Forms/Stock";
-import { Path } from "@/config/Path";
+import { getPath } from "@/router";
 import { StockValues } from "@/schema/Stock";
-import { Stock } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
@@ -13,12 +12,12 @@ const CreateStockPage = () => {
 
   const createStockMutation = useMutation({
     mutationFn: async (data: StockValues) => createStock(data),
-    onSuccess: (data: Stock) => {
+    onSuccess: (data) => {
       enqueueSnackbar({
         message: "สร้างสต๊อกสำเร็จแล้ว!",
         variant: "success",
       });
-      router.push(`${Path("stocks").href}/${data.id}`);
+      router.push(getPath("stocks.stock", { id: data.id.toString() }));
     },
     onError: (error) => {
       enqueueSnackbar({

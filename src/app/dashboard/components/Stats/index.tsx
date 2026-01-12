@@ -1,5 +1,4 @@
 "use client";
-import { Path } from "@/config/Path";
 import {
   BorrowPermissionEnum,
   OverStockPermissionEnum,
@@ -11,7 +10,9 @@ import {
 import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { money, number } from "@/libs/formatter";
+import { Route } from "@/libs/route/route";
 import { DashboardStateStatKey } from "@/reducers/dashboardReducer";
+import { getPath, getRoute } from "@/router";
 import {
   AllInbox,
   AttachMoney,
@@ -29,7 +30,7 @@ import { TotalStat, TotalStatProps } from "./Stat";
 interface StatConfig {
   name: string;
   value: DashboardStateStatKey;
-  path: { href: string; icon?: React.ReactNode } | null;
+  route?: Route;
   label: string;
   icon: React.ReactNode;
   render: (value: number) => string;
@@ -41,7 +42,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "orders",
     value: "orders",
-    path: Path("histories"),
+    route: getRoute("histories"),
     label: "ออเดอร์",
     icon: <Receipt />,
     render: (v) => `${number(v)} รายการ`,
@@ -50,7 +51,6 @@ const StatConfig: StatConfig[] = [
   {
     name: "profit",
     value: "profit",
-    path: null,
     label: "เงินในระบบ",
     icon: <AttachMoney />,
     render: (v) => `${money(v)} รายการ`,
@@ -59,7 +59,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "borrows",
     value: "borrows",
-    path: Path("borrows"),
+    route: getRoute("borrows"),
     label: "การเบิก",
     icon: <BackHand />,
     render: (v) => `${number(v)} รายการ`,
@@ -69,7 +69,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "purchase",
     value: "purchase",
-    path: Path("purchase"),
+    route: getRoute("purchase"),
     label: "การซื้อ",
     icon: <ShoppingBasket />,
     render: (v) => `${number(v)} รายการ`,
@@ -79,7 +79,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "overstocks",
     value: "overstock",
-    path: Path("overstocks"),
+    route: getRoute("overstocks"),
     label: "สินค้าค้าง",
     icon: <RotateRight />,
     render: (v) => `${number(v)} รายการ`,
@@ -89,7 +89,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "low_stock",
     value: "low_stock",
-    path: Path("products"),
+    route: getRoute("products"),
     label: "สินค้าใกล้จะหมด",
     icon: <Warning />,
     render: (v) => `${number(v)} รายการ`,
@@ -99,7 +99,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "stocks",
     value: "stocks",
-    path: Path("stocks"),
+    route: getRoute("stocks"),
     label: "จัดการสต๊อก",
     icon: <AllInbox />,
     render: (v) => `${number(v)} รายการ`,
@@ -109,7 +109,7 @@ const StatConfig: StatConfig[] = [
   {
     name: "products",
     value: "products",
-    path: Path("products"),
+    route: getRoute("products"),
     label: "สินค้าทั้งหมด",
     icon: <Work />,
     render: (v) => `${number(v)} รายการ`,
@@ -135,7 +135,7 @@ const Stats = () => {
           }
         >
           <TotalStat
-            href={stat.path ? stat.path.href : undefined}
+            href={stat.route && getPath(stat.route.name)}
             label={stat.label}
             color={stat.color || "primary"}
             icon={stat.icon}

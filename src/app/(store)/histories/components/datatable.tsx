@@ -2,8 +2,8 @@
 import GetHistories from "@/actions/order/get";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { Path } from "@/config/Path";
 import * as ff from "@/libs/formatter";
+import { getPath } from "@/router";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "@prisma/client";
@@ -75,7 +75,7 @@ const HistoryDatatable = () => {
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
-            to={`${Path("histories").href}/${row.id}`}
+            to={`${getPath("histories.history", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
             label="ดูรายละเอียด"
             showInMenu
@@ -86,14 +86,12 @@ const HistoryDatatable = () => {
   };
 
   return (
-    <>
-      <Datatable
-        name={"histories"}
-        columns={columns()}
-        fetch={GetHistories}
-        height={700}
-      />
-    </>
+    <Datatable
+      name={"histories"}
+      columns={columns()}
+      fetch={GetHistories}
+      height={700}
+    />
   );
 };
 

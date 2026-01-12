@@ -1,50 +1,43 @@
 "use client";
-import PathConfig, { HomePath, PathType } from "@/config/Path";
+import { useActiveRouteParams } from "@/hooks/useActiveRouteParams";
+import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
+import { getPath } from "@/router";
 import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
-import { usePathname } from "next/navigation";
-const Path = Object.values(PathConfig) as PathType[];
-
-const findRoute = (pathSegments: string[]) => {
-  return Path.filter((path) => !path.disableBreadcrumb).find((route) => {
-    const routeSegments = route.href.split("/").filter((segment) => segment);
-    if (routeSegments.length !== pathSegments.length) return false;
-    return routeSegments.every((segment, index) => {
-      return segment.startsWith(":") || segment === pathSegments[index];
-    });
-  });
-};
 
 const Breadcrumb = () => {
-  const paths = usePathname();
-  const pathNames = paths.split("/").filter((path) => path);
+  const activeRouteTrail = useActiveRouteTrail().filter(
+    (route) => !route.disabledBreadcrumb
+  );
+  const params = useActiveRouteParams();
+
+  const items = activeRouteTrail.map((route, index) => {
+    const isActive = index === activeRouteTrail.length - 1;
+
+    return isActive ? (
+      <Typography color="text.primary" key={route.name}>
+        {route.label}
+      </Typography>
+    ) : (
+      <Link
+        underline="hover"
+        color="inherit"
+        href={getPath(route.name, params as Record<string, any>)}
+        key={route.name}
+      >
+        {route.label}
+      </Link>
+    );
+  });
+
+  if (items.length <= 0) return null;
 
   return (
     <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
-      <Link underline="hover" color="inherit" href={HomePath}>
+      <Link underline="hover" color="inherit" href={getPath("overview")}>
         ภาพรวม
       </Link>
-
-      {pathNames.map((_, index) => {
-        const pathSegments = pathNames.slice(0, index + 1);
-        const path = `/${pathSegments.join("/")}`;
-        const route = findRoute(pathSegments);
-
-        if (path == "/admin") return null;
-        if (!route) return null;
-
-        const isActive = pathNames.length === pathSegments.length;
-
-        return !isActive ? (
-          <Link underline="hover" color="inherit" href={path} key={route.key}>
-            {route.title}
-          </Link>
-        ) : (
-          <Typography color="text.primary" key={route.key}>
-            {route.title}
-          </Typography>
-        );
-      })}
+      {items}
     </Breadcrumbs>
   );
 };

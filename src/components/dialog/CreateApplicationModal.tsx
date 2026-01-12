@@ -1,5 +1,5 @@
 "use client";
-import { Path } from "@/config/Path";
+import { getPath } from "@/router";
 import { ArrowForwardIosTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -31,7 +31,7 @@ const CreateApplicationModal = ({
 
     switch (applicationType) {
       case "line":
-        return router.push(Path("applications.create.line").href);
+        return router.push(getPath("applications.create.line"));
       default:
         console.log("Unknown application type");
     }
