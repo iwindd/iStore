@@ -7,8 +7,9 @@ Optimization:
   ☐ จัดการ Error Boundary
 
 Route Refactor:
-  ☐ สร้างระบบ Routing เว็บไซต์ใหม่
-  ☐ แก้ไขการแสดงผล Breadcrumb
+  ✔ สร้างระบบ Routing เว็บไซต์ใหม่ @done(26-01-12 22:13)
+  ✔ แก้ไขการแสดงผล Breadcrumb @done(26-01-12 22:13)
+  ☐ แก้ไขการแสดงผล Navbar ให้มี category และ scroll down ได้
 
 Multi Store:
   ☐ ลบการ Register
