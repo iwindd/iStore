@@ -1,4 +1,4 @@
-import BotApp from "@/libs/botapp";
+import sendBroadcastToApplications from "@/actions/application/sendBroadcastToApplications";
 import { validateCronRequest } from "@/libs/cron";
 import db from "@/libs/db";
 import { BroadcastStatus } from "@prisma/client";
@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
   try {
     if (!validateCronRequest(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,6 +26,7 @@ export async function GET(req: Request) {
         id: true,
         message: true,
         image_url: true,
+        store_id: true,
       },
     });
 
@@ -33,9 +34,9 @@ export async function GET(req: Request) {
 
     for (const broadcast of broadcasts) {
       try {
-        await BotApp.post(`/broadcast/sendAll`, {
-          text: broadcast.message,
-          image: broadcast.image_url,
+        sendBroadcastToApplications(broadcast.store_id, {
+          message: broadcast.message,
+          image_url: broadcast?.image_url ? broadcast.image_url : undefined,
         });
 
         await db.broadcast.update({
