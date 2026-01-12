@@ -1,14 +1,11 @@
 "use client";
 import Logo from "@/components/core/logo";
 import { getPath } from "@/router";
-import { Box, Divider, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import RouterLink from "next/link";
-import { usePathname } from "next/navigation";
-import NavItems from "./NavItems";
+import NavItems from "./components";
 
 const DesktopNav = () => {
-  const pathname = usePathname();
-
   return (
     <Box
       sx={{
@@ -20,7 +17,7 @@ const DesktopNav = () => {
         "--NavItem-active-background": "var(--mui-palette-primary-main)",
         "--NavItem-active-color": "var(--mui-palette-primary-contrastText)",
         "--NavItem-disabled-color": "var(--mui-palette-neutral-500)",
-        "--NavItem-icon-color": "var(--mui-palette-neutral-400)",
+        "--NavItem-icon-color": "var(--mui-palette-secondary-400)",
         "--NavItem-icon-active-color":
           "var(--mui-palette-primary-contrastText)",
         "--NavItem-icon-disabled-color": "var(--mui-palette-neutral-600)",
@@ -37,7 +34,6 @@ const DesktopNav = () => {
         top: 0,
         width: "var(--SideNav-width)",
         zIndex: "var(--SideNav-zIndex)",
-        "&::-webkit-scrollbar": { display: "none" },
       }}
     >
       <Stack spacing={2} sx={{ p: 3 }}>
@@ -49,10 +45,18 @@ const DesktopNav = () => {
           <Logo />
         </Box>
       </Stack>
-      <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
+
+      <Box
+        component="nav"
+        sx={{
+          flex: "1 1 auto",
+          px: "12px",
+          overflowY: "auto",
+          "&::-webkit-scrollbar": { display: "none" },
+        }}
+      >
         {NavItems()}
       </Box>
-      <Divider sx={{ borderColor: "var(--mui-palette-neutral-700)" }} />
     </Box>
   );
 };

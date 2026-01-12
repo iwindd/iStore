@@ -1,7 +1,6 @@
 "use client";
 import { Box, Drawer } from "@mui/material";
-import { usePathname } from "next/navigation";
-import NavItems from "./NavItems";
+import NavItems from "./components";
 
 export interface MobileNavProps {
   onClose?: () => void;
@@ -9,8 +8,6 @@ export interface MobileNavProps {
 }
 
 const MobileNav = ({ open, onClose }: MobileNavProps) => {
-  const pathname = usePathname();
-
   return (
     <Drawer
       onClose={onClose}
@@ -39,11 +36,11 @@ const MobileNav = ({ open, onClose }: MobileNavProps) => {
             zIndex: "var(--MobileNav-zIndex)",
             "&::-webkit-scrollbar": { display: "none" },
           },
-        }
+        },
       }}
     >
       <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
-        {NavItems({ pathname })}
+        {NavItems()}
       </Box>
     </Drawer>
   );

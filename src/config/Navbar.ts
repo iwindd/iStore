@@ -23,11 +23,13 @@ const NavbarItems = [
     key: "product",
     title: "สินค้า",
     routes: [getRoute("products"), getRoute("categories"), getRoute("stocks")],
+    defaultExpand: true,
   },
   {
     key: "etc",
     title: "อื่นๆ",
     routes: [getRoute("overstocks"), getRoute("borrows"), getRoute("purchase")],
+    defaultExpand: true,
   },
   {
     key: "store",
@@ -43,7 +45,7 @@ const NavbarItems = [
     ],
   },
   {
-    key: "store",
+    key: "account",
     title: "บัญชีของฉัน",
     routes: [getRoute("account")],
   },
@@ -55,6 +57,7 @@ export type NavbarItem = (
       key: string;
       title: string;
       routes: Route[];
+      defaultExpand?: boolean;
     }
 ) & {
   needSomePermissions?: PermissionEnum[];
