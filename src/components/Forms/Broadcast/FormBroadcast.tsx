@@ -1,12 +1,15 @@
 import { EventSelectorItem } from "@/actions/broadcast/eventActions";
 import { generateAdMessage } from "@/actions/broadcast/generateMessage";
 import EventSelector from "@/components/Selector/EventSelector";
+import AppFooter from "@/layouts/App/Footer";
 import {
   CreateBroadcastSchema,
   CreateBroadcastValues,
 } from "@/schema/Broadcast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SendTwoTone } from "@mui/icons-material";
 import {
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -22,6 +25,7 @@ import dayjs from "dayjs";
 import React from "react";
 import { useForm } from "react-hook-form";
 import ImageCard from "./Partials/ImageCard";
+import SettingCard from "./Partials/Settings";
 
 export interface FormBroadcastProps {
   broadcast?: {
@@ -60,7 +64,6 @@ const FormBroadcast = ({
     handleSubmit,
     setValue,
     watch,
-    control,
   } = form;
 
   const handleFormSubmit = async (data: CreateBroadcastValues) => {
@@ -81,10 +84,6 @@ const FormBroadcast = ({
     },
   });
 
-  const selectedEventId = watch("event_id");
-  const scheduledAt = watch("scheduled_at");
-  const type = watch("type");
-
   // Track selected event for date constraints
   const [selectedEvent, setSelectedEvent] =
     React.useState<EventSelectorItem | null>(null);
@@ -101,22 +100,6 @@ const FormBroadcast = ({
     }
   };
 
-  const getMinDateTime = () => {
-    if (selectedEvent) {
-      const eventStart = dayjs(selectedEvent.start_at);
-      const now = dayjs();
-      return eventStart.isAfter(now) ? eventStart : now;
-    }
-    return dayjs();
-  };
-
-  const getMaxDateTime = () => {
-    if (selectedEvent) {
-      return dayjs(selectedEvent.end_at);
-    }
-    return undefined;
-  };
-
   return (
     <Grid container spacing={1}>
       <Grid size={8}>
@@ -125,6 +108,7 @@ const FormBroadcast = ({
             spacing={2}
             component="form"
             onSubmit={handleSubmit(handleFormSubmit)}
+            id="broadcast-form"
           >
             <Card>
               <CardHeader title="เลือกโปรโมชั่น" />
@@ -188,113 +172,43 @@ const FormBroadcast = ({
                 </Stack>
               </CardContent>
             </Card>
-
-            {/*    <Card>
-            <CardHeader title="การเผยแพร่" />
-            <Divider />
-            <CardContent>
-              <Grid container spacing={2} alignItems="flex-start">
-                <Grid size={{ xs: 12, md: type === "SCHEDULED" ? 4 : 8 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>รูปแบบการเผยแพร่</InputLabel>
-                    <Controller
-                      name="type"
-                      control={control}
-                      render={({ field }) => (
-                        <Select {...field} label="รูปแบบการเผยแพร่">
-                          <MenuItem value="DRAFT">
-                            บันทึกแบบร่าง (Draft)
-                          </MenuItem>
-                          <MenuItem value="INSTANT">
-                            ส่งทันที (Instant)
-                          </MenuItem>
-                          <MenuItem value="SCHEDULED">
-                            ตั้งเวลา (Scheduled)
-                          </MenuItem>
-                        </Select>
-                      )}
-                    />
-                  </FormControl>
-                  {type !== "SCHEDULED" && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mt: 1 }}
-                    >
-                      {type === "DRAFT"
-                        ? "บันทึกเป็นแบบร่าง จะยังไม่มีการส่ง Broadcast"
-                        : "ระบบจะส่ง Broadcast ทันทีหลังจากกดบันทึก"}
-                    </Typography>
-                  )}
-                </Grid>
-
-                {type === "SCHEDULED" && (
-                  <Grid size={{ xs: 12, md: 4 }}>
-                    <FormControl fullWidth error={!!errors.scheduled_at}>
-                      <DateTimePicker
-                        label="วันและเวลาที่จะส่ง"
-                        value={dayjs(scheduledAt)}
-                        onChange={(date) => {
-                          if (date) {
-                            setValue("scheduled_at", date.toDate());
-                          }
-                        }}
-                        disabled={disabled || !selectedEventId}
-                        minDateTime={getMinDateTime()}
-                        maxDateTime={getMaxDateTime()}
-                        format="DD/MM/YYYY HH:mm"
-                        ampm={false}
-                      />
-                      {errors.scheduled_at && (
-                        <FormHelperText>
-                          {errors.scheduled_at.message}
-                        </FormHelperText>
-                      )}
-                      {selectedEvent && (
-                        <FormHelperText>
-                          ต้องอยู่ในช่วง{" "}
-                          {dayjs(selectedEvent.start_at).format("DD/MM/YYYY")} -{" "}
-                          {dayjs(selectedEvent.end_at).format("DD/MM/YYYY")}
-                        </FormHelperText>
-                      )}
-                    </FormControl>
-                  </Grid>
-                )}
-
-                <Grid size={{ xs: 12, md: 4 }}>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    size="large"
-                    fullWidth
-                    startIcon={<SaveTwoTone />}
-                    disabled={disabled}
-                    sx={{ height: 56 }}
-                  >
-                    {broadcast ? "บันทึกการแก้ไข" : "สร้าง Broadcast"}
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card> */}
           </Stack>
           <ImageCard form={form} disabled={disabled} />
         </Stack>
       </Grid>
       <Grid size={4}>
-        <Card>
-          <CardHeader title="ตัวอย่าง" />
-          <Divider />
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="body2" color="text.secondary">
-                ...
-              </Typography>
-            </Stack>
-          </CardContent>
-        </Card>
+        <Stack spacing={1}>
+          <SettingCard form={form} disabled={disabled} />
+          <Card>
+            <CardHeader title="ตัวอย่าง" />
+            <Divider />
+            <CardContent>
+              <Stack spacing={2}>
+                <Typography variant="body2" color="text.secondary">
+                  ...
+                </Typography>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Stack>
       </Grid>
+
+      <AppFooter justifyContent={"space-between"} alignItems={"center"}>
+        <Typography variant="subtitle1" color="secondary">
+          จัดการสต๊อก
+        </Typography>
+        <Stack direction={"row"} spacing={1}>
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={disabled}
+            endIcon={<SendTwoTone />}
+            form="broadcast-form"
+          >
+            เผยแพร่
+          </Button>
+        </Stack>
+      </AppFooter>
     </Grid>
   );
 };

@@ -1,17 +1,19 @@
 import { generateImageAction } from "@/actions/broadcast/generateImage";
+import AppFooter from "@/layouts/App/Footer";
 import {
   AiImagePromptSchema,
   AiImagePromptValues,
 } from "@/schema/Broadcast/AiImage";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircleTwoTone, Image, RefreshTwoTone } from "@mui/icons-material";
 import {
-  Alert,
+  CheckCircleTwoTone,
+  RefreshTwoTone,
+  SaveTwoTone,
+} from "@mui/icons-material";
+import {
   Box,
   Button,
   CircularProgress,
-  Grid,
-  InputLabel,
   Stack,
   TextField,
   Typography,
@@ -57,11 +59,6 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
 
   return (
     <Stack spacing={2}>
-      <Alert color="info">
-        อธิบายรูปภาพที่คุณต้องการจะสร้าง
-        คุณสามารถเพิ่มรูปอ้างอิงเพื่อให้ได้ผลลัพธ์ที่คุณต้องการ
-      </Alert>
-
       <Box component="form" onSubmit={handleSubmit(onGenerate)}>
         <Stack spacing={2}>
           <TextField
@@ -130,32 +127,27 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
         </Stack>
       )}
 
-      {/* Placeholder for future Image Reference feature */}
-      <Stack>
-        <InputLabel sx={{ mb: 1 }}>รูปภาพอ้างอิง (เร็วๆ นี้)</InputLabel>
-        <Grid container>
-          <Grid size={1}>
-            <Button
-              variant="dashed"
-              color="secondary"
-              disabled={true}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-                aspectRatio: "1 / 1",
-                width: "100%",
-              }}
-            >
-              <Image fontSize="large" color="disabled" />
-              <Typography color="text.secondary" variant="button">
-                เพิ่ม
-              </Typography>
-            </Button>
-          </Grid>
-        </Grid>
-      </Stack>
+      <AppFooter
+        direction={"row"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+      >
+        <Typography variant="subtitle1" color="secondary">
+          จัดการประชาสัมพันธ์
+        </Typography>
+        <Stack direction={"row"} spacing={1}>
+          <Button
+            variant="contained"
+            startIcon={<SaveTwoTone />}
+            type="submit"
+            form="stock-form"
+            name="saveAndUpdate"
+            disabled={disabled}
+          >
+            เผยแพร่
+          </Button>
+        </Stack>
+      </AppFooter>
     </Stack>
   );
 };
