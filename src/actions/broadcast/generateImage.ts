@@ -30,6 +30,7 @@ export const generateImageAction = async (data: AiImagePromptValues) => {
 
     return {
       success: true,
+      // @ts-ignore
       imageUrl: result.result.imageUrl,
     };
   } catch (error: any) {
