@@ -1,3 +1,13 @@
+FIX-TYPE;
+  ☐ FixTypes @started(26-01-14 00:08)
+
+Categories:
+  ☐ สร้างหมวดหมู่ได้จาก Selector
+  ☐ ย้าย Categories ไปยัง Group Store
+
+ETC Group:
+  ☐ เปลี่ยนจาก ETC Group เป็น การขาย
+
 UX/UI:
   ☐ Redesign theme modern
 
