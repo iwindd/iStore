@@ -25,9 +25,6 @@ const ProductUpdateForm = () => {
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [defaultCategory, setDefaultCategory] = useState<number>(
-    product.category?.id || 0
-  );
 
   const {
     register,
@@ -43,7 +40,7 @@ const ProductUpdateForm = () => {
     },
   });
 
-  const onSelectCategory = (category: SearchCategory) => {
+  const onSelectCategory = (category: SearchCategory | null) => {
     setValue("category_id", category?.id || 0, { shouldDirty: true });
   };
 
@@ -87,7 +84,7 @@ const ProductUpdateForm = () => {
             <Grid size={12}>
               <CategorySelector
                 onSubmit={onSelectCategory}
-                defaultValue={defaultCategory}
+                defaultValue={product.category?.id || 0}
               />
             </Grid>
 
