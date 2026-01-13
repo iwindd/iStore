@@ -1,5 +1,14 @@
-FIX-TYPE;
+FIX-TYPE:
   ☐ FixTypes @started(26-01-14 00:08)
+
+Borrow:
+  ☐ ปรับปรุงระบบ Borrow
+  ☐ รวมไปในหน้าขายสินค้า
+
+Overstocks:
+  ☐ ปรับปรุงระบบ Overstocks -> PreOrder
+  ☐ อนุญาตให้ Pre-order จากสินค้าโดยตรงไม่พึ่งพา Category
+  ☐ รวมไปในหน้าขายสินค้า
 
 Categories:
   ☐ สร้างหมวดหมู่ได้จาก Selector
