@@ -65,7 +65,7 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
         paper: {
           component: "form",
           onSubmit: handleSubmit(onSubmit),
-        }
+        },
       }}
     >
       <DialogTitle>ชำระเงิน</DialogTitle>
@@ -92,7 +92,7 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
                     {money((moneyLeft || 0) - total)}฿
                   </InputAdornment>
                 ),
-              }
+              },
             }}
           />
           <TextField

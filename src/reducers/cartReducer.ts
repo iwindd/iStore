@@ -16,6 +16,7 @@ import { enqueueSnackbar } from "notistack";
 export interface CartProduct {
   id: number;
   quantity: number;
+  note?: string;
   data?: FindProductByIdResult; // cached
 }
 
@@ -198,6 +199,16 @@ const cartSlice = createSlice({
         state.products
       );
     },
+    setProductNote: (
+      state,
+      action: PayloadAction<{ id: number; note: string }>
+    ) => {
+      const { id, note } = action.payload;
+      const product = state.products.find((p) => p.id === id);
+
+      if (!product) return;
+      product.note = note.slice(0, 40);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(addProductToCartById.fulfilled, onAddProductToCart);
@@ -213,6 +224,10 @@ const cartSlice = createSlice({
   },
 });
 
-export const { clearProductCart, removeProductFromCart, setProductQuantity } =
-  cartSlice.actions;
+export const {
+  clearProductCart,
+  removeProductFromCart,
+  setProductQuantity,
+  setProductNote,
+} = cartSlice.actions;
 export default cartSlice.reducer;

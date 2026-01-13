@@ -1,9 +1,11 @@
 import { useAppDispatch } from "@/hooks";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { money } from "@/libs/formatter";
 import {
   CartProduct as CartProductType,
   removeProductFromCart,
+  setProductNote,
 } from "@/reducers/cartReducer";
 import {
   Delete,
@@ -22,13 +24,16 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NumberStepper from "./NumberStepper";
 import TextAction from "./TextAction";
 
 const CartProduct = ({ product }: { product: CartProductType }) => {
   const [expand, setExpand] = useState(false);
+  const [note, setNote] = useState("");
+  const noteInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
+  const debouncedNote = useDebouncedValue(note, 500);
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -39,6 +44,19 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
     },
     onConfirm: async () => dispatch(removeProductFromCart(product.id)),
   });
+
+  const handleAddNote = () => {
+    setExpand(true);
+    setTimeout(() => noteInputRef.current?.focus(), 0);
+  };
+
+  const updateProductNote = () => {
+    dispatch(setProductNote({ id: product.id, note: debouncedNote }));
+  };
+
+  useEffect(() => {
+    updateProductNote();
+  }, [debouncedNote, updateProductNote]);
 
   return (
     <Paper variant="outlined" sx={{ p: 1 }}>
@@ -59,7 +77,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
                 </Typography>
               )}
 
-              <TextAction label="หมายเหตุ" />
+              <TextAction label="หมายเหตุ" onClick={handleAddNote} />
               <TextAction label="จองสินค้านี้" />
             </Stack>
           </Stack>
@@ -99,15 +117,23 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
           </Stack>
         </Stack>
       </Stack>
-      <Collapse in={expand} timeout="auto" unmountOnExit>
+      <Collapse in={expand} timeout={0} unmountOnExit>
         <Stack direction={"row"}>
           <InputBase
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
             placeholder="ระบุหมายเหต..."
+            inputRef={noteInputRef}
             sx={{
               width: "100%",
               fontSize: "0.75rem",
               borderBottom: "1px solid transparent",
               "&:focus-within": { borderBottomColor: "divider" },
+            }}
+            slotProps={{
+              input: {
+                maxLength: 40,
+              },
             }}
           />
           <Stack

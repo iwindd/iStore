@@ -1,8 +1,15 @@
 import { Typography } from "@mui/material";
 
-const TextAction = ({ label }: { label: string }) => {
+const TextAction = ({
+  label,
+  ...props
+}: {
+  label: string;
+  onClick?: () => void;
+}) => {
   return (
     <button
+      {...props}
       style={{
         padding: 0,
         background: "transparent",

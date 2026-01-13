@@ -12,147 +12,117 @@ import { CartProduct } from "@/reducers/cartReducer";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
 import { removeProductStock } from "../product/stock";
+import {
+  adjustOfferQuantity,
+  calculateTotals,
+  getStockInfo,
+  getTotalCost,
+  getTotalPrice,
+  validateStock,
+} from "./cashout-helpers";
+
+type TotalProduct = Prisma.ProductGetPayload<{
+  select: {
+    id: true;
+    serial: true;
+    label: true;
+    stock: true;
+    price: true;
+    cost: true;
+    category: { select: { label: true; overstock: true } };
+  };
+}> & {
+  offerQuantity: number;
+  promotion_offer_id: number[];
+  note?: string;
+} & ReturnType<typeof calculateTotals>;
 
 const validateProducts = async (
   user: User,
-  cart: Pick<CartProduct, "id" | "quantity">[]
+  cart: Omit<CartProduct, "data">[]
 ) => {
   const offers = await getPromotionOffers(user, cart);
+  const getOffer = (id: number) => offers.find((o) => o.id === id);
+  const where: Prisma.ProductWhereInput = {
+    store_id: user.store,
+    id: { in: [...cart.map((p) => p.id), ...offers.map((o) => o.id)] },
+    deleted_at: null,
+  };
 
-  const isOfferProduct = (productId: number) =>
-    offers.some((offer) => offer.id === productId);
+  const select: Prisma.ProductSelect = {
+    id: true,
+    serial: true,
+    label: true,
+    stock: true,
+    price: true,
+    cost: true,
+    category: { select: { label: true, overstock: true } },
+  };
 
-  const isCartProduct = (productId: number) =>
-    cart.some((item) => item.id === productId);
+  const products = await db.product.findMany({
+    where,
+    select,
+  });
 
-  const getOfferQuantity = (productId: number) =>
-    offers.find((offer) => offer.id === productId)?.quantity || 0;
-
-  const getPromotionOfferId = (productId: number) =>
-    offers.find((offer) => offer.id === productId)?.promotion_offer_id || [];
-
-  const products = (await db.product.findMany({
-    where: {
-      store_id: user.store,
-      id: {
-        in: [...cart.map((p) => p.id), ...offers.map((o) => o.id)],
-      },
-      deleted_at: null,
-    },
-    select: {
-      id: true,
-      serial: true,
-      label: true,
-      stock: true,
-      price: true,
-      cost: true,
-      category: {
-        select: {
-          label: true,
-          overstock: true,
-        },
-      },
-    },
-  })) as unknown as Prisma.ProductGetPayload<{
-    select: {
-      id: true;
-      serial: true;
-      label: true;
-      stock: true;
-      price: true;
-      cost: true;
-      category: {
-        select: {
-          label: true;
-          overstock: true;
-        };
-      };
-    };
-  }>[];
-
-  const totalProducts: ((typeof products)[0] & {
-    offerQuantity: number;
-    quantity: number;
-    totalPrice: number;
-    discountFromOffer: number;
-    isOverstock: boolean;
-    overstockCount: number;
-    promotion_offer_id: number[];
-  })[] = [];
-
-  const validateProduct = (productId: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (!product) throw new Error(`Product with ID ${productId} not found.`);
+  const findProduct = (id: number) => {
+    const product = products.find((p) => p.id === id);
+    if (!product) throw new Error(`Product with ID ${id} not found.`);
     return product;
   };
 
+  const totalProducts: TotalProduct[] = [];
+
   for (const cartItem of cart) {
-    const product = validateProduct(cartItem.id);
-    // STOCK VALIDATION
-    const stock = product.stock?.quantity || 0;
-    const canOverStock = product.category?.overstock || false;
-    const quantity = cartItem.quantity;
-    if (!canOverStock && quantity > stock) {
-      console.error(`Stock of product "${product.label}" is insufficient.`);
-      throw new Error(`Stock of product "${product.label}" is insufficient.`);
-    }
+    const product = findProduct(cartItem.id);
+    const { stock, canOverStock } = getStockInfo(product);
 
-    // OFFER VALIDATION
-    let offerQuantity = getOfferQuantity(cartItem.id);
-    if (isOfferProduct(cartItem.id) && offerQuantity > 0) {
-      if (quantity + offerQuantity > stock && !canOverStock) {
-        offerQuantity = Math.max(0, stock - quantity);
-        console.warn(
-          `Adjusted offer quantity for product "${
-            product.label
-          }" from ${getOfferQuantity(
-            cartItem.id
-          )} to ${offerQuantity} due to stock limitations.`
-        );
-      }
-    }
+    validateStock(product, cartItem.quantity, stock, canOverStock);
 
-    const totalQuantity = quantity + offerQuantity;
-    const discountFromOffer = offerQuantity * product.price;
-    const isOverstock = totalQuantity > stock;
-    const overStockCount = isOverstock ? totalQuantity - stock : 0;
+    const offer = getOffer(cartItem.id);
+    const offerQuantity = offer
+      ? adjustOfferQuantity(
+          offer.quantity,
+          cartItem.quantity,
+          stock,
+          canOverStock
+        )
+      : 0;
+
+    const totals = calculateTotals(
+      product,
+      cartItem.quantity,
+      offerQuantity,
+      stock
+    );
 
     totalProducts.push({
       ...product,
+      ...totals,
       offerQuantity,
-      quantity: totalQuantity,
-      totalPrice: product.price * totalQuantity - discountFromOffer,
-      discountFromOffer: discountFromOffer,
-      isOverstock: totalQuantity > stock,
-      overstockCount: overStockCount,
-      promotion_offer_id: getPromotionOfferId(cartItem.id),
+      promotion_offer_id: offer?.promotion_offer_id ?? [],
+      note: cartItem.note,
     });
   }
 
   for (const offer of offers) {
-    if (isCartProduct(offer.id)) continue; // Already processed in cart loop
-    const product = validateProduct(offer.id);
-    // OFFER-ONLY PRODUCT
-    let offerQuantity = offer.quantity;
-    const stock = product.stock?.quantity || 0;
-    const canOverStock = product.category?.overstock || false;
-    if (offerQuantity > stock && !canOverStock) {
-      offerQuantity = stock;
-      console.warn(
-        `Adjusted offer quantity for product "${product.label}" from ${offer.quantity} to ${offerQuantity} due to stock limitations.`
-      );
-    }
-    const isOverstock = offerQuantity > stock;
-    const overStockCount = isOverstock ? offerQuantity - stock : 0;
+    if (cart.some((c) => c.id === offer.id)) continue;
+
+    const product = findProduct(offer.id);
+    const { stock, canOverStock } = getStockInfo(product);
+
+    const offerQuantity = adjustOfferQuantity(
+      offer.quantity,
+      0,
+      stock,
+      canOverStock
+    );
+
+    const totals = calculateTotals(product, 0, offerQuantity, stock);
 
     totalProducts.push({
       ...product,
+      ...totals,
       offerQuantity,
-      quantity: offerQuantity,
-      totalPrice: 0,
-      discountFromOffer: offerQuantity * product.price,
-      isOverstock: isOverstock,
-      overstockCount: overStockCount,
       promotion_offer_id: offer.promotion_offer_id,
     });
   }
@@ -208,16 +178,6 @@ const getPromotionOffers = async (
   return mergedPromotionQuantities;
 };
 
-const getTotalPrice = (
-  products: { totalPrice: number; quantity: number }[]
-) => {
-  return products.reduce((total, item) => total + item.totalPrice, 0);
-};
-
-const getTotalCost = (products: { cost: number; quantity: number }[]) => {
-  return products.reduce((total, item) => total + item.cost * item.quantity, 0);
-};
-
 interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
   created_at: string;
   updated_at: string;
@@ -259,6 +219,7 @@ const Cashout = async (
               cost: product.cost,
               count: product.quantity,
               overstock: product.overstockCount,
+              note: product.note,
               promotionOffers: {
                 connect: product.promotion_offer_id.map((id) => ({ id })),
               },

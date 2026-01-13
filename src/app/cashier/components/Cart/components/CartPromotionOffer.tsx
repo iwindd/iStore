@@ -1,25 +1,11 @@
-import { useAppDispatch } from "@/hooks";
 import { MergedPromotionQuantity } from "@/libs/promotion";
-import {
-  Collapse,
-  FormControlLabel,
-  InputBase,
-  Paper,
-  Stack,
-  Switch,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { useState } from "react";
+import { Paper, Stack, Tooltip, Typography } from "@mui/material";
 
 const CartPromotionOffer = ({
   promotion,
 }: {
   promotion: MergedPromotionQuantity;
 }) => {
-  const [expand, setExpand] = useState(false);
-  const dispatch = useAppDispatch();
-
   return (
     <Paper variant="outlined" sx={{ p: 1 }}>
       <Stack width={"100%"}>
@@ -64,33 +50,6 @@ const CartPromotionOffer = ({
           </Stack>
         </Stack>
       </Stack>
-      <Collapse in={expand} timeout="auto" unmountOnExit>
-        <Stack direction={"row"}>
-          <InputBase
-            placeholder="ระบุหมายเหต..."
-            sx={{
-              width: "100%",
-              fontSize: "0.75rem",
-              borderBottom: "1px solid transparent",
-              "&:focus-within": { borderBottomColor: "divider" },
-            }}
-          />
-          <Stack
-            flex={1}
-            sx={{
-              gap: 1,
-              opacity: 0.5,
-            }}
-          >
-            <FormControlLabel
-              value="end"
-              control={<Switch color="primary" />}
-              label="จอง"
-              labelPlacement="start"
-            />
-          </Stack>
-        </Stack>
-      </Collapse>
     </Paper>
   );
 };

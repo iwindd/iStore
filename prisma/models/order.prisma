@@ -32,6 +32,7 @@ model OrderProduct {
   order_id        Int
   overstock_at    DateTime?
   creator_id      Int?
+  note            String?
 
   product_id      Int?
   product         Product?         @relation(fields: [product_id], references: [id])

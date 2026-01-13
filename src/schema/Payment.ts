@@ -15,6 +15,7 @@ export const CashoutSchema = z
         z.object({
           id: z.number(),
           quantity: z.number().min(1, "จำนวนต้องมากกว่าหรือเท่ากับ 1"),
+          note: z.string().max(40).optional(),
         })
       )
       .min(1, "ต้องมีสินค้าอย่างน้อย 1 รายการ"),
