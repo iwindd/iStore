@@ -1,6 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import usePayment from "@/hooks/use-payment";
+import useObtainPromotionOffer from "@/hooks/useObtainPromotionOffer";
 import { money } from "@/libs/formatter";
 import { clearProductCart } from "@/reducers/cartReducer";
 import {
@@ -18,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import CartProduct from "./components/CartProduct";
+import CartPromotionOffer from "./components/CartPromotionOffer";
 
 const CartSections = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +38,10 @@ const CartSections = () => {
     onConfirm: async () => {
       dispatch(clearProductCart());
     },
+  });
+
+  const { mergedPromotionQuantities } = useObtainPromotionOffer({
+    products: cart.map((p) => ({ id: p.id, quantity: p.quantity })),
   });
 
   return (
@@ -61,11 +67,26 @@ const CartSections = () => {
           overflowX: "hidden",
         }}
       >
-        {cart.length > 0 ? (
+        {cart.length > 0 &&
           cart.map((product) => (
             <CartProduct key={product.id} product={product} />
-          ))
-        ) : (
+          ))}
+
+        {mergedPromotionQuantities.length > 0 && (
+          <>
+            {mergedPromotionQuantities.map((promotionQuantity) => (
+              <CartPromotionOffer
+                key={
+                  promotionQuantity.id +
+                  promotionQuantity.promotion_offer_id.join("-")
+                }
+                promotion={promotionQuantity}
+              />
+            ))}
+          </>
+        )}
+
+        {cart.length <= 0 && mergedPromotionQuantities.length <= 0 && (
           <Stack
             height={"100%"}
             width={"100%"}

@@ -22,6 +22,7 @@ export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
             label: true;
             price: true;
             id: true;
+            serial: true;
             stock: true;
             category: {
               select: {
@@ -90,6 +91,7 @@ const fetchObtainPromotionOffer = async (
               select: {
                 id: true,
                 label: true,
+                serial: true,
                 price: true,
                 stock: true,
                 category: {

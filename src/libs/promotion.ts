@@ -99,10 +99,34 @@ export const mergePromotionQuantities = (
   return Array.from(mergedMap.values());
 };
 
+export type MergedPromotionQuantity = {
+  possibleQuantity: number;
+  data: {
+    id: number;
+    label: string;
+    price: number;
+    serial: string;
+    category: {
+      overstock: boolean;
+    } | null;
+    stock: {
+      id: number;
+      product_id: number;
+      quantity: number;
+      useAlert: boolean;
+      alertCount: number;
+      updatedAt: Date;
+    } | null;
+  };
+  id: number;
+  quantity: number;
+  promotion_offer_id: number[];
+};
+
 export const getMergedPromotionQuantitiesFromOffers = (
   offers: ObtainPromotionOffer[],
   products: UseObtainPromotionOfferProps["products"]
-) => {
+): MergedPromotionQuantity[] => {
   if (offers.length === 0) return [];
 
   const allProductData = offers.flatMap((offer) =>

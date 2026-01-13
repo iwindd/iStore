@@ -70,6 +70,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
               fontWeight="bold"
               whiteSpace="nowrap"
               color="success.main"
+              textAlign={"right"}
             >
               {(product.data?.price || 0) > 0
                 ? money(product.data?.price || 0)
