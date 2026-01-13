@@ -25,6 +25,7 @@ model Product {
   store_id               String
   creator_id             Int?
   keywords               String                   @default("")
+  usePreorder            Boolean                  @default(false)
   created_at             DateTime                 @default(now())
   updated_at             DateTime                 @updatedAt
   deleted_at             DateTime?

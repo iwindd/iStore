@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent, CardHeader, Grid, Stack } from "@mui/material";
 import { useProduct } from "../../ProductContext";
+import ProductPreorderForm from "./components/ProductPreorderForm";
 import ProductUpdateForm from "./components/ProductUpdateForm";
 import SoldCount from "./stats/SoldCount";
 import TotalProfit from "./stats/TotalProfit";
@@ -27,6 +28,7 @@ const ProductInformationPage = () => {
         </CardContent>
       </Card>
       <ProductUpdateForm />
+      <ProductPreorderForm />
     </Stack>
   );
 };

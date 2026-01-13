@@ -45,6 +45,10 @@ export const ProductStockAlertSchema = z.object({
   useAlert: z.boolean(),
 });
 
-export type ProductStockAlertValues = z.infer<
-  typeof ProductStockAlertSchema
->;
+export type ProductStockAlertValues = z.infer<typeof ProductStockAlertSchema>;
+
+export const ProductPreorderSchema = z.object({
+  usePreorder: z.boolean(),
+});
+
+export type ProductPreorderValues = z.infer<typeof ProductPreorderSchema>;
