@@ -11,7 +11,7 @@ export interface DashboardState {
     weeks: [number, number, number, number, number, number, number];
     methods: [
       { percent: number; total: number },
-      { percent: number; total: number }
+      { percent: number; total: number },
     ];
   };
   stats: {
@@ -115,13 +115,28 @@ const dashboardSlice = createSlice({
         total: bankOrders.reduce((total, order) => total + order.price, 0),
       };
     },
-    setProducts: (state, action: PayloadAction<any[]>) => {
+    setProducts: (
+      state,
+      action: PayloadAction<
+        {
+          stock: {
+            quantity: number;
+            useAlert: boolean;
+            alertCount: number;
+          } | null;
+        }[]
+      >
+    ) => {
       state.products = action.payload;
 
       state.stats.products = action.payload.length;
 
       const lowStockCount = action.payload.filter((p) => {
-        return p.stock <= p.low_stock_threshold;
+        const quantity = p.stock?.quantity || 0;
+        const threshold = p.stock?.alertCount || 0;
+        const useAlert = p.stock?.useAlert || false;
+
+        return useAlert && quantity <= threshold;
       }).length;
       state.stats.low_stock = lowStockCount;
     },

@@ -57,7 +57,13 @@ const fetchDashboard = async () => {
           deleted_at: null,
         },
         select: {
-          stock: true,
+          stock: {
+            select: {
+              quantity: true,
+              useAlert: true,
+              alertCount: true,
+            },
+          },
         },
       }),
       db.stockReceipt.count({

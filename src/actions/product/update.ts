@@ -25,7 +25,6 @@ const UpdateProduct = async (
         label: validated.label,
         price: validated.price,
         cost: validated.cost,
-        /* stock_min: validated.stock_min, */ // TODO:: Refactor this one
         category_id: validated.category_id,
         /* keywords: validated.keywords, */ // TODO:: Refactor this one
       },
