@@ -3,7 +3,7 @@ import * as Actions from "@/actions/roles";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
 type RoleSelectorProps = Omit<
-  BaseSelectorProps<Actions.RoleSelector>,
+  BaseSelectorProps<Actions.RoleSelectorItem>,
   "canCreate"
 >;
 
@@ -15,7 +15,7 @@ const RoleSelector = (props_: RoleSelectorProps) => {
   };
 
   return (
-    <BaseSelector<Actions.RoleSelector>
+    <BaseSelector<Actions.RoleSelectorItem>
       id="role-selector"
       noOptionsText="ไมพบตำแหน่ง"
       fetchItem={async (id) => {

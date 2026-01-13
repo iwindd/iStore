@@ -1,5 +1,6 @@
 "use client";
 import * as Actions from "@/actions/employee";
+import { RoleSelectorItem } from "@/actions/roles";
 import RoleSelector from "@/components/Selector/RoleSelector";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
@@ -14,7 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { Role, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import React from "react";
@@ -74,7 +75,8 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
     }
   };
 
-  const onSelectRole = (role: Role) => setValue("role", role ? role.id : 0);
+  const onSelectRole = (role: RoleSelectorItem | null) =>
+    setValue("role", role ? role.id : 0);
 
   React.useEffect(() => {
     if (user) {
