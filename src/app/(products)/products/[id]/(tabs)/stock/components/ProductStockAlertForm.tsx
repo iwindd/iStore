@@ -19,18 +19,13 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
 
 const ProductStockAlertForm = () => {
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-
-  const defaultValues = {
-    alertCount: product.stock?.alertCount ?? 0,
-    useAlert: product.stock?.useAlert ?? false,
-  };
 
   const {
     register,
@@ -39,9 +34,13 @@ const ProductStockAlertForm = () => {
     watch,
     reset,
     getValues,
+    control,
   } = useForm<ProductStockAlertValues>({
     resolver: zodResolver(ProductStockAlertSchema),
-    defaultValues,
+    defaultValues: {
+      alertCount: product.stock.alertCount,
+      useAlert: product.stock.useAlert,
+    },
   });
 
   const updateStockAlertMutation = useMutation({
@@ -81,9 +80,15 @@ const ProductStockAlertForm = () => {
         <div>
           <FormControlLabel
             control={
-              <Switch
-                {...register("useAlert")}
-                defaultChecked={defaultValues.useAlert}
+              <Controller
+                name="useAlert"
+                control={control}
+                render={({ field }) => (
+                  <Switch
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                  />
+                )}
               />
             }
             label="แจ้งเตือนสต๊อก"
