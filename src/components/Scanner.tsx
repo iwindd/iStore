@@ -1,5 +1,6 @@
 "use client";
-import { TextField } from "@mui/material";
+import { KeyboardReturn, QrCodeScanner } from "@mui/icons-material";
+import { Box, TextField, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 
 interface ScannerProps {
@@ -26,7 +27,45 @@ const Scanner = (props: ScannerProps) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <TextField autoFocus fullWidth label="รหัสสินค้า" inputRef={ref} />
+      <TextField
+        autoFocus
+        fullWidth
+        placeholder="รหัสสินค้า / สแกนสินค้า..."
+        variant="outlined"
+        inputRef={ref}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <Box sx={{ color: "primary.main", mr: 1, display: "flex" }}>
+                <QrCodeScanner />
+              </Box>
+            ),
+            endAdornment: (
+              <Box
+                sx={{
+                  display: { xs: "none", xl: "flex" },
+                  alignItems: "center",
+                  gap: 0.5,
+                  px: 1,
+                  py: 0.5,
+                  bgcolor: "action.hover",
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <KeyboardReturn fontSize="small" color="disabled" />
+                <Typography
+                  variant="caption"
+                  fontWeight="bold"
+                  color="text.secondary"
+                >
+                  Enter
+                </Typography>
+              </Box>
+            ),
+          },
+        }}
+      />
 
       <input type="submit" hidden />
     </form>
