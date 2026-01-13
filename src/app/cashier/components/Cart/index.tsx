@@ -1,0 +1,147 @@
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import usePayment from "@/hooks/use-payment";
+import { money } from "@/libs/formatter";
+import { clearProductCart } from "@/reducers/cartReducer";
+import {
+  ArrowForward,
+  DeleteSweep,
+  DeleteSweepTwoTone,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Divider,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
+import CartProduct from "./components/CartProduct";
+
+const CartSections = () => {
+  const dispatch = useAppDispatch();
+  const payment = usePayment();
+  const cart = useAppSelector((state) => state.cart.products);
+  const total = useAppSelector((state) => state.cart.total);
+
+  const confirmation = useConfirm({
+    title: "แจ้งเตือน",
+    text: "คุณต้องการจะล้างตะกร้าหรือไม่? สินค้าภายในตะกร้าจะถูกลบและไม่สามารถย้อนกลับได้!",
+    confirmProps: {
+      color: "warning",
+      startIcon: <DeleteSweepTwoTone />,
+    },
+    confirm: "ล้างตะกร้า",
+    onConfirm: async () => {
+      dispatch(clearProductCart());
+    },
+  });
+
+  return (
+    <Stack
+      sx={{
+        width: "100%",
+        borderColor: "divider",
+        flexDirection: "column",
+        zIndex: 10,
+        borderRadius: 0,
+      }}
+    >
+      {/* Cart Items List */}
+      <Stack
+        height={"40vh"}
+        minHeight={"40vh"}
+        maxHeight={"60vh"}
+        flex={1}
+        spacing={1}
+        pb={1}
+        sx={{
+          overflowY: "auto",
+          overflowX: "hidden",
+        }}
+      >
+        {cart.length > 0 ? (
+          cart.map((product) => (
+            <CartProduct key={product.id} product={product} />
+          ))
+        ) : (
+          <Stack
+            height={"100%"}
+            width={"100%"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            flex={1}
+          >
+            <Typography variant="h6" color="text.secondary">
+              ไม่มีสินค้าภายในตะกร้า
+            </Typography>
+          </Stack>
+        )}
+      </Stack>
+
+      {/* Cart Footer Summary */}
+      <Box>
+        <Stack spacing={1} mb={2}>
+          <Divider sx={{ borderStyle: "dashed" }} />
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              pt: 1,
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              ยอดรวม
+            </Typography>
+            <Typography variant="h6" fontWeight={800} color="primary.main">
+              {money(total)}
+            </Typography>
+          </Box>
+        </Stack>
+
+        <Stack spacing={1}>
+          <Stack direction={"row"} spacing={1}>
+            <Button
+              variant="outlined"
+              color="error"
+              sx={{
+                width: 40,
+                height: "100%",
+                borderRadius: 1,
+              }}
+              onClick={confirmation.handleOpen}
+            >
+              <DeleteSweep />
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              endIcon={<ArrowForward />}
+              sx={{
+                fontWeight: "bold",
+              }}
+              onClick={payment.toggle}
+            >
+              ชำระเงิน
+            </Button>
+          </Stack>
+          <ToggleButtonGroup
+            color="primary"
+            exclusive
+            value={"cashout"}
+            fullWidth
+          >
+            <ToggleButton value="cashout">ชำระเงิน</ToggleButton>
+            <ToggleButton value="borrow">เบิกสินค้า</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+      </Box>
+
+      {payment.dialog}
+      <Confirmation {...confirmation.props} />
+    </Stack>
+  );
+};
+
+export default CartSections;
