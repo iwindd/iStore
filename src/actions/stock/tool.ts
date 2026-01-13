@@ -1,81 +1,113 @@
 "use server";
-import {
-  ImportFromMinStockPayload,
-  ImportFromStockId,
-  ImportPayload,
-  ImportType,
-} from "@/app/(products)/stocks/import";
-import STOCK_CONFIG from "@/config/Stock";
 import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
 import { StockValues } from "@/schema/Stock";
+import {
+  StockReceiptImportFromMinStockValueValues,
+  StockReceiptImportFromStockIdValues,
+  StockReceiptImportSchema,
+  StockReceiptImportType,
+  StockReceiptImportValues,
+} from "@/schema/StockReceiptImport";
 
-const ImportMinStock = async (
-  payload: ImportFromMinStockPayload,
-  user: User
-) => {
-  const products = await db.product.findMany({
-    where: {
-      store_id: user.store,
-      stock: {
+class StockReceiptImportTool {
+  static async importFromMinStockAlert(user: User) {
+    const productStocks = await db.productStock.findMany({
+      where: {
+        product: {
+          store_id: user.store,
+        },
+        useAlert: true,
         quantity: {
-          lte: payload.product_min_stock
-            ? 10 /* db.product.fields.stock_min TODO :: FIX THIS*/
-            : payload.value,
+          lte: db.productStock.fields.alertCount,
         },
       },
-      deleted_at: null,
-    },
-    select: {
-      id: true,
-      serial: true,
-      label: true,
-      price: true,
-      cost: true,
-      stock: true,
-      /*      stock_min: true, */
-      category: {
-        select: {
-          label: true,
-          overstock: true,
+      select: {
+        quantity: true,
+        alertCount: true,
+        product: {
+          select: {
+            id: true,
+          },
         },
       },
-    },
-    take: STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK,
-    orderBy: {
-      sold: "desc",
-    },
-  });
+    });
 
-  return products.map((p) => ({
-    product_id: p.id,
-    delta: payload.changedBy || 10 /* p.stock_min TODO :: FIX THIS*/,
-  }));
-};
+    const products = productStocks.flatMap((ps) => ({
+      ...ps.product,
+      alertCount: ps.alertCount,
+      stock: ps.quantity,
+    }));
 
-const ImportStockId = async (payload: ImportFromStockId, user: User) => {
-  const validated = await db.stockReceipt.findFirstOrThrow({
-    where: { id: payload.id, store_id: user.store },
-    select: {
-      stock_recept_products: {
-        select: {
-          product_id: true,
-          quantity: true,
+    return products.map((p) => ({
+      product_id: p.id,
+      delta: p.alertCount - p.stock,
+    }));
+  }
+
+  static async importFromMinStockValue(
+    user: User,
+    validated: StockReceiptImportFromMinStockValueValues
+  ) {
+    const productStocks = await db.productStock.findMany({
+      where: {
+        product: {
+          store_id: user.store,
+        },
+        quantity: {
+          lte: validated.value,
         },
       },
-    },
-  });
+      select: {
+        quantity: true,
+        alertCount: true,
+        product: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
 
-  return validated.stock_recept_products.map((p) => ({
-    product_id: p.product_id,
-    delta: Math.abs(p.quantity),
-  }));
-};
+    const products = productStocks.flatMap((ps) => ({
+      ...ps.product,
+      alertCount: ps.alertCount,
+      stock: ps.quantity,
+    }));
+
+    return products.map((p) => ({
+      product_id: p.id,
+      delta: validated.value - p.stock,
+    }));
+  }
+
+  static async importFromStockId(
+    user: User,
+    validated: StockReceiptImportFromStockIdValues
+  ) {
+    const stockReceipt = await db.stockReceipt.findFirstOrThrow({
+      where: { id: validated.id, store_id: user.store },
+      select: {
+        stock_recept_products: {
+          select: {
+            product_id: true,
+            quantity: true,
+          },
+        },
+      },
+    });
+
+    return stockReceipt.stock_recept_products.map((p) => ({
+      product_id: p.product_id,
+      delta: Math.abs(p.quantity),
+    }));
+  }
+}
 
 const ImportToolAction = async (
-  payload: ImportPayload
+  payload: StockReceiptImportValues
 ): Promise<StockValues["products"]> => {
   try {
     const user = await getUser();
@@ -83,13 +115,19 @@ const ImportToolAction = async (
     if (!user.hasPermission(StockPermissionEnum.CREATE))
       throw new Error("Forbidden");
 
-    switch (payload.type) {
-      case ImportType.FromStockId:
-        return await ImportStockId(payload, user);
-      case ImportType.FromMinStock:
-        return await ImportMinStock(payload, user);
+    const validated = StockReceiptImportSchema.parse(payload);
+    switch (validated.type) {
+      case StockReceiptImportType.FromMinStockAlert:
+        return await StockReceiptImportTool.importFromMinStockAlert(user);
+      case StockReceiptImportType.FromMinStockValue:
+        return await StockReceiptImportTool.importFromMinStockValue(
+          user,
+          validated
+        );
+      case StockReceiptImportType.FromStockId:
+        return await StockReceiptImportTool.importFromStockId(user, validated);
       default:
-        throw new Error("Invalid payload");
+        throw new Error("invalid_type");
     }
   } catch (error) {
     console.error(error);

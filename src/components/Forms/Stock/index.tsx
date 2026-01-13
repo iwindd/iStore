@@ -284,12 +284,6 @@ const StockForm = ({
             </TableContainer>
           </CardContent>
         </Card>
-
-        <ToolDialog
-          open={toolDialog.open}
-          onClose={toolDialog.handleClose}
-          form={form}
-        />
       </Stack>
       <AppFooter
         direction={"row"}
@@ -334,6 +328,11 @@ const StockForm = ({
         </Stack>
       </AppFooter>
       <Confirmation {...submitConfirmation.props} />
+      <ToolDialog
+        open={toolDialog.open}
+        onClose={toolDialog.handleClose}
+        form={form}
+      />
     </>
   );
 };

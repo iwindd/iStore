@@ -1,7 +1,14 @@
 "use client";
 import ImportToolAction from "@/actions/stock/tool";
+import StockReceiptImportSelect from "@/components/Select/StockReceiptImportSelect";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { StockValues } from "@/schema/Stock";
+import {
+  StockReceiptImportSchema,
+  StockReceiptImportType,
+  StockReceiptImportValues,
+} from "@/schema/StockReceiptImport";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { PanToolAlt } from "@mui/icons-material";
 import {
   Button,
@@ -9,25 +16,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
   Stack,
-  TextField,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
-import { UseFormReturn } from "react-hook-form";
+import { Controller, useForm, UseFormReturn } from "react-hook-form";
 import MinStockController from "./components/MinStockController";
-import {
-  ImportFromMinStockPayload,
-  ImportPayload,
-  Imports,
-  ImportType,
-} from "./type";
 
 interface ToolDialogProps {
   onClose: () => void;
@@ -40,38 +35,37 @@ const ToolDialog = ({
   onClose,
   form,
 }: ToolDialogProps): React.JSX.Element => {
-  const [type, setType] = React.useState<ImportType>(ImportType.FromMinStock);
-  const [payload, setPayload] = React.useState<ImportPayload | null>(null);
-  const [changedBy, setChangedBy] = React.useState<number>(10);
   const { isBackdrop, setBackdrop } = useInterface();
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setType(+event.target.value);
-    setPayload(null);
-  };
-
-  const onSubmit = async () => {
-    if (!payload) return;
-    if (+(changedBy || 0) <= 0) return;
-    setBackdrop(true);
-
-    try {
-      const resp = await ImportToolAction({
-        ...payload,
-        changedBy,
-      } as ImportFromMinStockPayload);
-      form.setValue("products", resp);
+  const importToolMutation = useMutation({
+    mutationFn: async (data: StockReceiptImportValues) => {
+      const response = await ImportToolAction(data);
+      return response;
+    },
+    onSuccess: (data) => {
+      form.setValue("products", data);
       enqueueSnackbar("เพิ่มสินค้าสำเร็จ!", { variant: "success" });
       onClose();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error(error);
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
       });
-    } finally {
+    },
+    onSettled: () => {
       setBackdrop(false);
-    }
-  };
+    },
+  });
+
+  const formTool = useForm<StockReceiptImportValues>({
+    resolver: zodResolver(StockReceiptImportSchema),
+    defaultValues: {
+      type: StockReceiptImportType.FromMinStockAlert,
+    },
+  });
+
+  const toolType = formTool.watch("type");
 
   return (
     <Dialog
@@ -85,37 +79,25 @@ const ToolDialog = ({
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
           <Stack flexDirection={"column"} spacing={1}>
-            <FormControl>
-              <InputLabel id="selector-label">ประเภทการนำเข้า</InputLabel>
-              <Select
-                labelId="selector-label"
-                value={String(type)}
-                label="ประเภทการนำเข้า"
-                onChange={handleChange}
-              >
-                {Imports.map((item) => (
-                  <MenuItem key={item.value} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Controller
+              name="type"
+              control={formTool.control}
+              render={({ field }) => <StockReceiptImportSelect {...field} />}
+            />
           </Stack>
-          <TextField
-            type="number"
-            value={changedBy}
-            onChange={(e) => setChangedBy(+e.target.value)}
-            fullWidth
-            label="เปลี่ยนแปลงโดย"
-          />
-          <Divider />
-          {type == ImportType.FromMinStock && (
-            <MinStockController payload={payload} setPayload={setPayload} />
-          )}
+          {toolType === StockReceiptImportType.FromMinStockAlert ||
+            (toolType === StockReceiptImportType.FromMinStockValue && (
+              <MinStockController formTool={formTool} />
+            ))}
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Stack sx={{ width: "100%" }} direction={"row"} justifyContent={"end"}>
+        <Stack
+          sx={{ width: "100%" }}
+          direction={"row"}
+          justifyContent={"end"}
+          spacing={1}
+        >
           <Button color="secondary" onClick={onClose}>
             ปิด
           </Button>
@@ -123,7 +105,9 @@ const ToolDialog = ({
             color="success"
             variant="contained"
             startIcon={<PanToolAlt />}
-            onClick={onSubmit}
+            onClick={formTool.handleSubmit((data) =>
+              importToolMutation.mutate(data)
+            )}
           >
             ยืนยัน
           </Button>

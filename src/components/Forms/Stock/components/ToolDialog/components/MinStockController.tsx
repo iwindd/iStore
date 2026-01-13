@@ -1,37 +1,28 @@
 "use client";
-import { Checkbox, FormControlLabel, Stack, TextField } from "@mui/material";
-import React, { useEffect } from "react";
-import { ImportControllerProps, ImportType } from "../type";
+import { StockReceiptImportValues } from "@/schema/StockReceiptImport";
+import { Stack, TextField } from "@mui/material";
+import { UseFormReturn } from "react-hook-form";
 
-const MinStockController = ({ setPayload }: ImportControllerProps) => {
-  const [isCheck, setIsCheck] = React.useState<boolean>(true);
-  const [value, setValue] = React.useState<string>();
-
-  const onCheckChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsCheck(event.target.checked);
-  };
-
-  useEffect(() => {
-    setPayload({
-      type: ImportType.FromMinStock,
-      product_min_stock: isCheck,
-      value: +(value || 10),
-    });
-  }, [isCheck, value, setPayload]);
+const MinStockController = ({
+  formTool: {
+    register,
+    formState: { errors },
+  },
+}: {
+  formTool: UseFormReturn<StockReceiptImportValues>;
+}) => {
+  const error = "value" in errors ? errors.value : undefined;
 
   return (
-    <Stack>
+    <Stack spacing={1}>
       <TextField
         type="number"
         label="จำนวนขั้นต่ำ"
-        value={isCheck ? "" : value}
-        onChange={(e) => setValue(e.target.value)}
-        disabled={isCheck}
-        variant="standard"
-      />
-      <FormControlLabel
-        control={<Checkbox defaultChecked onChange={onCheckChange} />}
-        label="ใช้สต๊อกขั้นต่ำของสินค้า"
+        placeholder="จำนวนของสต๊อกขั้นต่ำที่ต้องการนำเข้า"
+        {...register("value", { valueAsNumber: true })}
+        autoFocus
+        helperText={error?.message}
+        error={!!error}
       />
     </Stack>
   );

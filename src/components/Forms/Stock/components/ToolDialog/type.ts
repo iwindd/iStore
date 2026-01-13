@@ -14,9 +14,8 @@ export const Imports: Import[] = [
 
 export interface ImportFromMinStockPayload {
   type: ImportType.FromMinStock;
-  product_min_stock: boolean;
-  value?: number;
-  changedBy?: number;
+  product_min_stock: boolean; // USE PRODUCT ALERT COUNT
+  value?: number; // CUSTOM VALUE
 }
 
 export interface ImportFromStockId {
