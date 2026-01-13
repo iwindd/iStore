@@ -39,3 +39,12 @@ export const ProductUpdateStockSchema = z.object({
 });
 
 export type ProductUpdateStockValues = z.infer<typeof ProductUpdateStockSchema>;
+
+export const ProductStockAlertSchema = z.object({
+  alertCount: z.number().min(0),
+  useAlert: z.boolean(),
+});
+
+export type ProductStockAlertValues = z.infer<
+  typeof ProductStockAlertSchema
+>;

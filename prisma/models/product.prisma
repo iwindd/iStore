@@ -47,6 +47,8 @@ model Product {
 model ProductStock {
   id         Int      @id @default(autoincrement())
   quantity   Int      @default(0)
+  useAlert   Boolean  @default(false)
+  alertCount Int      @default(30)
   product_id Int      @unique
   updatedAt  DateTime @updatedAt
 

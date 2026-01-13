@@ -3,8 +3,10 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { ProductLayoutValue } from "./layout";
 
 type ProductContextType = {
-  product: ProductLayoutValue;
-  updateStock: (stock: number) => void;
+  product: ProductLayoutValue & {
+    stock: NonNullable<ProductLayoutValue["stock"]>;
+  };
+  updateProduct: (product: any) => void;
 };
 
 const ProductContext = createContext<ProductContextType | null>(null);
@@ -16,15 +18,24 @@ export const ProductProvider = ({
   children: React.ReactNode;
   value: ProductLayoutValue;
 }) => {
-  const [product, setProduct] = useState<ProductLayoutValue>(value);
+  const [product, setProduct] = useState<ProductContextType["product"]>({
+    ...value,
+    stock: value.stock || {
+      quantity: 0,
+      useAlert: false,
+      alertCount: 0,
+    },
+  });
 
-  const updateStock = (stock: number) => {
-    setProduct({ ...product, stock: { quantity: stock } });
+  const updateProduct = (
+    product: Partial<Omit<ProductContextType["product"], "id" | "serial">>
+  ) => {
+    setProduct((prev) => ({ ...prev, ...product }));
   };
 
   const ctxValue = useMemo(
-    () => ({ product, updateStock }),
-    [product, updateStock]
+    () => ({ product, updateProduct }),
+    [product, updateProduct]
   );
 
   return (

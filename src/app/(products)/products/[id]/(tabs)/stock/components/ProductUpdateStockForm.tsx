@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateStockForm = () => {
-  const { product, updateStock } = useProduct();
+  const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
 
@@ -51,7 +51,12 @@ const ProductUpdateStockForm = () => {
       const resp = await UpdateStock(data, product.id);
       if (!resp.success) throw new Error(resp.message);
 
-      updateStock(resp.data.stock);
+      updateProduct({
+        stock: {
+          ...product.stock,
+          quantity: resp.data.stock,
+        },
+      });
       reset(getValues(), { keepValues: true });
       enqueueSnackbar("อัปเดตสต็อกเรียบร้อยแล้ว", { variant: "success" });
       setOpenDialog(false);

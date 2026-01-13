@@ -29,6 +29,8 @@ const selectProduct = {
   stock: {
     select: {
       quantity: true,
+      useAlert: true,
+      alertCount: true,
     },
   },
 } satisfies Prisma.ProductSelect;
