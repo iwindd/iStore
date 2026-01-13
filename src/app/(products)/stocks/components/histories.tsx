@@ -3,7 +3,7 @@ import CancelStock from "@/actions/stock/cancel";
 import fetchStockDatatable, {
   StockDatatableInstance,
 } from "@/actions/stock/fetchStockDatatable";
-import GetStock from "@/actions/stock/find";
+import getExportStockData from "@/actions/stock/getExportStockReceiptData";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import { StockPermissionEnum } from "@/enums/permission";
@@ -20,7 +20,7 @@ import {
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { StockState } from "@prisma/client";
+import { StockReceiptStatus } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
@@ -73,16 +73,16 @@ const HistoryDatatable = () => {
     async (stockId: number) => {
       try {
         setBackdrop(true);
-        const resp = await GetStock(stockId, true);
-        if (!resp.success || !resp.data?.products)
-          throw new Error(resp.message);
+        const stockData = await getExportStockData(stockId);
+        if (!stockData) throw new Error("error");
+
         setItems(
-          resp.data.products.map((item) => ({
+          stockData.map((item) => ({
             serial: item.product.serial,
             label: item.product.label,
             price: item.product.price,
             cost: item.product.cost,
-            delta: Math.abs(item.stock_after - item.stock_before),
+            delta: item.quantity,
             keywords: item.product.keywords,
           }))
         );
@@ -138,7 +138,8 @@ const HistoryDatatable = () => {
         headerName: "จำนวนสินค้า",
         flex: 2,
         editable: false,
-        renderCell: ({ row }) => `${ff.number(row._count.products)} รายการ`,
+        renderCell: ({ row }) =>
+          `${ff.number(row._count.stock_recept_products)} รายการ`,
       },
       {
         field: "note",
@@ -154,7 +155,7 @@ const HistoryDatatable = () => {
         headerName: "สถานะ",
         flex: 2,
         editable: false,
-        renderCell: ({ row }) => ff.stockState(row.state),
+        renderCell: ({ row }) => ff.stockReceiptStatus(row.state),
       },
       {
         field: "actions",
@@ -174,7 +175,8 @@ const HistoryDatatable = () => {
             icon={<CancelTwoTone />}
             onClick={menu.cancel(row)}
             disabled={
-              !permissions(row).canCancelStock || row.state !== StockState.DRAFT
+              !permissions(row).canCancelStock ||
+              row.state !== StockReceiptStatus.DRAFT
             }
             label="ยกเลิกรายการนี้"
             showInMenu
@@ -198,7 +200,7 @@ const HistoryDatatable = () => {
         columns={columns()}
         fetch={fetchStockDatatable}
         height={700}
-        getCellClassName={Colorization.getGridCellColorForStockState}
+        getCellClassName={Colorization.getGridCellColorForStockReceiptStatus}
       />
 
       {ExportHandler}

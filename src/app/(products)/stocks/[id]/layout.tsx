@@ -4,22 +4,21 @@ import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
 import { StockProvider } from "./StockContext";
 
-export type StockLayoutValue = Prisma.StockGetPayload<{
+export type StockLayoutValue = Prisma.StockReceiptGetPayload<{
   select: typeof StockLayoutSelect;
 }>;
 
 export const StockLayoutSelect = {
   id: true,
   note: true,
-  state: true,
-  products: {
+  status: true,
+  stock_recept_products: {
     select: {
       product_id: true,
-      stock_after: true,
-      stock_before: true,
+      quantity: true,
     },
   },
-} satisfies Prisma.StockSelect;
+} satisfies Prisma.StockReceiptSelect;
 
 const Layout = async ({
   children,
@@ -29,7 +28,7 @@ const Layout = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
-  const stock = await db.stock.findFirst({
+  const stock = await db.stockReceipt.findFirst({
     where: {
       id: +id,
     },

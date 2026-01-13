@@ -40,7 +40,7 @@ const ProductUpdateStockForm = () => {
   } = useForm<ProductUpdateStockValues>({
     resolver: zodResolver(ProductUpdateStockSchema),
     defaultValues: {
-      stock: product.stock,
+      stock: product.stock?.quantity || 0,
       note: "",
     },
   });
@@ -57,7 +57,10 @@ const ProductUpdateStockForm = () => {
       setOpenDialog(false);
       router.refresh();
     } catch (error: any) {
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาด", { variant: "error" });
+      console.log(error);
+      enqueueSnackbar("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", {
+        variant: "error",
+      });
     } finally {
       setLoading(false);
     }

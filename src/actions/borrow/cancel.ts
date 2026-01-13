@@ -3,7 +3,7 @@ import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { Borrow } from "@prisma/client";
+import { Borrow, ProductStockMovementType } from "@prisma/client";
 
 const CancelBorrow = async (
   borrowId: number,
@@ -25,16 +25,14 @@ const CancelBorrow = async (
       },
     });
 
-    await db.product.update({
-      where: {
-        id: data.product_id,
-      },
-      data: {
-        stock: {
-          increment: data.amount - data.count,
-        },
-      },
-    });
+    await db.product.addStock(
+      data.product_id,
+      data.amount - data.count,
+      ProductStockMovementType.CANCEL,
+      {
+        borrow_id: data.id,
+      }
+    );
 
     return { success: true, data: true };
   } catch (error) {

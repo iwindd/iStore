@@ -5,7 +5,11 @@ import ProductSelector from "@/components/Selector/ProductSelector";
 import { useAppDispatch } from "@/hooks";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import usePayment from "@/hooks/use-payment";
-import { addProductToCartById, clearProductCart } from "@/reducers/cartReducer";
+import {
+  addProductToCartById,
+  addProductToCartBySerial,
+  clearProductCart,
+} from "@/reducers/cartReducer";
 import { DeleteTwoTone, PaymentTwoTone } from "@mui/icons-material";
 import { Button, Divider, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
@@ -37,8 +41,8 @@ const CashierPage = () => {
       <Grid container spacing={1} direction={"row-reverse"}>
         <Grid size={12}>
           <Scanner
-            onSubmit={(p) => {
-              dispatch(addProductToCartById(p.id));
+            onSubmit={(serial) => {
+              dispatch(addProductToCartBySerial(serial));
             }}
           />
         </Grid>

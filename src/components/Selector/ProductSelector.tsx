@@ -22,7 +22,7 @@ const ProductSelector = (props_: ProductSelectorProps) => {
         id: resp.data.id,
         serial: resp.data.serial,
         label: resp.data.label,
-        stock: resp.data.stock,
+        stock: resp.data.stock || { quantity: 0 },
       };
     }
     return null;
@@ -46,7 +46,7 @@ const ProductSelector = (props_: ProductSelectorProps) => {
       renderCustomOption={(option) => (
         <div>
           <Typography variant="caption" color="text.secondary">
-            จำนวน: {option.stock} | รหัส: {option.serial}
+            จำนวน: {option.stock?.quantity || 0} | รหัส: {option.serial}
           </Typography>
         </div>
       )}

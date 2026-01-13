@@ -73,7 +73,7 @@ const MostSellerTab = () => {
                 </TableCell>
                 <TableCell>
                   <Stack>
-                    {product.stock} รายการ
+                    {product.stock?.quantity} รายการ
                     {product.category?.overstock && (
                       <Typography variant="caption" color={"text.secondary"}>
                         (สามารถค้างสินค้าได้)

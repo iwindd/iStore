@@ -32,7 +32,6 @@ function UserPopover({
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
 
-  /* TODO:: use redux instead of recoil */
   const [, setStocks] = React.useState<any>([]);
   const dispatch = useDispatch();
 

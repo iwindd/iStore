@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, ProductStockMovementType } from "@prisma/client";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 import orders from "./data/orders.json";
@@ -155,6 +155,11 @@ async function main() {
               store: {
                 connect: { id: category.store_id },
               },
+              stock: {
+                create: {
+                  quantity: 0,
+                },
+              },
             })),
           },
         },
@@ -172,11 +177,32 @@ async function main() {
   for (const [i, chunk] of chunks.entries()) {
     await prisma.$transaction(async () => {
       for (const order of chunk) {
-        const castedOrder = order as any;
+        const castedOrder = order;
         await prisma.order.upsert({
           where: { id: castedOrder.id },
           update: {},
-          create: castedOrder,
+          create: {
+            ...castedOrder,
+          },
+        });
+        await prisma.productStockMovement.createMany({
+          data: [
+            ...castedOrder.products.create.map((product: any) => ({
+              type: ProductStockMovementType.ADJUST,
+              quantity: product.count,
+              quantity_before: 0,
+              quantity_after: product.count,
+              product_id: product.product_id,
+            })),
+            ...castedOrder.products.create.map((product: any) => ({
+              type: ProductStockMovementType.SALE,
+              quantity: product.count,
+              quantity_before: product.count,
+              quantity_after: 0,
+              product_id: product.product_id,
+              order_id: castedOrder.id,
+            })),
+          ],
         });
       }
     });

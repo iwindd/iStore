@@ -10,7 +10,8 @@ import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
 import { CartProduct } from "@/reducers/cartReducer";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
-import { Order, Prisma } from "@prisma/client";
+import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
+import { removeProductStock } from "../product/stock";
 
 const validateProducts = async (
   user: User,
@@ -88,7 +89,7 @@ const validateProducts = async (
   for (const cartItem of cart) {
     const product = validateProduct(cartItem.id);
     // STOCK VALIDATION
-    const stock = product.stock;
+    const stock = product.stock?.quantity || 0;
     const canOverStock = product.category?.overstock || false;
     const quantity = cartItem.quantity;
     if (!canOverStock && quantity > stock) {
@@ -133,7 +134,7 @@ const validateProducts = async (
     const product = validateProduct(offer.id);
     // OFFER-ONLY PRODUCT
     let offerQuantity = offer.quantity;
-    const stock = product.stock;
+    const stock = product.stock?.quantity || 0;
     const canOverStock = product.category?.overstock || false;
     if (offerQuantity > stock && !canOverStock) {
       offerQuantity = stock;
@@ -207,24 +208,6 @@ const getPromotionOffers = async (
   return mergedPromotionQuantities;
 };
 
-const updateProductStock = async (
-  products: { id: number; count: number }[]
-) => {
-  return db.$transaction(
-    products.map((product) => {
-      return db.product.update({
-        where: {
-          id: product.id,
-        },
-        data: {
-          stock: { decrement: product.count },
-          sold: { increment: product.count },
-        },
-      });
-    })
-  );
-};
-
 const getTotalPrice = (
   products: { totalPrice: number; quantity: number }[]
 ) => {
@@ -256,36 +239,52 @@ const Cashout = async (
     const totalProfit = totalPrice - totalCost;
 
     // CREATE ORDER
-    const order = await db.order.create({
-      data: {
-        price: totalPrice,
-        cost: totalCost,
-        profit: totalProfit,
-        method: validated.method,
-        note: validated.note || "",
-        text: products.map((item) => item.label).join(", "),
-        store_id: user.store,
-        creator_id: user.employeeId,
-        products: {
-          create: products.map(({ id, ...product }) => ({
-            serial: product.serial,
-            label: product.label,
-            category: product.category?.label || "ไม่มี่หมวดหมู่",
-            price: product.price,
-            cost: product.cost,
-            count: product.quantity,
-            overstock: product.overstockCount,
-            promotionOffers: {
-              connect: product.promotion_offer_id.map((id) => ({ id })),
-            },
-          })),
+    const order = await db.$transaction(async (tx) => {
+      const order = await db.order.create({
+        data: {
+          price: totalPrice,
+          cost: totalCost,
+          profit: totalProfit,
+          method: validated.method,
+          note: validated.note || "",
+          text: products.map((item) => item.label).join(", "),
+          store_id: user.store,
+          creator_id: user.employeeId,
+          products: {
+            create: products.map(({ id, ...product }) => ({
+              serial: product.serial,
+              label: product.label,
+              category: product.category?.label || "ไม่มี่หมวดหมู่",
+              price: product.price,
+              cost: product.cost,
+              count: product.quantity,
+              overstock: product.overstockCount,
+              promotionOffers: {
+                connect: product.promotion_offer_id.map((id) => ({ id })),
+              },
+            })),
+          },
         },
-      },
-    });
+      });
+      for (const item of products) {
+        await removeProductStock(
+          item.id,
+          item.quantity,
+          ProductStockMovementType.SALE,
+          { order_id: order.id },
+          tx
+        );
 
-    updateProductStock(
-      products.map(({ id, quantity }) => ({ id, count: quantity }))
-    );
+        await tx.product.update({
+          where: { id: item.id },
+          data: {
+            sold: { increment: item.quantity },
+          },
+        });
+      }
+
+      return order;
+    });
 
     return {
       success: true,

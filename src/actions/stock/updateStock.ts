@@ -8,7 +8,7 @@ import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { StockValues } from "@/schema/Stock";
-import { StockState } from "@prisma/client";
+import { StockReceiptStatus } from "@prisma/client";
 import { setStockProduct } from "./setStockProduct";
 import { updateProductStock } from "./updateProductStock";
 
@@ -22,14 +22,14 @@ const updateStock = async (
     if (!user.hasPermission(StockPermissionEnum.UPDATE))
       throw new Error("Forbidden");
 
-    const stock = await db.stock.update({
+    const stock = await db.stockReceipt.update({
       where: {
         id: stockId,
-        state: StockState.DRAFT,
+        status: StockReceiptStatus.DRAFT,
       },
       data: {
         note: payload.note,
-        state: StockState.CREATING,
+        status: StockReceiptStatus.CREATING,
         store_id: user.store,
         creator_id: user.employeeId,
       },
@@ -37,9 +37,9 @@ const updateStock = async (
 
     await setStockProduct(stock.id, payload.products, true);
 
-    const drafted = await db.stock.update({
+    const drafted = await db.stockReceipt.update({
       where: { id: stock.id },
-      data: { state: StockState.DRAFT },
+      data: { status: StockReceiptStatus.DRAFT },
       select: StockLayoutSelect,
     });
 

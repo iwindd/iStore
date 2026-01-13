@@ -25,7 +25,7 @@ model Employee {
   products       Product[]
   orders         Order[]
   borrows        Borrow[]
-  stocks         Stock[]
+  stock_receipts StockReceipt[]
   roles          Role[]
   order_products OrderProduct[]
   store          Store          @relation(fields: [store_id], references: [id])

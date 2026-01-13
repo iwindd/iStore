@@ -2,7 +2,7 @@ import dayjs from "@/libs/dayjs";
 import { SortDirection } from "@mui/material";
 import { GridFilterModel, GridSortModel } from "@mui/x-data-grid";
 
-import { Borrow, StockState } from "@prisma/client";
+import { Borrow, StockReceiptStatus } from "@prisma/client";
 
 export const money = (val: number) => {
   try {
@@ -55,7 +55,7 @@ export const date = (
       year: "numeric",
       month: "long",
       day: "numeric",
-      ...(options?.withTime ?? true
+      ...((options?.withTime ?? true)
         ? {
             hour: "2-digit",
             minute: "2-digit",
@@ -161,10 +161,10 @@ export const filter = (
                   ...(item.value === -1
                     ? { ["equals"]: -1 }
                     : item.value === 1
-                    ? { ["equals"]: 1 }
-                    : item.value === 2
-                    ? { ["equals"]: 2 }
-                    : { ["equals"]: 0 }),
+                      ? { ["equals"]: 1 }
+                      : item.value === 2
+                        ? { ["equals"]: 2 }
+                        : { ["equals"]: 0 }),
                 },
                 ...(item.value == 0
                   ? {
@@ -173,15 +173,15 @@ export const filter = (
                       },
                     }
                   : item.value == 3
-                  ? {
-                      ["start"]: { lte: currentTime.toDate() },
-                      ["end"]: { gte: currentTime.toDate() },
-                    }
-                  : item.value == 4
-                  ? {
-                      ["end"]: { lte: currentTime.toDate() },
-                    }
-                  : {}),
+                    ? {
+                        ["start"]: { lte: currentTime.toDate() },
+                        ["end"]: { gte: currentTime.toDate() },
+                      }
+                    : item.value == 4
+                      ? {
+                          ["end"]: { lte: currentTime.toDate() },
+                        }
+                      : {}),
               };
             } else {
               return {
@@ -209,17 +209,17 @@ export const borrowStatus = (status: Borrow["status"]): string => {
   }
 };
 
-export const stockState = (state: StockState): string => {
-  switch (state) {
-    case StockState.CREATING:
+export const stockReceiptStatus = (status: StockReceiptStatus): string => {
+  switch (status) {
+    case StockReceiptStatus.CREATING:
       return "กำลังสร้าง...";
-    case StockState.DRAFT:
+    case StockReceiptStatus.DRAFT:
       return "แบบร่าง";
-    case StockState.PROCESSING:
+    case StockReceiptStatus.PROCESSING:
       return "กำลังดำเนินการ";
-    case StockState.COMPLETED:
+    case StockReceiptStatus.COMPLETED:
       return "เสร็จสิ้นแล้ว";
-    case StockState.CANCEL:
+    case StockReceiptStatus.CANCEL:
       return "ยกเลิกแล้ว";
     default:
       return "ไม่ทราบ";

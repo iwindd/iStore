@@ -58,10 +58,9 @@ const fetchDashboard = async () => {
         },
         select: {
           stock: true,
-          stock_min: true,
         },
       }),
-      db.stock.count({
+      db.stockReceipt.count({
         where: {
           store_id: storeId,
           creator_id: user.limitPermission(StockPermissionEnum.READ),

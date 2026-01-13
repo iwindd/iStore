@@ -15,6 +15,7 @@ model Order {
   store      Store          @relation(fields: [store_id], references: [id])
   creator    Employee?      @relation(fields: [creator_id], references: [id])
   products   OrderProduct[]
+  productStockMovements  ProductStockMovement[]
 
   @@map("orders")
 }

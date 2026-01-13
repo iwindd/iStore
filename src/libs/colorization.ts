@@ -1,5 +1,5 @@
 import { GridCellParams, GridTreeNode } from "@mui/x-data-grid";
-import { StockState } from "@prisma/client";
+import { StockReceiptStatus } from "@prisma/client";
 
 export class Colorization {
   static getGridCellColorForQuantity(
@@ -10,21 +10,21 @@ export class Colorization {
     return params.value <= 0 ? "text-color-error" : "text-color-success";
   }
 
-  static getGridCellColorForStockState(
+  static getGridCellColorForStockReceiptStatus(
     params: GridCellParams<any, any, any, GridTreeNode>
   ) {
     if (params.field != "state") return "";
 
     switch (params.value) {
-      case StockState.CREATING:
+      case StockReceiptStatus.CREATING:
         return "text-color-secondary";
-      case StockState.DRAFT:
+      case StockReceiptStatus.DRAFT:
         return "text-color-secondary";
-      case StockState.PROCESSING:
+      case StockReceiptStatus.PROCESSING:
         return "text-color-warning";
-      case StockState.COMPLETED:
+      case StockReceiptStatus.COMPLETED:
         return "text-color-success";
-      case StockState.CANCEL:
+      case StockReceiptStatus.CANCEL:
         return "text-color-error";
       default:
         return "text-color-secondary";

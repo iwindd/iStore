@@ -16,11 +16,7 @@ const GetProduct = async (
       where: {
         serial: removeWhiteSpace(serial),
         store_id: user.store,
-        ...(!includeDelete
-          ? {
-              deleted_at: null,
-            }
-          : {}),
+        ...(includeDelete ? {} : { deleted_at: null }),
       },
       include: {
         category: {

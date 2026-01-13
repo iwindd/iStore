@@ -20,9 +20,11 @@ const ImportMinStock = async (
     where: {
       store_id: user.store,
       stock: {
-        lte: payload.product_min_stock
-          ? db.product.fields.stock_min
-          : payload.value,
+        quantity: {
+          lte: payload.product_min_stock
+            ? 10 /* db.product.fields.stock_min TODO :: FIX THIS*/
+            : payload.value,
+        },
       },
       deleted_at: null,
     },
@@ -33,7 +35,7 @@ const ImportMinStock = async (
       price: true,
       cost: true,
       stock: true,
-      stock_min: true,
+      /*      stock_min: true, */
       category: {
         select: {
           label: true,
@@ -49,27 +51,26 @@ const ImportMinStock = async (
 
   return products.map((p) => ({
     product_id: p.id,
-    delta: payload.changedBy || p.stock_min,
+    delta: payload.changedBy || 10 /* p.stock_min TODO :: FIX THIS*/,
   }));
 };
 
 const ImportStockId = async (payload: ImportFromStockId, user: User) => {
-  const validated = await db.stock.findFirstOrThrow({
+  const validated = await db.stockReceipt.findFirstOrThrow({
     where: { id: payload.id, store_id: user.store },
     select: {
-      products: {
+      stock_recept_products: {
         select: {
           product_id: true,
-          stock_after: true,
-          stock_before: true,
+          quantity: true,
         },
       },
     },
   });
 
-  return validated.products.map((p) => ({
+  return validated.stock_recept_products.map((p) => ({
     product_id: p.product_id,
-    delta: Math.abs(p.stock_after - p.stock_before),
+    delta: Math.abs(p.quantity),
   }));
 };
 

@@ -4,6 +4,7 @@ import { BorrowPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
+import { ProductStockMovementType } from "@prisma/client";
 
 const UpdateBorrow = async (
   borrowId: number,
@@ -29,14 +30,9 @@ const UpdateBorrow = async (
     if (!data) throw new Error("Forbidden");
 
     if (data && data.count < data.amount) {
-      const product = await db.product.update({
+      const product = await db.product.findUniqueOrThrow({
         where: {
           id: data.product_id,
-        },
-        data: {
-          stock: {
-            increment: data.amount - data.count,
-          },
         },
         include: {
           category: {
@@ -46,6 +42,15 @@ const UpdateBorrow = async (
           },
         },
       });
+
+      await db.product.addStock(
+        product.id,
+        data.amount - data.count,
+        ProductStockMovementType.SALE,
+        {
+          borrow_id: borrowId,
+        }
+      );
 
       if (data.count > 0 && user.store) {
         const totalPrice = product.price * data.count;

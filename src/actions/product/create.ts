@@ -16,18 +16,23 @@ const CreateProduct = async (
     if (!user.hasPermission(ProductPermissionEnum.CREATE))
       throw new Error("Forbidden");
     const validated = ProductSchema.parse(payload);
-
     const product = await db.product.create({
       data: {
         serial: removeWhiteSpace(validated.serial),
         label: validated.label,
         store_id: user.store,
         creator_id: user.employeeId,
+        stock: {
+          create: {
+            quantity: 0,
+          },
+        },
       },
     });
 
     return { success: true, data: product };
   } catch (error) {
+    console.log(error);
     return ActionError(error) as ActionResponse<Product>;
   }
 };

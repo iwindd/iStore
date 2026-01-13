@@ -19,7 +19,7 @@ export const ProductProvider = ({
   const [product, setProduct] = useState<ProductLayoutValue>(value);
 
   const updateStock = (stock: number) => {
-    setProduct({ ...product, stock: stock });
+    setProduct({ ...product, stock: { quantity: stock } });
   };
 
   const ctxValue = useMemo(

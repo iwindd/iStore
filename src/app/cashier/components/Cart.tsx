@@ -47,7 +47,7 @@ const CartContainer = () => {
               quantity={product.quantity}
               price={product.data?.price || 0}
               canOverstock={product.data?.category?.overstock || false}
-              stock={product.data?.stock || 0}
+              stock={product.data?.stock?.quantity || 0}
             />
           ))
         ) : (
@@ -85,7 +85,7 @@ const CartContainer = () => {
                 canOverstock={
                   promotionQuantity.data.category?.overstock || false
                 }
-                stock={promotionQuantity.data.stock || 0}
+                stock={promotionQuantity.data.stock?.quantity || 0}
               />
             ))}
           </Stack>

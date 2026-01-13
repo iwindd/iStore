@@ -123,10 +123,11 @@ export const getMergedPromotionQuantitiesFromOffers = (
     const data = allProductData.find((p) => p.id === item.id)!;
     const cartQuantity = products.find((q) => q.id == item.id)?.quantity || 0;
     const canOverstock = data.category?.overstock;
+    const stockQuantity = data.stock?.quantity || 0;
     let possibleQuantity = item.quantity;
 
-    if (cartQuantity + item.quantity > data.stock && !canOverstock) {
-      possibleQuantity = data.stock - cartQuantity;
+    if (cartQuantity + item.quantity > stockQuantity && !canOverstock) {
+      possibleQuantity = stockQuantity - cartQuantity;
     }
 
     return {

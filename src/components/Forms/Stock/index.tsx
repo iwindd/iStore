@@ -25,7 +25,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { StockState } from "@prisma/client";
+import { StockReceiptStatus } from "@prisma/client";
 import { useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ToolDialog from "./components/ToolDialog";
@@ -44,16 +44,16 @@ const StockForm = ({
   ...props
 }: StockFormProps) => {
   const disabled =
-    props.disabled || (stock && stock?.state !== StockState.DRAFT);
+    props.disabled || (stock && stock?.status !== StockReceiptStatus.DRAFT);
   const toolDialog = useDialog();
   const ref = useRef<HTMLFormElement>(null);
   const form = useForm<StockValues>({
     resolver: zodResolver(StockSchema),
     defaultValues: {
       note: stock?.note || "",
-      products: stock?.products.map((product) => ({
+      products: stock?.stock_recept_products.map((product) => ({
         product_id: product.product_id,
-        delta: Math.abs(product.stock_after - product.stock_before),
+        delta: product.quantity,
       })) || [
         {
           product_id: 0,
@@ -169,7 +169,7 @@ const StockForm = ({
                     <TableCell
                       sx={{
                         display:
-                          stock?.state === StockState.DRAFT
+                          stock?.status === StockReceiptStatus.DRAFT
                             ? undefined
                             : "none",
                       }}
@@ -186,12 +186,10 @@ const StockForm = ({
                         <TableCell>
                           <ProductSelector
                             defaultValue={product.product_id}
-                            fieldProps={{
-                              fullWidth: true,
-                              error: !!errors.products?.[index]?.product_id,
-                              helperText:
-                                errors.products?.[index]?.product_id?.message,
-                            }}
+                            error={!!errors.products?.[index]?.product_id}
+                            helperText={
+                              errors.products?.[index]?.product_id?.message
+                            }
                             disabled={disabled || isLoading}
                             onSubmit={(product) => {
                               setValue(
@@ -218,7 +216,7 @@ const StockForm = ({
                         <TableCell
                           sx={{
                             display:
-                              stock?.state === StockState.DRAFT
+                              stock?.status === StockReceiptStatus.DRAFT
                                 ? undefined
                                 : "none",
                           }}
@@ -251,7 +249,9 @@ const StockForm = ({
                 <TableFooter
                   sx={{
                     display:
-                      stock?.state === StockState.DRAFT ? undefined : "none",
+                      !stock || stock?.status === StockReceiptStatus.DRAFT
+                        ? undefined
+                        : "none",
                   }}
                 >
                   <TableRow>
@@ -300,9 +300,10 @@ const StockForm = ({
           จัดการสต๊อก
         </Typography>
         <Stack direction={"row"} spacing={1}>
-          {isLoading || (stock && stock?.state !== StockState.DRAFT) ? (
+          {isLoading ||
+          (stock && stock?.status !== StockReceiptStatus.DRAFT) ? (
             <Typography variant="body2" color="secondary">
-              {stock?.state === StockState.DRAFT
+              {stock?.status === StockReceiptStatus.DRAFT
                 ? "กำลังบันทึก..."
                 : `เสร็จสิ้นแล้ว`}
             </Typography>

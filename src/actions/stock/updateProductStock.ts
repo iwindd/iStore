@@ -1,24 +1,26 @@
 "use server";
 import STOCK_CONFIG from "@/config/Stock";
 import db from "@/libs/db";
-import { StockState } from "@prisma/client";
+import { ProductStockMovementType, StockReceiptStatus } from "@prisma/client";
 import _ from "lodash";
+import { addProductStock, removeProductStock } from "../product/stock";
 
 export const updateProductStock = async (stock_id: number) => {
-  const stock = await db.stock.update({
+  const stock = await db.stockReceipt.update({
     where: {
       id: stock_id,
-      state: StockState.DRAFT,
+      status: StockReceiptStatus.DRAFT,
     },
     data: {
-      state: StockState.PROCESSING,
+      status: StockReceiptStatus.PROCESSING,
     },
     select: {
-      products: {
+      id: true,
+      stock_recept_products: {
         select: {
           id: true,
           product_id: true,
-          stock_after: true,
+          quantity: true,
           product: {
             select: {
               stock: true,
@@ -29,52 +31,49 @@ export const updateProductStock = async (stock_id: number) => {
     },
   });
 
-  const chunks = _.chunk(stock.products, STOCK_CONFIG.UPDATE_STOCK_CHUNK_SIZE);
+  const chunks = _.chunk(
+    stock.stock_recept_products,
+    STOCK_CONFIG.UPDATE_STOCK_CHUNK_SIZE
+  );
   const start_time = Date.now();
 
   for (const [_, chunk] of chunks.entries()) {
-    await db.$transaction(async () => {
+    await db.$transaction(async (tx) => {
       for (const payload of chunk) {
-        const updatedProduct = await db.product.update({
-          where: {
-            id: payload.product_id,
-            deleted_at: null,
-          },
-          data: {
-            stock:
-              payload.stock_after < 0
-                ? { decrement: Math.abs(payload.stock_after) }
-                : { increment: payload.stock_after },
-          },
-        });
-
-        await db.stockProduct.update({
-          where: {
-            id: payload.id,
-          },
-          data: {
-            stock_after: updatedProduct.stock,
-            stock_before: payload.product.stock,
-          },
-        });
+        if (payload.quantity > 0) {
+          addProductStock(
+            payload.product_id,
+            payload.quantity,
+            ProductStockMovementType.RECEIVE,
+            { stock_receipt_id: stock.id }
+          );
+        }
+        if (payload.quantity < 0) {
+          removeProductStock(
+            payload.product_id,
+            Math.abs(payload.quantity),
+            ProductStockMovementType.ADJUST,
+            { stock_receipt_id: stock.id }
+          );
+        }
       }
     });
   }
 
   const end_time = Date.now();
   console.warn(
-    `${stock.products.length} products updated in ${end_time - start_time} ms`
+    `${stock.stock_recept_products.length} products updated in ${end_time - start_time} ms`
   );
 
-  return await db.stock.update({
+  return await db.stockReceipt.update({
     where: {
       id: stock_id,
     },
     data: {
-      state: StockState.COMPLETED,
+      status: StockReceiptStatus.COMPLETED,
     },
     include: {
-      products: true,
+      stock_recept_products: true,
     },
   });
 };

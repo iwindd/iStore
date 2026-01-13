@@ -12,7 +12,7 @@ type MostSoldProduct = Prisma.ProductGetPayload<{
             category: {
               overstock: true;
             };
-          }
+          },
         ];
       },
       {
@@ -26,7 +26,7 @@ type MostSoldProduct = Prisma.ProductGetPayload<{
             category: {
               overstock: false;
             };
-          }
+          },
         ];
       },
       {
@@ -38,9 +38,9 @@ type MostSoldProduct = Prisma.ProductGetPayload<{
           },
           {
             category: null;
-          }
+          },
         ];
-      }
+      },
     ];
   };
   select: {
@@ -97,7 +97,9 @@ const fetchMostSoldProducts = async (): Promise<MostSoldProduct[]> => {
             AND: [
               {
                 stock: {
-                  gt: 0,
+                  quantity: {
+                    gt: 0,
+                  },
                 },
               },
               {
@@ -111,7 +113,9 @@ const fetchMostSoldProducts = async (): Promise<MostSoldProduct[]> => {
             AND: [
               {
                 stock: {
-                  gt: 0,
+                  quantity: {
+                    gt: 0,
+                  },
                 },
               },
               {

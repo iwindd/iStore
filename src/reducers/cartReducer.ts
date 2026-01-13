@@ -3,8 +3,14 @@ import Cashout from "@/actions/cashier/cashout";
 import findProductById, {
   FindProductByIdResult,
 } from "@/actions/product/findById";
+import findProductBySerial from "@/actions/product/findBySerial";
 import { CashoutInputValues, CashoutSchema } from "@/schema/Payment";
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  PayloadAction,
+  WritableDraft,
+} from "@reduxjs/toolkit";
 import { enqueueSnackbar } from "notistack";
 
 export interface CartProduct {
@@ -27,6 +33,25 @@ export const addProductToCartById = createAsyncThunk(
     if (!resp.success || !resp.data) {
       enqueueSnackbar(`มีบางอย่างผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง!`, {
         variant: "error",
+      });
+      throw new Error("product_not_found");
+    }
+
+    return resp.data;
+  }
+);
+
+export const addProductToCartBySerial = createAsyncThunk(
+  "cart/addProductToCartBySerial",
+  async (serial: string) => {
+    const resp = await findProductBySerial(serial);
+
+    console.log(resp);
+    if (!resp.success || !resp.data) {
+      enqueueSnackbar("ไม่พบสินค้านี้ในระบบ", {
+        variant: "error",
+        preventDuplicate: true,
+        key: "scanner-error",
       });
       throw new Error("product_not_found");
     }
@@ -90,9 +115,54 @@ const getTotalPrice = (products: CartProduct[]) => {
 const getHasSomeProductOverstock = (products: CartProduct[]) => {
   return products.some(
     (product) =>
-      product.quantity > (product.data?.stock || 0) &&
+      product.quantity > (product.data?.stock?.quantity || 0) &&
       product.data?.category?.overstock
   );
+};
+
+const onAddProductToCart = (
+  state: WritableDraft<CartState>,
+  action: PayloadAction<FindProductByIdResult>
+) => {
+  const product = action.payload;
+  const existingProduct = state.products.find((p) => p.id === product.id);
+  const quantity = (existingProduct ? existingProduct.quantity : 0) + 1;
+
+  if (
+    !product.category?.overstock &&
+    quantity > (product.stock?.quantity || 0)
+  ) {
+    enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
+      variant: "error",
+      key: `addProductToCart-${product.id}-overstock`,
+      preventDuplicate: true,
+    });
+
+    return;
+  }
+
+  enqueueSnackbar(`เพิ่มสินค้า <${product.label}> เข้าตะกร้าแล้ว!`, {
+    variant: "success",
+    key: `addProductToCart-${product.id}`,
+    preventDuplicate: true,
+  });
+
+  (() => {
+    if (existingProduct) {
+      existingProduct.quantity = quantity;
+      existingProduct.data = product;
+      return;
+    }
+
+    state.products.push({
+      id: product.id,
+      quantity: quantity,
+      data: product,
+    });
+  })();
+
+  state.total = getTotalPrice(state.products);
+  state.hasSomeProductOverstock = quantity > (product.stock?.quantity || 0);
 };
 
 const cartSlice = createSlice({
@@ -130,44 +200,8 @@ const cartSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(addProductToCartById.fulfilled, (state, action) => {
-      const product = action.payload;
-      const existingProduct = state.products.find((p) => p.id === product.id);
-      const quantity = (existingProduct ? existingProduct.quantity : 0) + 1;
-
-      if (!product.category?.overstock && quantity > product.stock) {
-        enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
-          variant: "error",
-          key: `addProductToCart-${product.id}-overstock`,
-          preventDuplicate: true,
-        });
-
-        return;
-      }
-
-      enqueueSnackbar(`เพิ่มสินค้า <${product.label}> เข้าตะกร้าแล้ว!`, {
-        variant: "success",
-        key: `addProductToCart-${product.id}`,
-        preventDuplicate: true,
-      });
-
-      (() => {
-        if (existingProduct) {
-          existingProduct.quantity = quantity;
-          existingProduct.data = product;
-          return;
-        }
-
-        state.products.push({
-          id: product.id,
-          quantity: quantity,
-          data: product,
-        });
-      })();
-
-      state.total = getTotalPrice(state.products);
-      state.hasSomeProductOverstock = quantity > product.stock;
-    });
+    builder.addCase(addProductToCartById.fulfilled, onAddProductToCart);
+    builder.addCase(addProductToCartBySerial.fulfilled, onAddProductToCart);
     builder.addCase(cashoutCart.fulfilled, (state) => {
       enqueueSnackbar(`ทำรายการคิดเงินสำเร็จแล้ว!`, {
         variant: "success",

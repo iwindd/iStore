@@ -13,6 +13,7 @@ model Borrow {
   product    Product     @relation(fields: [product_id], references: [id])
   store      Store       @relation(fields: [store_id], references: [id])
   creator    Employee?  @relation(fields: [creator_id], references: [id])
+  productStockMovements  ProductStockMovement[]
 
   @@map("borrows")
 }

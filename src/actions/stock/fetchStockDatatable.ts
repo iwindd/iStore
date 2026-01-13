@@ -6,7 +6,7 @@ import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { Prisma } from "@prisma/client";
 
-export type StockDatatableInstance = Prisma.StockGetPayload<{
+export type StockDatatableInstance = Prisma.StockReceiptGetPayload<{
   select: {
     id: true;
     action_at: true;
@@ -24,7 +24,7 @@ export type StockDatatableInstance = Prisma.StockGetPayload<{
     };
     _count: {
       select: {
-        products: true;
+        stock_recept_products: true;
       };
     };
   };
@@ -35,7 +35,7 @@ const fetchStockDatatable = async (table: TableFetch) => {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
 
-    return await db.stock.datatableFetch({
+    return await db.stockReceipt.datatableFetch({
       table,
       where: {
         store_id: user.store,
@@ -45,7 +45,7 @@ const fetchStockDatatable = async (table: TableFetch) => {
         id: true,
         action_at: true,
         note: true,
-        state: true,
+        status: true,
         creator: {
           select: {
             id: true,
@@ -58,7 +58,7 @@ const fetchStockDatatable = async (table: TableFetch) => {
         },
         _count: {
           select: {
-            products: true,
+            stock_recept_products: true,
           },
         },
       },

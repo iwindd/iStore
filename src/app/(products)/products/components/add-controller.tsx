@@ -200,11 +200,13 @@ export function ProductFormDialog({
       if (product?.deleted_at) {
         const resp = await recoveryProduct(product.id);
         if (!resp.success) throw new Error("error");
-        router.push(getPath("products.product", { id: product.id }));
+        router.push(getPath("products.product", { id: product.id.toString() }));
       } else {
         const resp = await CreateProduct(payload);
         if (!resp.success) throw new Error(resp.message);
-        router.push(getPath("products.product", { id: resp?.data?.id }));
+        router.push(
+          getPath("products.product", { id: resp?.data?.id.toString() })
+        );
       }
 
       reset();

@@ -7,7 +7,8 @@ import {
   ProductUpdateStockSchema,
   ProductUpdateStockValues,
 } from "@/schema/Product";
-import { StockState } from "@prisma/client";
+import { ProductStockMovementType, StockReceiptStatus } from "@prisma/client";
+import { setProductStock } from "./stock";
 
 const UpdateStock = async (
   payload: ProductUpdateStockValues,
@@ -19,49 +20,44 @@ const UpdateStock = async (
     if (!user.hasPermission(ProductPermissionEnum.UPDATE))
       throw new Error("Unauthorized");
     const validated = ProductUpdateStockSchema.parse(payload);
+    const product = await db.product.findUniqueOrThrow({
+      where: {
+        id: id,
+        store_id: user.store,
+      },
+      select: {
+        id: true,
+        stock: true,
+      },
+    });
 
-    await db.$transaction(async (tx) => {
-      const product = await tx.product.findUnique({
-        where: {
-          id: id,
-          store_id: user.store,
-        },
-        select: {
-          stock: true,
-        },
-      });
-
-      if (!product) throw new Error("Product not found");
-
-      await tx.product.update({
-        where: {
-          id: id,
-          store_id: user.store,
-        },
-        data: {
-          stock: validated.stock,
-        },
-      });
-
-      await tx.stock.create({
-        data: {
-          note: validated.note,
-          state: StockState.SUCCESS,
-          store_id: user.store,
-          creator_id: user.employeeId,
-          products: {
-            create: {
-              product_id: id,
-              stock_after: validated.stock,
-              stock_before: product.stock,
-            },
+    const stockReceipt = await db.stockReceipt.create({
+      data: {
+        note: validated.note,
+        status: StockReceiptStatus.COMPLETED,
+        store_id: user.store,
+        creator_id: user.employeeId,
+        stock_recept_products: {
+          create: {
+            quantity: validated.stock,
+            product_id: product.id,
           },
         },
-      });
+      },
     });
+
+    await setProductStock(
+      id,
+      validated.stock,
+      ProductStockMovementType.ADJUST,
+      {
+        stock_receipt_id: stockReceipt.id,
+      }
+    );
 
     return { success: true, data: validated };
   } catch (error) {
+    console.error(error);
     return ActionError(error) as ActionResponse<ProductUpdateStockValues>;
   }
 };

@@ -4,7 +4,7 @@ import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { Prisma } from "@prisma/client";
 
-export type FindProductByIdResult = Prisma.ProductGetPayload<{
+export type FindProductBySerialResult = Prisma.ProductGetPayload<{
   select: {
     id: true;
     serial: true;
@@ -25,16 +25,16 @@ export type FindProductByIdResult = Prisma.ProductGetPayload<{
   };
 }>;
 
-const findProductById = async (
-  id: number,
+const findProductBySerial = async (
+  serial: string,
   includeDelete?: boolean
-): Promise<ActionResponse<FindProductByIdResult | null>> => {
+): Promise<ActionResponse<FindProductBySerialResult | null>> => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     const product = await db.product.findFirst({
       where: {
-        id: id,
+        serial: serial,
         store_id: user.store,
         ...(includeDelete
           ? {}
@@ -67,8 +67,10 @@ const findProductById = async (
       data: product,
     };
   } catch (error) {
-    return ActionError(error) as ActionResponse<FindProductByIdResult | null>;
+    return ActionError(
+      error
+    ) as ActionResponse<FindProductBySerialResult | null>;
   }
 };
 
-export default findProductById;
+export default findProductBySerial;

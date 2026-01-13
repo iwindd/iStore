@@ -26,7 +26,11 @@ const selectProduct = {
       id: true,
     },
   },
-  stock: true,
+  stock: {
+    select: {
+      quantity: true,
+    },
+  },
 } satisfies Prisma.ProductSelect;
 
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {

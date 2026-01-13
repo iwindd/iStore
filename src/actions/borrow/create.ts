@@ -4,6 +4,7 @@ import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { BorrowsSchema, BorrowsValues } from "@/schema/Borrows";
+import { ProductStockMovementType } from "@prisma/client";
 
 const CreateBorrow = async (
   payload: BorrowsValues
@@ -25,7 +26,7 @@ const CreateBorrow = async (
     const validated = BorrowsSchema.parse(payload); // revalidate
     if (!product) throw new Error("not_found_product");
 
-    await db.borrow.create({
+    const borrow = await db.borrow.create({
       data: {
         amount: validated.count,
         note: validated.note,
@@ -36,17 +37,14 @@ const CreateBorrow = async (
       },
     });
 
-    await db.product.update({
-      where: {
-        id: product.id,
-        deleted_at: null,
-      },
-      data: {
-        stock: {
-          decrement: validated.count,
-        },
-      },
-    });
+    await db.product.removeStock(
+      product.id,
+      validated.count,
+      ProductStockMovementType.SALE,
+      {
+        borrow_id: borrow.id,
+      }
+    );
 
     return { success: true, data: validated };
   } catch (error) {

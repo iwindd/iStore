@@ -4,6 +4,8 @@ import { createSoftDeleteExtension } from "prisma-extension-soft-delete";
 import { datatableFetchExtension } from "./prismaExtensions/Datatable";
 import { promotionExtension } from "./prismaExtensions/Promotion";
 
+export type Tx = Parameters<Parameters<typeof db.$transaction>[0]>[0];
+
 const prismaClientSingleton = () => {
   const prisma = new PrismaClient()
     .$extends(withAccelerate())
