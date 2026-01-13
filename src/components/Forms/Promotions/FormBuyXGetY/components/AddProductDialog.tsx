@@ -57,12 +57,10 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <ProductSelector
+            error={errors["product_id"] !== undefined}
+            helperText={errors["product_id"]?.message}
             onSubmit={(product) => {
               setValue("product_id", product?.id as number);
-            }}
-            fieldProps={{
-              error: errors["product_id"] !== undefined,
-              helperText: errors["product_id"]?.message,
             }}
           />
           <TextField
