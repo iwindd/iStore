@@ -180,22 +180,28 @@ async function main() {
   });
 
   const ordersData = await getOrders();
-  const chunks = _.chunk(ordersData, 500);
+  const chunks = _.chunk(ordersData, 100);
 
   console.log(
     `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`
   );
 
   for (const [i, chunk] of chunks.entries()) {
-    await prisma.$transaction(async () => {
-      for (const order of chunk) {
-        await prisma.order.create({
-          data: {
-            ...order,
-          },
-        });
+    await prisma.$transaction(
+      async () => {
+        for (const order of chunk) {
+          await prisma.order.create({
+            data: {
+              ...order,
+            },
+          });
+        }
+      },
+      {
+        maxWait: 60000,
+        timeout: 60000,
       }
-    });
+    );
     console.log(`✅ Seeded chunk ${i + 1}/${chunks.length}`);
   }
   console.log(
