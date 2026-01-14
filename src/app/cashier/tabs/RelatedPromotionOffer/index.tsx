@@ -32,7 +32,6 @@ const RelatedPromotionOfferTab = () => {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>โปรโมชั่น</TableCell>
             <TableCell>สินค้าที่ต้องซื้อ</TableCell>
             <TableCell>สินค้าที่ได้รับ</TableCell>
             <TableCell align="right">หมดอายุ</TableCell>
@@ -51,18 +50,6 @@ const RelatedPromotionOfferTab = () => {
           {relatedPromotionOffers.map((offer) => {
             return (
               <TableRow key={offer.id}>
-                <TableCell width={400}>
-                  <Stack width={400}>
-                    <Typography noWrap={true}>{offer.event.title}</Typography>
-                    <Typography
-                      variant="caption"
-                      color={"text.secondary"}
-                      noWrap={true}
-                    >
-                      {offer.event.description || "ไม่มีรายละเอียด"}
-                    </Typography>
-                  </Stack>
-                </TableCell>
                 <TableCell>
                   <Stack>
                     {offer.buyItems.map((item) => (
