@@ -2,66 +2,50 @@
 import { CashierPermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import {
-  getPromotionQuantities,
-  mergePromotionQuantities,
-} from "@/libs/promotion";
 import { getUser } from "@/libs/session";
-import { User } from "@/libs/user";
-import { CartProduct } from "@/reducers/cartReducer";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
-import { removeProductStock } from "../product/stock";
-import {
-  adjustOfferQuantity,
-  calculateTotals,
-  getStockInfo,
-  getTotalCost,
-  getTotalPrice,
-  validateStock,
-} from "./cashout-helpers";
+import { Decimal } from "@prisma/client/runtime/library";
+import { CashoutHelper } from "./cashout-helpers";
 
-type TotalProduct = Prisma.ProductGetPayload<{
-  select: {
-    id: true;
-    serial: true;
-    label: true;
-    stock: true;
-    price: true;
-    cost: true;
-    category: { select: { label: true; overstock: true } };
-  };
-}> & {
-  offerQuantity: number;
-  promotion_offer_id: number[];
+type ValidateProduct = {
+  id: number;
+  stock: number;
+  quantity: number;
+  profit: number;
+  cost: number;
+  total: number;
   note?: string;
-} & ReturnType<typeof calculateTotals>;
+};
 
 const validateProducts = async (
-  user: User,
-  cart: CashoutValues["products"]
+  store_id: string,
+  cartProducts: CashoutValues["products"],
+  preOrderProducts: CashoutValues["preOrderProducts"]
 ) => {
-  const offers = await getPromotionOffers(user, cart);
-  const getOffer = (id: number) => offers.find((o) => o.id === id);
-  const where: Prisma.ProductWhereInput = {
-    store_id: user.store,
-    id: { in: [...cart.map((p) => p.id), ...offers.map((o) => o.id)] },
-    deleted_at: null,
-  };
+  const allRelateProductIds = [
+    ...cartProducts.map((p) => p.id),
+    ...preOrderProducts.map((p) => p.id),
+  ];
 
-  const select: Prisma.ProductSelect = {
-    id: true,
-    serial: true,
-    label: true,
-    stock: true,
-    price: true,
-    cost: true,
-    category: { select: { label: true, overstock: true } },
+  const where: Prisma.ProductWhereInput = {
+    store_id,
+    id: { in: allRelateProductIds },
+    deleted_at: null,
   };
 
   const products = await db.product.findMany({
     where,
-    select,
+    select: {
+      id: true,
+      stock: {
+        select: {
+          quantity: true,
+        },
+      },
+      price: true,
+      cost: true,
+    },
   });
 
   const findProduct = (id: number) => {
@@ -70,112 +54,59 @@ const validateProducts = async (
     return product;
   };
 
-  const totalProducts: TotalProduct[] = [];
+  const totalProducts: ValidateProduct[] = [];
+  const totalPreOrderProducts: ValidateProduct[] = [];
 
-  for (const cartItem of cart) {
-    const product = findProduct(cartItem.id);
-    const { stock, canOverStock } = getStockInfo(product);
+  const validateProduct = (
+    cartProduct: CashoutValues["products"][number],
+    isPreOrder?: boolean
+  ) => {
+    const product = findProduct(cartProduct.id);
 
-    validateStock(product, cartItem.quantity, stock, canOverStock);
+    if (!isPreOrder) {
+      if ((product.stock?.quantity || 0) < cartProduct.quantity)
+        throw new Error(`Product ${product.id} is out of stock.`);
+    }
 
-    const offer = getOffer(cartItem.id);
-    const offerQuantity = offer
-      ? adjustOfferQuantity(
-          offer.quantity,
-          cartItem.quantity,
-          stock,
-          canOverStock
-        )
-      : 0;
+    const totalPrice = product.price * cartProduct.quantity;
+    const totalCost = product.cost * cartProduct.quantity;
+    const totalProfit = totalPrice - totalCost;
 
-    const totals = calculateTotals(
-      product,
-      cartItem.quantity,
-      offerQuantity,
-      stock
-    );
+    return {
+      id: product.id,
+      stock: product.stock?.quantity || 0,
+      quantity: cartProduct.quantity,
+      profit: totalProfit,
+      cost: totalCost,
+      total: totalPrice,
+      note: cartProduct.note,
+    };
+  };
 
-    totalProducts.push({
-      ...product,
-      ...totals,
-      offerQuantity,
-      promotion_offer_id: offer?.promotion_offer_id ?? [],
-      note: cartItem.note,
-    });
+  for (const cartProduct of cartProducts) {
+    totalProducts.push(validateProduct(cartProduct));
   }
 
-  for (const offer of offers) {
-    if (cart.some((c) => c.id === offer.id)) continue;
-
-    const product = findProduct(offer.id);
-    const { stock, canOverStock } = getStockInfo(product);
-
-    const offerQuantity = adjustOfferQuantity(
-      offer.quantity,
-      0,
-      stock,
-      canOverStock
-    );
-
-    const totals = calculateTotals(product, 0, offerQuantity, stock);
-
-    totalProducts.push({
-      ...product,
-      ...totals,
-      offerQuantity,
-      promotion_offer_id: offer.promotion_offer_id,
-    });
+  for (const preOrderProduct of preOrderProducts) {
+    totalPreOrderProducts.push(validateProduct(preOrderProduct, true));
   }
 
-  return totalProducts;
-};
-
-const getPromotionOffers = async (
-  user: User,
-  products: Pick<CartProduct, "id" | "quantity">[]
-) => {
-  const relatedOffers = await db.promotionOffer.findRelatedPromotionOffer({
-    productIds: products.map((p) => p.id),
-    where: {
-      event: {
-        store_id: user.store,
-      },
-    },
-    select: {
-      id: true,
-      getItems: {
-        select: {
-          quantity: true,
-          product_id: true,
-          product: {
-            select: {
-              stock: true,
-              category: {
-                select: {
-                  overstock: true,
-                },
-              },
-            },
-          },
-        },
-      },
-      buyItems: {
-        select: {
-          product_id: true,
-          quantity: true,
-        },
-      },
-    },
-  });
-
-  const quantifiedOffers = relatedOffers.map((offer) => {
-    return getPromotionQuantities(offer.buyItems, offer.getItems, products)
-      .filter((item) => item.quantity > 0)
-      .map((item) => ({ ...item, promotion_offer_id: offer.id }));
-  });
-
-  const mergedPromotionQuantities = mergePromotionQuantities(quantifiedOffers);
-  return mergedPromotionQuantities;
+  return {
+    products: totalProducts,
+    preOrderProducts: totalPreOrderProducts,
+    totalPrice: CashoutHelper.getTotalPrice([
+      ...totalProducts,
+      ...totalPreOrderProducts,
+    ]),
+    totalCost: CashoutHelper.getTotalCost([
+      ...totalProducts,
+      ...totalPreOrderProducts,
+    ]),
+    totalProfit: CashoutHelper.getTotalProfit([
+      ...totalProducts,
+      ...totalPreOrderProducts,
+    ]),
+  };
 };
 
 interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
@@ -183,67 +114,92 @@ interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
   updated_at: string;
 }
 
-const Cashout = async (
-  payload: CashoutValues
-): Promise<ActionResponse<CashoutResponse>> => {
+const Cashout = async (payload: CashoutValues) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(CashierPermissionEnum.CREATE))
       throw new Error("Forbidden");
     const validated = CashoutSchema.parse(payload);
-    console.log(validated);
-    const products = await validateProducts(user, validated.products);
+    const { products, preOrderProducts, totalPrice, totalCost, totalProfit } =
+      await validateProducts(
+        user.store,
+        validated.products,
+        validated.preOrderProducts
+      );
 
-    const totalPrice = getTotalPrice(products);
-    const totalCost = getTotalCost(products);
-    const totalProfit = totalPrice - totalCost;
-
-    // CREATE ORDER
     const order = await db.$transaction(async (tx) => {
-      const order = await db.order.create({
+      const order = await tx.order.create({
         data: {
-          price: totalPrice,
-          cost: totalCost,
-          profit: totalProfit,
+          total: new Decimal(totalPrice),
+          cost: new Decimal(totalCost),
+          profit: new Decimal(totalProfit),
           method: validated.method,
-          note: validated.note || "",
-          text: products.map((item) => item.label).join(", "),
+          note: validated.note,
           store_id: user.store,
           creator_id: user.employeeId,
-          products: {
-            create: products.map(({ id, ...product }) => ({
-              serial: product.serial,
-              label: product.label,
-              category: product.category?.label || "ไม่มี่หมวดหมู่",
-              price: product.price,
-              cost: product.cost,
-              count: product.quantity,
-              overstock: product.overstockCount,
-              note: product.note,
-              promotionOffers: {
-                connect: product.promotion_offer_id.map((id) => ({ id })),
-              },
-            })),
-          },
         },
       });
-      for (const item of products) {
-        await removeProductStock(
-          item.id,
-          item.quantity,
-          ProductStockMovementType.SALE,
-          { order_id: order.id },
-          tx
-        );
 
-        await tx.product.update({
-          where: { id: item.id },
+      // Create Order Products
+      await tx.orderProduct.createMany({
+        data: products.map((product) => ({
+          order_id: order.id,
+          product_id: product.id,
+          count: product.quantity,
+          total: new Decimal(product.total),
+          cost: new Decimal(product.cost),
+          profit: new Decimal(product.profit),
+          note: product.note,
+        })),
+      });
+
+      // Remove Product Stock
+      for (const product of products) {
+        const stock = await tx.productStock.upsert({
+          where: { product_id: product.id },
+          create: { product_id: product.id, quantity: 0 },
+          update: {},
+        });
+
+        if (stock.quantity < product.quantity) {
+          throw new Error(`Product ${product.id} is out of stock`);
+        }
+
+        const before = stock.quantity;
+        const after = before - product.quantity;
+
+        await tx.productStockMovement.create({
           data: {
-            sold: { increment: item.quantity },
+            order_id: order.id,
+            product_id: product.id,
+            type: ProductStockMovementType.SALE,
+            quantity: -product.quantity,
+            quantity_before: before,
+            quantity_after: after,
+          },
+        });
+
+        await tx.productStock.update({
+          where: { id: stock.id },
+          data: {
+            quantity: { decrement: product.quantity },
           },
         });
       }
+
+      // Create Pre Order Products
+      await tx.orderPreOrder.createMany({
+        data: preOrderProducts.map((product) => ({
+          order_id: order.id,
+          product_id: product.id,
+          count: product.quantity,
+          total: new Decimal(product.total),
+          cost: new Decimal(product.cost),
+          profit: new Decimal(product.profit),
+          note: product.note,
+        })),
+      });
 
       return order;
     });
@@ -252,6 +208,9 @@ const Cashout = async (
       success: true,
       data: {
         ...order,
+        profit: order.profit.toNumber(),
+        cost: order.cost.toNumber(),
+        total: order.total.toNumber(),
         created_at: order.created_at.toISOString(),
         updated_at: order.updated_at.toISOString(),
       },

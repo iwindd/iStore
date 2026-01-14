@@ -14,6 +14,7 @@ model Order {
   store      Store          @relation(fields: [store_id], references: [id])
   creator    Employee?      @relation(fields: [creator_id], references: [id])
   products   OrderProduct[]
+  preOrders  OrderPreOrder[]
   productStockMovements  ProductStockMovement[]
 
   @@map("orders")
@@ -34,6 +35,22 @@ model OrderProduct {
   promotionOffers PromotionOffer[]
 
   @@map("order_products")
+}
+
+model OrderPreOrder{
+  id              Int               @id @default(autoincrement())
+  order_id        Int
+  product_id      Int
+  note            String?
+  count           Int
+  total           Decimal
+  profit          Decimal
+  cost            Decimal
+
+  product         Product         @relation(fields: [product_id], references: [id])
+  order           Order            @relation(fields: [order_id], references: [id])
+
+  @@map("order_preorders")
 }
 
 enum Method {

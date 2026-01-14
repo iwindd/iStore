@@ -38,6 +38,7 @@ model Product {
   promotionOfferBuyItems PromotionOfferBuyItem[]
   promotionOfferGetItems PromotionOfferGetItem[]
   orderProduct           OrderProduct[]
+  orderPreOrders         OrderPreOrder[]
   stock           ProductStock?     
   productStockMovements  ProductStockMovement[]
 
