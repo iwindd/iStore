@@ -85,7 +85,7 @@ const ProductPreorderForm = () => {
                     )}
                   />
                 }
-                label="การสั่งจอง"
+                label="พรีออเดอร์"
               />
               <Box>
                 <Typography variant="body2" color="text.secondary">
