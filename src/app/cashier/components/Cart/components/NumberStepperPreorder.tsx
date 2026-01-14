@@ -2,18 +2,16 @@ import { useAppDispatch } from "@/hooks";
 import {
   CartProduct,
   setProductPreOrderQuantity,
-  setProductQuantity,
 } from "@/reducers/cartReducer";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { IconButton, InputBase, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 
 const NumberStepperPreorder = ({
-  product: { preOrder, id, data },
+  product: { quantity, id, data },
 }: {
   product: CartProduct;
 }) => {
-  const quantity = preOrder?.quantity || 1;
   const [value, setValue] = useState<string | number>(quantity);
   const dispatch = useAppDispatch();
   const stockCount = data?.stock?.quantity || quantity;
@@ -25,12 +23,11 @@ const NumberStepperPreorder = ({
     let parseValue = Number(value);
 
     if (Number.isNaN(parseValue)) parseValue = quantity;
-    if (parseValue > stockCount) parseValue = stockCount;
     if (parseValue < 1) parseValue = 1;
 
     setValue(parseValue);
 
-    dispatch(setProductQuantity({ id: id, quantity: parseValue }));
+    dispatch(setProductPreOrderQuantity({ id: id, quantity: parseValue }));
   };
 
   useEffect(() => {

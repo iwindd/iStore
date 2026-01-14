@@ -18,6 +18,7 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
+import CartPreorder from "./components/CartPreorder";
 import CartProduct from "./components/CartProduct";
 import CartPromotionOffer from "./components/CartPromotionOffer";
 
@@ -25,6 +26,7 @@ const CartSections = () => {
   const dispatch = useAppDispatch();
   const payment = usePayment();
   const cart = useAppSelector((state) => state.cart.products);
+  const cartPreOrder = useAppSelector((state) => state.cart.preOrderProducts);
   const total = useAppSelector((state) => state.cart.total);
 
   const confirmation = useConfirm({
@@ -70,6 +72,10 @@ const CartSections = () => {
         {cart.length > 0 &&
           cart.map((product) => (
             <CartProduct key={product.id} product={product} />
+          ))}
+        {cartPreOrder.length > 0 &&
+          cartPreOrder.map((product) => (
+            <CartPreorder key={product.id} product={product} />
           ))}
 
         {mergedPromotionQuantities.length > 0 && (

@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/hooks";
-import { setProductPreOrderQuantity } from "@/reducers/cartReducer";
+import { preOrderProduct } from "@/reducers/cartReducer";
 import {
   Button,
   Dialog,
@@ -24,9 +24,11 @@ const PreOrderDialog = ({
   const dispatch = useAppDispatch();
 
   const handleSubmit = () => {
-    dispatch(
-      setProductPreOrderQuantity({ id: product_id, quantity: Number(quantity) })
-    );
+    let realQuantity = Number(quantity);
+    if (quantity == "") realQuantity = defaultValue;
+    if (Number.isNaN(realQuantity)) realQuantity = defaultValue;
+
+    dispatch(preOrderProduct({ id: product_id, quantity: realQuantity }));
     handleClose();
   };
 

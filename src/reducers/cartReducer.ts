@@ -12,20 +12,18 @@ import {
   WritableDraft,
 } from "@reduxjs/toolkit";
 import { enqueueSnackbar } from "notistack";
+import { CartHelper } from "./cartHelpers";
 
 export interface CartProduct {
   id: number;
   quantity: number;
-  preOrder?: {
-    quantity: number;
-    preOrderAll?: boolean;
-  };
   note?: string;
   data?: FindProductByIdResult; // cached
 }
 
 export interface CartState {
   products: CartProduct[];
+  preOrderProducts: CartProduct[];
   total: number;
   hasSomeProductOverstock: boolean;
 }
@@ -71,6 +69,7 @@ export const cashoutCart = createAsyncThunk(
     const { cart } = thunkAPI.getState() as { cart: CartState };
     const payload = CashoutSchema.safeParse({
       products: cart.products,
+      preOrderProducts: cart.preOrderProducts,
       ...data,
     });
 
@@ -106,6 +105,7 @@ export const cashoutCart = createAsyncThunk(
 
 const initialState: CartState = {
   products: [],
+  preOrderProducts: [],
   total: 0,
   hasSomeProductOverstock: false,
 };
@@ -132,42 +132,78 @@ const onAddProductToCart = (
   const product = action.payload;
   const existingProduct = state.products.find((p) => p.id === product.id);
   const quantity = (existingProduct ? existingProduct.quantity : 0) + 1;
-  const isPreOrderAll =
-    product.usePreorder && existingProduct?.preOrder?.preOrderAll;
+  const isEnoughtStock = quantity <= (product.stock?.quantity || 0);
+  let caseType: "not_enought_stock" | "add_to_cart" | "add_to_pre_order" =
+    "add_to_cart";
 
-  if (
-    !product.category?.overstock &&
-    quantity > (product.stock?.quantity || 0) &&
-    !isPreOrderAll
-  ) {
-    enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
-      variant: "error",
-      key: `addProductToCart-${product.id}-overstock`,
-      preventDuplicate: true,
-    });
-
-    return;
+  if (!isEnoughtStock) {
+    caseType = "not_enought_stock";
   }
 
-  enqueueSnackbar(`เพิ่มสินค้า <${product.label}> เข้าตะกร้าแล้ว!`, {
-    variant: "success",
-    key: `addProductToCart-${product.id}`,
-    preventDuplicate: true,
-  });
+  if (!isEnoughtStock && product.usePreorder) {
+    caseType = "add_to_pre_order";
+  }
 
-  (() => {
-    if (existingProduct) {
-      existingProduct.quantity = quantity;
-      existingProduct.data = product;
-      return;
-    }
+  switch (caseType) {
+    case "not_enought_stock":
+      enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
+        variant: "error",
+        key: `addProductToCart-${product.id}-overstock`,
+        preventDuplicate: true,
+      });
+      break;
+    case "add_to_pre_order":
+      (() => {
+        const existingPreOrderProduct = state.preOrderProducts.find(
+          (p) => p.id === product.id
+        );
 
-    state.products.push({
-      id: product.id,
-      quantity: quantity,
-      data: product,
-    });
-  })();
+        if (existingPreOrderProduct) {
+          existingPreOrderProduct.quantity += 1;
+          existingPreOrderProduct.data = product;
+          return;
+        }
+
+        state.preOrderProducts.push({
+          id: product.id,
+          quantity: 1,
+          data: product,
+        });
+      })();
+
+      enqueueSnackbar(
+        `เพิ่มสินค้าพรีออเดอร์ <${product.label}> เข้าตะกร้าแล้ว!`,
+        {
+          variant: "info",
+          key: `addPreOrderProductToCart-${product.id}`,
+          preventDuplicate: true,
+        }
+      );
+      break;
+    case "add_to_cart":
+      (() => {
+        if (existingProduct) {
+          existingProduct.quantity = quantity;
+          existingProduct.data = product;
+          return;
+        }
+
+        state.products.push({
+          id: product.id,
+          quantity: quantity,
+          data: product,
+        });
+      })();
+
+      enqueueSnackbar(`เพิ่มสินค้า <${product.label}> เข้าตะกร้าแล้ว!`, {
+        variant: "success",
+        key: `addProductToCart-${product.id}`,
+        preventDuplicate: true,
+      });
+      break;
+    default:
+      break;
+  }
 
   state.total = getTotalPrice(state.products);
   state.hasSomeProductOverstock = quantity > (product.stock?.quantity || 0);
@@ -179,106 +215,60 @@ const cartSlice = createSlice({
   reducers: {
     clearProductCart: (state) => {
       state.products = [];
+      state.preOrderProducts = [];
       state.hasSomeProductOverstock = false;
       state.total = 0;
     },
     removeProductFromCart: (state, action: PayloadAction<number>) => {
       state.products = state.products.filter((p) => p.id != action.payload);
       state.total = getTotalPrice(state.products);
-      state.hasSomeProductOverstock = getHasSomeProductOverstock(
-        state.products
-      );
     },
-    setProductQuantity: (
-      state,
-      action: PayloadAction<{ id: number; quantity: number }>
-    ) => {
-      const { id, quantity } = action.payload;
-      const product = state.products.find((p) => p.id === id);
-      if (!product) return;
-      const stockCount = product.data?.stock?.quantity || product.quantity;
-      const isPreOrderAll = product.preOrder?.preOrderAll;
-
-      if (Number.isNaN(quantity)) return;
-      if (quantity <= 0) return;
-
-      if (quantity > stockCount && !isPreOrderAll) {
-        product.quantity = stockCount;
-        return;
-      }
-
-      product.quantity = Math.max(+quantity, 1);
+    removePreOrderProductFromCart: (state, action: PayloadAction<number>) => {
+      state.preOrderProducts = state.preOrderProducts.filter(
+        (p) => p.id != action.payload
+      );
+      state.total = getTotalPrice(state.preOrderProducts);
+    },
+    setProductQuantity: (state, action) => {
+      CartHelper.setQuantity(state.products, action, {
+        checkStock: true,
+      });
       state.total = getTotalPrice(state.products);
-      state.hasSomeProductOverstock = getHasSomeProductOverstock(
-        state.products
+    },
+    setProductPreOrderQuantity: (state, action) => {
+      CartHelper.setQuantity(state.preOrderProducts, action);
+      state.total = getTotalPrice(state.products);
+    },
+    setProductNote: (state, action) =>
+      CartHelper.setNote(state.products, action),
+    setProductPreOrderNote: (state, action) =>
+      CartHelper.setNote(state.preOrderProducts, action),
+    preOrderProduct: (
+      state,
+      action: PayloadAction<{
+        id: number;
+        quantity: number;
+      }>
+    ) => {
+      let quantity = Number(action.payload.quantity);
+      if (quantity <= 0) return;
+      const product = state.products.find((p) => p.id === action.payload.id);
+      if (!product) return;
+      if (Number.isNaN(quantity)) quantity = product?.quantity;
+      const existingPreOrderProduct = state.preOrderProducts.find(
+        (p) => p.id === action.payload.id
       );
-    },
-    setProductPreOrderQuantity: (
-      state,
-      action: PayloadAction<{ id: number; quantity: number }>
-    ) => {
-      const { id, quantity } = action.payload;
-      let value = Number(quantity);
-      const product = state.products.find((p) => p.id === id);
-      if (!product) return;
-      if (Number.isNaN(value)) value = product.quantity;
-      if (value <= 0) value = 1;
 
-      if (product.quantity > (product.data?.stock?.quantity || 0)) {
-        product.quantity = product.data?.stock?.quantity || 0;
-      }
-
-      product.preOrder = {
-        quantity: value,
-        preOrderAll: false,
-      };
-    },
-    setProductNote: (
-      state,
-      action: PayloadAction<{ id: number; note: string }>
-    ) => {
-      const { id, note } = action.payload;
-      const product = state.products.find((p) => p.id === id);
-
-      if (!product) return;
-      product.note = note.slice(0, 40);
-    },
-    setPreOrderAll: (
-      state,
-      action: PayloadAction<{ id: number; preOrderAll: boolean }>
-    ) => {
-      const { id, preOrderAll } = action.payload;
-      const product = state.products.find((p) => p.id === id);
-
-      if (!product) return console.error("product_not_found", id, product);
-
-      if (!preOrderAll) {
-        delete product.preOrder;
-        if (product.quantity > (product.data?.stock?.quantity || 0)) {
-          product.quantity = product.data?.stock?.quantity || 0;
-        }
+      if (existingPreOrderProduct) {
+        existingPreOrderProduct.quantity = quantity;
         return;
       }
 
-      product.preOrder = {
-        quantity: 0,
-        preOrderAll: true,
-      };
-    },
-    mergePreorder: (state, action: PayloadAction<number>) => {
-      const product = state.products.find((p) => p.id === action.payload);
-      if (!product) return;
-
-      product.quantity = (product.preOrder?.quantity || 1) + product.quantity;
-      product.preOrder = {
-        quantity: 0,
-        preOrderAll: true,
-      };
-    },
-    removePreorder: (state, action: PayloadAction<number>) => {
-      const product = state.products.find((p) => p.id === action.payload);
-      if (!product) return;
-      delete product.preOrder;
+      state.preOrderProducts.push({
+        ...product,
+        quantity: quantity,
+        note: "",
+      });
     },
   },
   extraReducers: (builder) => {
@@ -289,6 +279,7 @@ const cartSlice = createSlice({
         variant: "success",
       });
       state.products = [];
+      state.preOrderProducts = [];
       state.total = 0;
       state.hasSomeProductOverstock = false;
     });
@@ -298,11 +289,11 @@ const cartSlice = createSlice({
 export const {
   clearProductCart,
   removeProductFromCart,
+  removePreOrderProductFromCart,
   setProductQuantity,
   setProductNote,
-  setPreOrderAll,
+  setProductPreOrderNote,
   setProductPreOrderQuantity,
-  mergePreorder,
-  removePreorder,
+  preOrderProduct,
 } = cartSlice.actions;
 export default cartSlice.reducer;

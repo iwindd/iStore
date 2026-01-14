@@ -3,8 +3,8 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { money } from "@/libs/formatter";
 import {
   CartProduct as CartProductType,
-  removePreorder,
-  setProductNote,
+  removePreOrderProductFromCart,
+  setProductPreOrderNote,
 } from "@/reducers/cartReducer";
 import {
   Delete,
@@ -35,7 +35,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
       startIcon: <DeleteTwoTone />,
       color: "error",
     },
-    onConfirm: async () => dispatch(removePreorder(product.id)),
+    onConfirm: async () => dispatch(removePreOrderProductFromCart(product.id)),
   });
 
   return (
@@ -112,7 +112,9 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
           <TextField
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            onBlur={() => dispatch(setProductNote({ id: product.id, note }))}
+            onBlur={() =>
+              dispatch(setProductPreOrderNote({ id: product.id, note }))
+            }
             label="หมายเหตุ"
             variant="filled"
             sx={{
