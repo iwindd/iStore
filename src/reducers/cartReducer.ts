@@ -16,6 +16,10 @@ import { enqueueSnackbar } from "notistack";
 export interface CartProduct {
   id: number;
   quantity: number;
+  preOrder?: {
+    quantity: number;
+    preOrderAll?: boolean;
+  };
   note?: string;
   data?: FindProductByIdResult; // cached
 }
@@ -128,10 +132,13 @@ const onAddProductToCart = (
   const product = action.payload;
   const existingProduct = state.products.find((p) => p.id === product.id);
   const quantity = (existingProduct ? existingProduct.quantity : 0) + 1;
+  const isPreOrderAll = existingProduct?.preOrder?.preOrderAll;
 
   if (
+    //TODO:: Make only product.useForPreOrder
     !product.category?.overstock &&
-    quantity > (product.stock?.quantity || 0)
+    quantity > (product.stock?.quantity || 0) &&
+    !isPreOrderAll
   ) {
     enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
       variant: "error",
@@ -188,16 +195,39 @@ const cartSlice = createSlice({
     ) => {
       const { id, quantity } = action.payload;
       const product = state.products.find((p) => p.id === id);
-
       if (!product) return;
+      const stockCount = product.data?.stock?.quantity || product.quantity;
+      const isPreOrderAll = product.preOrder?.preOrderAll;
+
       if (Number.isNaN(quantity)) return;
       if (quantity <= 0) return;
+
+      if (quantity > stockCount && !isPreOrderAll) {
+        product.quantity = stockCount;
+        return;
+      }
 
       product.quantity = Math.max(+quantity, 1);
       state.total = getTotalPrice(state.products);
       state.hasSomeProductOverstock = getHasSomeProductOverstock(
         state.products
       );
+    },
+    setProductPreOrderQuantity: (
+      state,
+      action: PayloadAction<{ id: number; quantity: number }>
+    ) => {
+      const { id, quantity } = action.payload;
+      let value = Number(quantity);
+      const product = state.products.find((p) => p.id === id);
+      if (!product) return;
+      if (Number.isNaN(value)) value = product.quantity;
+      if (value <= 0) value = 1;
+
+      product.preOrder = {
+        quantity: value,
+        preOrderAll: false,
+      };
     },
     setProductNote: (
       state,
@@ -208,6 +238,40 @@ const cartSlice = createSlice({
 
       if (!product) return;
       product.note = note.slice(0, 40);
+    },
+    setPreOrderAll: (
+      state,
+      action: PayloadAction<{ id: number; preOrderAll: boolean }>
+    ) => {
+      const { id, preOrderAll } = action.payload;
+      const product = state.products.find((p) => p.id === id);
+
+      if (!product) return console.error("product_not_found", id, product);
+
+      if (!preOrderAll) {
+        delete product.preOrder;
+        return;
+      }
+
+      product.preOrder = {
+        quantity: 0,
+        preOrderAll: true,
+      };
+    },
+    mergePreorder: (state, action: PayloadAction<number>) => {
+      const product = state.products.find((p) => p.id === action.payload);
+      if (!product) return;
+
+      product.quantity = (product.preOrder?.quantity || 1) + product.quantity;
+      product.preOrder = {
+        quantity: 0,
+        preOrderAll: true,
+      };
+    },
+    removePreorder: (state, action: PayloadAction<number>) => {
+      const product = state.products.find((p) => p.id === action.payload);
+      if (!product) return;
+      delete product.preOrder;
     },
   },
   extraReducers: (builder) => {
@@ -229,5 +293,9 @@ export const {
   removeProductFromCart,
   setProductQuantity,
   setProductNote,
+  setPreOrderAll,
+  setProductPreOrderQuantity,
+  mergePreorder,
+  removePreorder,
 } = cartSlice.actions;
 export default cartSlice.reducer;

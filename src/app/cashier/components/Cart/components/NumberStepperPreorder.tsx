@@ -1,14 +1,19 @@
 import { useAppDispatch } from "@/hooks";
-import { CartProduct, setProductQuantity } from "@/reducers/cartReducer";
+import {
+  CartProduct,
+  setProductPreOrderQuantity,
+  setProductQuantity,
+} from "@/reducers/cartReducer";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { IconButton, InputBase, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const NumberStepper = ({
-  product: { quantity, id, data },
+const NumberStepperPreorder = ({
+  product: { preOrder, id, data },
 }: {
   product: CartProduct;
 }) => {
+  const quantity = preOrder?.quantity || 1;
   const [value, setValue] = useState<string | number>(quantity);
   const dispatch = useAppDispatch();
   const stockCount = data?.stock?.quantity || quantity;
@@ -54,7 +59,9 @@ const NumberStepper = ({
       <IconButton
         size="small"
         onClick={() =>
-          dispatch(setProductQuantity({ id: id, quantity: quantity + 1 }))
+          dispatch(
+            setProductPreOrderQuantity({ id: id, quantity: quantity + 1 })
+          )
         }
         className="stepper-btn"
         sx={{
@@ -84,7 +91,9 @@ const NumberStepper = ({
       <IconButton
         size="small"
         onClick={() =>
-          dispatch(setProductQuantity({ id: id, quantity: quantity - 1 }))
+          dispatch(
+            setProductPreOrderQuantity({ id: id, quantity: quantity - 1 })
+          )
         }
         className="stepper-btn"
         sx={{
@@ -100,4 +109,4 @@ const NumberStepper = ({
   );
 };
 
-export default NumberStepper;
+export default NumberStepperPreorder;

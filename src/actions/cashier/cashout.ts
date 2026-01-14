@@ -9,7 +9,11 @@ import {
 import { getUser } from "@/libs/session";
 import { User } from "@/libs/user";
 import { CartProduct } from "@/reducers/cartReducer";
-import { CashoutSchema, CashoutValues } from "@/schema/Payment";
+import {
+  CashoutServerSchema,
+  CashoutServerValues,
+  CashoutValues,
+} from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
 import { removeProductStock } from "../product/stock";
 import {
@@ -39,7 +43,7 @@ type TotalProduct = Prisma.ProductGetPayload<{
 
 const validateProducts = async (
   user: User,
-  cart: Omit<CartProduct, "data">[]
+  cart: CashoutServerValues["products"]
 ) => {
   const offers = await getPromotionOffers(user, cart);
   const getOffer = (id: number) => offers.find((o) => o.id === id);
@@ -191,7 +195,9 @@ const Cashout = async (
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(CashierPermissionEnum.CREATE))
       throw new Error("Forbidden");
-    const validated = CashoutSchema.parse(payload);
+    console.log(payload);
+    const validated = CashoutServerSchema.parse(payload);
+    console.log(validated);
     const products = await validateProducts(user, validated.products);
 
     const totalPrice = getTotalPrice(products);
