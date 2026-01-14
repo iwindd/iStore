@@ -195,9 +195,7 @@ const Cashout = async (
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(CashierPermissionEnum.CREATE))
       throw new Error("Forbidden");
-    console.log(payload);
     const validated = CashoutServerSchema.parse(payload);
-    console.log(validated);
     const products = await validateProducts(user, validated.products);
 
     const totalPrice = getTotalPrice(products);
