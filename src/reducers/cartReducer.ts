@@ -21,11 +21,17 @@ export interface CartProduct {
   data?: FindProductByIdResult; // cached
 }
 
+export enum CheckoutMode {
+  CASHOUT = "cashout",
+  CONSIGNMENT = "consignment",
+}
+
 export interface CartState {
   products: CartProduct[];
   preOrderProducts: CartProduct[];
   total: number;
   hasSomeProductOverstock: boolean;
+  checkoutMode: CheckoutMode;
 }
 
 export const addProductToCartById = createAsyncThunk(
@@ -108,6 +114,7 @@ const initialState: CartState = {
   preOrderProducts: [],
   total: 0,
   hasSomeProductOverstock: false,
+  checkoutMode: CheckoutMode.CASHOUT,
 };
 
 const getTotalPrice = (products: CartProduct[]) => {
@@ -270,6 +277,9 @@ const cartSlice = createSlice({
         note: "",
       });
     },
+    setCheckoutMode: (state, action: PayloadAction<CheckoutMode>) => {
+      state.checkoutMode = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(addProductToCartById.fulfilled, onAddProductToCart);
@@ -295,5 +305,6 @@ export const {
   setProductPreOrderNote,
   setProductPreOrderQuantity,
   preOrderProduct,
+  setCheckoutMode,
 } = cartSlice.actions;
 export default cartSlice.reducer;

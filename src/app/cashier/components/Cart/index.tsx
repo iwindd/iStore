@@ -3,7 +3,11 @@ import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import usePayment from "@/hooks/use-payment";
 import useObtainPromotionOffer from "@/hooks/useObtainPromotionOffer";
 import { money } from "@/libs/formatter";
-import { clearProductCart } from "@/reducers/cartReducer";
+import {
+  CheckoutMode,
+  clearProductCart,
+  setCheckoutMode,
+} from "@/reducers/cartReducer";
 import {
   ArrowForward,
   DeleteSweep,
@@ -28,6 +32,7 @@ const CartSections = () => {
   const cart = useAppSelector((state) => state.cart.products);
   const cartPreOrder = useAppSelector((state) => state.cart.preOrderProducts);
   const total = useAppSelector((state) => state.cart.total);
+  const checkoutMode = useAppSelector((state) => state.cart.checkoutMode);
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -150,17 +155,20 @@ const CartSections = () => {
               }}
               onClick={payment.toggle}
             >
-              ชำระเงิน
+              {checkoutMode === CheckoutMode.CASHOUT ? "ชำระเงิน" : "ฝากขาย"}
             </Button>
           </Stack>
           <ToggleButtonGroup
             color="primary"
             exclusive
-            value={"cashout"}
+            value={checkoutMode}
+            onChange={(_, value) => {
+              if (value) dispatch(setCheckoutMode(value));
+            }}
             fullWidth
           >
-            <ToggleButton value="cashout">ชำระเงิน</ToggleButton>
-            <ToggleButton value="borrow">เบิกสินค้า</ToggleButton>
+            <ToggleButton value={CheckoutMode.CASHOUT}>ชำระเงิน</ToggleButton>
+            <ToggleButton value={CheckoutMode.CONSIGNMENT}>ฝากขาย</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       </Box>
