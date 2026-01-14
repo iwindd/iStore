@@ -224,6 +224,10 @@ const cartSlice = createSlice({
       if (Number.isNaN(value)) value = product.quantity;
       if (value <= 0) value = 1;
 
+      if (product.quantity > (product.data?.stock?.quantity || 0)) {
+        product.quantity = product.data?.stock?.quantity || 0;
+      }
+
       product.preOrder = {
         quantity: value,
         preOrderAll: false,

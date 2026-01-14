@@ -48,7 +48,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
       color: "error",
     },
     onConfirm: async () => dispatch(removeProductFromCart(product.id)),
-  }); /*  */
+  });
 
   const canPreOrder = product.data?.usePreorder;
   const isSplitPreOrder =
@@ -84,7 +84,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
                   </Typography>
                 )}
 
-                {canPreOrder && (
+                {canPreOrder && !isSplitPreOrder && (
                   <TextAction
                     onClick={preOrderDialog.handleOpen}
                     label={
