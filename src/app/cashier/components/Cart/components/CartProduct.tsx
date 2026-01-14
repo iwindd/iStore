@@ -50,6 +50,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
     onConfirm: async () => dispatch(removeProductFromCart(product.id)),
   }); /*  */
 
+  const canPreOrder = product.data?.usePreorder;
   const isSplitPreOrder =
     !product.preOrder?.preOrderAll && (product.preOrder?.quantity || 0) > 0;
 
@@ -83,14 +84,16 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
                   </Typography>
                 )}
 
-                <TextAction
-                  onClick={preOrderDialog.handleOpen}
-                  label={
-                    product.preOrder?.preOrderAll
-                      ? "แยกพรีออเดอร์"
-                      : "พรีออเดอร์"
-                  }
-                />
+                {canPreOrder && (
+                  <TextAction
+                    onClick={preOrderDialog.handleOpen}
+                    label={
+                      product.preOrder?.preOrderAll
+                        ? "แยกพรีออเดอร์"
+                        : "พรีออเดอร์"
+                    }
+                  />
+                )}
               </Stack>
               {product.preOrder?.preOrderAll && (
                 <Typography
@@ -155,45 +158,46 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
               maxRows={2}
               multiline
             />
-            {isSplitPreOrder ? (
-              <Stack direction={"row-reverse"}>
-                <TextAction
-                  onClick={() => {
-                    dispatch(mergePreorder(product.id));
-                  }}
-                  label="รวมเป็นสินค้าพรีออเดอร์"
-                />
-              </Stack>
-            ) : (
-              <Card
-                sx={{
-                  boxShadow: 0,
-                  border: "none",
-                }}
-              >
-                <CardContent>
-                  <FormControlLabel
-                    value="end"
-                    control={<Switch color="primary" />}
-                    label="พรีออเดอร์"
-                    checked={product.preOrder?.preOrderAll || false}
-                    onChange={(_, checked) => {
-                      dispatch(
-                        setPreOrderAll({
-                          id: product.id,
-                          preOrderAll: checked,
-                        })
-                      );
+            {canPreOrder &&
+              (isSplitPreOrder ? (
+                <Stack direction={"row-reverse"}>
+                  <TextAction
+                    onClick={() => {
+                      dispatch(mergePreorder(product.id));
                     }}
+                    label="รวมเป็นสินค้าพรีออเดอร์"
                   />
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      พรีออเดอร์สินค้า ระบบจะไม่ตรวจสอบสต๊อก
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            )}
+                </Stack>
+              ) : (
+                <Card
+                  sx={{
+                    boxShadow: 0,
+                    border: "none",
+                  }}
+                >
+                  <CardContent>
+                    <FormControlLabel
+                      value="end"
+                      control={<Switch color="primary" />}
+                      label="พรีออเดอร์"
+                      checked={product.preOrder?.preOrderAll || false}
+                      onChange={(_, checked) => {
+                        dispatch(
+                          setPreOrderAll({
+                            id: product.id,
+                            preOrderAll: checked,
+                          })
+                        );
+                      }}
+                    />
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        พรีออเดอร์สินค้า ระบบจะไม่ตรวจสอบสต๊อก
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
           </Stack>
         </Collapse>
 

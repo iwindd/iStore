@@ -11,6 +11,7 @@ export type FindProductBySerialResult = Prisma.ProductGetPayload<{
     label: true;
     price: true;
     cost: true;
+    usePreorder: true;
     stock: {
       select: {
         quantity: true;
@@ -48,6 +49,7 @@ const findProductBySerial = async (
         label: true,
         price: true,
         cost: true,
+        usePreorder: true,
         stock: {
           select: {
             quantity: true,

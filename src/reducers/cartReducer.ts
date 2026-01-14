@@ -132,10 +132,10 @@ const onAddProductToCart = (
   const product = action.payload;
   const existingProduct = state.products.find((p) => p.id === product.id);
   const quantity = (existingProduct ? existingProduct.quantity : 0) + 1;
-  const isPreOrderAll = existingProduct?.preOrder?.preOrderAll;
+  const isPreOrderAll =
+    product.usePreorder && existingProduct?.preOrder?.preOrderAll;
 
   if (
-    //TODO:: Make only product.useForPreOrder
     !product.category?.overstock &&
     quantity > (product.stock?.quantity || 0) &&
     !isPreOrderAll
@@ -250,6 +250,9 @@ const cartSlice = createSlice({
 
       if (!preOrderAll) {
         delete product.preOrder;
+        if (product.quantity > (product.data?.stock?.quantity || 0)) {
+          product.quantity = product.data?.stock?.quantity || 0;
+        }
         return;
       }
 

@@ -11,6 +11,7 @@ export type FindProductByIdResult = Prisma.ProductGetPayload<{
     label: true;
     price: true;
     cost: true;
+    usePreorder: true;
     stock: {
       select: {
         quantity: true;
@@ -48,6 +49,7 @@ const findProductById = async (
         label: true,
         price: true,
         cost: true,
+        usePreorder: true,
         stock: {
           select: {
             quantity: true,
