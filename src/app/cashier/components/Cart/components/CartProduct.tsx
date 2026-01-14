@@ -1,6 +1,5 @@
 import { useAppDispatch } from "@/hooks";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import useDebouncedValue from "@/hooks/useDebouncedValue";
 import { money } from "@/libs/formatter";
 import {
   CartProduct as CartProductType,
@@ -24,16 +23,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import NumberStepper from "./NumberStepper";
 import TextAction from "./TextAction";
 
 const CartProduct = ({ product }: { product: CartProductType }) => {
   const [expand, setExpand] = useState(false);
-  const [note, setNote] = useState("");
+  const [note, setNote] = useState(product.note ?? "");
   const noteInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
-  const debouncedNote = useDebouncedValue(note, 500);
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -49,14 +47,6 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
     setExpand(true);
     setTimeout(() => noteInputRef.current?.focus(), 0);
   };
-
-  const updateProductNote = () => {
-    dispatch(setProductNote({ id: product.id, note: debouncedNote }));
-  };
-
-  useEffect(() => {
-    updateProductNote();
-  }, [debouncedNote, updateProductNote]);
 
   return (
     <Paper variant="outlined" sx={{ p: 1 }}>
@@ -122,6 +112,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
           <InputBase
             value={note}
             onChange={(e) => setNote(e.target.value)}
+            onBlur={() => dispatch(setProductNote({ id: product.id, note }))}
             placeholder="ระบุหมายเหต..."
             inputRef={noteInputRef}
             sx={{
