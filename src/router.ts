@@ -223,6 +223,11 @@ const ROUTES = ROUTER({
       },
     },
   },
+  preorders: {
+    path: "/preorders",
+    label: "พรีออเดอร์",
+    icon: RotateRight,
+  },
 });
 
 export const {

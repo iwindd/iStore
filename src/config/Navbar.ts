@@ -28,7 +28,12 @@ const NavbarItems = [
   {
     key: "etc",
     title: "อื่นๆ",
-    routes: [getRoute("overstocks"), getRoute("borrows"), getRoute("purchase")],
+    routes: [
+      getRoute("overstocks"),
+      getRoute("borrows"),
+      getRoute("preorders"),
+      getRoute("purchase"),
+    ],
     defaultExpand: true,
   },
   {

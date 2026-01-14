@@ -23,8 +23,10 @@ model Employee {
   role           Role           @relation("EmployeeRole", fields: [role_id], references: [id])
   categories     Category[]
   products       Product[]
-  orders         Order[]
-  borrows        Borrow[]
+  orders              Order[]
+  returned_preorders  OrderPreOrder[] @relation("ReturnedPreOrders")
+  cancelled_preorders OrderPreOrder[] @relation("CancelledPreOrders")
+  borrows             Borrow[]
   stock_receipts StockReceipt[]
   roles          Role[]
   store          Store          @relation(fields: [store_id], references: [id])

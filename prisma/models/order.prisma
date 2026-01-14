@@ -46,9 +46,16 @@ model OrderPreOrder{
   total           Decimal
   profit          Decimal
   cost            Decimal
+  status          PreOrderStatus    @default(PENDING)
+  returned_at     DateTime?
+  returned_by_id  Int?
+  cancelled_at    DateTime?
+  cancelled_by_id Int?
 
   product         Product         @relation(fields: [product_id], references: [id])
   order           Order            @relation(fields: [order_id], references: [id])
+  returned_by     Employee?       @relation("ReturnedPreOrders", fields: [returned_by_id], references: [id])
+  cancelled_by    Employee?       @relation("CancelledPreOrders", fields: [cancelled_by_id], references: [id])
 
   @@map("order_preorders")
 }
@@ -67,4 +74,10 @@ enum OrderType {
 enum OrderProductType {
   NORMAL
   OFFER
+}
+
+enum PreOrderStatus {
+  PENDING
+  RETURNED
+  CANCELLED
 }
