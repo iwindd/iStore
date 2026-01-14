@@ -27,7 +27,6 @@ model Employee {
   borrows        Borrow[]
   stock_receipts StockReceipt[]
   roles          Role[]
-  order_products OrderProduct[]
   store          Store          @relation(fields: [store_id], references: [id])
   creator        Employee?      @relation("EmployeeToEmployee", fields: [creator_id], references: [id])
   employees      Employee[]     @relation("EmployeeToEmployee")

@@ -1,4 +1,9 @@
-import { Prisma, PrismaClient, ProductStockMovementType } from "@prisma/client";
+import {
+  Method,
+  OrderType,
+  PrismaClient,
+  ProductStockMovementType,
+} from "@prisma/client";
 import bcrypt from "bcrypt";
 import _ from "lodash";
 import orders from "./data/orders.json";
@@ -10,65 +15,72 @@ const prisma = new PrismaClient();
 const DEFAULT_PASSWORD = "password";
 
 const getOrders = async () => {
-  const products = orders.flatMap((order) => order.products);
-  const uniqueProductSerials = Array.from(
-    new Set(products.map((p) => p.serial))
-  );
-  const productsInDb = await prisma.product.findMany({
-    where: {
-      serial: { in: uniqueProductSerials },
-    },
-    select: {
-      id: true,
-      label: true,
-      serial: true,
-      price: true,
-      cost: true,
-      category: {
-        select: {
-          label: true,
-        },
-      },
-    },
-  });
-
   const result = [];
 
   for (const order of orders) {
-    const productsForOrder = productsInDb.filter((product) =>
-      order.products.some((p: any) => p.serial === product.serial)
-    );
-
-    if (productsForOrder.length === 0) continue;
-
     result.push({
-      id: order.id,
-      price: order.price,
       cost: order.cost,
       profit: order.profit,
-      method: order.method as any,
-      type: order.type as any,
+      total: order.price,
+      method: order.method as Method,
+      type: order.type as OrderType,
       note: order.note,
       created_at: new Date(order.created_at),
       updated_at: new Date(order.updated_at),
-      store_id: order.store_id,
-      text: productsForOrder.map((p: any) => p.label).join(", "),
+      store: {
+        connect: {
+          id: order.store_id,
+        },
+      },
       products: {
-        create: productsForOrder.map((product) => {
-          const data = order.products.find(
-            (p: any) => p.serial === product.serial
-          );
-
+        create: order.products.map((product) => {
           return {
-            serial: product.serial,
-            label: product.label,
-            price: data?.price || product.price,
-            cost: data?.cost || product.cost,
-            category: product.category?.label || "-",
-            count: data?.count || 1,
-            ...(product.id && { product_id: product.id }),
-          } as Prisma.OrderProductCreateInput;
+            product: {
+              connect: {
+                serial_store_id: {
+                  serial: product.serial,
+                  store_id: order.store_id,
+                },
+              },
+            },
+            total: product.price,
+            profit: product.price - product.cost,
+            cost: product.cost,
+            count: product.count,
+          };
         }),
+      },
+      productStockMovements: {
+        create: [
+          ...order.products.map((product) => ({
+            type: ProductStockMovementType.ADJUST,
+            quantity: product.count,
+            quantity_before: 0,
+            quantity_after: product.count,
+            product: {
+              connect: {
+                serial_store_id: {
+                  serial: product.serial,
+                  store_id: order.store_id,
+                },
+              },
+            },
+          })),
+          ...order.products.map((product) => ({
+            type: ProductStockMovementType.SALE,
+            quantity: product.count,
+            quantity_before: product.count,
+            quantity_after: 0,
+            product: {
+              connect: {
+                serial_store_id: {
+                  serial: product.serial,
+                  store_id: order.store_id,
+                },
+              },
+            },
+          })),
+        ],
       },
     });
   }
@@ -177,32 +189,10 @@ async function main() {
   for (const [i, chunk] of chunks.entries()) {
     await prisma.$transaction(async () => {
       for (const order of chunk) {
-        const castedOrder = order;
-        await prisma.order.upsert({
-          where: { id: castedOrder.id },
-          update: {},
-          create: {
-            ...castedOrder,
+        await prisma.order.create({
+          data: {
+            ...order,
           },
-        });
-        await prisma.productStockMovement.createMany({
-          data: [
-            ...castedOrder.products.create.map((product: any) => ({
-              type: ProductStockMovementType.ADJUST,
-              quantity: product.count,
-              quantity_before: 0,
-              quantity_after: product.count,
-              product_id: product.product_id,
-            })),
-            ...castedOrder.products.create.map((product: any) => ({
-              type: ProductStockMovementType.SALE,
-              quantity: product.count,
-              quantity_before: product.count,
-              quantity_after: 0,
-              product_id: product.product_id,
-              order_id: castedOrder.id,
-            })),
-          ],
         });
       }
     });

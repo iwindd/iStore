@@ -1,5 +1,5 @@
 "use client";
-import GetHistories from "@/actions/order/get";
+import getHistoryDatatable from "@/actions/order/getHistoryDatatable";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import * as ff from "@/libs/formatter";
@@ -29,12 +29,11 @@ const HistoryDatatable = () => {
           ff.text(data?.value?.user?.name || "ไม่ระบุ"),
       },
       {
-        field: "price",
+        field: "total",
         sortable: true,
-        headerName: "ราคา",
+        headerName: "ยอดรวม",
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.money(data.value),
       },
       {
         field: "cost",
@@ -53,11 +52,22 @@ const HistoryDatatable = () => {
         renderCell: (data: any) => ff.money(data.value),
       },
       {
-        field: "text",
+        field: "products",
         sortable: false,
         headerName: "สินค้า",
         flex: 1,
         editable: false,
+        renderCell: (data: any) =>
+          data.value
+            .map(
+              (item: {
+                count: string;
+                product: {
+                  label: string;
+                };
+              }) => `${item.count}x${item.product.label}`
+            )
+            .join(", ") || "ไม่พบสินค้า",
       },
       {
         field: "note",
@@ -89,7 +99,7 @@ const HistoryDatatable = () => {
     <Datatable
       name={"histories"}
       columns={columns()}
-      fetch={GetHistories}
+      fetch={getHistoryDatatable}
       height={700}
     />
   );

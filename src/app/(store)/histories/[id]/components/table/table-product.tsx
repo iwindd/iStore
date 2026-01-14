@@ -1,24 +1,42 @@
 "use client";
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import Divider from "@mui/material/Divider";
-import type { SxProps } from "@mui/material/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { OrderProduct } from "@prisma/client";
+import * as React from "react";
 
-export interface HistoryProductTableProps {
-  products: OrderProduct[];
-}
+type HistoryProductTableProps = {
+  products: {
+    total: number;
+    cost: number;
+    profit: number;
+    product: {
+      category: {
+        id: number;
+        created_at: Date;
+        updated_at: Date;
+        store_id: string;
+        creator_id: number | null;
+        label: string;
+        overstock: boolean;
+      } | null;
+      serial: string;
+      label: string;
+    };
+    count: number;
+    id: number;
+    note: string | null;
+  }[];
+};
 
 export function HistoryProductTable({
   products,
-}: HistoryProductTableProps): React.JSX.Element {
+}: Readonly<HistoryProductTableProps>): React.JSX.Element {
   return (
     <Card>
       <CardHeader title="รายการสินค้า" />
@@ -41,14 +59,13 @@ export function HistoryProductTable({
               return (
                 <TableRow
                   key={p.id}
-                  className={p.overstock ? "bg-red-100" : ""}
                 >
-                  <TableCell>{p.serial}</TableCell>
-                  <TableCell>{p.label}</TableCell>
-                  <TableCell>{p.category}</TableCell>
-                  <TableCell>{p.price.toLocaleString()} ฿</TableCell>
+                  <TableCell>{p.product.serial}</TableCell>
+                  <TableCell>{p.product.label}</TableCell>
+                  <TableCell>{p.product.category?.label}</TableCell>
+                  <TableCell>{p.total.toLocaleString()} ฿</TableCell>
                   <TableCell>{p.cost.toLocaleString()} ฿</TableCell>
-                  <TableCell>{(p.price - p.cost).toLocaleString()} ฿</TableCell>
+                  <TableCell>{p.profit.toLocaleString()} ฿</TableCell>
                   <TableCell>{p.count.toLocaleString()} รายการ</TableCell>
                 </TableRow>
               );
