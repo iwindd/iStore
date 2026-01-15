@@ -1,7 +1,6 @@
-import { useAppDispatch, useAppSelector } from "@/hooks";
-import { money } from "@/libs/formatter";
+"use client";
+import {money} from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { consignmentCart } from "@/reducers/cartReducer";
 import {
   ConsignmentInputSchema,
   ConsignmentInputValues,
@@ -18,34 +17,27 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { PaymentDialogProps } from "..";
+import { PaymentDialogContentProps } from "..";
 
-const ConsignmentContent = ({ open, onClose }: PaymentDialogProps) => {
-  const total = useAppSelector((state) => state.cart.total);
-  const { setBackdrop, isBackdrop } = useInterface();
-  const dispatch = useAppDispatch();
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ConsignmentInputValues>({
+const ConsignmentContent = ({
+  open,
+  onClose,
+  total,
+  onSubmit,
+}: PaymentDialogContentProps) => {
+  const { isBackdrop } = useInterface();
+  const form = useForm<ConsignmentInputValues>({
     resolver: zodResolver(ConsignmentInputSchema),
     defaultValues: {
       note: "",
     },
   });
 
-  const onSubmit = async (data: ConsignmentInputValues) => {
-    setBackdrop(true);
-    const resp = await dispatch(consignmentCart(data));
-    if (resp.meta.requestStatus == "fulfilled") {
-      reset();
-      onClose();
-    }
-    setBackdrop(false);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   return (
     <Dialog
@@ -133,7 +125,7 @@ const ConsignmentContent = ({ open, onClose }: PaymentDialogProps) => {
             color="warning"
             fullWidth
             size="large"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit((data) => onSubmit(data, form))}
             endIcon={<ArrowForward />}
             sx={{
               height: 64,

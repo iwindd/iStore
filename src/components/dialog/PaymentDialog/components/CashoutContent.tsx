@@ -1,7 +1,6 @@
-import { useAppDispatch, useAppSelector } from "@/hooks";
+"use client";
 import { money } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { cashoutCart } from "@/reducers/cartReducer";
 import { CashoutInputSchema, CashoutInputValues } from "@/schema/Payment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,7 +26,7 @@ import {
 import { Method } from "@prisma/client";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { PaymentDialogProps } from "..";
+import { PaymentDialogContentProps } from "..";
 
 const MethodButton = styled(Button, {
   shouldForwardProp: (prop) => prop !== "active",
@@ -90,33 +89,26 @@ const calculateBreakdown = (amount: number) => {
   return breakdown;
 };
 
-const CashoutContent = ({ open, onClose }: PaymentDialogProps) => {
-  const total = useAppSelector((state) => state.cart.total);
-  const { setBackdrop, isBackdrop } = useInterface();
+const CashoutContent = ({
+  open,
+  onClose,
+  total,
+  onSubmit,
+}: PaymentDialogContentProps) => {
+  const { isBackdrop } = useInterface();
   const [moneyReceived, setMoneyReceived] = React.useState<number>(0);
-  const dispatch = useAppDispatch();
 
-  const { register, handleSubmit, reset, setValue, watch } =
-    useForm<CashoutInputValues>({
-      resolver: zodResolver(CashoutInputSchema),
-      defaultValues: {
-        method: Method.CASH,
-        note: "",
-      },
-    });
+  const form = useForm<CashoutInputValues>({
+    resolver: zodResolver(CashoutInputSchema),
+    defaultValues: {
+      method: Method.CASH,
+      note: "",
+    },
+  });
+
+  const { register, handleSubmit, setValue, watch } = form;
 
   const selectedMethod = watch("method");
-
-  const onSubmit = async (payload: CashoutInputValues) => {
-    setBackdrop(true);
-    const resp = await dispatch(cashoutCart(payload));
-    if (resp.meta.requestStatus == "fulfilled") {
-      reset();
-      setMoneyReceived(0);
-      onClose();
-    }
-    setBackdrop(false);
-  };
 
   const quickPicks = useMemo(() => {
     const targets = [10, 20, 50, 100, 500, 1000];
@@ -129,9 +121,12 @@ const CashoutContent = ({ open, onClose }: PaymentDialogProps) => {
       }
     });
 
-    return Array.from(picks)
+    const choices = Array.from(picks)
       .sort((a, b) => a - b)
       .slice(0, 5);
+
+    setMoneyReceived(choices[0]);
+    return choices;
   }, [total]);
 
   const changeDue = Math.max(0, moneyReceived - total);
@@ -397,7 +392,7 @@ const CashoutContent = ({ open, onClose }: PaymentDialogProps) => {
             fullWidth
             size="large"
             disabled={moneyReceived < total}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit((data) => onSubmit(data, form))}
             endIcon={<ArrowForward />}
             sx={{
               height: 64,

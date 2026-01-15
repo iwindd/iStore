@@ -1,5 +1,13 @@
-import { useAppSelector } from "@/hooks";
-import { CheckoutMode } from "@/reducers/cartReducer";
+"use client";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { useInterface } from "@/providers/InterfaceProvider";
+import {
+  cashoutCart,
+  CheckoutMode,
+  consignmentCart,
+} from "@/reducers/cartReducer";
+import { CashoutInputValues, ConsignmentInputValues } from "@/schema/Payment";
+import { UseFormReturn } from "react-hook-form";
 import CashoutContent from "./components/CashoutContent";
 import ConsignmentContent from "./components/ConsignmentContent";
 
@@ -8,14 +16,58 @@ export interface PaymentDialogProps {
   onClose(): void;
 }
 
-const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
+export interface PaymentDialogContentProps extends PaymentDialogProps {
+  total: number;
+  onSubmit(payload: any, form: UseFormReturn<any>): void;
+}
+
+const PaymentDialog =  ({ open, onClose }: PaymentDialogProps) => {
+  const { setBackdrop } = useInterface();
   const checkoutMode = useAppSelector((state) => state.cart.checkoutMode);
+  const total = useAppSelector((state) => state.cart.total);
+  const dispatch = useAppDispatch();
 
-  if (checkoutMode === CheckoutMode.CONSIGNMENT) {
-    return <ConsignmentContent open={open} onClose={onClose} />;
-  }
+  const onCashout = async (
+    data: CashoutInputValues,
+    form: UseFormReturn<CashoutInputValues>
+  ) => {
+    setBackdrop(true);
+    const resp = await dispatch(cashoutCart(data));
+    if (resp.meta.requestStatus == "fulfilled") {
+      form.reset();
+      onClose();
+    }
+    setBackdrop(false);
+  };
 
-  return <CashoutContent open={open} onClose={onClose} />;
+  const onConsignment = async (
+    data: ConsignmentInputValues,
+    form: UseFormReturn<ConsignmentInputValues>
+  ) => {
+    setBackdrop(true);
+    const resp = await dispatch(consignmentCart(data));
+    if (resp.meta.requestStatus == "fulfilled") {
+      form.reset();
+      onClose();
+    }
+    setBackdrop(false);
+  };
+
+  return checkoutMode === CheckoutMode.CONSIGNMENT ? (
+    <ConsignmentContent
+      open={open}
+      onClose={onClose}
+      onSubmit={onConsignment}
+      total={total}
+    />
+  ) : (
+    <CashoutContent
+      open={open}
+      onClose={onClose}
+      onSubmit={onCashout}
+      total={total}
+    />
+  );
 };
 
 export default PaymentDialog;
