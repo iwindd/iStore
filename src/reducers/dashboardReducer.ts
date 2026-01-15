@@ -3,6 +3,20 @@ import { OrderType } from "@prisma/client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 
+export enum EnumDashboardRange {
+  TODAY = "today",
+  WEEK = "week",
+  MONTH = "month",
+  YEAR = "year",
+}
+
+export type DashboardRange =
+  | EnumDashboardRange
+  | {
+      start: string;
+      end: string;
+    };
+
 export interface DashboardState {
   orders: any[];
   products: any[];
@@ -24,6 +38,7 @@ export interface DashboardState {
     stocks: number;
     products: number;
   };
+  range: DashboardRange;
 }
 
 export type DashboardStateStatKey = keyof DashboardState["stats"];
@@ -49,6 +64,7 @@ const initialState: DashboardState = {
     stocks: 0,
     products: 0,
   },
+  range: EnumDashboardRange.TODAY,
 };
 
 const dashboardSlice = createSlice({

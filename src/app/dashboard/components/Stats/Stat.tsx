@@ -1,4 +1,4 @@
-import { Link } from "@mui/material";
+import { Link, Skeleton } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -22,6 +22,7 @@ export interface TotalStatProps {
     | "inherit";
   icon: React.ReactNode;
   href?: string;
+  loading?: boolean;
 }
 
 export function TotalStat({
@@ -31,6 +32,7 @@ export function TotalStat({
   color,
   icon,
   href,
+  loading,
 }: Readonly<TotalStatProps>): React.JSX.Element {
   return (
     <Link
@@ -46,10 +48,19 @@ export function TotalStat({
             spacing={3}
           >
             <Stack spacing={1}>
-              <Typography color="text.secondary" variant="overline">
-                {label}
-              </Typography>
-              <Typography variant="h4">{value}</Typography>
+              {loading ? (
+                <>
+                  <Skeleton width={80} />
+                  <Skeleton width={120} height={32} />
+                </>
+              ) : (
+                <>
+                  <Typography color="text.secondary" variant="overline">
+                    {label}
+                  </Typography>
+                  <Typography variant="h4">{value}</Typography>
+                </>
+              )}
             </Stack>
             <Avatar
               sx={{

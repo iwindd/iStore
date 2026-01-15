@@ -1,39 +1,28 @@
 "use client";
+import { getStats, StatResult } from "@/actions/dashboard/getStats";
 import {
   ConsignmentPermissionEnum,
   OverStockPermissionEnum,
   PermissionEnum,
   ProductPermissionEnum,
-  PurchasePermissionEnum,
-  StockPermissionEnum,
 } from "@/enums/permission";
 import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
-import { money, number } from "@/libs/formatter";
+import { number } from "@/libs/formatter";
 import { Route } from "@/libs/route/route";
-import { DashboardStateStatKey } from "@/reducers/dashboardReducer";
 import { getPath, getRoute } from "@/router";
-import {
-  AllInbox,
-  AttachMoney,
-  BackHand,
-  Receipt,
-  RotateRight,
-  ShoppingBasket,
-  Warning,
-  Work,
-} from "@mui/icons-material";
+import { BackHand, Receipt, RotateRight, Warning } from "@mui/icons-material";
 import { Grid } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 import { notFound } from "next/navigation";
 import { TotalStat, TotalStatProps } from "./Stat";
 
 interface StatConfig {
   name: string;
-  value: DashboardStateStatKey;
   route?: Route;
   label: string;
   icon: React.ReactNode;
-  render: (value: number) => string;
+  render: (stats: StatResult) => string;
   color?: TotalStatProps["color"];
   permission?: PermissionEnum;
 }
@@ -41,78 +30,37 @@ interface StatConfig {
 const StatConfig: StatConfig[] = [
   {
     name: "orders",
-    value: "orders",
     route: getRoute("histories"),
-    label: "ออเดอร์",
+    label: "ขายไปแล้ว",
     icon: <Receipt />,
-    render: (v) => `${number(v)} รายการ`,
-    color: "primary",
-  },
-  {
-    name: "profit",
-    value: "profit",
-    label: "เงินในระบบ",
-    icon: <AttachMoney />,
-    render: (v) => `${money(v)} รายการ`,
+    render: (stats) => `${number(stats.order.sold)} รายการ`,
     color: "success",
   },
   {
     name: "consignments",
-    value: "consignments",
     route: getRoute("consignments"),
     label: "ฝากขาย",
     icon: <BackHand />,
-    render: (v) => `${number(v)} รายการ`,
-    color: "warning",
+    render: (stats) => `${number(stats.consignment)} รายการ`,
+    color: "primary",
     permission: ConsignmentPermissionEnum.READ,
   },
   {
-    name: "purchase",
-    value: "purchase",
-    route: getRoute("purchase"),
-    label: "การซื้อ",
-    icon: <ShoppingBasket />,
-    render: (v) => `${number(v)} รายการ`,
-    color: "info",
-    permission: PurchasePermissionEnum.READ,
-  },
-  {
-    name: "overstocks",
-    value: "overstock",
-    route: getRoute("overstocks"),
-    label: "สินค้าค้าง",
+    name: "preorders",
+    route: getRoute("preorders"),
+    label: "พรีออเดอร์",
     icon: <RotateRight />,
-    render: (v) => `${number(v)} รายการ`,
-    color: "error",
+    render: (stats) => `${number(stats.preorder.pending)} รายการ`,
+    color: "info",
     permission: OverStockPermissionEnum.READ,
   },
   {
     name: "low_stock",
-    value: "low_stock",
     route: getRoute("products"),
     label: "สินค้าใกล้จะหมด",
     icon: <Warning />,
-    render: (v) => `${number(v)} รายการ`,
+    render: (stats) => `${number(stats.product.lowStockCount)} รายการ`,
     color: "warning",
-    permission: ProductPermissionEnum.READ,
-  },
-  {
-    name: "stocks",
-    value: "stocks",
-    route: getRoute("stocks"),
-    label: "จัดการสต๊อก",
-    icon: <AllInbox />,
-    render: (v) => `${number(v)} รายการ`,
-    color: "info",
-    permission: StockPermissionEnum.READ,
-  },
-  {
-    name: "products",
-    value: "products",
-    route: getRoute("products"),
-    label: "สินค้าทั้งหมด",
-    icon: <Work />,
-    render: (v) => `${number(v)} รายการ`,
     permission: ProductPermissionEnum.READ,
   },
 ];
@@ -120,7 +68,12 @@ const StatConfig: StatConfig[] = [
 const Stats = () => {
   const { user } = useAuth();
   if (!user) return notFound();
-  const stats = useAppSelector((state) => state.dashboard.stats);
+  const range = useAppSelector((state) => state.dashboard.range);
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["stats", range],
+    queryFn: () => getStats(range),
+  });
 
   return (
     <Grid container spacing={1}>
@@ -139,7 +92,8 @@ const Stats = () => {
             label={stat.label}
             color={stat.color || "primary"}
             icon={stat.icon}
-            value={stat.render(stats[stat.value])}
+            loading={isLoading}
+            value={(data && stat.render(data)) || ""}
           />
         </Grid>
       ))}
