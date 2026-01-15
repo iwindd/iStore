@@ -163,17 +163,13 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
               height: 300,
             }}
           >
-            {isLoading ? (
-              <Skeleton variant="rectangular" height={"100%"} />
-            ) : (
-              <Chart
-                options={chartOptions}
-                series={chartSeries}
-                type="area"
-                height="100%"
-                width="100%"
-              />
-            )}
+            <Chart
+              options={chartOptions}
+              series={chartSeries}
+              type="area"
+              height="100%"
+              width="100%"
+            />
           </Box>
         </Stack>
       </CardContent>
