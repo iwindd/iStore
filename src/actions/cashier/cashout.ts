@@ -6,9 +6,9 @@ import { getUser } from "@/libs/session";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import { CashoutHelper } from "./cashout-helpers";
+import {CashoutHelper} from './cashout-helpers';
 
-type ValidateProduct = {
+export type ValidateProduct = {
   id: number;
   stock: number;
   quantity: number;
@@ -18,14 +18,14 @@ type ValidateProduct = {
   note?: string;
 };
 
-const validateProducts = async (
+export const validateProducts = async (
   store_id: string,
   cartProducts: CashoutValues["products"],
-  preOrderProducts: CashoutValues["preOrderProducts"]
+  preOrderProducts?: CashoutValues["preOrderProducts"]
 ) => {
   const allRelateProductIds = [
     ...cartProducts.map((p) => p.id),
-    ...preOrderProducts.map((p) => p.id),
+    ...(preOrderProducts?.map((p) => p.id) || []),
   ];
 
   const where: Prisma.ProductWhereInput = {
@@ -87,8 +87,10 @@ const validateProducts = async (
     totalProducts.push(validateProduct(cartProduct));
   }
 
-  for (const preOrderProduct of preOrderProducts) {
-    totalPreOrderProducts.push(validateProduct(preOrderProduct, true));
+  if (preOrderProducts) {
+    for (const preOrderProduct of preOrderProducts) {
+      totalPreOrderProducts.push(validateProduct(preOrderProduct, true));
+    }
   }
 
   return {

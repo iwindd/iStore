@@ -11,6 +11,7 @@ model Store {
   events         Event[]
   broadcasts     Broadcast[]
   applications   LineApplication[]
+  consignments   Consignment[]
   //         Add ress
   address        String?
   district       String?

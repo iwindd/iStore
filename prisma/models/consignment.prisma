@@ -1,0 +1,43 @@
+model Consignment {
+  id                    Int                    @id @default(autoincrement())
+  status                ConsignmentStatus      @default(PENDING)
+  note                  String?
+  store_id              String
+  creator_id            Int
+  created_at            DateTime               @default(now())
+  updated_at            DateTime               @updatedAt
+  completed_at          DateTime?
+  cancelled_at          DateTime?
+  completed_by_id       Int?
+  cancelled_by_id       Int?
+
+  store                 Store                  @relation(fields: [store_id], references: [id])
+  creator               Employee               @relation(fields: [creator_id], references: [id])
+  completedBy           Employee?              @relation("CompletedConsignments", fields: [completed_by_id], references: [id])
+  cancelledBy           Employee?              @relation("CancelledConsignments", fields: [cancelled_by_id], references: [id])
+  products              ConsigmentProduct[]
+  productStockMovements ProductStockMovement[]
+
+  @@map("consignments")
+}
+
+enum ConsignmentStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+model ConsigmentProduct{
+  id                Int               @id @default(autoincrement())
+  note              String?
+  consignment_id    Int
+  product_id        Int
+  quantityOut       Int
+  quantitySold      Int?
+  quantityReturned  Int?
+
+  consignment       Consignment       @relation(fields: [consignment_id], references: [id])
+  product           Product           @relation(fields: [product_id], references: [id])
+
+  @@map("consignment_products")
+}

@@ -34,6 +34,9 @@ model Employee {
   employees      Employee[]     @relation("EmployeeToEmployee")
   events         Event[]
   broadcasts     Broadcast[]
+  consignments   Consignment[]
+  completed_consignments Consignment[] @relation("CompletedConsignments")
+  cancelled_consignments Consignment[] @relation("CancelledConsignments")
 
   @@unique([user_id, store_id])
   @@map("employees")

@@ -1,10 +1,17 @@
 "use client";
 import Cashout from "@/actions/cashier/cashout";
+import { Consignment } from "@/actions/cashier/consignment";
 import findProductById, {
   FindProductByIdResult,
 } from "@/actions/product/findById";
 import findProductBySerial from "@/actions/product/findBySerial";
-import { CashoutInputValues, CashoutSchema } from "@/schema/Payment";
+import {
+  CashoutInputValues,
+  CashoutSchema,
+  ConsignmentInputValues,
+  ConsignmentSchema,
+  ConsignmentValues,
+} from "@/schema/Payment";
 import {
   createAsyncThunk,
   createSlice,
@@ -106,6 +113,45 @@ export const cashoutCart = createAsyncThunk(
     }
 
     return resp.data;
+  }
+);
+
+export const consignmentCart = createAsyncThunk(
+  "cart/consignmentCart",
+  async (data: ConsignmentInputValues, thunkAPI) => {
+    const { cart } = thunkAPI.getState() as { cart: CartState };
+    const payload = ConsignmentSchema.safeParse({
+      products: cart.products,
+      ...data,
+    });
+
+    if (!payload.success) {
+      const hasCartProductError = payload.error.errors.find((p) =>
+        p.path.find((path) => path == "products")
+      );
+
+      if (hasCartProductError) {
+        enqueueSnackbar(`เกิดข้อผิดพลาด ${hasCartProductError.message}`, {
+          variant: "error",
+          key: "consignment-error",
+          preventDuplicate: true,
+        });
+      }
+
+      throw new Error(payload.error?.message);
+    }
+
+    const resp = await Consignment(payload.data);
+    if (!resp.success) {
+      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        variant: "error",
+        key: "error",
+        preventDuplicate: true,
+      });
+      return console.error(resp);
+    }
+
+    return resp.consignment;
   }
 );
 
@@ -292,6 +338,16 @@ const cartSlice = createSlice({
       state.preOrderProducts = [];
       state.total = 0;
       state.hasSomeProductOverstock = false;
+    });
+    builder.addCase(consignmentCart.fulfilled, (state) => {
+      enqueueSnackbar(`ทำรายการฝากขายสำเร็จแล้ว!`, {
+        variant: "success",
+      });
+      state.products = [];
+      state.preOrderProducts = [];
+      state.total = 0;
+      state.hasSomeProductOverstock = false;
+      state.checkoutMode = CheckoutMode.CASHOUT;
     });
   },
 });

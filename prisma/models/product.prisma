@@ -41,6 +41,7 @@ model Product {
   orderPreOrders         OrderPreOrder[]
   stock           ProductStock?     
   productStockMovements  ProductStockMovement[]
+  consignmentProducts ConsigmentProduct[]
 
   @@unique([serial,      store_id])
   @@map("products")
@@ -69,13 +70,15 @@ model ProductStockMovement{
   stock_receipt_id  Int?
   order_id          Int?
   borrow_id         Int?
+  consignment_id    Int?
   createdAt         DateTime      @default(now())
 
   product           Product       @relation(fields: [product_id], references: [id])
   stock_receipt     StockReceipt? @relation(fields: [stock_receipt_id], references: [id])
   order             Order?        @relation(fields: [order_id], references: [id])
   borrow            Borrow?       @relation(fields: [borrow_id], references: [id])
-  
+  consignment       Consignment?  @relation(fields: [consignment_id], references: [id])
+
   @@index([product_id])
   @@map("product_stock_movements")
 }
@@ -85,4 +88,5 @@ enum ProductStockMovementType {
   RECEIVE
   CANCEL
   ADJUST
+  CONSIGNMENT
 }

@@ -22,3 +22,17 @@ export const CashoutSchema = z
   .merge(CashoutInputSchema);
 
 export type CashoutValues = z.infer<typeof CashoutSchema>;
+
+export const ConsignmentInputSchema = z.object({
+  note: z.string().optional(),
+});
+
+export type ConsignmentInputValues = z.infer<typeof ConsignmentInputSchema>;
+
+export const ConsignmentSchema = z
+  .object({
+    products: z.array(ProductShape).min(1, "ต้องมีสินค้าอย่างน้อย 1 รายการ"),
+  })
+  .merge(ConsignmentInputSchema);
+
+export type ConsignmentValues = z.infer<typeof ConsignmentSchema>;
