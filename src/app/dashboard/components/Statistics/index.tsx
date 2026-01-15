@@ -2,8 +2,8 @@
 
 import { useAppSelector } from "@/hooks";
 import { Grid } from "@mui/material";
+import { PaymentMethodTrafficChart } from "../../charts/PaymentMethodTrafficChart";
 import { Sales } from "../../charts/sales";
-import { Traffic } from "../../charts/traffic";
 
 const Statistics = () => {
   const weeks = useAppSelector((state) => state.dashboard.statistics.weeks);
@@ -18,10 +18,9 @@ const Statistics = () => {
         />
       </Grid>
       <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-        <Traffic
+        <PaymentMethodTrafficChart
           chartSeries={methods}
           labels={["เงินสด", "ธนาคาร"]}
-          sx={{ height: "100%" }}
         />
       </Grid>
     </Grid>

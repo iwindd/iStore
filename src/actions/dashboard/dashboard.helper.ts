@@ -3,9 +3,13 @@
 import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { User } from "@/libs/user";
-import {DashboardRange, EnumDashboardRange} from '@/reducers/dashboardReducer';
+import {
+  DashboardRange,
+  EnumDashboardRange,
+} from "@/reducers/dashboardReducer";
 
-import { PreOrderStatus } from "@prisma/client";
+import { Method, PreOrderStatus } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import dayjs from "dayjs";
 
 export async function getSoldSummary(user: User, range: DashboardDateRange) {
@@ -107,6 +111,63 @@ export async function getProductSummary(user: User) {
   return {
     lowStockCount,
   };
+}
+
+export async function getPaymentMethodTrafficSummary(
+  user: User,
+  range: DashboardDateRange
+) {
+  type PaymentMethodGroupResult = {
+    method: Method;
+    _count: {
+      id: number;
+    };
+    _sum: {
+      total: Decimal;
+    };
+  };
+
+  const data = (await db.order.groupBy({
+    by: ["method"],
+    where: {
+      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      created_at: {
+        gte: range.start,
+        lte: range.end,
+      },
+    },
+    _count: { id: true },
+    _sum: {
+      total: true,
+    },
+  })) as PaymentMethodGroupResult[];
+
+  const totalOrders = data.reduce((acc, row) => acc + row._count.id, 0);
+  const methodCash = {
+    method: Method.CASH,
+    percent: 50,
+    count: 0,
+  };
+
+  const methodBank = {
+    method: Method.BANK,
+    percent: 50,
+    count: 0,
+  };
+
+  for (const row of data) {
+    if (row.method === Method.CASH) {
+      methodCash.percent = (row._count.id / totalOrders) * 100;
+      methodCash.count = row._sum.total.toNumber();
+    }
+    if (row.method === Method.BANK) {
+      methodBank.percent = (row._count.id / totalOrders) * 100;
+      methodBank.count = row._sum.total.toNumber();
+    }
+  }
+
+  const result = [methodCash, methodBank];
+  return result;
 }
 
 export type DashboardDateRange = {

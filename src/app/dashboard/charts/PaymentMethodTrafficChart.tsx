@@ -7,12 +7,15 @@ import type { SxProps } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import type { ApexOptions } from "apexcharts";
-import * as React from "react";
 
+import { getPaymentMethodTraffic } from "@/actions/dashboard/getPaymentMethodTraffic";
 import { Chart } from "@/components/core/chart";
-import { number } from "@/libs/formatter";
+import { useAppSelector } from "@/hooks";
+import { money } from "@/libs/formatter";
+import { Skeleton } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
 
-export interface TrafficProps {
+export interface PaymentMethodTrafficChartProps {
   chartSeries: {
     percent: number;
     total: number;
@@ -21,22 +24,30 @@ export interface TrafficProps {
   sx?: SxProps;
 }
 
-export function Traffic({
+export function PaymentMethodTrafficChart({
   chartSeries,
-  labels,
-  sx,
-}: Readonly<TrafficProps>): React.JSX.Element {
+}: Readonly<PaymentMethodTrafficChartProps>) {
+  const labels = ["เงินสด", "โอนเงิน"];
   const chartOptions = useChartOptions(labels);
+  const range = useAppSelector((state) => state.dashboard.range);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["payment-method-traffic", range],
+    queryFn: () => getPaymentMethodTraffic(range),
+  });
+
+  if (isLoading || !data)
+    return <Skeleton variant="rectangular" height={470} />;
 
   return (
-    <Card sx={sx}>
+    <Card sx={{ height: "100%" }}>
       <CardHeader title="ช่องทางการชำระเงิน" />
       <CardContent>
         <Stack spacing={2}>
           <Chart
             height={300}
             options={chartOptions}
-            series={chartSeries.map((item) => item.percent)}
+            series={data.map((item) => item.percent)}
             type="donut"
             width="100%"
           />
@@ -45,20 +56,20 @@ export function Traffic({
             spacing={2}
             sx={{ alignItems: "center", justifyContent: "center" }}
           >
-            {chartSeries.map((item, index) => {
+            {data.map((item, index) => {
               const label = labels[index];
               return (
                 <Stack key={label} sx={{ alignItems: "center" }}>
                   <Typography variant="h6">{label}</Typography>
                   <Typography color="text.secondary" variant="subtitle2">
-                    {number(item.total)} บาท
+                    {money(item.count)}
                   </Typography>
                   <Typography
                     color="text.secondary"
                     lineHeight={0.5}
                     variant="caption"
                   >
-                    ({item.percent}%)
+                    ({item.percent.toFixed(2)}%)
                   </Typography>
                 </Stack>
               );
