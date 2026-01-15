@@ -18,7 +18,7 @@ import TableRow from "@mui/material/TableRow";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-export function RecentOrderTable() {
+export function RecentOrders() {
   const { data: latestOrders, isLoading } = useQuery({
     queryKey: ["latest-orders"],
     queryFn: getRecentOrders,
