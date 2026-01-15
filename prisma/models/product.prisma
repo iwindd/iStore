@@ -33,7 +33,6 @@ model Product {
   store                  Store                   @relation(fields: [store_id], references: [id])
   category               Category?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
   creator                Employee?               @relation(fields: [creator_id], references: [id])
-  borrows                Borrow[]
   stockReceiptProducts   StockReceiptProduct[]
   promotionOfferBuyItems PromotionOfferBuyItem[]
   promotionOfferGetItems PromotionOfferGetItem[]
@@ -69,14 +68,12 @@ model ProductStockMovement{
   product_id        Int
   stock_receipt_id  Int?
   order_id          Int?
-  borrow_id         Int?
   consignment_id    Int?
   createdAt         DateTime      @default(now())
 
   product           Product       @relation(fields: [product_id], references: [id])
   stock_receipt     StockReceipt? @relation(fields: [stock_receipt_id], references: [id])
   order             Order?        @relation(fields: [order_id], references: [id])
-  borrow            Borrow?       @relation(fields: [borrow_id], references: [id])
   consignment       Consignment?  @relation(fields: [consignment_id], references: [id])
 
   @@index([product_id])

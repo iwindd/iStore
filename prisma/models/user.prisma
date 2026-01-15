@@ -26,7 +26,6 @@ model Employee {
   orders              Order[]
   returned_preorders  OrderPreOrder[] @relation("ReturnedPreOrders")
   cancelled_preorders OrderPreOrder[] @relation("CancelledPreOrders")
-  borrows             Borrow[]
   stock_receipts StockReceipt[]
   roles          Role[]
   store          Store          @relation(fields: [store_id], references: [id])

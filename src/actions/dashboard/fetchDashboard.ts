@@ -1,6 +1,6 @@
 "use server";
 import {
-  BorrowPermissionEnum,
+  ConsignmentPermissionEnum,
   HistoryPermissionEnum,
   ProductPermissionEnum,
   StockPermissionEnum,
@@ -42,10 +42,10 @@ const fetchDashboard = async () => {
           },
         },
       }),
-      db.borrow.count({
+      db.consignment.count({
         where: {
           store_id: storeId,
-          creator_id: user.limitPermission(BorrowPermissionEnum.READ),
+          creator_id: user.limitPermission(ConsignmentPermissionEnum.READ),
           ...(await getFilterRange()),
         },
       }),
@@ -80,7 +80,7 @@ const fetchDashboard = async () => {
         ...order,
         created_at: order.created_at.toISOString(),
       })),
-      borrows: data[1],
+      consignments: data[1],
       products: data[2],
       stocks: data[3],
     };
@@ -88,7 +88,7 @@ const fetchDashboard = async () => {
     console.error("Error fetching dashboard data:", error);
     return {
       orders: [],
-      borrows: [],
+      consignments: [],
       products: [],
       stocks: [],
     };

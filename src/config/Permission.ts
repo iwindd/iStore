@@ -1,8 +1,8 @@
 import {
   AccountPermissionEnum,
-  BorrowPermissionEnum,
   CashierPermissionEnum,
   CategoryPermissionEnum,
+  ConsignmentPermissionEnum,
   DashboardPermissionEnum,
   EmployeePermissionEnum,
   HistoryPermissionEnum,
@@ -43,11 +43,11 @@ const ALL_PERMISSIONS: Record<SuperPermissionEnum, PermissionEnum[]> = {
     OverStockPermissionEnum.READ,
     OverStockPermissionEnum.UPDATE,
   ],
-  [SuperPermissionEnum.BORROW]: [
-    BorrowPermissionEnum.READ,
-    BorrowPermissionEnum.CREATE,
-    BorrowPermissionEnum.UPDATE,
-    BorrowPermissionEnum.DELETE,
+  [SuperPermissionEnum.CONSIGNMENT]: [
+    ConsignmentPermissionEnum.READ,
+    ConsignmentPermissionEnum.CREATE,
+    ConsignmentPermissionEnum.UPDATE,
+    ConsignmentPermissionEnum.DELETE,
   ],
   [SuperPermissionEnum.PURCHASE]: [
     PurchasePermissionEnum.READ,

@@ -1,8 +1,8 @@
 import {
   AccountPermissionEnum,
-  BorrowPermissionEnum,
   CashierPermissionEnum,
   CategoryPermissionEnum,
+  ConsignmentPermissionEnum,
   EmployeePermissionEnum,
   HistoryPermissionEnum,
   OverStockPermissionEnum,
@@ -87,13 +87,13 @@ const TreeViewPermissionItems: TreeViewBaseItem[] = [
     ], */
   },
   {
-    id: BorrowPermissionEnum.ALL,
-    label: "การเบิกสินค้า",
+    id: ConsignmentPermissionEnum.ALL,
+    label: "การฝากขาย",
     /*     children: [
-      { id: BorrowPermissionEnum.READ, label: "เข้าถึงการเบิกสินค้าทั้งหมด" },
-      { id: BorrowPermissionEnum.CREATE, label: "เพิ่มรายการเบิกสินค้า" },
-      { id: BorrowPermissionEnum.UPDATE, label: "คืนการเบิกสินค้า" },
-      { id: BorrowPermissionEnum.DELETE, label: "ยกเลิกการเบิกสินค้า" },
+      { id: ConsignmentPermissionEnum.READ, label: "เข้าถึงการฝากขายทั้งหมด" },
+      { id: ConsignmentPermissionEnum.CREATE, label: "เพิ่มรายการฝากขาย" },
+      { id: ConsignmentPermissionEnum.UPDATE, label: "คืนการฝากขาย" },
+      { id: ConsignmentPermissionEnum.DELETE, label: "ยกเลิกการฝากขาย" },
     ], */
   },
   {

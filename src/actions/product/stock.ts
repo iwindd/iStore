@@ -4,7 +4,7 @@ import { ProductStock, ProductStockMovementType } from "@prisma/client";
 
 type ProductStockMovementRelationInput =
   | {
-      borrow_id: number;
+      consignment_id: number;
     }
   | {
       order_id: number;

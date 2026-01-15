@@ -4,8 +4,6 @@
   - You are about to drop the `user_stores` table. If the table is not empty, all the data it contains will be lost.
 
 */
--- DropForeignKey
-ALTER TABLE "borrows" DROP CONSTRAINT "borrows_creator_id_fkey";
 
 -- DropForeignKey
 ALTER TABLE "broadcasts" DROP CONSTRAINT "broadcasts_creator_id_fkey";
@@ -61,9 +59,6 @@ CREATE TABLE "employees" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "employees_user_id_store_id_key" ON "employees"("user_id", "store_id");
-
--- AddForeignKey
-ALTER TABLE "borrows" ADD CONSTRAINT "borrows_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "employees"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "broadcasts" ADD CONSTRAINT "broadcasts_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "employees"("id") ON DELETE SET NULL ON UPDATE CASCADE;

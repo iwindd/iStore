@@ -20,7 +20,7 @@
           "Product.*",
           "Category.*",
           "Stock.*",
-          "Borrow.*",
+          "Consignment.*",
           "Account.*",
           "Cashier.*"
         ],
@@ -60,7 +60,7 @@
           "Product.*",
           "Category.*",
           "Stock.*",
-          "Borrow.*",
+          "Consignment.*",
           "Account.*",
           "Cashier.*"
         ],

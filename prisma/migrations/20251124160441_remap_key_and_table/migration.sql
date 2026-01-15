@@ -8,9 +8,6 @@
 CREATE TYPE "OrderProductType" AS ENUM ('NORMAL', 'OFFER');
 
 -- DropForeignKey
-ALTER TABLE "borrows" DROP CONSTRAINT "borrows_creator_id_fkey";
-
--- DropForeignKey
 ALTER TABLE "categories" DROP CONSTRAINT "categories_creator_id_fkey";
 
 -- DropForeignKey
@@ -58,9 +55,6 @@ CREATE TABLE "user_stores" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user_stores_user_id_store_id_key" ON "user_stores"("user_id", "store_id");
-
--- AddForeignKey
-ALTER TABLE "borrows" ADD CONSTRAINT "borrows_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "user_stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "user_stores"("id") ON DELETE SET NULL ON UPDATE CASCADE;

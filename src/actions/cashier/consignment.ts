@@ -1,5 +1,5 @@
 "use server";
-import { BorrowPermissionEnum } from "@/enums/permission";
+import { ConsignmentPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { ConsignmentSchema, ConsignmentValues } from "@/schema/Payment";
@@ -10,7 +10,7 @@ export const Consignment = async (payload: ConsignmentValues) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(BorrowPermissionEnum.CREATE))
+    if (!user.hasPermission(ConsignmentPermissionEnum.CREATE))
       throw new Error("Forbidden");
     const validated = ConsignmentSchema.parse(payload);
     const { products } = await validateProducts(user.store, validated.products);

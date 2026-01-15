@@ -4,7 +4,7 @@ import { RangeChange } from "@/actions/dashboard/range";
 import { usePopover } from "@/hooks/use-popover";
 import { date2 as date } from "@/libs/formatter";
 import {
-  setBorrowCount,
+  setConsignment,
   setOrders,
   setProducts,
   setStocks,
@@ -82,7 +82,7 @@ const DashboardController = ({
   useEffect(() => {
     if (data) {
       dispatch(setOrders(data.orders));
-      dispatch(setBorrowCount(data.borrows as number));
+      dispatch(setConsignment(data.consignments as number));
       dispatch(setProducts(data.products));
       dispatch(setStocks(+data.stocks));
     }

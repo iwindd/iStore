@@ -17,7 +17,7 @@ export interface DashboardState {
   stats: {
     orders: number;
     profit: number;
-    borrows: number;
+    consignments: number;
     purchase: number;
     overstock: number;
     low_stock: number;
@@ -42,7 +42,7 @@ const initialState: DashboardState = {
   stats: {
     orders: 0,
     profit: 0,
-    borrows: 0,
+    consignments: 0,
     purchase: 0,
     overstock: 0,
     low_stock: 0,
@@ -55,8 +55,8 @@ const dashboardSlice = createSlice({
   name: "dashboard",
   initialState: initialState,
   reducers: {
-    setBorrowCount: (state, action: PayloadAction<number>) => {
-      state.stats.borrows = action.payload;
+    setConsignment: (state, action: PayloadAction<number>) => {
+      state.stats.consignments = action.payload;
     },
     setOrders: (state, action: PayloadAction<any[]>) => {
       const orders = action.payload;
@@ -146,6 +146,6 @@ const dashboardSlice = createSlice({
   },
 });
 
-export const { setBorrowCount, setOrders, setProducts, setStocks } =
+export const { setConsignment, setOrders, setProducts, setStocks } =
   dashboardSlice.actions;
 export default dashboardSlice.reducer;

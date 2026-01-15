@@ -1,6 +1,6 @@
 "use client";
 import {
-  BorrowPermissionEnum,
+  ConsignmentPermissionEnum,
   OverStockPermissionEnum,
   PermissionEnum,
   ProductPermissionEnum,
@@ -57,14 +57,14 @@ const StatConfig: StatConfig[] = [
     color: "success",
   },
   {
-    name: "borrows",
-    value: "borrows",
-    route: getRoute("borrows"),
-    label: "การเบิก",
+    name: "consignments",
+    value: "consignments",
+    route: getRoute("consignments"),
+    label: "ฝากขาย",
     icon: <BackHand />,
     render: (v) => `${number(v)} รายการ`,
     color: "warning",
-    permission: BorrowPermissionEnum.READ,
+    permission: ConsignmentPermissionEnum.READ,
   },
   {
     name: "purchase",

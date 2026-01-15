@@ -1,30 +1,11 @@
 -- CreateEnum
-CREATE TYPE "BorrowState" AS ENUM ('PROGRESS', 'SUCCESS', 'CANCEL');
-
--- CreateEnum
 CREATE TYPE "Method" AS ENUM ('CASH', 'BANK');
 
 -- CreateEnum
-CREATE TYPE "OrderType" AS ENUM ('CASHOUT', 'PURCHASE', 'BORROW');
+CREATE TYPE "OrderType" AS ENUM ('CASHOUT', 'PURCHASE');
 
 -- CreateEnum
 CREATE TYPE "StockState" AS ENUM ('PROGRESS', 'SUCCESS', 'CANCEL');
-
--- CreateTable
-CREATE TABLE "borrows" (
-    "id" SERIAL NOT NULL,
-    "amount" INTEGER NOT NULL,
-    "count" INTEGER NOT NULL DEFAULT 0,
-    "note" TEXT NOT NULL,
-    "status" "BorrowState" NOT NULL DEFAULT 'PROGRESS',
-    "product_id" INTEGER NOT NULL,
-    "store_id" TEXT NOT NULL,
-    "creator_id" INTEGER,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "borrows_pkey" PRIMARY KEY ("id")
-);
 
 -- CreateTable
 CREATE TABLE "orders" (
@@ -205,15 +186,6 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE INDEX "_RolePermission_B_index" ON "_RolePermission"("B");
-
--- AddForeignKey
-ALTER TABLE "borrows" ADD CONSTRAINT "borrows_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "products"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "borrows" ADD CONSTRAINT "borrows_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "borrows" ADD CONSTRAINT "borrows_creator_id_fkey" FOREIGN KEY ("creator_id") REFERENCES "creators"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "orders" ADD CONSTRAINT "orders_store_id_fkey" FOREIGN KEY ("store_id") REFERENCES "stores"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

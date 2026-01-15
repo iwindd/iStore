@@ -1,6 +1,5 @@
 import {
   AllInbox,
-  BackHand,
   Badge,
   Campaign,
   Category,
@@ -94,11 +93,6 @@ const ROUTES = ROUTER({
     path: "/overstocks",
     label: "สินค้าถูกจอง",
     icon: RotateRight,
-  },
-  borrows: {
-    path: "/borrows",
-    label: "เบิกสินค้า",
-    icon: BackHand,
   },
   purchase: {
     path: "/purchase",

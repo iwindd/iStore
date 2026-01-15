@@ -30,7 +30,7 @@ const NavbarItems = [
     title: "อื่นๆ",
     routes: [
       getRoute("overstocks"),
-      getRoute("borrows"),
+      getRoute("consignments"),
       getRoute("preorders"),
       getRoute("purchase"),
     ],

@@ -4,7 +4,6 @@ model Store {
   categories     Category[]
   products       Product[]
   orders         Order[]
-  borrows        Borrow[]
   stock_receipts         StockReceipt[]
   employees      Employee[]
   roles          Role[]

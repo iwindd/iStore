@@ -6,7 +6,7 @@ export enum SuperPermissionEnum {
   CATEGORY = "CATEGORY.*",
   STOCK = "STOCK.*",
   OVERSTOCK = "OVERSTOCK.*",
-  BORROW = "BORROW.*",
+  CONSIGNMENT = "CONSIGNMENT.*",
   PURCHASE = "PURCHASE.*",
   HISTORY = "HISTORY.*",
   ACCOUNT = "ACCOUNT.*",
@@ -56,12 +56,12 @@ export enum OverStockPermissionEnum {
   UPDATE = "OVERSTOCK.UPDATE",
 }
 
-export enum BorrowPermissionEnum {
-  ALL = SuperPermissionEnum.BORROW,
-  READ = "BORROW.READ",
-  CREATE = "BORROW.CREATE",
-  UPDATE = "BORROW.UPDATE",
-  DELETE = "BORROW.DELETE",
+export enum ConsignmentPermissionEnum {
+  ALL = SuperPermissionEnum.CONSIGNMENT,
+  READ = "CONSIGNMENT.READ",
+  CREATE = "CONSIGNMENT.CREATE",
+  UPDATE = "CONSIGNMENT.UPDATE",
+  DELETE = "CONSIGNMENT.DELETE",
 }
 
 export enum PurchasePermissionEnum {
@@ -120,7 +120,7 @@ export type PermissionEnum =
   | CategoryPermissionEnum
   | StockPermissionEnum
   | OverStockPermissionEnum
-  | BorrowPermissionEnum
+  | ConsignmentPermissionEnum
   | PurchasePermissionEnum
   | HistoryPermissionEnum
   | AccountPermissionEnum
