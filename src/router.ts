@@ -228,6 +228,17 @@ const ROUTES = ROUTER({
     label: "พรีออเดอร์",
     icon: RotateRight,
   },
+  consignments: {
+    path: "/consignments",
+    label: "ฝากขาย",
+    icon: AllInbox,
+    children: {
+      consignment: {
+        path: "/consignments/:id",
+        label: "รายละเอียดการฝากขาย",
+      },
+    },
+  },
 });
 
 export const {

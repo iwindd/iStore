@@ -30,4 +30,21 @@ export class Colorization {
         return "text-color-secondary";
     }
   }
+
+  static getGridCellColorForConsignmentStatus(
+    params: GridCellParams<any, any, any, GridTreeNode>
+  ) {
+    if (params.field != "status") return "";
+
+    switch (params.value) {
+      case "PENDING":
+        return "text-color-warning";
+      case "COMPLETED":
+        return "text-color-success";
+      case "CANCELLED":
+        return "text-color-error";
+      default:
+        return "text-color-secondary";
+    }
+  }
 }

@@ -10,11 +10,13 @@ model Order {
   creator_id Int?
   created_at DateTime        @default(now())
   updated_at DateTime        @updatedAt
+  consignment_id Int?
 
-  store      Store          @relation(fields: [store_id], references: [id])
-  creator    Employee?      @relation(fields: [creator_id], references: [id])
-  products   OrderProduct[]
-  preOrders  OrderPreOrder[]
+  store           Store          @relation(fields: [store_id], references: [id])
+  creator         Employee?      @relation(fields: [creator_id], references: [id])
+  consignment     Consignment?      @relation(fields: [consignment_id], references: [id])
+  products        OrderProduct[]
+  preOrders       OrderPreOrder[]
   productStockMovements  ProductStockMovement[]
 
   @@map("orders")
