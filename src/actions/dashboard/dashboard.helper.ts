@@ -342,3 +342,26 @@ export async function getTopSellingProductsData(
     };
   });
 }
+
+export async function getRecentOrdersData(user: User) {
+  const order = await db.order.findMany({
+    where: {
+      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+    take: 5,
+    select: {
+      id: true,
+      created_at: true,
+      note: true,
+      total: true,
+    },
+  });
+
+  return order.map((item) => ({
+    ...item,
+    total: item.total.toNumber(),
+  }));
+}
