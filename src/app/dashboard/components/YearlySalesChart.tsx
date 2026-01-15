@@ -43,7 +43,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
   const [availableYears, setAvailableYears] = useState<number[]>([currentYear]);
 
   // Fetch oldest order to determine available years
-  const { data: oldestOrderDate } = useQuery({
+  const { data: oldestOrderDate, isLoading: isLoadingOldestOrder } = useQuery({
     queryKey: ["oldest-order"],
     queryFn: getOldestOrder,
   });
@@ -97,17 +97,21 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
           )
         }
         action={
-          <Select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
-            size="small"
-          >
-            {availableYears.map((year) => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
+          isLoadingOldestOrder ? (
+            <Skeleton variant="text" height={55} width={70} />
+          ) : (
+            <Select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              size="small"
+            >
+              {availableYears.map((year) => (
+                <MenuItem key={year} value={year}>
+                  {year}
+                </MenuItem>
+              ))}
+            </Select>
+          )
         }
       />
       <CardContent>
