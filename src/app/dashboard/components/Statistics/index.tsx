@@ -6,13 +6,12 @@ import { PaymentMethodTrafficChart } from "../../charts/PaymentMethodTrafficChar
 import { YearlySalesChart } from "../../charts/YearlySalesChart";
 
 const Statistics = () => {
-  const weeks = useAppSelector((state) => state.dashboard.statistics.weeks);
   const methods = useAppSelector((state) => state.dashboard.statistics.methods);
 
   return (
     <Grid container spacing={1}>
       <Grid size={{ xs: 12, lg: 8 }}>
-        <YearlySalesChart />
+        <YearlySalesChart sx={{ height: "100%" }} />
       </Grid>
       <Grid size={{ xs: 12, md: 6, lg: 4 }}>
         <PaymentMethodTrafficChart

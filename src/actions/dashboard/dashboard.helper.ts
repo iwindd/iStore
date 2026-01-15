@@ -285,3 +285,60 @@ export async function getYearlySalesData(user: User, year: number) {
     yearOverYearChange,
   };
 }
+
+export async function getTopSellingProductsData(
+  user: User,
+  range: DashboardDateRange
+) {
+  type TopSellingGroupResult = {
+    product_id: number;
+    _sum: {
+      count: number | null;
+    };
+  };
+
+  const data = (await db.orderProduct.groupBy({
+    by: ["product_id"],
+    where: {
+      order: {
+        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+        created_at: {
+          gte: range.start,
+          lte: range.end,
+        },
+      },
+    },
+    _sum: {
+      count: true,
+    },
+    orderBy: {
+      _sum: {
+        count: "desc",
+      },
+    },
+    take: 5,
+  })) as TopSellingGroupResult[];
+
+  const products = await db.product.findMany({
+    where: {
+      id: {
+        in: data.map((item) => item.product_id),
+      },
+    },
+    select: {
+      id: true,
+      label: true,
+      price: true,
+    },
+  });
+
+  return data.map((item) => {
+    const product = products.find((p) => p.id === item.product_id);
+    return {
+      id: item.product_id,
+      label: product?.label || "Unknown",
+      price: product?.price || 0,
+      sold: item._sum.count || 0,
+    };
+  });
+}
