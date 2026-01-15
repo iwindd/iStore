@@ -212,3 +212,76 @@ export async function getDashboardRangeDate(range: DashboardRange) {
     };
   }
 }
+
+export async function getYearlySalesData(user: User, year: number) {
+  const startOfYear = dayjs().year(year).startOf("year").toDate();
+  const endOfYear = dayjs().year(year).endOf("year").toDate();
+
+  // Get orders for the specified year
+  const orders = await db.order.findMany({
+    where: {
+      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      created_at: {
+        gte: startOfYear,
+        lte: endOfYear,
+      },
+    },
+    select: {
+      created_at: true,
+      total: true,
+      cost: true,
+    },
+  });
+
+  // Initialize monthly data (0-11 for Jan-Dec)
+  const monthlyIncome = new Array(12).fill(0);
+  const monthlyExpenses = new Array(12).fill(0);
+
+  // Aggregate data by month
+  orders.forEach((order) => {
+    const month = dayjs(order.created_at).month(); // 0-11
+    monthlyIncome[month] += order.total.toNumber();
+    monthlyExpenses[month] += order.cost.toNumber();
+  });
+
+  // Calculate totals
+  const totalIncome = monthlyIncome.reduce((sum, val) => sum + val, 0);
+  const totalExpenses = monthlyExpenses.reduce((sum, val) => sum + val, 0);
+
+  // Get previous year data for comparison
+  const previousYearStart = dayjs()
+    .year(year - 1)
+    .startOf("year")
+    .toDate();
+  const previousYearEnd = dayjs()
+    .year(year - 1)
+    .endOf("year")
+    .toDate();
+
+  const previousYearOrders = await db.order.aggregate({
+    where: {
+      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      created_at: {
+        gte: previousYearStart,
+        lte: previousYearEnd,
+      },
+    },
+    _sum: {
+      total: true,
+    },
+  });
+
+  const previousYearIncome = previousYearOrders._sum.total?.toNumber() || 0;
+  const yearOverYearChange =
+    previousYearIncome > 0
+      ? ((totalIncome - previousYearIncome) / previousYearIncome) * 100
+      : 0;
+
+  return {
+    monthlyIncome,
+    monthlyExpenses,
+    totalIncome,
+    totalExpenses,
+    yearOverYearChange,
+  };
+}

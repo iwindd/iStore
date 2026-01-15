@@ -3,7 +3,7 @@
 import { useAppSelector } from "@/hooks";
 import { Grid } from "@mui/material";
 import { PaymentMethodTrafficChart } from "../../charts/PaymentMethodTrafficChart";
-import { Sales } from "../../charts/sales";
+import { YearlySalesChart } from "../../charts/YearlySalesChart";
 
 const Statistics = () => {
   const weeks = useAppSelector((state) => state.dashboard.statistics.weeks);
@@ -12,10 +12,7 @@ const Statistics = () => {
   return (
     <Grid container spacing={1}>
       <Grid size={{ xs: 12, lg: 8 }}>
-        <Sales
-          chartSeries={[{ name: "ยอดขาย", data: weeks }]}
-          sx={{ height: "100%" }}
-        />
+        <YearlySalesChart />
       </Grid>
       <Grid size={{ xs: 12, md: 6, lg: 4 }}>
         <PaymentMethodTrafficChart
