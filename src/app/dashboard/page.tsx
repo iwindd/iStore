@@ -1,4 +1,3 @@
-import { getRange } from "@/actions/dashboard/range";
 import { getUser } from "@/libs/session";
 import { Stack } from "@mui/material";
 import { notFound } from "next/navigation";
@@ -10,14 +9,10 @@ import Stats from "./components/Stats";
 const Dashboard = async () => {
   const user = await getUser();
   if (!user) return notFound();
-  const [startDate, endDate] = await getRange();
 
   return (
     <Stack spacing={1}>
-      <DashboardController
-        savedStart={startDate ? startDate.format() : null}
-        savedEnd={endDate ? endDate.format() : null}
-      />
+      <DashboardController />
       <Stats />
       <Statistics />
       <Orders />

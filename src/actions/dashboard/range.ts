@@ -45,10 +45,21 @@ export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
   return [startDayjs, endDayjs];
 };
 
-export const getFilterRange = async (key: string = "created_at") => {
-  const [start, end] = await getRange();
+export const getFilterRange = async (
+  key: string = "created_at",
+  startStr?: string,
+  endStr?: string
+) => {
+  let start: Dayjs | null = null;
+  let end: Dayjs | null = null;
 
-  if (end) end.endOf("day");
+  if (startStr || endStr) {
+    start = startStr ? dayjs(startStr).startOf("day") : null;
+    end = endStr ? dayjs(endStr).endOf("day") : null;
+  } else {
+    [start, end] = await getRange();
+    if (end) end.endOf("day");
+  }
 
   return {
     [key]: {

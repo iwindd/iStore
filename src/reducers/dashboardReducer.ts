@@ -8,14 +8,14 @@ export enum EnumDashboardRange {
   WEEK = "week",
   MONTH = "month",
   YEAR = "year",
+  CUSTOM = "custom",
 }
 
-export type DashboardRange =
-  | EnumDashboardRange
-  | {
-      start: string;
-      end: string;
-    };
+export type DashboardRange = {
+  type: EnumDashboardRange;
+  start: string;
+  end: string;
+};
 
 export interface DashboardState {
   orders: any[];
@@ -64,7 +64,11 @@ const initialState: DashboardState = {
     stocks: 0,
     products: 0,
   },
-  range: EnumDashboardRange.TODAY,
+  range: {
+    type: EnumDashboardRange.MONTH,
+    start: dayjs().subtract(1, "month").toISOString(),
+    end: dayjs().toISOString(),
+  },
 };
 
 const dashboardSlice = createSlice({
@@ -159,9 +163,12 @@ const dashboardSlice = createSlice({
     setStocks: (state, action: PayloadAction<number>) => {
       state.stats.stocks = action.payload;
     },
+    setRange: (state, action: PayloadAction<DashboardRange>) => {
+      state.range = action.payload;
+    },
   },
 });
 
-export const { setConsignment, setOrders, setProducts, setStocks } =
+export const { setConsignment, setOrders, setProducts, setStocks, setRange } =
   dashboardSlice.actions;
 export default dashboardSlice.reducer;
