@@ -198,6 +198,11 @@ export async function getDashboardRangeDate(range: DashboardRange) {
           start: dayjs().startOf("year").toDate(),
           end: dayjs().endOf("year").toDate(),
         };
+      case EnumDashboardRange.ALL_TIME:
+        return {
+          start: new Date(0),
+          end: dayjs().endOf("day").toDate(),
+        };
       default:
         return {
           start: dayjs(range.start).toDate(),

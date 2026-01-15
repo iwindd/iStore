@@ -63,6 +63,9 @@ const DashboardController = () => {
       case EnumDashboardRange.YEAR:
         newStart = dayjs().startOf("year");
         break;
+      case EnumDashboardRange.ALL_TIME:
+        newStart = dayjs(0);
+        break;
     }
 
     const newRange: DashboardRange = {
@@ -143,6 +146,9 @@ const DashboardController = () => {
               <MenuItem value={EnumDashboardRange.WEEK}>อาทิตย์นี้</MenuItem>
               <MenuItem value={EnumDashboardRange.MONTH}>เดือนนี้</MenuItem>
               <MenuItem value={EnumDashboardRange.YEAR}>ปีนี้</MenuItem>
+              <MenuItem value={EnumDashboardRange.ALL_TIME}>
+                ตลอดระยะเวลา
+              </MenuItem>
               <MenuItem value={EnumDashboardRange.CUSTOM}>กำหนดเอง</MenuItem>
             </Select>
             <FormHelperText>

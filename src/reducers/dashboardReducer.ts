@@ -8,6 +8,7 @@ export enum EnumDashboardRange {
   WEEK = "week",
   MONTH = "month",
   YEAR = "year",
+  ALL_TIME = "all-time",
   CUSTOM = "custom",
 }
 
