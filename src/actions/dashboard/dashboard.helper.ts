@@ -3,10 +3,8 @@
 import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { User } from "@/libs/user";
-import {
-  DashboardRange,
-  EnumDashboardRange,
-} from "@/reducers/dashboardReducer";
+import {DashboardRange, EnumDashboardRange} from '@/reducers/dashboardReducer';
+
 import { PreOrderStatus } from "@prisma/client";
 import dayjs from "dayjs";
 
@@ -118,7 +116,7 @@ export type DashboardDateRange = {
 
 export async function getDashboardRangeDate(range: DashboardRange) {
   try {
-    switch (range) {
+    switch (range.type) {
       case EnumDashboardRange.TODAY:
         return {
           start: dayjs().startOf("day").toDate(),
