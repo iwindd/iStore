@@ -3,7 +3,6 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
 import Stack from "@mui/material/Stack";
-import type { SxProps } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import type { ApexOptions } from "apexcharts";
@@ -15,18 +14,7 @@ import { money } from "@/libs/formatter";
 import { Box, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
-export interface PaymentMethodTrafficChartProps {
-  chartSeries: {
-    percent: number;
-    total: number;
-  }[];
-  labels: string[];
-  sx?: SxProps;
-}
-
-export function PaymentMethodTrafficChart({
-  chartSeries,
-}: Readonly<PaymentMethodTrafficChartProps>) {
+export function PaymentMethodTrafficChart() {
   const labels = ["เงินสด", "โอนเงิน"];
   const chartOptions = useChartOptions(labels);
   const range = useAppSelector((state) => state.dashboard.range);

@@ -31,8 +31,8 @@ const BestSelling = () => {
       <CardContent>
         {isLoading ? (
           <List>
-            {new Array(5).fill(0).map((_, index) => (
-              <ListItem key={`skeleton-${index}`} disableGutters>
+            {new Array(5).fill(0).map(() => (
+              <ListItem key={crypto.randomUUID()} disableGutters>
                 <ListItemText
                   primary={<Skeleton variant="text" width="60%" />}
                   secondary={<Skeleton variant="text" width="40%" />}

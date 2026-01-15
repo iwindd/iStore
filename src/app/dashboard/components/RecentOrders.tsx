@@ -41,9 +41,9 @@ export function RecentOrders() {
           </TableHead>
           <TableBody>
             {isLoading
-              ? new Array(5).fill(0).map((_, index) => {
+              ? new Array(5).fill(0).map(() => {
                   return (
-                    <TableRow hover key={`skeleton-${index}`}>
+                    <TableRow hover key={crypto.randomUUID()}>
                       <TableCell>
                         <Skeleton variant="text" width="60%" height={55} />
                       </TableCell>
