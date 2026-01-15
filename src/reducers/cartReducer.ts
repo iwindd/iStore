@@ -102,7 +102,7 @@ export const cashoutCart = createAsyncThunk(
         key: "error",
         preventDuplicate: true,
       });
-      throw new Error(resp.message);
+      return console.error(resp);
     }
 
     return resp.data;
