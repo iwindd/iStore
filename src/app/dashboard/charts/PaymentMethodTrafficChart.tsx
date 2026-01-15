@@ -12,7 +12,7 @@ import { getPaymentMethodTraffic } from "@/actions/dashboard/getPaymentMethodTra
 import { Chart } from "@/components/core/chart";
 import { useAppSelector } from "@/hooks";
 import { money } from "@/libs/formatter";
-import { Skeleton } from "@mui/material";
+import { Box, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 
 export interface PaymentMethodTrafficChartProps {
@@ -31,46 +31,64 @@ export function PaymentMethodTrafficChart({
   const chartOptions = useChartOptions(labels);
   const range = useAppSelector((state) => state.dashboard.range);
 
-  const { data, isLoading } = useQuery({
+  const { isLoading, ...query } = useQuery({
     queryKey: ["payment-method-traffic", range],
     queryFn: () => getPaymentMethodTraffic(range),
   });
 
-  if (isLoading || !data)
-    return <Skeleton variant="rectangular" height={470} />;
+  const result = query.data || [
+    {
+      count: 0,
+      percent: 0,
+    },
+    {
+      count: 0,
+      percent: 0,
+    },
+  ];
 
   return (
     <Card sx={{ height: "100%" }}>
       <CardHeader title="ช่องทางการชำระเงิน" />
       <CardContent>
         <Stack spacing={2}>
-          <Chart
-            height={300}
-            options={chartOptions}
-            series={data.map((item) => item.percent)}
-            type="donut"
-            width="100%"
-          />
+          <Box height={300}>
+            <Chart
+              height={"100%"}
+              options={chartOptions}
+              series={result.map((item) => item.percent) || []}
+              type="donut"
+              width="100%"
+            />
+          </Box>
           <Stack
             direction="row"
             spacing={2}
             sx={{ alignItems: "center", justifyContent: "center" }}
           >
-            {data.map((item, index) => {
+            {result.map((item, index) => {
               const label = labels[index];
               return (
                 <Stack key={label} sx={{ alignItems: "center" }}>
-                  <Typography variant="h6">{label}</Typography>
-                  <Typography color="text.secondary" variant="subtitle2">
-                    {money(item.count)}
-                  </Typography>
-                  <Typography
-                    color="text.secondary"
-                    lineHeight={0.5}
-                    variant="caption"
-                  >
-                    ({item.percent.toFixed(2)}%)
-                  </Typography>
+                  {isLoading ? (
+                    <Stack>
+                      <Skeleton variant="text" height={50} width={100} />
+                    </Stack>
+                  ) : (
+                    <>
+                      <Typography variant="h6">{label}</Typography>
+                      <Typography color="text.secondary" variant="subtitle2">
+                        {money(item.count)}
+                      </Typography>
+                      <Typography
+                        color="text.secondary"
+                        lineHeight={0.5}
+                        variant="caption"
+                      >
+                        ({item.percent.toFixed(2)}%)
+                      </Typography>
+                    </>
+                  )}
                 </Stack>
               );
             })}
