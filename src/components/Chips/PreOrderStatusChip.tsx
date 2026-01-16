@@ -5,29 +5,31 @@ import {
 } from "@mui/icons-material";
 import { Chip, ChipProps } from "@mui/material";
 import { PreOrderStatus } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 interface PreOrderStatusChipProps extends Omit<ChipProps, "label" | "color"> {
-  status: PreOrderStatus | string;
+  status: PreOrderStatus;
 }
 
 const PreOrderStatusChip = ({ status, ...props }: PreOrderStatusChipProps) => {
+  const t = useTranslations("COMPONENTS.preorder_status");
   const getStatusInfo = () => {
     switch (status) {
       case PreOrderStatus.PENDING:
         return {
-          label: "รอส่งคืน",
+          label: t("pending"),
           color: "primary" as const,
           icon: <LocalShippingTwoTone />,
         };
       case PreOrderStatus.RETURNED:
         return {
-          label: "ส่งคืนแล้ว",
+          label: t("returned"),
           color: "success" as const,
           icon: <CheckCircleTwoTone />,
         };
       case PreOrderStatus.CANCELLED:
         return {
-          label: "ยกเลิกแล้ว",
+          label: t("cancelled"),
           color: "default" as const,
           icon: <CloseTwoTone />,
         };

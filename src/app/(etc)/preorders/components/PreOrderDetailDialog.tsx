@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { PreOrderStatus } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 
@@ -35,6 +36,7 @@ const PreOrderDetailDialog = ({
   onClose,
   onSuccess,
 }: PreOrderDetailDialogProps) => {
+  const t = useTranslations("PREORDERS.dialog");
   const { enqueueSnackbar } = useSnackbar();
   const [preorder, setPreorder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -51,7 +53,7 @@ const PreOrderDetailDialog = ({
       setPreorder(data);
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("ไม่สามารถโหลดข้อมูลได้", { variant: "error" });
+      enqueueSnackbar(t("messages.load_error"), { variant: "error" });
     }
   };
 
@@ -59,11 +61,11 @@ const PreOrderDetailDialog = ({
     try {
       setLoading(true);
       await updatePreOrderStatus(id, PreOrderStatus.RETURNED);
-      enqueueSnackbar("อัปเดตสถานะเรียบร้อย", { variant: "success" });
+      enqueueSnackbar(t("messages.update_success"), { variant: "success" });
       onSuccess();
     } catch (error: any) {
       console.error(error);
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาดในการอัปเดตสถานะ", {
+      enqueueSnackbar(error.message || t("messages.update_error"), {
         variant: "error",
       });
     } finally {
@@ -72,22 +74,19 @@ const PreOrderDetailDialog = ({
   };
 
   const confirmCancel = useConfirm({
-    title: "ยืนยันการยกเลิก",
-    text: "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกพรีออเดอร์นี้?",
+    title: t("messages.cancel_confirm_title"),
+    text: t("messages.cancel_confirm_text"),
     onConfirm: async () => {
       try {
         setLoading(true);
         await updatePreOrderStatus(id, PreOrderStatus.CANCELLED);
-        enqueueSnackbar("ยกเลิกพรีออเดอร์เรียบร้อย", { variant: "success" });
+        enqueueSnackbar(t("messages.cancel_success"), { variant: "success" });
         onSuccess();
       } catch (error: any) {
         console.error(error);
-        enqueueSnackbar(
-          error.message || "เกิดข้อผิดพลาดในการยกเลิกพรีออเดอร์",
-          {
-            variant: "error",
-          }
-        );
+        enqueueSnackbar(error.message || t("messages.cancel_error"), {
+          variant: "error",
+        });
       } finally {
         setLoading(false);
       }
@@ -105,9 +104,9 @@ const PreOrderDetailDialog = ({
   const isOutOfStock = preorder.product.stock?.quantity < preorder.count;
 
   const getReturnButtonLabel = () => {
-    if (loading) return "กำลังบันทึก...";
-    if (isOutOfStock) return "สต๊อกสินค้าไม่เพียงพอ";
-    return "ส่งคืนเรียบร้อยแล้ว";
+    if (loading) return t("buttons.saving");
+    if (isOutOfStock) return t("buttons.insufficient_stock");
+    return t("buttons.mark_returned");
   };
 
   return (
@@ -115,7 +114,7 @@ const PreOrderDetailDialog = ({
       <DialogTitle>
         <Stack direction="row" alignItems="center" spacing={2}>
           <Typography variant="h6" component="div" sx={{ flex: 1 }}>
-            รายละเอียดพรีออเดอร์ #{preorder.id}
+            {t("title", { id: preorder.id })}
           </Typography>
           <PreOrderStatusChip status={preorder.status} size="medium" />
           <IconButton onClick={onClose} size="small">
@@ -128,12 +127,12 @@ const PreOrderDetailDialog = ({
         <Grid container spacing={2}>
           <Grid size={12}>
             <Typography variant="overline" color="text.secondary">
-              ข้อมูลสินค้า
+              {t("sections.product")}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body2" color="text.secondary">
-              ชื่อสินค้า
+              {t("labels.product_name")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {preorder.product.label}
@@ -141,7 +140,7 @@ const PreOrderDetailDialog = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body2" color="text.secondary">
-              รหัสสินค้า
+              {t("labels.serial")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {preorder.product.serial || "-"}
@@ -149,15 +148,15 @@ const PreOrderDetailDialog = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="body2" color="text.secondary">
-              จำนวน
+              {t("labels.count")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
-              {preorder.count} ชิ้น
+              {t("labels.items_unit", { count: preorder.count })}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="body2" color="text.secondary">
-              ราคาต่อหน่วย
+              {t("labels.price_per_unit")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {ff.money(preorder.product.price)}
@@ -165,7 +164,7 @@ const PreOrderDetailDialog = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Typography variant="body2" color="text.secondary">
-              ยอดรวม
+              {t("labels.total")}
             </Typography>
             <Typography variant="body1" fontWeight={600} color="success.main">
               {ff.money(preorder.total)}
@@ -175,12 +174,12 @@ const PreOrderDetailDialog = ({
           <Grid size={12}>
             <Divider sx={{ my: 1 }} />
             <Typography variant="overline" color="text.secondary">
-              ข้อมูลออเดอร์
+              {t("sections.order")}
             </Typography>
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body2" color="text.secondary">
-              เลขที่ออเดอร์
+              {t("labels.order_id")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               #{preorder.order.id}
@@ -188,7 +187,7 @@ const PreOrderDetailDialog = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body2" color="text.secondary">
-              วันที่ทำรายการ
+              {t("labels.order_date")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
               {ff.date(preorder.order.created_at)}
@@ -196,10 +195,10 @@ const PreOrderDetailDialog = ({
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
             <Typography variant="body2" color="text.secondary">
-              ผู้ทำรายการ
+              {t("labels.creator")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
-              {preorder.order.creator?.user?.name || "ไม่ระบุ"}
+              {preorder.order.creator?.user?.name || t("labels.not_specified")}
             </Typography>
           </Grid>
 
@@ -208,12 +207,12 @@ const PreOrderDetailDialog = ({
               <Grid size={12}>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="overline" color="text.secondary">
-                  ข้อมูลการส่งคืน
+                  {t("sections.return")}
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="body2" color="text.secondary">
-                  วันที่ส่งคืน
+                  {t("labels.return_date")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
                   {ff.date(preorder.returned_at)}
@@ -221,10 +220,11 @@ const PreOrderDetailDialog = ({
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="body2" color="text.secondary">
-                  ผู้ส่งคืน
+                  {t("labels.returner")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {preorder.returned_by?.user?.name || "ไม่ระบุ"}
+                  {preorder.returned_by?.user?.name ||
+                    t("labels.not_specified")}
                 </Typography>
               </Grid>
             </>
@@ -235,12 +235,12 @@ const PreOrderDetailDialog = ({
               <Grid size={12}>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="overline" color="text.secondary">
-                  ข้อมูลการยกเลิก
+                  {t("sections.cancel")}
                 </Typography>
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="body2" color="text.secondary">
-                  วันที่ยกเลิก
+                  {t("labels.cancel_date")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
                   {ff.date(preorder.cancelled_at)}
@@ -248,10 +248,11 @@ const PreOrderDetailDialog = ({
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="body2" color="text.secondary">
-                  ผู้ยกเลิก
+                  {t("labels.canceller")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {preorder.cancelled_by?.user?.name || "ไม่ระบุ"}
+                  {preorder.cancelled_by?.user?.name ||
+                    t("labels.not_specified")}
                 </Typography>
               </Grid>
             </>
@@ -261,7 +262,7 @@ const PreOrderDetailDialog = ({
             <Grid size={12}>
               <Divider sx={{ my: 1 }} />
               <Typography variant="body2" color="text.secondary">
-                หมายเหตุ
+                {t("labels.note")}
               </Typography>
               <Box
                 sx={{
@@ -280,7 +281,7 @@ const PreOrderDetailDialog = ({
       <Divider />
       <DialogActions sx={{ p: 2 }}>
         <Button onClick={onClose} color="inherit">
-          ปิด
+          {t("buttons.close")}
         </Button>
         {isPending && (
           <Stack direction="row" spacing={1}>
@@ -291,7 +292,7 @@ const PreOrderDetailDialog = ({
               disabled={loading}
               startIcon={<CloseTwoTone />}
             >
-              ยกเลิกพรีออเดอร์
+              {t("buttons.cancel")}
             </Button>
             <Button
               onClick={handleMarkAsReturned}

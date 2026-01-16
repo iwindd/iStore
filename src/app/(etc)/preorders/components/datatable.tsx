@@ -5,10 +5,12 @@ import Datatable from "@/components/Datatable";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import PreOrderDetailDialog from "./PreOrderDetailDialog";
 
 const PreOrdersDatatable = () => {
+  const t = useTranslations("PREORDERS.datatable");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -17,7 +19,7 @@ const PreOrdersDatatable = () => {
       {
         field: "order",
         sortable: true,
-        headerName: "วันทำรายการ",
+        headerName: t("headers.date"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.date(data.value?.created_at),
@@ -25,7 +27,7 @@ const PreOrdersDatatable = () => {
       {
         field: "product",
         sortable: false,
-        headerName: "สินค้า",
+        headerName: t("headers.product"),
         flex: 2,
         editable: false,
         renderCell: (data: any) => {
@@ -38,14 +40,14 @@ const PreOrdersDatatable = () => {
       {
         field: "count",
         sortable: true,
-        headerName: "จำนวน",
+        headerName: t("headers.count"),
         flex: 0.5,
         editable: false,
       },
       {
         field: "total",
         sortable: true,
-        headerName: "ยอดรวม",
+        headerName: t("headers.total"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -53,7 +55,7 @@ const PreOrdersDatatable = () => {
       {
         field: "status",
         sortable: true,
-        headerName: "สถานะ",
+        headerName: t("headers.status"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => <PreOrderStatusChip status={data.value} />,
@@ -61,7 +63,7 @@ const PreOrdersDatatable = () => {
       {
         field: "note",
         sortable: true,
-        headerName: "หมายเหตุ",
+        headerName: t("headers.note"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.text(data.value),
@@ -69,14 +71,14 @@ const PreOrdersDatatable = () => {
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("headers.actions"),
         flex: 1,
         getActions: ({ row }: { row: any }) => [
           <GridActionsCellItem
             key="view"
             onClick={() => setSelectedId(row.id)}
             icon={<ViewAgendaTwoTone />}
-            label="ดูรายละเอียด"
+            label={t("actions.view")}
             showInMenu
           />,
         ],

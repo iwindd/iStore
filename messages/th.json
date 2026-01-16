@@ -250,6 +250,65 @@
       "sold_label": "ขายแล้ว"
     }
   },
+  "PREORDERS": {
+    "title": "รายการพรีออเดอร์",
+    "datatable": {
+      "headers": {
+        "date": "วันทำรายการ",
+        "product": "สินค้า",
+        "count": "จำนวน",
+        "total": "ยอดรวม",
+        "status": "สถานะ",
+        "note": "หมายเหตุ",
+        "actions": "เครื่องมือ"
+      },
+      "actions": {
+        "view": "ดูรายละเอียด"
+      }
+    },
+    "dialog": {
+      "title": "รายละเอียดพรีออเดอร์ #{id}",
+      "sections": {
+        "product": "ข้อมูลสินค้า",
+        "order": "ข้อมูลออเดอร์",
+        "return": "ข้อมูลการส่งคืน",
+        "cancel": "ข้อมูลการยกเลิก"
+      },
+      "labels": {
+        "product_name": "ชื่อสินค้า",
+        "serial": "รหัสสินค้า",
+        "count": "จำนวน",
+        "items_unit": "{count} ชิ้น",
+        "price_per_unit": "ราคาต่อหน่วย",
+        "total": "ยอดรวม",
+        "order_id": "เลขที่ออเดอร์",
+        "order_date": "วันที่ทำรายการ",
+        "creator": "ผู้ทำรายการ",
+        "return_date": "วันที่ส่งคืน",
+        "returner": "ผู้ส่งคืน",
+        "cancel_date": "วันที่ยกเลิก",
+        "canceller": "ผู้ยกเลิก",
+        "note": "หมายเหตุ",
+        "not_specified": "ไม่ระบุ"
+      },
+      "buttons": {
+        "close": "ปิด",
+        "cancel": "ยกเลิกพรีออเดอร์",
+        "mark_returned": "ส่งคืนเรียบร้อยแล้ว",
+        "saving": "กำลังบันทึก...",
+        "insufficient_stock": "สต๊อกสินค้าไม่เพียงพอ"
+      },
+      "messages": {
+        "load_error": "ไม่สามารถโหลดข้อมูลได้",
+        "update_success": "อัปเดตสถานะเรียบร้อย",
+        "update_error": "เกิดข้อผิดพลาดในการอัปเดตสถานะ",
+        "cancel_confirm_title": "ยืนยันการยกเลิก",
+        "cancel_confirm_text": "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกพรีออเดอร์นี้?",
+        "cancel_success": "ยกเลิกพรีออเดอร์เรียบร้อย",
+        "cancel_error": "เกิดข้อผิดพลาดในการยกเลิกพรีออเดอร์"
+      }
+    }
+  },
   "COMPONENTS": {
     "selector": {
       "search": "ค้นหา",
@@ -266,6 +325,11 @@
     "scanner": {
       "placeholder": "รหัสสินค้า / สแกนสินค้า...",
       "enter": "ENTER"
+    },
+    "preorder_status": {
+      "pending": "รอส่งคืน",
+      "returned": "ส่งคืนแล้ว",
+      "cancelled": "ยกเลิกแล้ว"
     }
   }
 }
