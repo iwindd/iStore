@@ -309,6 +309,52 @@
       }
     }
   },
+  "CONSIGNMENTS": {
+    "title": "ฝากขาย",
+    "datatable": {
+      "headers": {
+        "date": "วันที่ทำรายการ",
+        "creator": "ผู้จัดทำ",
+        "count": "จำนวนรายการ",
+        "note": "หมายเหตุ",
+        "status": "สถานะ",
+        "actions": "เครื่องมือ"
+      },
+      "items_unit": "{count} รายการ",
+      "not_specified": "ไม่ระบุ",
+      "actions": {
+        "view": "ดูรายละเอียด"
+      }
+    },
+    "detail": {
+      "title": "รายละเอียดการฝากขาย #{id}",
+      "not_found": "ไม่พบข้อมูลการฝากขาย",
+      "success": "ทำรายการฝากขายสำเร็จแล้ว!",
+      "error": "มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง"
+    },
+    "form": {
+      "general_info": "ข้อมูลทั่วไป",
+      "note": "หมายเหตุ",
+      "product_details": "รายละเอียดสินค้าฝากขาย",
+      "headers": {
+        "index": "#",
+        "product_name": "ชื่อสินค้า",
+        "net_total": "ยอดสุทธิ",
+        "quantity_consigned": "จำนวนที่ฝากขาย",
+        "quantity_sold": "จำนวนที่ขายออก"
+      },
+      "footer": {
+        "manage": "จัดการการฝากขาย",
+        "completed": "รายการเสร็จสิ้นแล้ว",
+        "save": "บันทึกผลการขาย"
+      }
+    },
+    "status": {
+      "pending": "รอดำเนินการ",
+      "completed": "เสร็จสิ้นแล้ว",
+      "cancelled": "ยกเลิกแล้ว"
+    }
+  },
   "COMPONENTS": {
     "selector": {
       "search": "ค้นหา",

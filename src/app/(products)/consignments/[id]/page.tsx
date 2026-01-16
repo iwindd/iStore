@@ -7,30 +7,33 @@ import ConsignmentForm from "@/components/Forms/Consignment";
 import App, { Wrapper } from "@/layouts/App";
 import { ConsignmentValues } from "@/schema/Consignment";
 import { CashoutInputValues } from "@/schema/Payment";
+import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
-import { enqueueSnackbar } from "notistack";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
 
 const ConsignmentDetailPage = () => {
+  const t = useTranslations("CONSIGNMENTS.detail");
   const params = useParams();
   const router = useRouter();
-  const id = parseInt(params.id as string);
+  const id = Number.parseInt(params.id as string);
   const [consignment, setConsignment] = useState<ConsignmentDetail | null>(
     null
   );
   const [loading, setLoading] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     const data = await getConsignment(id);
     if (!data) {
-      enqueueSnackbar("ไม่พบข้อมูลการฝากขาย", { variant: "error" });
+      enqueueSnackbar(t("not_found"), { variant: "error" });
       router.push("/consignments");
       return;
     }
     setConsignment(data);
     setLoading(false);
-  }, [id, router]);
+  }, [id, router, t, enqueueSnackbar]);
 
   useEffect(() => {
     fetchData();
@@ -43,12 +46,12 @@ const ConsignmentDetailPage = () => {
     setLoading(true);
     const res = await confirmConsignment(id, payload);
     if (res.success) {
-      enqueueSnackbar("ทำสำเร็จรายการฝากขายสำเร็จแล้ว!", {
+      enqueueSnackbar(t("success"), {
         variant: "success",
       });
       fetchData();
     } else {
-      enqueueSnackbar("มีบางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     }
@@ -58,7 +61,7 @@ const ConsignmentDetailPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>รายละเอียดการฝากขาย #{id}</App.Header.Title>
+        <App.Header.Title>{t("title", { id })}</App.Header.Title>
       </App.Header>
       <App.Main>
         {consignment && (

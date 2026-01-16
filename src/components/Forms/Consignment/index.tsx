@@ -24,6 +24,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ConsignmentStatus } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 
@@ -41,6 +42,7 @@ const ConsignmentForm = ({
   onSubmit,
   isLoading,
 }: ConsignmentFormProps) => {
+  const t = useTranslations("CONSIGNMENTS.form");
   const disabled =
     consignment.status !== ConsignmentStatus.PENDING || isLoading;
 
@@ -97,11 +99,11 @@ const ConsignmentForm = ({
         onSubmit={handleSubmit(onProductFormSubmit)}
       >
         <Card>
-          <CardHeader title="ข้อมูลทั่วไป" />
+          <CardHeader title={t("general_info")} />
           <CardContent>
             <TextField
               margin="dense"
-              label="หมายเหตุ"
+              label={t("note")}
               fullWidth
               multiline
               rows={2}
@@ -111,17 +113,25 @@ const ConsignmentForm = ({
           </CardContent>
         </Card>
         <Card>
-          <CardHeader title="รายละเอียดสินค้าฝากขาย" />
+          <CardHeader title={t("product_details")} />
           <CardContent>
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: "50px" }}>#</TableCell>
-                    <TableCell>ชื่อสินค้า</TableCell>
-                    <TableCell align="right">ยอดสุทธิ</TableCell>
-                    <TableCell align="right">จำนวนที่ฝากขาย</TableCell>
-                    <TableCell align="right">จำนวนที่ขายออก</TableCell>
+                    <TableCell sx={{ width: "50px" }}>
+                      {t("headers.index")}
+                    </TableCell>
+                    <TableCell>{t("headers.product_name")}</TableCell>
+                    <TableCell align="right">
+                      {t("headers.net_total")}
+                    </TableCell>
+                    <TableCell align="right">
+                      {t("headers.quantity_consigned")}
+                    </TableCell>
+                    <TableCell align="right">
+                      {t("headers.quantity_sold")}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -170,12 +180,12 @@ const ConsignmentForm = ({
         alignItems={"center"}
       >
         <Typography variant="subtitle1" color="secondary">
-          จัดการการฝากขาย
+          {t("footer.manage")}
         </Typography>
         <Stack direction={"row"} spacing={1}>
           {disabled && consignment.status !== ConsignmentStatus.PENDING ? (
             <Typography variant="body2" color="success.main">
-              รายการเสร็จสิ้นแล้ว
+              {t("footer.completed")}
             </Typography>
           ) : (
             <Button
@@ -185,7 +195,7 @@ const ConsignmentForm = ({
               form="consignment-form"
               disabled={disabled}
             >
-              บันทึกผลการขาย
+              {t("footer.save")}
             </Button>
           )}
         </Stack>
