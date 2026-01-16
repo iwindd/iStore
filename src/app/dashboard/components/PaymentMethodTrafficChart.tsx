@@ -13,9 +13,11 @@ import { useAppSelector } from "@/hooks";
 import { money } from "@/libs/formatter";
 import { Box, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 export function PaymentMethodTrafficChart() {
-  const labels = ["เงินสด", "โอนเงิน"];
+  const t = useTranslations("DASHBOARD.payment_methods");
+  const labels = [t("cash"), t("transfer")];
   const chartOptions = useChartOptions(labels);
   const range = useAppSelector((state) => state.dashboard.range);
 
@@ -37,7 +39,7 @@ export function PaymentMethodTrafficChart() {
 
   return (
     <Card sx={{ height: "100%" }}>
-      <CardHeader title="ช่องทางการชำระเงิน" />
+      <CardHeader title={t("title")} />
       <CardContent>
         <Stack spacing={2}>
           <Box height={300}>

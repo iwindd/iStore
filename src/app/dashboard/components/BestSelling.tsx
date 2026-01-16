@@ -1,5 +1,4 @@
 "use client";
-
 import { getTopSellingProducts } from "@/actions/dashboard/getTopSellingProducts";
 import { useAppSelector } from "@/hooks";
 import { money } from "@/libs/formatter";
@@ -16,8 +15,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 const BestSelling = () => {
+  const t = useTranslations("DASHBOARD.best_selling");
   const range = useAppSelector((state) => state.dashboard.range);
 
   const { data, isLoading } = useQuery({
@@ -27,7 +28,7 @@ const BestSelling = () => {
 
   return (
     <Card sx={{ height: "100%" }}>
-      <CardHeader title="สินค้าขายดี" />
+      <CardHeader title={t("title")} />
       <CardContent>
         {isLoading ? (
           <List>
@@ -49,7 +50,7 @@ const BestSelling = () => {
                 align="center"
                 sx={{ py: 4 }}
               >
-                ยังไม่มีข้อมูลการขายในระยะเวลานี้
+                {t("empty")}
               </Typography>
             ) : (
               data?.map((product, index) => (
@@ -69,10 +70,10 @@ const BestSelling = () => {
                     />
                     <Stack alignItems="flex-end">
                       <Typography variant="subtitle2" color="primary.main">
-                        {product.sold} ชิ้น
+                        {t("sold_count", { count: product.sold })}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        ขายแล้ว
+                        {t("sold_label")}
                       </Typography>
                     </Stack>
                   </ListItem>

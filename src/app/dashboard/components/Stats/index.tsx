@@ -14,6 +14,7 @@ import { getPath, getRoute } from "@/router";
 import { BackHand, Receipt, RotateRight, Warning } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { notFound } from "next/navigation";
 import { TotalStat, TotalStatProps } from "./Stat";
 
@@ -27,45 +28,8 @@ interface StatConfig {
   permission?: PermissionEnum;
 }
 
-const StatConfig: StatConfig[] = [
-  {
-    name: "orders",
-    route: getRoute("histories"),
-    label: "ขายไปแล้ว",
-    icon: <Receipt />,
-    render: (stats) => `${number(stats.order.sold)} รายการ`,
-    color: "success",
-  },
-  {
-    name: "consignments",
-    route: getRoute("consignments"),
-    label: "ฝากขาย",
-    icon: <BackHand />,
-    render: (stats) => `${number(stats.consignment)} รายการ`,
-    color: "primary",
-    permission: ConsignmentPermissionEnum.READ,
-  },
-  {
-    name: "preorders",
-    route: getRoute("preorders"),
-    label: "พรีออเดอร์",
-    icon: <RotateRight />,
-    render: (stats) => `${number(stats.preorder.pending)} รายการ`,
-    color: "info",
-    permission: OverStockPermissionEnum.READ,
-  },
-  {
-    name: "low_stock",
-    route: getRoute("products"),
-    label: "สินค้าใกล้จะหมด",
-    icon: <Warning />,
-    render: (stats) => `${number(stats.product.lowStockCount)} รายการ`,
-    color: "warning",
-    permission: ProductPermissionEnum.READ,
-  },
-];
-
 const Stats = () => {
+  const t = useTranslations("DASHBOARD.stats");
   const { user } = useAuth();
   if (!user) return notFound();
   const range = useAppSelector((state) => state.dashboard.range);
@@ -75,9 +39,49 @@ const Stats = () => {
     queryFn: () => getStats(range),
   });
 
+  const config: StatConfig[] = [
+    {
+      name: "orders",
+      route: getRoute("histories"),
+      label: t("sold"),
+      icon: <Receipt />,
+      render: (stats) => t("items_unit", { count: number(stats.order.sold) }),
+      color: "success",
+    },
+    {
+      name: "consignments",
+      route: getRoute("consignments"),
+      label: t("consignment"),
+      icon: <BackHand />,
+      render: (stats) => t("items_unit", { count: number(stats.consignment) }),
+      color: "primary",
+      permission: ConsignmentPermissionEnum.READ,
+    },
+    {
+      name: "preorders",
+      route: getRoute("preorders"),
+      label: t("preorder"),
+      icon: <RotateRight />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.preorder.pending) }),
+      color: "info",
+      permission: OverStockPermissionEnum.READ,
+    },
+    {
+      name: "low_stock",
+      route: getRoute("products"),
+      label: t("low_stock"),
+      icon: <Warning />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.product.lowStockCount) }),
+      color: "warning",
+      permission: ProductPermissionEnum.READ,
+    },
+  ];
+
   return (
     <Grid container spacing={1}>
-      {StatConfig.map((stat) => (
+      {config.map((stat) => (
         <Grid
           key={stat.name}
           size={{ xs: 12, sm: 6, lg: 3 }}

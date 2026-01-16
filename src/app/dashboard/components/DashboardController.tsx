@@ -29,11 +29,13 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs, { Dayjs } from "dayjs";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const DashboardController = () => {
+  const t = useTranslations("DASHBOARD.controller");
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
   const range = useSelector((state: any) => state.dashboard.range);
@@ -105,11 +107,11 @@ const DashboardController = () => {
         justifyContent={"space-between"}
       >
         <Stack>
-          <Typography variant="h5">ภาพรวม</Typography>
+          <Typography variant="h5">{t("title")}</Typography>
         </Stack>
 
         <Stack direction={"row"} spacing={1} alignItems="center">
-          <Tooltip title="พิมพ์">
+          <Tooltip title={t("print")}>
             <IconButton
               color="secondary"
               component={Link}
@@ -118,18 +120,18 @@ const DashboardController = () => {
               <PrintTwoTone />
             </IconButton>
           </Tooltip>
-          <Tooltip title="รีเฟรช">
+          <Tooltip title={t("refresh")}>
             <IconButton color="secondary" onClick={handleRefresh}>
               <RefreshTwoTone />
             </IconButton>
           </Tooltip>
           <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="range-select-label">ช่วงเวลา</InputLabel>
+            <InputLabel id="range-select-label">{t("range.label")}</InputLabel>
             <Select
               variant="outlined"
               labelId="range-select-label"
               value={range.type}
-              label="ช่วงเวลา"
+              label={t("range.label")}
               sx={{
                 border: "none",
                 "& .MuiOutlinedInput-notchedOutline": {
@@ -142,14 +144,24 @@ const DashboardController = () => {
                 )
               }
             >
-              <MenuItem value={EnumDashboardRange.TODAY}>วันนี้</MenuItem>
-              <MenuItem value={EnumDashboardRange.WEEK}>อาทิตย์นี้</MenuItem>
-              <MenuItem value={EnumDashboardRange.MONTH}>เดือนนี้</MenuItem>
-              <MenuItem value={EnumDashboardRange.YEAR}>ปีนี้</MenuItem>
-              <MenuItem value={EnumDashboardRange.ALL_TIME}>
-                ตลอดระยะเวลา
+              <MenuItem value={EnumDashboardRange.TODAY}>
+                {t("range.today")}
               </MenuItem>
-              <MenuItem value={EnumDashboardRange.CUSTOM}>กำหนดเอง</MenuItem>
+              <MenuItem value={EnumDashboardRange.WEEK}>
+                {t("range.this_week")}
+              </MenuItem>
+              <MenuItem value={EnumDashboardRange.MONTH}>
+                {t("range.this_month")}
+              </MenuItem>
+              <MenuItem value={EnumDashboardRange.YEAR}>
+                {t("range.this_year")}
+              </MenuItem>
+              <MenuItem value={EnumDashboardRange.ALL_TIME}>
+                {t("range.all_time")}
+              </MenuItem>
+              <MenuItem value={EnumDashboardRange.CUSTOM}>
+                {t("range.custom")}
+              </MenuItem>
             </Select>
             <FormHelperText>
               {range.type === EnumDashboardRange.CUSTOM
@@ -165,21 +177,23 @@ const DashboardController = () => {
         maxWidth="xs"
         fullWidth
       >
-        <DialogTitle sx={{ m: 0, p: 2 }}>กำหนดช่วงเวลา</DialogTitle>
+        <DialogTitle sx={{ m: 0, p: 2 }}>
+          {t("custom_dialog.title")}
+        </DialogTitle>
         <DialogContent dividers>
           <Stack spacing={2} sx={{ pt: 1 }}>
             <DatePicker
               value={start}
               format="DD/MM/YYYY"
               onChange={(data) => setStart(data)}
-              label="วันเริ่มต้น"
+              label={t("custom_dialog.start")}
               disableFuture
             />
             <DatePicker
               value={end}
               format="DD/MM/YYYY"
               onChange={(data) => setEnd(data)}
-              label="สิ้นสุด"
+              label={t("custom_dialog.end")}
               disableFuture
             />
           </Stack>
@@ -190,7 +204,7 @@ const DashboardController = () => {
             color="inherit"
             onClick={() => setIsOpenCustomDialog(false)}
           >
-            ปิด
+            {t("custom_dialog.close")}
           </Button>
           <Button
             variant="contained"
@@ -198,7 +212,7 @@ const DashboardController = () => {
             startIcon={<AnalyticsTwoTone />}
             onClick={setCustomRange}
           >
-            สรุปผล
+            {t("custom_dialog.analyze")}
           </Button>
         </DialogActions>
       </Dialog>

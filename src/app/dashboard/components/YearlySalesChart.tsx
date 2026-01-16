@@ -1,5 +1,4 @@
 "use client";
-
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
@@ -10,6 +9,7 @@ import Typography from "@mui/material/Typography";
 import { useQuery } from "@tanstack/react-query";
 import type { ApexOptions } from "apexcharts";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { getOldestOrder } from "@/actions/dashboard/getOldestOrder";
@@ -22,22 +22,24 @@ export interface YearlySalesChartProps {
   sx?: SxProps;
 }
 
-const MONTHS_TH = [
-  "ม.ค.",
-  "ก.พ.",
-  "มี.ค.",
-  "เม.ย.",
-  "พ.ค.",
-  "มิ.ย.",
-  "ก.ค.",
-  "ส.ค.",
-  "ก.ย.",
-  "ต.ค.",
-  "พ.ย.",
-  "ธ.ค.",
-];
-
 export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
+  const t = useTranslations("DASHBOARD.yearly_sales");
+
+  const MONTHS_TH = [
+    t("months.jan"),
+    t("months.feb"),
+    t("months.mar"),
+    t("months.apr"),
+    t("months.may"),
+    t("months.jun"),
+    t("months.jul"),
+    t("months.aug"),
+    t("months.sep"),
+    t("months.oct"),
+    t("months.nov"),
+    t("months.dec"),
+  ];
+
   const currentYear = dayjs().year();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [availableYears, setAvailableYears] = useState<number[]>([currentYear]);
@@ -66,15 +68,15 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
     queryFn: () => getYearlySales(selectedYear),
   });
 
-  const chartOptions = useChartOptions();
+  const chartOptions = useChartOptions(MONTHS_TH);
 
   const chartSeries = [
     {
-      name: "รายรับ",
+      name: t("income"),
       data: data?.monthlyIncome || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
     {
-      name: "ค่าใช้จ่าย",
+      name: t("expense"),
       data: data?.monthlyExpenses || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ];
@@ -88,12 +90,12 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
   return (
     <Card sx={sx}>
       <CardHeader
-        title="ยอดขายรายปี"
+        title={t("title")}
         subheader={
           isLoading ? (
             <Skeleton variant="text" height={20} width={250} />
           ) : (
-            percentText + " เมื่อเทียบกับปีที่แล้ว"
+            t("comparison", { percent: percentText })
           )
         }
         action={
@@ -128,7 +130,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
                   }}
                 />
                 <Typography color="text.secondary" variant="body2">
-                  รายรับทั้งหมด
+                  {t("total_income")}
                 </Typography>
               </Stack>
               {isLoading && <Skeleton variant="text" height={35} />}
@@ -150,7 +152,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
                   }}
                 />
                 <Typography color="text.secondary" variant="body2">
-                  ค่าใช้จ่ายทั้งหมด
+                  {t("total_expenses")}
                 </Typography>
               </Stack>
               {isLoading && <Skeleton variant="text" height={35} />}
@@ -181,7 +183,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
   );
 }
 
-function useChartOptions(): ApexOptions {
+function useChartOptions(months: string[]): ApexOptions {
   const theme = useTheme();
 
   return {
@@ -221,7 +223,7 @@ function useChartOptions(): ApexOptions {
     xaxis: {
       axisBorder: { color: theme.palette.divider, show: true },
       axisTicks: { color: theme.palette.divider, show: true },
-      categories: MONTHS_TH,
+      categories: months,
       labels: {
         offsetY: 5,
         style: { colors: theme.palette.text.secondary },

@@ -176,6 +176,80 @@
       }
     }
   },
+  "DASHBOARD": {
+    "controller": {
+      "title": "ภาพรวม",
+      "print": "พิมพ์",
+      "refresh": "รีเฟรช",
+      "range": {
+        "label": "ช่วงเวลา",
+        "today": "วันนี้",
+        "this_week": "อาทิตย์นี้",
+        "this_month": "เดือนนี้",
+        "this_year": "ปีนี้",
+        "all_time": "ตลอดระยะเวลา",
+        "custom": "กำหนดเอง"
+      },
+      "custom_dialog": {
+        "title": "กำหนดช่วงเวลา",
+        "start": "วันเริ่มต้น",
+        "end": "สิ้นสุด",
+        "close": "ปิด",
+        "analyze": "สรุปผล"
+      }
+    },
+    "stats": {
+      "sold": "ขายไปแล้ว",
+      "consignment": "ฝากขาย",
+      "preorder": "พรีออเดอร์",
+      "low_stock": "สินค้าใกล้จะหมด",
+      "items_unit": "{count} รายการ"
+    },
+    "yearly_sales": {
+      "title": "ยอดขายรายปี",
+      "comparison": "{percent} เมื่อเทียบกับปีที่แล้ว",
+      "total_income": "รายรับทั้งหมด",
+      "total_expenses": "ค่าใช้จ่ายทั้งหมด",
+      "income": "รายรับ",
+      "expense": "ค่าใช้จ่าย",
+      "months": {
+        "jan": "ม.ค.",
+        "feb": "ก.พ.",
+        "mar": "มี.ค.",
+        "apr": "เม.ย.",
+        "may": "พ.ค.",
+        "jun": "มิ.ย.",
+        "jul": "ก.ค.",
+        "aug": "ส.ค.",
+        "sep": "ก.ย.",
+        "oct": "ต.ค.",
+        "nov": "พ.ย.",
+        "dec": "ธ.ค."
+      }
+    },
+    "payment_methods": {
+      "title": "ช่องทางการชำระเงิน",
+      "cash": "เงินสด",
+      "transfer": "โอนเงิน"
+    },
+    "recent_orders": {
+      "title": "ออเดอร์ล่าสุด",
+      "headers": {
+        "id": "#",
+        "date": "วันทำรายการ",
+        "note": "หมายเหตุ",
+        "total": "รวม"
+      },
+      "view_details": "ดูรายละเอียด",
+      "view_all": "ดูทั้งหมด"
+    },
+    "best_selling": {
+      "title": "สินค้าขายดี",
+      "empty": "ยังไม่มีข้อมูลการขายในระยะเวลานี้",
+      "sold_count": "{count} ชิ้น",
+      "sold_label": "ขายแล้ว"
+    }
+  },
   "COMPONENTS": {
     "selector": {
       "search": "ค้นหา",

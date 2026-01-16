@@ -16,9 +16,11 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 export function RecentOrders() {
+  const t = useTranslations("DASHBOARD.recent_orders");
   const { data: latestOrders, isLoading } = useQuery({
     queryKey: ["latest-orders"],
     queryFn: getRecentOrders,
@@ -26,16 +28,16 @@ export function RecentOrders() {
 
   return (
     <Card sx={{ height: "100%" }}>
-      <CardHeader title="ออเดอร์ล่าสุด" />
+      <CardHeader title={t("title")} />
       <Divider />
       <Box sx={{ overflowX: "auto" }}>
         <Table sx={{ minWidth: 800 }} size="small">
           <TableHead>
             <TableRow>
-              <TableCell>#</TableCell>
-              <TableCell>วันทำรายการ</TableCell>
-              <TableCell>หมายเหตุ</TableCell>
-              <TableCell>รวม</TableCell>
+              <TableCell>{t("headers.id")}</TableCell>
+              <TableCell>{t("headers.date")}</TableCell>
+              <TableCell>{t("headers.note")}</TableCell>
+              <TableCell>{t("headers.total")}</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -83,7 +85,7 @@ export function RecentOrders() {
                             id: order.id.toString(),
                           })}
                         >
-                          ดูรายละเอียด
+                          {t("view_details")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -102,7 +104,7 @@ export function RecentOrders() {
           component={Link}
           href={getPath("histories")}
         >
-          ดูทั้งหมด
+          {t("view_all")}
         </Button>
       </CardActions>
     </Card>
