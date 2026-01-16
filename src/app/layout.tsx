@@ -6,6 +6,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvder";
 import StoreProvider from "@/providers/StoreProvider";
 import ThemeRegistry from "@/styles/ThemeRegistry";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata = {
   title: "iStore",
@@ -24,19 +25,21 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <StoreProvider>
-          <LocalizationProvider>
-            <ThemeRegistry>
-              <SessionProvider session={session}>
-                <QueryProvider>
-                  <InterfaceProvider>
-                    <MainLayout>{children}</MainLayout>
-                  </InterfaceProvider>
-                </QueryProvider>
-              </SessionProvider>
-            </ThemeRegistry>
-          </LocalizationProvider>
-        </StoreProvider>
+        <NextIntlClientProvider>
+          <StoreProvider>
+            <LocalizationProvider>
+              <ThemeRegistry>
+                <SessionProvider session={session}>
+                  <QueryProvider>
+                    <InterfaceProvider>
+                      <MainLayout>{children}</MainLayout>
+                    </InterfaceProvider>
+                  </QueryProvider>
+                </SessionProvider>
+              </ThemeRegistry>
+            </LocalizationProvider>
+          </StoreProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
