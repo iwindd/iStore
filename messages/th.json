@@ -938,6 +938,38 @@
       "not_found": "ไม่พบแอพพลิเคชั่น"
     }
   },
+  "ACCOUNT": {
+    "title": "บัญชี",
+    "info": {
+      "card_title": "ข้อมูลผู้ใช้",
+      "name_label": "ชื่อ",
+      "email_label": "อีเมล",
+      "save_button": "บันทึก",
+      "confirm_dialog": {
+        "title": "แจ้งเตือน",
+        "text": "คุณต้องการที่จะแก้ไขโปรไฟล์หรือไม่?"
+      },
+      "messages": {
+        "save_success": "บันทึกข้อมูลผู้ใช้สำเร็จแล้ว!",
+        "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง"
+      }
+    },
+    "password": {
+      "card_title": "เปลี่ยนรหัสผ่าน",
+      "old_password_label": "รหัสผ่านเก่า",
+      "new_password_label": "รหัสผ่านใหม่",
+      "confirm_password_label": "ยืนยันรหัสผ่านใหม่",
+      "save_button": "บันทึก",
+      "confirm_dialog": {
+        "title": "แจ้งเตือน",
+        "text": "คุณต้องการที่จะแก้ไขรหัสผ่านหรือไม่?"
+      },
+      "messages": {
+        "save_success": "บันทึกรหัสผ่านเรียบร้อยแล้ว!",
+        "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง"
+      }
+    }
+  },
   "COMPONENTS": {
     "selector": {
       "search": "ค้นหา",

@@ -1,14 +1,17 @@
 "use client";
 import App, { Wrapper } from "@/layouts/App";
 import Grid from "@mui/material/Grid";
+import { useTranslations } from "next-intl";
 import AccountInfo from "./components/AccountInfo";
 import PasswordChanger from "./components/PasswordChanger";
 
 const Account = () => {
+  const t = useTranslations("ACCOUNT");
+
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>บัญชี</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
       </App.Header>
       <App.Main>
         <Grid container spacing={2}>

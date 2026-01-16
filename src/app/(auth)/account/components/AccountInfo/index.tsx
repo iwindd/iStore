@@ -17,15 +17,20 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
-import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const AccountInfo = () => {
+  const t = useTranslations("ACCOUNT.info");
   const { user, setName } = useAuth();
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
-  const { register, handleSubmit, formState: {errors} } = useForm<ProfileValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileValues>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
       name: user?.displayName,
@@ -33,19 +38,20 @@ const AccountInfo = () => {
   });
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะแก้ไขโปรไฟล์หรือไม่?",
+    title: t("confirm_dialog.title"),
+    text: t("confirm_dialog.text"),
     onConfirm: async (payload: ProfileValues) => {
       setBackdrop(true);
       try {
         const resp = await UpdateProfile(payload);
-        if (!resp.success) throw Error(resp.message);
+        if (!resp.success) throw new Error(resp.message);
         setName(resp.data.name);
-        enqueueSnackbar("บันทึกข้อมูลผู้ใช้สำเร็จแล้ว!", {
+        enqueueSnackbar(t("messages.save_success"), {
           variant: "success",
         });
       } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        console.error("Error updating profile:", error);
+        enqueueSnackbar(t("messages.error"), {
           variant: "error",
         });
       } finally {
@@ -62,7 +68,7 @@ const AccountInfo = () => {
   return (
     <>
       <Card component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        <CardHeader title="ข้อมูลผู้ใช้" />
+        <CardHeader title={t("card_title")} />
         <Divider />
         <CardContent>
           <Stack
@@ -75,7 +81,7 @@ const AccountInfo = () => {
             }}
           >
             <TextField
-              label="ชื่อ"
+              label={t("name_label")}
               autoFocus
               disabled={!user?.hasPermission(AccountPermissionEnum.UPDATE)}
               {...register("name")}
@@ -88,10 +94,11 @@ const AccountInfo = () => {
                       <PeopleTwoTone />
                     </InputAdornment>
                   ),
-                }
-              }} />
+                },
+              }}
+            />
             <TextField
-              label="อีเมล"
+              label={t("email_label")}
               value={user?.email || ""}
               disabled
               aria-readonly
@@ -102,23 +109,21 @@ const AccountInfo = () => {
                       <EmailTwoTone />
                     </InputAdornment>
                   ),
-                }
+                },
               }}
             />
-            {
-              user?.hasPermission(AccountPermissionEnum.UPDATE) && (
-                <div>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    color="success"
-                    startIcon={<SaveTwoTone />}
-                  >
-                    บันทึก
-                  </Button>
-                </div>
-              )
-            }
+            {user?.hasPermission(AccountPermissionEnum.UPDATE) && (
+              <div>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="success"
+                  startIcon={<SaveTwoTone />}
+                >
+                  {t("save_button")}
+                </Button>
+              </div>
+            )}
           </Stack>
         </CardContent>
         <Divider />

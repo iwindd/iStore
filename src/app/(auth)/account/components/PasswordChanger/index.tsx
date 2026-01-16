@@ -1,6 +1,5 @@
 "use client";
 import UpdatePassword from "@/actions/user/password";
-import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { PasswordSchema, PasswordValues } from "@/schema/Password";
@@ -15,12 +14,12 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
-import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const PasswordChanger = () => {
-  const { user, setName } = useAuth();
+  const t = useTranslations("ACCOUNT.password");
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -37,18 +36,19 @@ const PasswordChanger = () => {
   });
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะแก้ไขรหัสผ่านหรือไม่?",
+    title: t("confirm_dialog.title"),
+    text: t("confirm_dialog.text"),
     onConfirm: async (payload: PasswordValues) => {
       setBackdrop(true);
       try {
         const resp = await UpdatePassword(payload);
-        if (!resp.success) throw Error(resp.message);
-        enqueueSnackbar("บันทึกรหัสผ่านเรียบร้อยแล้วใ!", {
+        if (!resp.success) throw new Error(resp.message);
+        enqueueSnackbar(t("messages.save_success"), {
           variant: "success",
         });
       } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        console.error("Error updating password:", error);
+        enqueueSnackbar(t("messages.error"), {
           variant: "error",
         });
       } finally {
@@ -65,7 +65,7 @@ const PasswordChanger = () => {
   return (
     <>
       <Card component={"form"} onSubmit={handleSubmit(onSubmit)}>
-        <CardHeader title="เปลี่ยนรหัสผ่าน" />
+        <CardHeader title={t("card_title")} />
         <Divider />
         <CardContent>
           <Stack
@@ -79,7 +79,7 @@ const PasswordChanger = () => {
           >
             <TextField
               type="password"
-              label="รหัสผ่านเก่า"
+              label={t("old_password_label")}
               fullWidth
               {...register("old_password")}
               error={errors["old_password"] !== undefined}
@@ -87,7 +87,7 @@ const PasswordChanger = () => {
             />
             <TextField
               type="password"
-              label="รหัสผ่านใหม่"
+              label={t("new_password_label")}
               fullWidth
               {...register("password")}
               error={errors["password"] !== undefined}
@@ -95,7 +95,7 @@ const PasswordChanger = () => {
             />
             <TextField
               type="password"
-              label="ยืนยันรหัสผ่านใหม่"
+              label={t("confirm_password_label")}
               fullWidth
               {...register("password_confirmation")}
               error={errors["password_confirmation"] !== undefined}
@@ -108,7 +108,7 @@ const PasswordChanger = () => {
                 variant="contained"
                 startIcon={<SaveTwoTone />}
               >
-                บันทึก
+                {t("save_button")}
               </Button>
             </div>
           </Stack>
