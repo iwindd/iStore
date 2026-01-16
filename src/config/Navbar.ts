@@ -19,20 +19,28 @@ import { getRoute } from "@/router";
 const NavbarItems = [
   getRoute("overview"),
   getRoute("cashier"),
+
+  {
+    key: "work",
+    title: "การขาย",
+    routes: [getRoute("preorders"), getRoute("consignments")],
+    defaultExpand: true,
+  },
   {
     key: "product",
     title: "สินค้า",
-    routes: [getRoute("products"), getRoute("categories"), getRoute("stocks")],
+    routes: [getRoute("products"), getRoute("stocks")],
     defaultExpand: true,
   },
+
   {
     key: "etc",
     title: "อื่นๆ",
     routes: [
-      getRoute("overstocks"),
-      getRoute("consignments"),
-      getRoute("preorders"),
-      getRoute("purchase"),
+      getRoute("histories"),
+      getRoute("categories"),
+      getRoute("promotions"),
+      getRoute("broadcasts"),
     ],
     defaultExpand: true,
   },
@@ -41,9 +49,6 @@ const NavbarItems = [
     title: "ร้านค้า",
     routes: [
       getRoute("applications"),
-      getRoute("promotions"),
-      getRoute("broadcasts"),
-      getRoute("histories"),
       getRoute("roles"),
       getRoute("employees"),
       getRoute("store"),
