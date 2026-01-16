@@ -14,6 +14,7 @@ import {
   DeleteSweepTwoTone,
 } from "@mui/icons-material";
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -78,38 +79,43 @@ const CartSections = () => {
           cart.map((product) => (
             <CartProduct key={product.id} product={product} />
           ))}
-        {cartPreOrder.length > 0 &&
-          cartPreOrder.map((product) => (
-            <CartPreorder key={product.id} product={product} />
-          ))}
 
-        {mergedPromotionQuantities.length > 0 && (
+        {checkoutMode == CheckoutMode.CASHOUT && (
           <>
-            {mergedPromotionQuantities.map((promotionQuantity) => (
-              <CartPromotionOffer
-                key={
-                  promotionQuantity.id +
-                  promotionQuantity.promotion_offer_id.join("-")
-                }
-                promotion={promotionQuantity}
-              />
-            ))}
+            {cartPreOrder.length > 0 &&
+              cartPreOrder.map((product) => (
+                <CartPreorder key={product.id} product={product} />
+              ))}
+
+            {mergedPromotionQuantities.length > 0 &&
+              mergedPromotionQuantities.map((promotionQuantity) => (
+                <CartPromotionOffer
+                  key={
+                    promotionQuantity.id +
+                    promotionQuantity.promotion_offer_id.join("-")
+                  }
+                  promotion={promotionQuantity}
+                />
+              ))}
           </>
         )}
 
-        {cart.length <= 0 && mergedPromotionQuantities.length <= 0 && (
-          <Stack
-            height={"100%"}
-            width={"100%"}
-            justifyContent={"center"}
-            alignItems={"center"}
-            flex={1}
-          >
-            <Typography variant="h6" color="text.secondary">
-              ไม่มีสินค้าภายในตะกร้า
-            </Typography>
-          </Stack>
-        )}
+        {cart.length <= 0 &&
+          ((mergedPromotionQuantities.length <= 0 &&
+            cartPreOrder.length <= 0) ||
+            checkoutMode == CheckoutMode.CONSIGNMENT) && (
+            <Stack
+              height={"100%"}
+              width={"100%"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              flex={1}
+            >
+              <Typography variant="h6" color="text.secondary">
+                ไม่มีสินค้าภายในตะกร้า
+              </Typography>
+            </Stack>
+          )}
       </Stack>
 
       {/* Cart Footer Summary */}
@@ -170,6 +176,20 @@ const CartSections = () => {
             <ToggleButton value={CheckoutMode.CASHOUT}>ชำระเงิน</ToggleButton>
             <ToggleButton value={CheckoutMode.CONSIGNMENT}>ฝากขาย</ToggleButton>
           </ToggleButtonGroup>
+
+          {checkoutMode == CheckoutMode.CONSIGNMENT &&
+            cartPreOrder.length > 0 && (
+              <Alert severity="warning">
+                สินค้าพรีออเดอร์ไม่สามารถฝากขายได้
+              </Alert>
+            )}
+
+          {checkoutMode == CheckoutMode.CONSIGNMENT &&
+            mergedPromotionQuantities.length > 0 && (
+              <Alert severity="warning">
+                ไม่ได้รับสินค้าโปรโมชั่นเมื่อเป็นรายการฝากขาย
+              </Alert>
+            )}
         </Stack>
       </Box>
 

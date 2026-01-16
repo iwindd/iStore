@@ -7,7 +7,13 @@ const CartPromotionOffer = ({
   promotion: MergedPromotionQuantity;
 }) => {
   return (
-    <Paper variant="outlined" sx={{ p: 1 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 1,
+        borderStyle: "dashed",
+      }}
+    >
       <Stack width={"100%"}>
         <Stack direction={"row"} spacing={1}>
           <Stack width={40} justifyContent={"center"}>
