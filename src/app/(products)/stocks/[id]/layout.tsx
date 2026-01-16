@@ -1,6 +1,7 @@
 import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
 import { Prisma } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { StockProvider } from "./StockContext";
 
@@ -27,6 +28,7 @@ const Layout = async ({
   children: React.ReactNode;
   params: Promise<{ id: string }>;
 }) => {
+  const t = await getTranslations("STOCKS.detail");
   const { id } = await params;
   const stock = await db.stockReceipt.findFirst({
     where: {
@@ -42,7 +44,7 @@ const Layout = async ({
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>รายการละเอียดสต๊อก</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
       </App.Header>
       <App.Main>
         <StockProvider value={stock}>{children}</StockProvider>

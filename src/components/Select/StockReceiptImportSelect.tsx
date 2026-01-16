@@ -9,21 +9,11 @@ import {
   Select,
   SelectProps,
 } from "@mui/material";
-
-const OPTIONS = [
-  {
-    value: StockReceiptImportType.FromMinStockAlert,
-    label: "สินค้าที่ต่ำกว่าค่าแจ้งเตือนสต๊อก",
-  },
-  {
-    value: StockReceiptImportType.FromMinStockValue,
-    label: "สินค้าที่ต่ำกว่ากำหนด",
-  },
-];
+import { useTranslations } from "next-intl";
 
 const StockReceiptImportSelect = ({
   slotProps,
-  label = "ประเภทการนำเข้า",
+  label,
   ...selectProps
 }: {
   slotProps?: {
@@ -32,19 +22,34 @@ const StockReceiptImportSelect = ({
     menuItem?: MenuItemProps;
   };
 } & SelectProps) => {
+  const t = useTranslations("STOCKS.tool_dialog.import_select");
+
+  const OPTIONS = [
+    {
+      value: StockReceiptImportType.FromMinStockAlert,
+      label: t("options.min_stock_alert"),
+    },
+    {
+      value: StockReceiptImportType.FromMinStockValue,
+      label: t("options.min_stock_value"),
+    },
+  ];
+
+  const displayLabel = label || t("label");
+
   return (
     <FormControl {...slotProps?.formControl}>
       <InputLabel
         {...slotProps?.inputLabel}
         id={selectProps.labelId || "stock-receipt-import-tool-select-label"}
       >
-        {label}
+        {displayLabel}
       </InputLabel>
       <Select
         labelId={
           selectProps.labelId || "stock-receipt-import-tool-select-label"
         }
-        label={label}
+        label={displayLabel}
         {...selectProps}
       >
         {OPTIONS.map((item) => (

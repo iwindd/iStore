@@ -19,6 +19,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
@@ -35,6 +36,7 @@ const ToolDialog = ({
   onClose,
   form,
 }: ToolDialogProps): React.JSX.Element => {
+  const t = useTranslations("STOCKS.tool_dialog");
   const { isBackdrop, setBackdrop } = useInterface();
 
   const importToolMutation = useMutation({
@@ -44,12 +46,12 @@ const ToolDialog = ({
     },
     onSuccess: (data) => {
       form.setValue("products", data);
-      enqueueSnackbar("เพิ่มสินค้าสำเร็จ!", { variant: "success" });
+      enqueueSnackbar(t("success"), { variant: "success" });
       onClose();
     },
     onError: (error) => {
       console.error(error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     },
@@ -75,7 +77,7 @@ const ToolDialog = ({
       fullWidth
       disableRestoreFocus
     >
-      <DialogTitle>เครื่องมือ</DialogTitle>
+      <DialogTitle>{t("title")}</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
           <Stack flexDirection={"column"} spacing={1}>
@@ -99,7 +101,7 @@ const ToolDialog = ({
           spacing={1}
         >
           <Button color="secondary" onClick={onClose}>
-            ปิด
+            {t("close")}
           </Button>
           <Button
             color="success"
@@ -109,7 +111,7 @@ const ToolDialog = ({
               importToolMutation.mutate(data)
             )}
           >
-            ยืนยัน
+            {t("confirm")}
           </Button>
         </Stack>
       </DialogActions>

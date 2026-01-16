@@ -22,10 +22,13 @@ import {
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { StockReceiptStatus } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
 
 const HistoryDatatable = () => {
+  const t = useTranslations("STOCKS.datatable");
+  const ts = useTranslations("STOCKS.status");
   const { setBackdrop } = useInterface();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -37,32 +40,35 @@ const HistoryDatatable = () => {
   });
 
   const { setItems, Export, ExportHandler } = useExport([
-    { label: "รหัสสินค้า", key: "serial" },
-    { label: "ชื่อสินค้า", key: "label" },
-    { label: "ราคา", key: "price" },
-    { label: "ต้นทุน", key: "cost" },
-    { label: "จำนวน", key: "delta" },
-    { label: "อื่นๆ", key: "keywords" },
+    { label: t("export_labels.serial"), key: "serial" },
+    { label: t("export_labels.label"), key: "label" },
+    { label: t("export_labels.price"), key: "price" },
+    { label: t("export_labels.cost"), key: "cost" },
+    { label: t("export_labels.delta"), key: "delta" },
+    { label: t("export_labels.keywords"), key: "keywords" },
   ]);
 
   const cancelConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะยกเลิกรายการสต๊อกหรือไม่?",
+    title: t("confirmation.cancel_title"),
+    text: t("confirmation.cancel_text"),
     onConfirm: async (id: number) => {
       try {
         const resp = await CancelStock(id);
 
         if (!resp.success) throw new Error(resp.message);
-        enqueueSnackbar(`ยกเลิกรายการสต๊อกหมายเลข #${ff.number(id)} แล้ว!`, {
-          variant: "success",
-        });
+        enqueueSnackbar(
+          t("confirmation.cancel_success", { id: ff.number(id) }),
+          {
+            variant: "success",
+          }
+        );
         await queryClient.refetchQueries({
           queryKey: ["stocks_histories"],
           type: "active",
         });
       } catch (error) {
         console.error(error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        enqueueSnackbar(t("confirmation.error"), {
           variant: "error",
         });
       }
@@ -89,14 +95,14 @@ const HistoryDatatable = () => {
         Export();
       } catch (error) {
         console.error(error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        enqueueSnackbar(t("confirmation.error"), {
           variant: "error",
         });
       } finally {
         setBackdrop(false);
       }
     },
-    [setBackdrop, setItems, Export]
+    [setBackdrop, setItems, Export, t]
   );
 
   const menu = {
@@ -120,7 +126,7 @@ const HistoryDatatable = () => {
       {
         field: "action_at",
         sortable: true,
-        headerName: "วันที่ทำรายการ",
+        headerName: t("headers.date"),
         flex: 2,
         editable: false,
         renderCell: ({ row }) => ff.date(row.action_at),
@@ -128,31 +134,35 @@ const HistoryDatatable = () => {
       {
         field: "creator",
         sortable: true,
-        headerName: "ผู้สร้างรายการ",
+        headerName: t("headers.creator"),
         flex: 2,
-        renderCell: ({ row }) => ff.text(row.creator?.user.name || "ไม่ระบุ"),
+        renderCell: ({ row }) =>
+          ff.text(row.creator?.user.name || t("placeholders.not_specified")),
       },
       {
         field: "_count",
         sortable: false,
-        headerName: "จำนวนสินค้า",
+        headerName: t("headers.count"),
         flex: 2,
         editable: false,
         renderCell: ({ row }) =>
-          `${ff.number(row._count.stock_recept_products)} รายการ`,
+          t("units.items", {
+            count: ff.number(row._count.stock_recept_products),
+          }),
       },
       {
         field: "note",
         sortable: true,
-        headerName: "หมายเหตุ",
+        headerName: t("headers.note"),
         flex: 3,
         editable: false,
-        renderCell: ({ row }) => ff.text(row.note || "ไม่ระบุ"),
+        renderCell: ({ row }) =>
+          ff.text(row.note || t("placeholders.not_specified")),
       },
       {
         field: "state",
         sortable: true,
-        headerName: "สถานะ",
+        headerName: t("headers.status"),
         flex: 2,
         editable: false,
         renderCell: ({ row }) => ff.stockReceiptStatus(row.state),
@@ -160,14 +170,14 @@ const HistoryDatatable = () => {
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("headers.actions"),
         flex: 1,
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
             to={getPath("stocks.stock", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
-            label="ดูรายละเอียด"
+            label={t("actions.view")}
             showInMenu
           />,
           <GridActionsCellItem
@@ -178,14 +188,14 @@ const HistoryDatatable = () => {
               !permissions(row).canCancelStock ||
               row.state !== StockReceiptStatus.DRAFT
             }
-            label="ยกเลิกรายการนี้"
+            label={t("actions.cancel")}
             showInMenu
           />,
           <GridActionsCellItem
             key="export"
             icon={<DownloadTwoTone />}
             onClick={menu.export(row)}
-            label="Export"
+            label={t("actions.export")}
             showInMenu
           />,
         ],

@@ -4,24 +4,27 @@ import StockForm from "@/components/Forms/Stock";
 import { getPath } from "@/router";
 import { StockValues } from "@/schema/Stock";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
 const CreateStockPage = () => {
+  const t = useTranslations("STOCKS.create");
   const router = useRouter();
 
   const createStockMutation = useMutation({
     mutationFn: async (data: StockValues) => createStock(data),
     onSuccess: (data) => {
       enqueueSnackbar({
-        message: "สร้างสต๊อกสำเร็จแล้ว!",
+        message: t("success"),
         variant: "success",
       });
       router.push(getPath("stocks.stock", { id: data.id.toString() }));
     },
     onError: (error) => {
+      console.error(error);
       enqueueSnackbar({
-        message: "ไม่สามารถสร้างสต๊อกได้! กรุณาลองใหม่อีกครั้งในภายหลัง",
+        message: t("error"),
         variant: "error",
       });
     },

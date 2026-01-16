@@ -3,11 +3,13 @@ import updateStock from "@/actions/stock/updateStock";
 import StockForm from "@/components/Forms/Stock";
 import { StockValues } from "@/schema/Stock";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
-import { useStock } from "./StockContext";
 import { StockLayoutValue } from "./layout";
+import { useStock } from "./StockContext";
 
 const StockDetailPage = () => {
+  const t = useTranslations("STOCKS.detail");
   const { stock, setStock } = useStock();
 
   const updateStockMutation = useMutation({
@@ -15,13 +17,14 @@ const StockDetailPage = () => {
     onSuccess: (stock: StockLayoutValue) => {
       setStock(stock);
       enqueueSnackbar({
-        message: "บันทึกสต๊อกแล้ว!",
+        message: t("save_success"),
         variant: "success",
       });
     },
     onError: (error) => {
+      console.error(error);
       enqueueSnackbar({
-        message: "ไม่สามารถบันทึกสต๊อกได้! กรุณาลองใหม่อีกครั้งในภายหลัง",
+        message: t("save_error"),
         variant: "error",
       });
     },

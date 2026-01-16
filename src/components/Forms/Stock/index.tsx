@@ -26,6 +26,7 @@ import {
   Typography,
 } from "@mui/material";
 import { StockReceiptStatus } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import { useRef } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import ToolDialog from "./components/ToolDialog";
@@ -43,6 +44,7 @@ const StockForm = ({
   isLoading,
   ...props
 }: StockFormProps) => {
+  const t = useTranslations("STOCKS.form");
   const disabled =
     props.disabled || (stock && stock?.status !== StockReceiptStatus.DRAFT);
   const toolDialog = useDialog();
@@ -86,8 +88,8 @@ const StockForm = ({
   });
 
   const submitConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการจัดการสต๊อกนี้หรือไม่?",
+    title: t("confirmation.title"),
+    text: t("confirmation.text"),
     confirmProps: {
       color: "success",
       startIcon: <SaveTwoTone />,
@@ -126,12 +128,12 @@ const StockForm = ({
         spacing={2}
       >
         <Card>
-          <CardHeader title="ข้อมูลทั่วไป" />
+          <CardHeader title={t("general_info")} />
           <CardContent>
             <TextField
               autoFocus
               margin="dense"
-              label="หมายเหตุ"
+              label={t("note")}
               fullWidth
               multiline
               rows={2}
@@ -144,7 +146,7 @@ const StockForm = ({
         </Card>
         <Card sx={{ pb: 0 }}>
           <CardHeader
-            title="รายละเอียดสินค้า"
+            title={t("product_details")}
             action={
               <Button
                 startIcon={<PanToolAltTwoTone />}
@@ -154,7 +156,7 @@ const StockForm = ({
                 size="small"
                 disabled={isLoading || disabled}
               >
-                เครื่องมือ
+                {t("tools")}
               </Button>
             }
           />
@@ -163,9 +165,13 @@ const StockForm = ({
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: "50px" }}>#</TableCell>
-                    <TableCell sx={{ width: "50%" }}>ชื่อสินค้า</TableCell>
-                    <TableCell>จำนวน</TableCell>
+                    <TableCell sx={{ width: "50px" }}>
+                      {t("headers.index")}
+                    </TableCell>
+                    <TableCell sx={{ width: "50%" }}>
+                      {t("headers.label")}
+                    </TableCell>
+                    <TableCell>{t("headers.delta")}</TableCell>
                     <TableCell
                       sx={{
                         display:
@@ -174,7 +180,7 @@ const StockForm = ({
                             : "none",
                       }}
                     >
-                      เครื่องมือ
+                      {t("headers.actions")}
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -240,7 +246,7 @@ const StockForm = ({
                           align="center"
                           color="secondary"
                         >
-                          ยังไม่มีสินค้า
+                          {t("empty")}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -265,7 +271,7 @@ const StockForm = ({
                           onClick={() => append({ product_id: 0, delta: 0 })}
                           disabled={isLoading || disabled}
                         >
-                          เพิ่มสินค้า
+                          {t("add_product")}
                         </Button>
                       ) : (
                         <Typography
@@ -273,8 +279,9 @@ const StockForm = ({
                           align="center"
                           color="secondary"
                         >
-                          สูงสุด {STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK}{" "}
-                          รายการ
+                          {t("max_limit", {
+                            max: STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK,
+                          })}
                         </Typography>
                       )}
                     </TableCell>
@@ -291,15 +298,15 @@ const StockForm = ({
         alignItems={"center"}
       >
         <Typography variant="subtitle1" color="secondary">
-          จัดการสต๊อก
+          {t("footer_title")}
         </Typography>
         <Stack direction={"row"} spacing={1}>
           {isLoading ||
           (stock && stock?.status !== StockReceiptStatus.DRAFT) ? (
             <Typography variant="body2" color="secondary">
               {stock?.status === StockReceiptStatus.DRAFT
-                ? "กำลังบันทึก..."
-                : `เสร็จสิ้นแล้ว`}
+                ? t("status_saving")
+                : t("status_completed")}
             </Typography>
           ) : (
             <>
@@ -311,7 +318,7 @@ const StockForm = ({
                 name="draft"
                 disabled={disabled}
               >
-                บันทึกแบบร่าง
+                {t("save_draft")}
               </Button>
               <Button
                 variant="contained"
@@ -321,7 +328,7 @@ const StockForm = ({
                 name="saveAndUpdate"
                 disabled={disabled}
               >
-                บันทึกและจัดการสต๊อก
+                {t("save_and_manage")}
               </Button>
             </>
           )}
