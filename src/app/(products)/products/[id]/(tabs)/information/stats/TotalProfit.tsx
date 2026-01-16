@@ -1,32 +1,31 @@
 "use client";
-import getProductOrderData from "@/actions/product/getSoldCount";
+import getProductOrderData from "@/actions/product/getProductOrderData";
 import { money } from "@/libs/formatter";
-import { Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useProduct } from "../../../ProductContext";
 
 const TotalProfit = () => {
   const { product } = useProduct();
 
-  const productOrderData = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["product-order-data", product.id],
     queryFn: async () => await getProductOrderData(product.id),
   });
-
-  if (!productOrderData.data) return null;
-
-  const profit = productOrderData.data.reduce((acc, order) => {
-    return acc + (order.price - order.cost) * order.count;
-  }, 0);
 
   return (
     <>
       <Typography variant="body2" color="text.secondary">
         กำไรทั้งหมด
       </Typography>
-      <Typography variant="h6" color="success.main">
-        {money(profit || 0)}
-      </Typography>
+
+      {isLoading ? (
+        <Skeleton variant="text" width={100} />
+      ) : (
+        <Typography variant="h6" color="success.main">
+          {money(data?.totalProfit || 0)}
+        </Typography>
+      )}
     </>
   );
 };

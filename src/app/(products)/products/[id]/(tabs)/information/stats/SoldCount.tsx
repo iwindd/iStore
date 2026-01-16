@@ -1,13 +1,13 @@
 "use client";
-import getProductOrderData from "@/actions/product/getSoldCount";
-import { Typography } from "@mui/material";
+import getProductOrderData from "@/actions/product/getProductOrderData";
+import { Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useProduct } from "../../../ProductContext";
 
 const SoldCount = () => {
   const { product } = useProduct();
 
-  const productOrderData = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["product-order-data", product.id],
     queryFn: async () => await getProductOrderData(product.id),
   });
@@ -17,9 +17,11 @@ const SoldCount = () => {
       <Typography variant="body2" color="text.secondary">
         ขายไปแล้ว
       </Typography>
-      <Typography variant="h6">
-        {productOrderData.data?.length || 0} รายการ
-      </Typography>
+      {isLoading ? (
+        <Skeleton variant="text" width={100} />
+      ) : (
+        <Typography variant="h6">{`${data?.totalOrderCount || 0} รายการ`}</Typography>
+      )}
     </>
   );
 };
