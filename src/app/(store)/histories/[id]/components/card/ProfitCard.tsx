@@ -1,6 +1,7 @@
 import { NoteTwoTone } from "@mui/icons-material";
 import { Avatar, Card, CardContent, Stack, Typography } from "@mui/material";
 import type { SxProps } from "@mui/material/styles";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
 export interface ProfitCardProps {
@@ -12,6 +13,7 @@ export function ProfitCard({
   value,
   sx,
 }: Readonly<ProfitCardProps>): React.JSX.Element {
+  const t = useTranslations("HISTORIES.detail.cards");
   return (
     <Card sx={sx}>
       <CardContent>
@@ -22,7 +24,7 @@ export function ProfitCard({
         >
           <Stack spacing={1}>
             <Typography color="text.secondary" variant="overline">
-              กำไรทั้งหมด
+              {t("profit")}
             </Typography>
             <Typography variant="h4">{value}</Typography>
           </Stack>

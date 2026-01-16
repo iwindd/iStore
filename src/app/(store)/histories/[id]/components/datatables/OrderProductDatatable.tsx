@@ -3,18 +3,20 @@ import getOrderProducts from "@/actions/order/getOrderProducts";
 import Datatable from "@/components/Datatable";
 import * as ff from "@/libs/formatter";
 import { GridColDef } from "@mui/x-data-grid";
+import { useTranslations } from "next-intl";
 
 interface OrderProductDatatableProps {
   orderId: number;
 }
 
 const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
+  const t = useTranslations("HISTORIES.detail.datatable");
   const columns = (): GridColDef[] => {
     return [
       {
         field: "product.serial",
         sortable: true,
-        headerName: "รหัสสินค้า",
+        headerName: t("headers.serial"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => data.row.product.serial,
@@ -22,7 +24,7 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "product.label",
         sortable: true,
-        headerName: "ชื่อสินค้า",
+        headerName: t("headers.label"),
         flex: 1.5,
         editable: false,
         renderCell: (data: any) => data.row.product.label,
@@ -30,7 +32,7 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "product.category.label",
         sortable: true,
-        headerName: "ประเภทสินค้า",
+        headerName: t("headers.category"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => data.row.product.category?.label || "-",
@@ -38,7 +40,7 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "total",
         sortable: true,
-        headerName: "ราคา",
+        headerName: t("headers.price"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -46,7 +48,7 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "cost",
         sortable: true,
-        headerName: "ต้นทุน",
+        headerName: t("headers.cost"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -54,7 +56,7 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "profit",
         sortable: true,
-        headerName: "กำไร",
+        headerName: t("headers.profit"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -62,15 +64,15 @@ const OrderProductDatatable = ({ orderId }: OrderProductDatatableProps) => {
       {
         field: "count",
         sortable: true,
-        headerName: "จำนวน",
+        headerName: t("headers.count"),
         flex: 0.8,
         editable: false,
-        renderCell: (data: any) => `${data.value} รายการ`,
+        renderCell: (data: any) => t("units.items", { count: data.value }),
       },
       {
         field: "note",
         sortable: false,
-        headerName: "หมายเหตุ",
+        headerName: t("headers.note"),
         flex: 1.2,
         editable: false,
         renderCell: (data: any) => ff.text(data.value),

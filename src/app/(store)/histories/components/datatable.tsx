@@ -7,14 +7,16 @@ import { getPath } from "@/router";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 const HistoryDatatable = () => {
+  const t = useTranslations("HISTORIES.datatable");
   const columns = (): GridColDef[] => {
     return [
       {
         field: "created_at",
         sortable: true,
-        headerName: "วันทำรายการ",
+        headerName: t("headers.date"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.date(data.value),
@@ -22,23 +24,23 @@ const HistoryDatatable = () => {
       {
         field: "creator",
         sortable: true,
-        headerName: "ผู้คิดเงิน",
+        headerName: t("headers.creator"),
         flex: 1,
         editable: false,
         renderCell: (data: any) =>
-          ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+          ff.text(data?.value?.user?.name || t("placeholders.not_specified")),
       },
       {
         field: "total",
         sortable: true,
-        headerName: "ยอดรวม",
+        headerName: t("headers.total"),
         flex: 1,
         editable: false,
       },
       {
         field: "cost",
         sortable: true,
-        headerName: "ต้นทุน",
+        headerName: t("headers.cost"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -46,7 +48,7 @@ const HistoryDatatable = () => {
       {
         field: "profit",
         sortable: true,
-        headerName: "กำไร",
+        headerName: t("headers.profit"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.money(data.value),
@@ -54,7 +56,7 @@ const HistoryDatatable = () => {
       {
         field: "products",
         sortable: false,
-        headerName: "สินค้า",
+        headerName: t("headers.products"),
         flex: 1,
         editable: false,
         renderCell: (data: any) =>
@@ -67,12 +69,12 @@ const HistoryDatatable = () => {
                 };
               }) => `${item.count}x${item.product.label}`
             )
-            .join(", ") || "ไม่พบสินค้า",
+            .join(", ") || t("placeholders.no_products"),
       },
       {
         field: "note",
         sortable: true,
-        headerName: "หมายเหตุ",
+        headerName: t("headers.note"),
         flex: 1,
         editable: false,
         renderCell: (data: any) => ff.text(data.value),
@@ -80,14 +82,14 @@ const HistoryDatatable = () => {
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("headers.actions"),
         flex: 1,
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
             to={`${getPath("histories.history", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
-            label="ดูรายละเอียด"
+            label={t("actions.view")}
             showInMenu
           />,
         ],

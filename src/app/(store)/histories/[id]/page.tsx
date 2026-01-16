@@ -1,9 +1,9 @@
 "use server";
 import getHistoryDetail from "@/actions/order/getHistoryDetail";
 import * as ff from "@/libs/formatter";
-import { getServerSession } from "@/libs/session";
 import { Stack, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { CostCard } from "./components/card/CostCard";
 import { NoteCard } from "./components/card/NoteCard";
@@ -14,31 +14,32 @@ import HistoryTabs from "./components/HistoryTabs";
 const History = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const history = await getHistoryDetail(+id);
-  const session = await getServerSession();
+  const t = await getTranslations("HISTORIES.detail");
 
   if (!history) return notFound();
 
-  const address = session?.user.address;
-  const addressText = session?.user.address
-    ? `${address?.province} ${address?.area} ${address?.district} ${address?.address} ${address?.postalcode}`
-    : "ไม่ทราบที่อยู่";
-  const cashoutBy = history?.creator?.user.name || "ไม่ทราบชื่อผู้ทำรายการ";
+  const cashoutBy = history?.creator?.user.name || t("unknown_name");
 
   return (
     <Grid container spacing={1}>
       <Grid size={12}>
         <Stack direction="row" spacing={3} alignItems={"center"}>
           <Stack sx={{ flex: "1 1 auto" }}>
-            <Typography variant="h4">ประวัติการทำรายการ</Typography>
-            <Typography variant="caption">คิดเงินโดย: {cashoutBy}</Typography>
+            <Typography variant="h4">{t("title")}</Typography>
             <Typography variant="caption">
-              วันที่ทำรายการ: {ff.date(history.created_at)}
+              {t("cashout_by", { name: cashoutBy })}
+            </Typography>
+            <Typography variant="caption">
+              {t("action_date", { date: ff.date(history.created_at) })}
             </Typography>
           </Stack>
         </Stack>
       </Grid>
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-        <NoteCard sx={{ height: "100%" }} value={history.note || "ไม่ระบุ"} />
+        <NoteCard
+          sx={{ height: "100%" }}
+          value={history.note || t("not_specified")}
+        />
       </Grid>
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
         <PriceCard

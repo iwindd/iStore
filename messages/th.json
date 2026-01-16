@@ -576,6 +576,72 @@
       "save_error": "ไม่สามารถบันทึกสต๊อกได้! กรุณาลองใหม่อีกครั้งในภายหลัง"
     }
   },
+  "HISTORIES": {
+    "title": "ประวัติการซื้อขายสินค้า",
+    "datatable": {
+      "headers": {
+        "date": "วันทำรายการ",
+        "creator": "ผู้คิดเงิน",
+        "total": "ยอดรวม",
+        "cost": "ต้นทุน",
+        "profit": "กำไร",
+        "products": "สินค้า",
+        "note": "หมายเหตุ",
+        "actions": "เครื่องมือ"
+      },
+      "actions": {
+        "view": "ดูรายละเอียด"
+      },
+      "placeholders": {
+        "not_specified": "ไม่ระบุ",
+        "no_products": "ไม่พบสินค้า"
+      }
+    },
+    "detail": {
+      "title": "ประวัติการทำรายการ",
+      "cashout_by": "คิดเงินโดย: {name}",
+      "action_date": "วันที่ทำรายการ: {date}",
+      "not_specified": "ไม่ระบุ",
+      "unknown_name": "ไม่ทราบชื่อผู้ทำรายการ",
+      "cards": {
+        "note": "หมายเหตุ",
+        "total": "ยอดรวม",
+        "cost": "ต้นทุน",
+        "profit": "กำไร"
+      },
+      "tabs": {
+        "all": "ทั้งหมด",
+        "product": "รายการสินค้า",
+        "preorder": "รายการพรีออเดอร์"
+      },
+      "datatable": {
+        "headers": {
+          "type": "ประเภทรายการ",
+          "serial": "รหัสสินค้า",
+          "label": "ชื่อสินค้า",
+          "category": "ประเภทสินค้า",
+          "price": "ราคา",
+          "cost": "ต้นทุน",
+          "profit": "กำไร",
+          "count": "จำนวน",
+          "status": "สถานะ",
+          "note": "หมายเหตุ"
+        },
+        "types": {
+          "product": "สินค้า",
+          "preorder": "พรีออเดอร์"
+        },
+        "statuses": {
+          "PENDING": "รอดำเนินการ",
+          "RETURNED": "คืนแล้ว",
+          "CANCELLED": "ยกเลิก"
+        },
+        "units": {
+          "items": "{count} รายการ"
+        }
+      }
+    }
+  },
   "COMPONENTS": {
     "selector": {
       "search": "ค้นหา",
