@@ -15,12 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Controller, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
 
 const ProductPreorderForm = () => {
+  const t = useTranslations("PRODUCT_DETAIL.information.preorder_form");
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -49,7 +51,7 @@ const ProductPreorderForm = () => {
         usePreorder: data.usePreorder,
       });
 
-      enqueueSnackbar("บันทึกการอนุญาตสั่งซื้อล่วงหน้าเรียบร้อยแล้ว", {
+      enqueueSnackbar(t("success"), {
         variant: "success",
       });
 
@@ -58,7 +60,7 @@ const ProductPreorderForm = () => {
     },
     onError: (error) => {
       console.log(error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองอีกครั้งในภายหลัง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     },
@@ -85,11 +87,11 @@ const ProductPreorderForm = () => {
                     )}
                   />
                 }
-                label="พรีออเดอร์"
+                label={t("label")}
               />
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  เปิดการอนุญาตให้ลูกค้าสามารถสั่งสั่งจองสินค้ารายการนี้ล่วงหน้าได้เมื่อสต๊อกหมด
+                  {t("helper")}
                 </Typography>
               </Box>
             </div>
@@ -104,7 +106,7 @@ const ProductPreorderForm = () => {
               variant="contained"
               sx={{ mt: 2 }}
             >
-              บันทึก
+              {t("save")}
             </Button>
           )}
         </form>

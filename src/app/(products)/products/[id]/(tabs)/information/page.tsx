@@ -1,5 +1,6 @@
 "use client";
 import { Card, CardContent, CardHeader, Grid, Stack } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useProduct } from "../../ProductContext";
 import ProductPreorderForm from "./components/ProductPreorderForm";
 import ProductUpdateForm from "./components/ProductUpdateForm";
@@ -8,13 +9,14 @@ import TotalProfit from "./stats/TotalProfit";
 
 const ProductInformationPage = () => {
   const { product } = useProduct();
+  const t = useTranslations("PRODUCT_DETAIL.information.header");
 
   return (
     <Stack spacing={1}>
       <Card>
         <CardHeader
           title={product.label}
-          subheader={`รหัสสินค้า: ${product.serial}`}
+          subheader={t("serial", { serial: product.serial })}
         />
         <CardContent>
           <Grid container spacing={2}>

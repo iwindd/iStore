@@ -19,12 +19,14 @@ import {
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 import { ProductFormDialog } from "./add-controller";
 import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = () => {
+  const t = useTranslations("PRODUCTS.datatable");
   const editDialog = useDialog();
   const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
@@ -43,8 +45,8 @@ const ProductDatatable = () => {
   });
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะลบสินค้าหรือไม่",
+    title: t("confirmation.delete_title"),
+    text: t("confirmation.delete_text"),
     confirmProps: {
       color: "error",
       startIcon: <DeleteTwoTone />,
@@ -53,14 +55,17 @@ const ProductDatatable = () => {
       try {
         const resp = await DeleteProduct(id);
 
-        if (!resp.success) throw Error(resp.message);
-        enqueueSnackbar("ลบรายการสินค้าสำเร็จแล้ว!", { variant: "success" });
+        if (!resp.success) throw new Error(resp.message);
+        enqueueSnackbar(t("confirmation.delete_success"), {
+          variant: "success",
+        });
         await queryClient.refetchQueries({
           queryKey: ["products"],
           type: "active",
         });
       } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง");
+        console.error(error);
+        enqueueSnackbar(t("confirmation.delete_error"));
       }
     },
   });
@@ -91,33 +96,44 @@ const ProductDatatable = () => {
 
   const columns = (): GridColDef[] => {
     return [
-      { field: "serial", sortable: false, headerName: "รหัสสินค้า", flex: 1 },
-      { field: "label", sortable: false, headerName: "ชื่อสินค้า", flex: 1 },
+      {
+        field: "serial",
+        sortable: false,
+        headerName: t("headers.serial"),
+        flex: 1,
+      },
+      {
+        field: "label",
+        sortable: false,
+        headerName: t("headers.label"),
+        flex: 1,
+      },
       {
         field: "creator",
         sortable: true,
-        headerName: "ผู้สร้าง",
+        headerName: t("headers.creator"),
         flex: 1,
-        renderCell: (data: any) => ff.text(data.value?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          ff.text(data.value?.user?.name || t("not_specified")),
       },
       {
         field: "keywords",
         sortable: true,
-        headerName: "คีย์เวิร์ด",
+        headerName: t("headers.keywords"),
         flex: 1,
         renderCell: (data: any) => ff.text(data.value),
       },
       {
         field: "category",
         sortable: true,
-        headerName: "ประเภทสินค้า",
+        headerName: t("headers.category"),
         flex: 1,
-        renderCell: ({ row }: any) => row.category?.label || "ไม่มีประเภท",
+        renderCell: ({ row }: any) => row.category?.label || t("no_category"),
       },
       {
         field: "price",
         sortable: true,
-        headerName: "ราคา",
+        headerName: t("headers.price"),
         flex: 1,
         type: "number",
         renderCell: ({ value }) => ff.money(value),
@@ -125,7 +141,7 @@ const ProductDatatable = () => {
       {
         field: "cost",
         sortable: true,
-        headerName: "ต้นทุน",
+        headerName: t("headers.cost"),
         flex: 1,
         type: "number",
         renderCell: ({ value }) => ff.money(value),
@@ -133,7 +149,7 @@ const ProductDatatable = () => {
       {
         field: "stock",
         sortable: true,
-        headerName: "ของในสต๊อก",
+        headerName: t("headers.stock"),
         flex: 1,
         type: "number",
         renderCell: (data: any) => ff.number(data.value),
@@ -141,21 +157,21 @@ const ProductDatatable = () => {
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("headers.actions"),
         flex: 1,
         getActions: ({ row }: { row: Product }) => [
           <GridLinkAction
             key="view"
             to={getPath("products.product", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
-            label="ดูรายละเอียด"
+            label={t("actions.view")}
             showInMenu
           />,
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
-            label="แก้ไข"
+            label={t("actions.edit")}
             disabled={!permissions(row).canEditProduct}
             showInMenu
           />,
@@ -163,7 +179,7 @@ const ProductDatatable = () => {
             key="delete"
             icon={<DeleteTwoTone />}
             onClick={menu.delete(row)}
-            label="ลบ"
+            label={t("actions.delete")}
             disabled={!permissions(row).canRemoveProduct}
             showInMenu
           />,
@@ -171,7 +187,7 @@ const ProductDatatable = () => {
             key="barcode"
             icon={<QrCodeTwoTone />}
             onClick={menu.barcode(row)}
-            label="แสดงบาร์โค้ด"
+            label={t("actions.barcode")}
             showInMenu
           />,
         ],

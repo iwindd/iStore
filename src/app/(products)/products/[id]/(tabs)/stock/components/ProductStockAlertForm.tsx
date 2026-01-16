@@ -17,12 +17,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Controller, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
 
 const ProductStockAlertForm = () => {
+  const t = useTranslations("PRODUCT_DETAIL.stock.alert_form");
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -57,7 +59,7 @@ const ProductStockAlertForm = () => {
         },
       });
 
-      enqueueSnackbar("บันทึกการแจ้งเตือนสต๊อกเรียบร้อยแล้ว", {
+      enqueueSnackbar(t("success"), {
         variant: "success",
       });
 
@@ -66,7 +68,7 @@ const ProductStockAlertForm = () => {
     },
     onError: (error) => {
       console.log(error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองอีกครั้งในภายหลัง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     },
@@ -91,18 +93,18 @@ const ProductStockAlertForm = () => {
                 )}
               />
             }
-            label="แจ้งเตือนสต๊อก"
+            label={t("label")}
           />
           <Box>
             <Typography variant="body2" color="text.secondary">
-              เปิดการจัดการเมื่อจำนวนสต๊อกน้อยกว่าที่กำหนด
+              {t("helper")}
             </Typography>
           </Box>
         </div>
         {watch("useAlert") && (
           <TextField
             fullWidth
-            label="จำนวนสต็อก"
+            label={t("count_label")}
             type="number"
             {...register("alertCount", { valueAsNumber: true })}
             error={!!errors.alertCount}
@@ -121,7 +123,7 @@ const ProductStockAlertForm = () => {
           variant="contained"
           sx={{ mt: 2 }}
         >
-          บันทึก
+          {t("save")}
         </Button>
       )}
     </form>

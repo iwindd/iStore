@@ -2,9 +2,11 @@
 import getProductOrderData from "@/actions/product/getProductOrderData";
 import { Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useProduct } from "../../../ProductContext";
 
 const SoldCount = () => {
+  const t = useTranslations("PRODUCT_DETAIL.information.stats");
   const { product } = useProduct();
 
   const { data, isLoading } = useQuery({
@@ -15,12 +17,14 @@ const SoldCount = () => {
   return (
     <>
       <Typography variant="body2" color="text.secondary">
-        ขายไปแล้ว
+        {t("sold_count")}
       </Typography>
       {isLoading ? (
         <Skeleton variant="text" width={100} />
       ) : (
-        <Typography variant="h6">{`${data?.totalOrderCount || 0} รายการ`}</Typography>
+        <Typography variant="h6">
+          {t("items_unit", { count: data?.totalOrderCount || 0 })}
+        </Typography>
       )}
     </>
   );

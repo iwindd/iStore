@@ -36,6 +36,7 @@ import {
 } from "@mui/material";
 import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
@@ -61,6 +62,7 @@ function SearchDialog({
   onSubmit,
   setLoading,
 }: Readonly<SearchDialogProps>): React.JSX.Element {
+  const t = useTranslations("PRODUCTS.search_dialog");
   const [isRandomSerial, setIsRandomSerial] = React.useState<string>();
   const {
     register,
@@ -85,7 +87,7 @@ function SearchDialog({
       onSubmit(resp?.data || ({ serial: payload.serial } as Product));
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     } finally {
@@ -115,30 +117,31 @@ function SearchDialog({
       slotProps={{
         paper: {
           component: "form",
-          onSubmit: handleSubmit(searchSubmit),
+          onSubmit: (e: React.FormEvent) => {
+            handleSubmit(searchSubmit)(e);
+          },
         },
       }}
     >
-      <DialogTitle>ค้นหาสินค้า</DialogTitle>
+      <DialogTitle>{t("title")}</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
           <TextField
-            label="รหัสสินค้า"
+            label={t("serial")}
             {...register("serial")}
             autoFocus
-            placeholder="EAN8 or EAN13"
+            placeholder={t("placeholder")}
             error={errors["serial"] != undefined}
             helperText={
               errors["serial"]?.message ||
-              (isRandomSerial == watch("serial") &&
-                " สินค้าที่สร้างรหัสสินค้าจากระบบจะเป็นสินค้าที่ไม่มีรหัสสินค้า และสามารถ Export Barcode ได้ภายหลัง")
+              (isRandomSerial == watch("serial") && t("random_helper"))
             }
             fullWidth
             slotProps={{
               input: {
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Tooltip title="สร้างรหัสสินค้า">
+                    <Tooltip title={t("random_tooltip")}>
                       <IconButton onClick={random}>
                         <Rotate90DegreesCcw />
                       </IconButton>
@@ -154,10 +157,10 @@ function SearchDialog({
       </DialogContent>
       <DialogActions>
         <Button color="secondary" onClick={handleClose}>
-          ยกเลิก
+          {t("cancel")}
         </Button>
         <Button variant="contained" startIcon={<SearchTwoTone />} type="submit">
-          ค้นหา
+          {t("search")}
         </Button>
       </DialogActions>
     </Dialog>
@@ -170,6 +173,7 @@ export function ProductFormDialog({
   onClose,
   product,
 }: Readonly<ProductFormDialogProps>): React.JSX.Element {
+  const t = useTranslations("PRODUCTS.form_dialog");
   const {
     register,
     handleSubmit,
@@ -214,11 +218,11 @@ export function ProductFormDialog({
         queryKey: ["products"],
         type: "active",
       });
-      enqueueSnackbar("บันทึกสินค้าเรียบร้อยแล้ว!", { variant: "success" });
+      enqueueSnackbar(t("save_success"), { variant: "success" });
       onClose();
     } catch (error) {
       console.error(error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+      enqueueSnackbar(t("save_error"), {
         variant: "error",
       });
     } finally {
@@ -241,40 +245,43 @@ export function ProductFormDialog({
       slotProps={{
         paper: {
           component: "form",
-          onSubmit: handleSubmit(submitProduct),
+          onSubmit: (e: React.FormEvent) => {
+            handleSubmit(submitProduct)(e);
+          },
         },
       }}
     >
       <DialogTitle>
-        {product?.label ? "แก้ไขสินค้า" : "เพิ่มสินค้า"}
+        {product?.label ? t("edit_title") : t("add_title")}
       </DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }} spacing={1}>
           <TextField
             fullWidth
-            label="ชื่อสินค้า"
+            label={t("label")}
             slotProps={{
               inputLabel: {
                 shrink: true,
               },
             }}
             disabled={product?.deleted_at != null}
-            placeholder={`ชื่อของสินค้าที่ต้องการเพิ่ม`}
+            placeholder={t("placeholder")}
             error={errors["label"] !== undefined}
             helperText={
-              errors["label"]?.message ?? `รหัสสินค้า: ${product?.serial}`
+              errors["label"]?.message ??
+              t("serial_helper", { serial: product?.serial ?? "" })
             }
             {...register("label")}
             autoFocus
           />
           {product?.id && product?.deleted_at != null && (
-            <Alert color="error">สินค้านี้ถูกลบไปแล้ว!</Alert>
+            <Alert color="error">{t("deleted_alert")}</Alert>
           )}
         </Stack>
       </DialogContent>
       <DialogActions>
         <Button color="secondary" onClick={onClose}>
-          ยกเลิก
+          {t("cancel")}
         </Button>
         <Button
           variant="contained"
@@ -288,7 +295,7 @@ export function ProductFormDialog({
                 : "",
           }}
         >
-          {product?.deleted_at ? "กู้คืน" : "เพิ่มสินค้าใหม่"}
+          {product?.deleted_at ? t("recovery") : t("save")}
         </Button>
       </DialogActions>
     </Dialog>
@@ -296,6 +303,7 @@ export function ProductFormDialog({
 }
 
 const AddController = () => {
+  const t = useTranslations("PRODUCTS");
   const [product, setProduct] = useState<Product | null>(null);
   const { setBackdrop, isBackdrop } = useInterface();
   const [isSearch, setIsSearch] = useState<boolean>(true);
@@ -328,7 +336,7 @@ const AddController = () => {
         onClick={onOpen}
         size="small"
       >
-        เพิ่มรายการ
+        {t("add_button")}
       </Button>
 
       <SearchDialog

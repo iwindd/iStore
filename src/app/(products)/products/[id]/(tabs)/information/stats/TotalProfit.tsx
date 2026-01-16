@@ -3,9 +3,11 @@ import getProductOrderData from "@/actions/product/getProductOrderData";
 import { money } from "@/libs/formatter";
 import { Skeleton, Typography } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useProduct } from "../../../ProductContext";
 
 const TotalProfit = () => {
+  const t = useTranslations("PRODUCT_DETAIL.information.stats");
   const { product } = useProduct();
 
   const { data, isLoading } = useQuery({
@@ -16,7 +18,7 @@ const TotalProfit = () => {
   return (
     <>
       <Typography variant="body2" color="text.secondary">
-        กำไรทั้งหมด
+        {t("total_profit")}
       </Typography>
 
       {isLoading ? (

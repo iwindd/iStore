@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Product } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import React from "react";
 import Barcode from "react-barcode";
 
@@ -24,6 +25,7 @@ const BarcodeDialog = ({
       | React.KeyboardEvent<HTMLDivElement>
   ) => void;
 }) => {
+  const t = useTranslations("PRODUCTS.barcode_dialog");
   const barcodeRef = React.useRef<HTMLDivElement>(null);
 
   const handleDownload = () => {
@@ -46,7 +48,7 @@ const BarcodeDialog = ({
       disableRestoreFocus
     >
       <DialogTitle>
-        {product?.label ? `${product.label}` : "บาร์โค้ดของสินค้า"}
+        {product?.label ? `${product.label}` : t("title")}
       </DialogTitle>
       <DialogContent
         sx={{
@@ -56,27 +58,27 @@ const BarcodeDialog = ({
         }}
       >
         <div ref={barcodeRef}>
-          {product && product.serial ? (
-            <Barcode value={product?.serial} format="EAN13" renderer="canvas" />
+          {product?.serial ? (
+            <Barcode value={product.serial} format="EAN13" renderer="canvas" />
           ) : (
-            <Typography>ไม่มีข้อมูลบาร์โค้ดสำหรับสินค้านี้</Typography>
+            <Typography>{t("no_barcode")}</Typography>
           )}
         </div>
       </DialogContent>
       <DialogActions>
         <Button color="secondary" size="small" onClick={handleClose}>
-          ปิด
+          {t("close")}
         </Button>
         <Button
           variant="contained"
           color="primary"
           onClick={handleDownload}
           size="small"
-          disabled={!product || !product.serial}
+          disabled={!product?.serial}
           autoFocus
           startIcon={<DownloadTwoTone />}
         >
-          ดาวน์โหลด
+          {t("download")}
         </Button>
       </DialogActions>
     </Dialog>

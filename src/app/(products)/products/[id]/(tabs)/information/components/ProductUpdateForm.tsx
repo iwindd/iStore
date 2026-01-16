@@ -12,6 +12,7 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateForm = () => {
+  const t = useTranslations("PRODUCT_DETAIL.information.update_form");
   const { product } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -50,11 +52,11 @@ const ProductUpdateForm = () => {
       const resp = await UpdateProduct(payload, product.id);
       if (!resp.success) throw new Error(resp.message);
 
-      enqueueSnackbar("บันทึกข้อมูลเรียบร้อยแล้ว", { variant: "success" });
+      enqueueSnackbar(t("success"), { variant: "success" });
       router.refresh();
       reset(payload); // Reset dirty state with new values
     } catch (error: any) {
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาดในการบันทึก", {
+      enqueueSnackbar(error.message || t("error"), {
         variant: "error",
       });
     } finally {
@@ -64,17 +66,14 @@ const ProductUpdateForm = () => {
 
   return (
     <Card>
-      <CardHeader
-        title="แก้ไขข้อมูลสินค้า"
-        subheader="ปรับปรุงข้อมูลรายละเอียดสินค้า"
-      />
+      <CardHeader title={t("title")} subheader={t("subheader")} />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2} maxWidth={"500px"}>
             <Grid size={12}>
               <TextField
                 fullWidth
-                label="ชื่อสินค้า"
+                label={t("label")}
                 {...register("label")}
                 error={!!errors.label}
                 helperText={errors.label?.message}
@@ -91,7 +90,7 @@ const ProductUpdateForm = () => {
             <Grid size={12}>
               <TextField
                 fullWidth
-                label="ราคาขาย"
+                label={t("price")}
                 type="number"
                 {...register("price", { valueAsNumber: true })}
                 error={!!errors.price}
@@ -102,7 +101,7 @@ const ProductUpdateForm = () => {
             <Grid size={12}>
               <TextField
                 fullWidth
-                label="ต้นทุน"
+                label={t("cost")}
                 type="number"
                 {...register("cost", { valueAsNumber: true })}
                 error={!!errors.cost}
@@ -120,7 +119,7 @@ const ProductUpdateForm = () => {
               variant="contained"
               sx={{ mt: 2 }}
             >
-              บันทึก
+              {t("save")}
             </Button>
           )}
         </form>

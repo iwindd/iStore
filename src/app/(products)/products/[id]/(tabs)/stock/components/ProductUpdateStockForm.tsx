@@ -16,6 +16,7 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
@@ -23,6 +24,7 @@ import { useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateStockForm = () => {
+  const t = useTranslations("PRODUCT_DETAIL.stock.update_form");
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
@@ -58,12 +60,12 @@ const ProductUpdateStockForm = () => {
         },
       });
       reset(getValues(), { keepValues: true });
-      enqueueSnackbar("อัปเดตสต็อกเรียบร้อยแล้ว", { variant: "success" });
+      enqueueSnackbar(t("success"), { variant: "success" });
       setOpenDialog(false);
       router.refresh();
     } catch (error: any) {
       console.log(error);
-      enqueueSnackbar("เกิดข้อผิดพลาด กรุณาลองอีกครั้งในภายหลัง", {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
     } finally {
@@ -88,7 +90,7 @@ const ProductUpdateStockForm = () => {
           <Grid>
             <TextField
               fullWidth
-              label="จำนวนสต็อก"
+              label={t("stock_label")}
               type="number"
               {...register("stock", { valueAsNumber: true })}
               error={!!errors.stock}
@@ -106,22 +108,21 @@ const ProductUpdateStockForm = () => {
             variant="contained"
             sx={{ mt: 2 }}
           >
-            บันทึก
+            {t("save")}
           </Button>
         )}
       </form>
 
       <Dialog open={openDialog} onClose={onCancel} maxWidth="xs" fullWidth>
-        <DialogTitle>ยืนยันการปรับสต็อก</DialogTitle>
+        <DialogTitle>{t("dialog.title")}</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
-            คุณต้องการที่จะแก้ไขสต็อกสินค้า {product.label} จำนวน
-            {watch("stock")}รายการ หรือไม่
+            {t("dialog.text", { label: product.label, count: watch("stock") })}
           </DialogContentText>
           <TextField
             autoFocus
             margin="dense"
-            label="หมายเหตุ"
+            label={t("dialog.note")}
             fullWidth
             variant="standard"
             multiline
@@ -132,13 +133,13 @@ const ProductUpdateStockForm = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={onCancel}>ยกเลิก</Button>
+          <Button onClick={onCancel}>{t("dialog.cancel")}</Button>
           <Button
             onClick={handleSubmit(onSubmit)}
             variant="contained"
             color="primary"
           >
-            ยืนยัน
+            {t("dialog.confirm")}
           </Button>
         </DialogActions>
       </Dialog>
