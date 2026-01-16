@@ -37,7 +37,6 @@ export interface CartState {
   preOrderProducts: CartProduct[];
   total: number;
   totalPreOrder: number;
-  hasSomeProductOverstock: boolean;
   checkoutMode: CheckoutMode;
 }
 
@@ -160,7 +159,6 @@ const initialState: CartState = {
   preOrderProducts: [],
   total: 0,
   totalPreOrder: 0,
-  hasSomeProductOverstock: false,
   checkoutMode: CheckoutMode.CASHOUT,
 };
 
@@ -252,7 +250,6 @@ const onAddProductToCart = (
   }
 
   state.total = getTotalPrice(state.products);
-  state.hasSomeProductOverstock = quantity > (product.stock?.quantity || 0);
 };
 
 const cartSlice = createSlice({
@@ -262,7 +259,6 @@ const cartSlice = createSlice({
     clearProductCart: (state) => {
       state.products = [];
       state.preOrderProducts = [];
-      state.hasSomeProductOverstock = false;
       state.total = 0;
       state.totalPreOrder = 0;
     },
