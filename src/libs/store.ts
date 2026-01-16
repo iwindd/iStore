@@ -1,5 +1,5 @@
 import cartReducer, { CartState } from "@/reducers/cartReducer";
-import dashboardReducer from "@/reducers/dashboardReducer";
+import dashboardReducer, { DashboardState } from "@/reducers/dashboardReducer";
 import { configureStore } from "@reduxjs/toolkit";
 import persistReducer from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
@@ -14,11 +14,16 @@ const persistedCartReducer = persistReducer<CartState>(
   cartReducer
 );
 
+const persistedDashboardReducer = persistReducer<DashboardState>(
+  persistConfig,
+  dashboardReducer
+);
+
 export const store = () => {
   return configureStore({
     reducer: {
       cart: persistedCartReducer,
-      dashboard: dashboardReducer,
+      dashboard: persistedDashboardReducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
