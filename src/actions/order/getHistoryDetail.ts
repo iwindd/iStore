@@ -12,27 +12,8 @@ const getHistoryDetail = async (id: number) => {
     const where: Prisma.OrderWhereInput = {
       id: id,
       store_id: user.store,
-      OR: [
-        {
-          type: CashoutType.CASHOUT,
-          creator_id: user.limitPermission(HistoryPermissionEnum.READ),
-        },
-        /* { // TODO:: DO SOMETHING WITH THIS SHIT
-            type: CashoutType.CASHOUT,
-            creator_id: user.limitPermission(OverStockPermissionEnum.READ),
-            products: {
-              some: {
-                overstock: {
-                  gte: 1,
-                },
-              },
-            },
-          },
-          {
-            type: CashoutType.PURCHASE,
-            creator_id: user.limitPermission(PurchasePermissionEnum.READ),
-          }, */
-      ],
+      type: CashoutType.CASHOUT,
+      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
     };
 
     const history = await db.order.findFirstOrThrow({
@@ -54,38 +35,10 @@ const getHistoryDetail = async (id: number) => {
             },
           },
         },
-        products: {
-          select: {
-            id: true,
-            note: true,
-            cost: true,
-            profit: true,
-            total: true,
-            count: true,
-            product: {
-              select: {
-                serial: true,
-                label: true,
-                category: true,
-              },
-            },
-          },
-        },
       },
     });
 
-    return {
-      ...history,
-      products: history.products.map((p) => ({
-        ...p,
-        total: Number(p.total),
-        cost: Number(p.cost),
-        profit: Number(p.profit),
-        product: {
-          ...p.product,
-        },
-      })),
-    };
+    return history;
   } catch (error) {
     console.error(error);
     return null;

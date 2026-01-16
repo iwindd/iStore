@@ -9,7 +9,7 @@ import { CostCard } from "./components/card/CostCard";
 import { NoteCard } from "./components/card/NoteCard";
 import { PriceCard } from "./components/card/PriceCard";
 import { ProfitCard } from "./components/card/ProfitCard";
-import { HistoryProductTable } from "./components/table/table-product";
+import HistoryTabs from "./components/HistoryTabs";
 
 const History = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -35,10 +35,6 @@ const History = async ({ params }: { params: Promise<{ id: string }> }) => {
               วันที่ทำรายการ: {ff.date(history.created_at)}
             </Typography>
           </Stack>
-          <>
-            {/* TODO */}
-            {/* <ReceiptController items={data.products} name={session.user.name} address={addressText} left={ff.date(data.created_at)} right={`No.${data.id}`}  /> */}
-          </>
         </Stack>
       </Grid>
       <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
@@ -63,7 +59,7 @@ const History = async ({ params }: { params: Promise<{ id: string }> }) => {
         />
       </Grid>
       <Grid size={12}>
-        <HistoryProductTable products={history.products} />
+        <HistoryTabs orderId={history.id} />
       </Grid>
     </Grid>
   );
