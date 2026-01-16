@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { Category } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -34,6 +35,7 @@ export function CategoryFormDialog({
   onClose,
   category,
 }: Readonly<CategoryFormDialogProps>): React.JSX.Element {
+  const t = useTranslations("CATEGORIES.form");
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const {
@@ -59,15 +61,16 @@ export function CategoryFormDialog({
     mutationFn: async (data: CategoryValues) =>
       await upsertCategory(data, category?.id),
     onSuccess: async () => {
-      enqueueSnackbar("บันทึกสินค้าเรียบร้อยแล้ว!", { variant: "success" });
+      enqueueSnackbar(t("save_success"), { variant: "success" });
       handleClose();
       queryClient.invalidateQueries({
         queryKey: ["categories"],
         type: "active",
       });
     },
-    onError: async () => {
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+    onError: async (error) => {
+      console.error(error);
+      enqueueSnackbar(t("save_error"), {
         variant: "error",
       });
     },
@@ -89,9 +92,7 @@ export function CategoryFormDialog({
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="xs">
-      <DialogTitle>
-        {category ? "แก้ไขประเภทสินค้า" : "เพิ่มประเภทสินค้า"}
-      </DialogTitle>
+      <DialogTitle>{category ? t("title_edit") : t("title_add")}</DialogTitle>
       <DialogContent>
         <Stack
           id="category-form"
@@ -100,7 +101,7 @@ export function CategoryFormDialog({
           onSubmit={handleSubmit((data) => upsertMutattion.mutate(data))}
         >
           <TextField
-            label="ประเภทสินค้า"
+            label={t("label")}
             fullWidth
             {...register("label")}
             error={errors["label"] !== undefined}
@@ -123,11 +124,11 @@ export function CategoryFormDialog({
                   )}
                 />
               }
-              label="ใช้กับสินค้าที่ไม่มีหมวดหมู่"
+              label={t("active_label")}
             />
             <Box>
               <Typography variant="body2" color="text.secondary">
-                สินค้าที่ไม่มีหมวดหมู่ทั้งหมดจะใช้หมวดหมู่นี้
+                {t("active_helper")}
               </Typography>
             </Box>
           </FormGroup>
@@ -140,7 +141,7 @@ export function CategoryFormDialog({
           onClick={onClose}
           disabled={isPending}
         >
-          ปิด
+          {t("close")}
         </Button>
         <Button
           variant="contained"
@@ -150,7 +151,7 @@ export function CategoryFormDialog({
           form="category-form"
           loading={isPending}
         >
-          บันทึก
+          {t("save")}
         </Button>
       </DialogActions>
     </Dialog>

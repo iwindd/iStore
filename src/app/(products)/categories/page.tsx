@@ -3,16 +3,18 @@ import { useDialog } from "@/hooks/use-dialog";
 import App, { Wrapper } from "@/layouts/App";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { CategoryFormDialog } from "./components/CategoryFormDialog";
 import CategoryDatatable from "./components/datatable";
 
 const CategoryPage = () => {
+  const t = useTranslations("CATEGORIES");
   const dialog = useDialog();
 
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>หมวดหมู่สินค้า</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
           <Button
             startIcon={<AddTwoTone />}
@@ -20,7 +22,7 @@ const CategoryPage = () => {
             onClick={dialog.handleOpen}
             size="small"
           >
-            เพิ่มรายการ
+            {t("add_button")}
           </Button>
 
           <CategoryFormDialog open={dialog.open} onClose={dialog.handleClose} />

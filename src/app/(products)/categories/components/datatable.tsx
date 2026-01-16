@@ -11,6 +11,7 @@ import { DeleteTwoTone, EditTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Category as OriginalCategory } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { CategoryFormDialog } from "./CategoryFormDialog";
@@ -22,6 +23,7 @@ interface Category extends OriginalCategory {
 }
 
 const CategoryDatatable = () => {
+  const t = useTranslations("CATEGORIES.datatable");
   const editDialog = useDialog();
   const [category, setCategory] = React.useState<Category | null>(null);
   const { enqueueSnackbar } = useSnackbar();
@@ -39,7 +41,7 @@ const CategoryDatatable = () => {
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => await deleteCategory(id),
     onSuccess: async () => {
-      enqueueSnackbar("ลบรายการประเภทสินค้าสำเร็จแล้ว!", {
+      enqueueSnackbar(t("delete_success"), {
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -47,16 +49,17 @@ const CategoryDatatable = () => {
         type: "active",
       });
     },
-    onError: () => {
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar(t("delete_error"), {
         variant: "error",
       });
     },
   });
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะลบประเภทสินค้าหรือไม่",
+    title: t("confirmation.title"),
+    text: t("confirmation.text"),
     confirmProps: {
       color: "error",
       startIcon: <DeleteTwoTone />,
@@ -93,7 +96,7 @@ const CategoryDatatable = () => {
       {
         field: "created_at",
         sortable: true,
-        headerName: "วันที่สร้าง",
+        headerName: t("headers.created_at"),
         flex: 3,
         editable: false,
         renderCell: ({ value }) => date(value),
@@ -101,14 +104,15 @@ const CategoryDatatable = () => {
       {
         field: "creator",
         sortable: true,
-        headerName: "ผู้สร้าง",
+        headerName: t("headers.creator"),
         flex: 3,
-        renderCell: (data: any) => text(data.value?.user?.name || "ไม่ระบุ"),
+        renderCell: (data: any) =>
+          text(data.value?.user?.name || t("placeholders.not_specified")),
       },
       {
         field: "label",
         sortable: true,
-        headerName: "ประเภทสินค้า",
+        headerName: t("headers.label"),
         flex: 3,
         editable: false,
       },
@@ -116,22 +120,23 @@ const CategoryDatatable = () => {
       {
         field: "_count",
         sortable: false,
-        headerName: "จำนวนสินค้า",
+        headerName: t("headers.count"),
         flex: 2,
         editable: false,
-        renderCell: ({ value }) => `${number(value.product)} รายการ`,
+        renderCell: ({ value }) =>
+          t("units.items", { count: number(value.product) }),
       },
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("headers.actions"),
         flex: 2,
         getActions: ({ row }: { row: Category }) => [
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoTone />}
             onClick={menu.edit(row)}
-            label="แก้ไข"
+            label={t("actions.edit")}
             disabled={!permissions(row).canUpdateCategory}
             showInMenu
           />,
@@ -139,7 +144,7 @@ const CategoryDatatable = () => {
             key="delete"
             icon={<DeleteTwoTone />}
             onClick={menu.delete(row)}
-            label="ลบ"
+            label={t("actions.delete")}
             showInMenu
           />,
         ],
