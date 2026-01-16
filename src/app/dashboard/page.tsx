@@ -6,7 +6,7 @@ import { RecentOrders } from "./components/RecentOrders";
 import Stats from "./components/Stats";
 import { YearlySalesChart } from "./components/YearlySalesChart";
 
-const Dashboard = async () => {
+const Dashboard = () => {
   return (
     <Stack spacing={1}>
       <Grid container spacing={1}>
