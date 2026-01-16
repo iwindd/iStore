@@ -26,6 +26,7 @@ import {
 import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import z from "zod";
@@ -51,6 +52,7 @@ export interface FormBuyXGetYProps {
 }
 
 const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
+  const t = useTranslations("PROMOTIONS.buyXgetY");
   const startAt = dayjs(props.buyXgetY?.start_at);
   const endAt = dayjs(props.buyXgetY?.end_at);
   const isInProgress = dayjs().isBetween(startAt, endAt);
@@ -123,14 +125,14 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
         setOfferProducts(onAddProduct);
       }
 
-      enqueueSnackbar("เพิ่มรายการสินค้าเรียบร้อยแล้ว!", {
+      enqueueSnackbar(t("add_product_dialog.success"), {
         variant: "success",
       });
       setModalNeedOpen(false);
       setModalOfferOpen(false);
     } catch (error) {
       console.error("error adding product to promotion offer: ", error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+      enqueueSnackbar(t("add_product_dialog.error"), {
         variant: "error",
       });
     } finally {
@@ -180,7 +182,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
               <CardHeader
-                title="สินค้าที่ต้องการ"
+                title={t("cards.need_products.title")}
                 action={
                   <Button
                     startIcon={<AddTwoTone />}
@@ -189,7 +191,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     onClick={() => setModalNeedOpen(true)}
                     disabled={disabled || isStarted}
                   >
-                    เพิ่ม
+                    {t("cards.need_products.add")}
                   </Button>
                 }
               />
@@ -204,8 +206,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     />
                     <FormHelperText>
                       {errors.needProducts?.message ||
-                        (isStarted &&
-                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขสินค้าที่ต้องการได้")}
+                        (isStarted && t("cards.need_products.started_helper"))}
                     </FormHelperText>
                   </FormControl>
                 </Stack>
@@ -215,7 +216,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
               <CardHeader
-                title="ข้อเสนอ (ของที่จะได้)"
+                title={t("cards.offer_products.title")}
                 action={
                   <Button
                     startIcon={<AddTwoTone />}
@@ -224,7 +225,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     onClick={() => setModalOfferOpen(true)}
                     disabled={disabled || isStarted}
                   >
-                    เพิ่ม
+                    {t("cards.offer_products.add")}
                   </Button>
                 }
               />
@@ -239,8 +240,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     />
                     <FormHelperText>
                       {errors.offerProducts?.message ||
-                        (isStarted &&
-                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขสินค้าข้อเสนอได้")}
+                        (isStarted && t("cards.offer_products.started_helper"))}
                     </FormHelperText>
                   </FormControl>
                 </Stack>
@@ -249,12 +249,12 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           </Grid>
         </Grid>
         <Card>
-          <CardHeader title="หมายเหตุ" />
+          <CardHeader title={t("cards.note.title")} />
           <Divider />
           <CardContent>
             <Stack spacing={2}>
               <TextField
-                label="หมายเหตุ (Note)"
+                label={t("cards.note.label")}
                 variant="outlined"
                 fullWidth
                 multiline
@@ -268,7 +268,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader title="อื่นๆ" />
+          <CardHeader title={t("cards.others.title")} />
           <Divider />
           <CardContent>
             <Stack
@@ -279,18 +279,24 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
             >
               <Stack spacing={2} direction={"row"}>
                 <FormControl>
-                  <InputLabel id="status">สถานะ</InputLabel>
+                  <InputLabel id="status">
+                    {t("cards.others.status")}
+                  </InputLabel>
                   <Select
                     labelId="status"
-                    label="สถานะ"
+                    label={t("cards.others.status")}
                     value={status}
                     disabled={disabled || isStarted}
                     onChange={(e) =>
                       setStatus(e.target.value as PromotionStatus)
                     }
                   >
-                    <MenuItem value="scheduled">กำหนดเวลาเผยแพร่</MenuItem>
-                    <MenuItem value="immediate">เผยแพร่ทันที</MenuItem>
+                    <MenuItem value="scheduled">
+                      {t("cards.others.status_options.scheduled")}
+                    </MenuItem>
+                    <MenuItem value="immediate">
+                      {t("cards.others.status_options.immediate")}
+                    </MenuItem>
                   </Select>
                 </FormControl>
                 {status === PromotionStatus.SCHEDULED && (
@@ -298,7 +304,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     <DatePicker
                       name="start"
                       format="DD/MM/YYYY"
-                      label="วันเริ่มต้น"
+                      label={t("cards.others.start_date")}
                       value={dayjs(getValues().start_at)}
                       disabled={disabled || isStarted}
                       onChange={(date) =>
@@ -309,7 +315,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                     <FormHelperText>
                       {errors.start_at?.message ||
                         (isStarted &&
-                          "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขวันเริ่มต้นได้")}
+                          t("cards.others.started_start_date_helper"))}
                     </FormHelperText>
                   </FormControl>
                 )}
@@ -317,7 +323,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                   <DatePicker
                     name="end"
                     format="DD/MM/YYYY"
-                    label="สิ้นสุด"
+                    label={t("cards.others.end_date")}
                     minDate={dayjs(getValues().start_at).add(1, "day")}
                     value={dayjs(getValues().end_at)}
                     disabled={disabled || isEnded}
@@ -328,8 +334,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                   />
                   <FormHelperText>
                     {errors.end_at?.message ||
-                      (isEnded &&
-                        "ข้อเสนอนี้สิ้นสุดแล้ว ไม่สามารถแก้ไขวันสิ้นสุดได้")}
+                      (isEnded && t("cards.others.ended_end_date_helper"))}
                   </FormHelperText>
                 </FormControl>
               </Stack>
@@ -341,7 +346,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
                   type="submit"
                   disabled={disabled}
                 >
-                  บันทึกข้อเสนอ
+                  {t("submit")}
                 </Button>
               </div>
             </Stack>
@@ -350,13 +355,13 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
       </Stack>
 
       <AddProductDialog
-        title="เพิ่มสินค้าที่ต้องการ"
+        title={t("add_product_dialog.title_need")}
         onSubmit={onAddProductNeed}
         open={modalNeedOpen}
         onClose={() => setModalNeedOpen(false)}
       />
       <AddProductDialog
-        title="เพิ่มสินค้าข้อเสนอ"
+        title={t("add_product_dialog.title_offer")}
         onSubmit={onAddProductOffer}
         open={modalOfferOpen}
         onClose={() => setModalOfferOpen(false)}

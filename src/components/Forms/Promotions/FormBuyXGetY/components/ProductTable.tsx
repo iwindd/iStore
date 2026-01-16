@@ -9,6 +9,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 export interface ProductTableRow {
   product: FindProductByIdResult;
@@ -29,6 +30,7 @@ const ProductTable = ({
   setProducts,
   disabled,
 }: ProductTableProps) => {
+  const t = useTranslations("PROMOTIONS.buyXgetY.table");
   const onRemoveProduct = (productId: number) => {
     setProducts((prev) => prev.filter((item) => item.product.id !== productId));
   };
@@ -37,10 +39,10 @@ const ProductTable = ({
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>รหัส</TableCell>
-          <TableCell>สินค้า</TableCell>
-          <TableCell align="right">จำนวน</TableCell>
-          <TableCell align="right">ลบ</TableCell>
+          <TableCell>{t("serial")}</TableCell>
+          <TableCell>{t("product")}</TableCell>
+          <TableCell align="right">{t("quantity")}</TableCell>
+          <TableCell align="right">{t("remove")}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -48,7 +50,7 @@ const ProductTable = ({
           <TableRow>
             <TableCell colSpan={4}>
               <Typography color="text.secondary" align="center">
-                ยังไม่มีรายการ
+                {t("empty")}
               </Typography>
             </TableCell>
           </TableRow>

@@ -15,6 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -31,6 +32,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const t = useTranslations("PROMOTIONS.buyXgetY.add_product_dialog");
   const {
     register,
     formState: { errors },
@@ -49,7 +51,9 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
       slotProps={{
         paper: {
           component: "form",
-          onSubmit: handleSubmit(onSubmit),
+          onSubmit: (e: React.FormEvent) => {
+            void handleSubmit(onSubmit)(e);
+          },
         },
       }}
     >
@@ -64,7 +68,7 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
             }}
           />
           <TextField
-            label="จำนวน"
+            label={t("quantity")}
             type="number"
             error={errors.quantity != undefined}
             helperText={errors.quantity?.message}
@@ -76,14 +80,14 @@ const AddProductDialog: React.FC<AddProductDialogProps> = ({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>ยกเลิก</Button>
+        <Button onClick={onClose}>{t("cancel")}</Button>
         <Button
           variant="contained"
           type="submit"
           color="success"
           endIcon={<ChevronRight />}
         >
-          เพิ่มสินค้านี้
+          {t("submit")}
         </Button>
       </DialogActions>
     </Dialog>

@@ -6,11 +6,13 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { getPath } from "@/router";
 import { AddPromotionOfferValues } from "@/schema/Promotion/Offer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
 const PromotionOfferCreatePage = () => {
+  const t = useTranslations("PROMOTIONS.buyXgetY");
   const { setBackdrop } = useInterface();
   const [isCreated, setIsCreated] = useState(false);
   const router = useRouter();
@@ -22,9 +24,9 @@ const PromotionOfferCreatePage = () => {
     onMutate: () => {
       setBackdrop(true);
     },
-    onSuccess: async (resp) => {
+    onSuccess: async () => {
       setIsCreated(true);
-      enqueueSnackbar("บันทึกข้อเสนอเรียบร้อยแล้ว!", { variant: "success" });
+      enqueueSnackbar(t("save_success"), { variant: "success" });
       await queryClient.refetchQueries({
         queryKey: ["datatable:promotions"],
         type: "active",
@@ -33,7 +35,7 @@ const PromotionOfferCreatePage = () => {
     },
     onError: (error) => {
       console.log("error creating promotion offer", error);
-      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+      enqueueSnackbar(t("save_error"), {
         variant: "error",
       });
     },
@@ -45,7 +47,7 @@ const PromotionOfferCreatePage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>สร้างข้อเสนอ ซื้อ X แถม Y</App.Header.Title>
+        <App.Header.Title>{t("create_title")}</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBuyXGetY

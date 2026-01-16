@@ -18,6 +18,7 @@ import { Button } from "@mui/material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 import CreatePromotionModal from "./components/CreatePromotionModal";
@@ -33,11 +34,12 @@ const MAPPING_PRODUCT_LABEL = (
 };
 
 const PromotionPage = () => {
+  const t = useTranslations("PROMOTIONS");
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const disableConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะปิดใช้งานโปรโมชั่นหรือไม่",
+    title: t("datatable.disable_confirmation.title"),
+    text: t("datatable.disable_confirmation.text"),
     confirmProps: {
       color: "warning",
       startIcon: <StopTwoTone />,
@@ -50,12 +52,12 @@ const PromotionPage = () => {
           queryKey: ["promotions"],
           type: "active",
         });
-        enqueueSnackbar("ปิดใช้งานโปรโมชั่นเรียบร้อยแล้ว!", {
+        enqueueSnackbar(t("datatable.disable_confirmation.success"), {
           variant: "success",
         });
       } catch (error) {
         console.error("Error disabling promotion offer:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        enqueueSnackbar(t("datatable.disable_confirmation.error"), {
           variant: "error",
         });
       }
@@ -89,12 +91,12 @@ const PromotionPage = () => {
             shortYear: true,
             withTime: false,
           })}`,
-        headerName: "ระยะเวลาโปรโมชั่น",
+        headerName: t("datatable.headers.duration"),
       },
 
       {
         field: "event.note",
-        headerName: "หมายเหตุ",
+        headerName: t("datatable.headers.note"),
         flex: 1,
         renderCell: ({ row }) => {
           return row.event.note || "-";
@@ -104,37 +106,39 @@ const PromotionPage = () => {
         flex: 2,
         field: "buyItems._count",
         renderCell: ({ row }) => MAPPING_PRODUCT_LABEL(row.buyItems),
-        headerName: "จำนวนสินค้าที่ซื้อ",
+        headerName: t("datatable.headers.buy_count"),
       },
       {
         flex: 2,
         field: "getItems._count",
         renderCell: ({ row }) => MAPPING_PRODUCT_LABEL(row.getItems),
-        headerName: "จำนวนสินค้าที่ได้รับ",
+        headerName: t("datatable.headers.get_count"),
       },
       {
         field: "event.creator.user.name",
-        renderCell: ({ row }) => row.event.creator?.user.name || "ไม่ระบุ",
-        headerName: "ผู้สร้างโปรโมชั่น",
+        renderCell: ({ row }) =>
+          row.event.creator?.user.name ||
+          t("datatable.placeholders.not_specified"),
+        headerName: t("datatable.headers.creator"),
         flex: 1,
       },
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("datatable.headers.actions"),
         flex: 0,
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
             to={`${getPath("promotions.buyXgetY", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
-            label="ดูรายละเอียด"
+            label={t("datatable.actions.view")}
             showInMenu
           />,
           <GridActionsCellItem
             key="disable"
             icon={<StopTwoTone />}
-            label="ปิดใช้งานโปรโมชั่น"
+            label={t("datatable.actions.disable")}
             onClick={menu.disable(row)}
             showInMenu
             disabled={
@@ -150,7 +154,7 @@ const PromotionPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>โปรโมชั่น</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
           <Button
             startIcon={<AddTwoTone />}
@@ -158,7 +162,7 @@ const PromotionPage = () => {
             size="small"
             onClick={() => setIsOpen(true)}
           >
-            เพิ่มรายการ
+            {t("add_button")}
           </Button>
         </App.Header.Actions>
       </App.Header>

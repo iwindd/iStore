@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -23,18 +24,17 @@ const CreatePromotionModal = ({
   isOpen: boolean;
   handleClose: () => void;
 }) => {
+  const t = useTranslations("PROMOTIONS.create_modal");
   const [promotionType, setPromotionType] = useState<string>("offer");
   const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    switch (promotionType) {
-      case "offer":
-        return router.push(getPath("promotions.create.buyXgetY"));
-      default:
-        console.log("Unknown promotion type");
+    if (promotionType === "offer") {
+      return router.push(getPath("promotions.create.buyXgetY"));
     }
+    console.log("Unknown promotion type");
   };
 
   const onClose = handleClose;
@@ -52,19 +52,19 @@ const CreatePromotionModal = ({
         },
       }}
     >
-      <DialogTitle>สร้างโปรโมชั่นใหม่</DialogTitle>
+      <DialogTitle>{t("title")}</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
           <Stack flexDirection={"column"} spacing={1}>
             <FormControl>
-              <InputLabel id="promotion-type">ประเภทโปรโมชั่น</InputLabel>
+              <InputLabel id="promotion-type">{t("type_label")}</InputLabel>
               <Select
                 value={promotionType}
                 labelId="promotion-type"
-                label="ประเภทโปรโมชั่น"
+                label={t("type_label")}
                 onChange={(e) => setPromotionType(e.target.value)}
               >
-                <MenuItem value="offer">ซื้อ X แถม Y</MenuItem>
+                <MenuItem value="offer">{t("types.buyXgetY")}</MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -72,7 +72,7 @@ const CreatePromotionModal = ({
       </DialogContent>
       <DialogActions>
         <Button color="secondary" type="button" onClick={onClose}>
-          ปิด
+          {t("close")}
         </Button>
         <Button
           variant="contained"
@@ -80,7 +80,7 @@ const CreatePromotionModal = ({
           endIcon={<ArrowForwardIosTwoTone />}
           type="submit"
         >
-          สร้างโปรโมชั่น
+          {t("submit")}
         </Button>
       </DialogActions>
     </Dialog>
