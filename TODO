@@ -1,19 +1,16 @@
 Borrow:
-  ☐ ปรับปรุงระบบ Borrow -> Consignment 
-  ☐ รวมไปในหน้าขายสินค้า
-  ☐ สร้างหน้า Consignments ใหม่
+  ✔ ปรับปรุงระบบ Borrow -> Consignment @done(26-01-16 08:12)
+  ✔ รวมไปในหน้าขายสินค้า @done(26-01-16 08:12)
+  ✔ สร้างหน้า Consignments ใหม่ @done(26-01-16 08:12)
 
 Overstocks:
-  ☐ ปรับปรุงระบบ Overstocks -> PreOrder
-  ☐ อนุญาตให้ Pre-order จากสินค้าโดยตรงไม่พึ่งพา Category
-  ☐ รวมไปในหน้าขายสินค้า
+  ✔ ปรับปรุงระบบ Overstocks -> PreOrder @done(26-01-16 08:12)
+  ✔ อนุญาตให้ Pre-order จากสินค้าโดยตรงไม่พึ่งพา Category @done(26-01-16 08:12)
+  ✔ รวมไปในหน้าขายสินค้า @done(26-01-16 08:12)
 
 Categories:
-  ☐ สร้างหมวดหมู่ได้จาก Selector
-  ☐ ย้าย Categories ไปยัง Group Store
-
-ETC Group:
-  ☐ เปลี่ยนจาก ETC Group เป็น การขาย
+  ✔ สร้างหมวดหมู่ได้จาก Selector @done(26-01-16 08:12)
+  ✔ ย้าย Categories ไปยัง ETC @done(26-01-16 08:12)
 
 UX/UI:
   ☐ Redesign theme modern
