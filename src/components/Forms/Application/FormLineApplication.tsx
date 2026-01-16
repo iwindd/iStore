@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import { LineApplication } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 
 type FormLineApplicationProps = {
@@ -32,6 +33,7 @@ const FormLineApplication = ({
   onSubmit,
   application,
 }: FormLineApplicationProps) => {
+  const t = useTranslations("APPLICATIONS.form");
   const {
     register,
     handleSubmit,
@@ -65,11 +67,11 @@ const FormLineApplication = ({
       spacing={1}
     >
       <Card>
-        <CardHeader title="ข้อมูลทั่วไป" />
+        <CardHeader title={t("general_title")} />
         <CardContent>
           <TextField
             {...register("name")}
-            label="ชื่อแอพพลิเคชั่น"
+            label={t("name_label")}
             fullWidth
             error={!!errors.name}
             helperText={errors.name?.message}
@@ -78,7 +80,7 @@ const FormLineApplication = ({
         </CardContent>
       </Card>
       <Card>
-        <CardHeader title="ข้อมูลแอพพลิเคชั่น" />
+        <CardHeader title={t("app_data_title")} />
         <CardContent>
           <Stack spacing={1}>
             <TextField
@@ -101,7 +103,7 @@ const FormLineApplication = ({
         </CardContent>
       </Card>
       <Card>
-        <CardHeader title="อื่นๆ" />
+        <CardHeader title={t("others_title")} />
         <CardContent>
           <Stack>
             <FormControlLabel
@@ -112,7 +114,7 @@ const FormLineApplication = ({
                   disabled={isSubmitting}
                 />
               }
-              label="ใช้สำหรับ แชทบอท"
+              label={t("use_chatbot")}
             />
             <FormControlLabel
               control={
@@ -122,7 +124,7 @@ const FormLineApplication = ({
                   disabled={isSubmitting}
                 />
               }
-              label="ใช้สำหรับ ประชาสัมพันธ์"
+              label={t("use_broadcast")}
             />
           </Stack>
         </CardContent>
@@ -135,7 +137,7 @@ const FormLineApplication = ({
           alignItems={"center"}
         >
           <Typography variant="subtitle1" color="secondary">
-            จัดการแอพพลิเคชั่น
+            {t("footer_label")}
           </Typography>
           <Button
             variant="contained"
@@ -143,7 +145,7 @@ const FormLineApplication = ({
             type="submit"
             disabled={isSubmitting}
           >
-            บันทึก
+            {t("save_button")}
           </Button>
         </AppFooter>
       ) : null}

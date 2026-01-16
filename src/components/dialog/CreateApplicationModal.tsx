@@ -13,6 +13,7 @@ import {
   Select,
   Stack,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -23,17 +24,17 @@ const CreateApplicationModal = ({
   isOpen: boolean;
   handleClose: () => void;
 }) => {
+  const t = useTranslations("APPLICATIONS.create_modal");
   const [applicationType, setApplicationType] = useState<string>("line");
   const router = useRouter();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    switch (applicationType) {
-      case "line":
-        return router.push(getPath("applications.create.line"));
-      default:
-        console.log("Unknown application type");
+    if (applicationType === "line") {
+      router.push(getPath("applications.create.line"));
+    } else {
+      console.log("Unknown application type");
     }
   };
 
@@ -52,16 +53,16 @@ const CreateApplicationModal = ({
         },
       }}
     >
-      <DialogTitle>สร้างแอพพลิเคชั่นใหม่</DialogTitle>
+      <DialogTitle>{t("title")}</DialogTitle>
       <DialogContent>
         <Stack sx={{ mt: 2 }}>
           <Stack flexDirection={"column"} spacing={1}>
             <FormControl>
-              <InputLabel id="application-type">ประเภทแอพพลิเคชั่น</InputLabel>
+              <InputLabel id="application-type">{t("type_label")}</InputLabel>
               <Select
                 value={applicationType}
                 labelId="application-type"
-                label="ประเภทแอพพลิเคชั่น"
+                label={t("type_label")}
                 onChange={(e) => setApplicationType(e.target.value)}
               >
                 <MenuItem value="line">Line</MenuItem>
@@ -72,7 +73,7 @@ const CreateApplicationModal = ({
       </DialogContent>
       <DialogActions>
         <Button color="secondary" type="button" onClick={onClose}>
-          ปิด
+          {t("close")}
         </Button>
         <Button
           variant="contained"
@@ -80,7 +81,7 @@ const CreateApplicationModal = ({
           endIcon={<ArrowForwardIosTwoTone />}
           type="submit"
         >
-          สร้างแอพพลิเคชั่น
+          {t("submit")}
         </Button>
       </DialogActions>
     </Dialog>

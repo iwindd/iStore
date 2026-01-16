@@ -5,10 +5,12 @@ import FormLineApplication from "@/components/Forms/Application/FormLineApplicat
 import App, { Wrapper } from "@/layouts/App";
 import { getPath } from "@/router";
 import { LineApplicationSchemaType } from "@/schema/Application";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
 const LineApplicationCreatePage = () => {
+  const t = useTranslations("APPLICATIONS");
   const router = useRouter();
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
@@ -22,10 +24,7 @@ const LineApplicationCreatePage = () => {
         enqueueSnackbar(result.message, { variant: "error" });
       }
     } catch (error) {
-      enqueueSnackbar(
-        "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ กรุณาลองใหม่อีกครั้งภายหลัง!",
-        { variant: "error" }
-      );
+      enqueueSnackbar(t("messages.unknown_error"), { variant: "error" });
       console.error(error);
     }
   };
@@ -33,7 +32,7 @@ const LineApplicationCreatePage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>ไลน์แอพพลิเคชั่น</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormLineApplication onSubmit={handleSubmit} />

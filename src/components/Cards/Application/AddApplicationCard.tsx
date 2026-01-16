@@ -1,11 +1,14 @@
 import { AddTwoTone } from "@mui/icons-material";
 import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 type AddApplicationCardProps = {
   onClick: () => void;
 };
 
 const AddApplicationCard = ({ onClick }: AddApplicationCardProps) => {
+  const t = useTranslations("APPLICATIONS");
+
   return (
     <Card
       sx={{
@@ -36,7 +39,7 @@ const AddApplicationCard = ({ onClick }: AddApplicationCardProps) => {
         >
           <AddTwoTone fontSize="large" color="disabled" />
           <Typography color="text.secondary" variant="button">
-            Add Application
+            {t("add_card_label")}
           </Typography>
         </CardContent>
       </CardActionArea>

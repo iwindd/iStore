@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { LineApplication } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 
 type LineCardDisplayProps = {
@@ -18,6 +19,8 @@ type LineCardDisplayProps = {
 };
 
 const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
+  const t = useTranslations("APPLICATIONS");
+
   return (
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
@@ -52,7 +55,7 @@ const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
             {application.useAsChatbot && (
               <Chip
                 icon={<ChatBubbleTwoTone />}
-                label="Chatbot"
+                label={t("labels.chatbot")}
                 size="small"
                 color="primary"
                 variant="outlined"
@@ -61,7 +64,7 @@ const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
             {application.useAsBroadcast && (
               <Chip
                 icon={<RssFeedTwoTone />}
-                label="Broadcast"
+                label={t("labels.broadcast")}
                 size="small"
                 color="secondary"
                 variant="outlined"
@@ -69,7 +72,7 @@ const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
             )}
             {!application.useAsChatbot && !application.useAsBroadcast && (
               <Typography variant="body2" color="text.secondary">
-                Not active
+                {t("labels.not_active")}
               </Typography>
             )}
           </Stack>

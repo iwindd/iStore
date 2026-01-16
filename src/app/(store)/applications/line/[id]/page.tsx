@@ -3,10 +3,12 @@ import { updateLineApplication } from "@/actions/application/updateLineApplicati
 import FormLineApplication from "@/components/Forms/Application/FormLineApplication";
 import App, { Wrapper } from "@/layouts/App";
 import { LineApplicationSchemaType } from "@/schema/Application";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import { useApplication } from "./LineApplicationContext";
 
 const ApplicationDetailPage = () => {
+  const t = useTranslations("APPLICATIONS");
   const { application } = useApplication();
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
@@ -20,7 +22,7 @@ const ApplicationDetailPage = () => {
         return false;
       }
     } catch (error) {
-      enqueueSnackbar("เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ", { variant: "error" });
+      enqueueSnackbar(t("messages.update_error"), { variant: "error" });
       console.error("Error updating application:", error);
     }
   };

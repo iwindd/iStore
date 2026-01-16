@@ -8,6 +8,7 @@ import App, { Wrapper } from "@/layouts/App";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button, Grid } from "@mui/material";
 import { LineApplication } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 type ApplicationClientPageProps = {
   applications: LineApplication[];
@@ -16,12 +17,13 @@ type ApplicationClientPageProps = {
 const ApplicationClientPage = ({
   applications,
 }: ApplicationClientPageProps) => {
+  const t = useTranslations("APPLICATIONS");
   const applicationDialog = useDialog();
 
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>แอพพลิเคชั่น</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
           <Button
             startIcon={<AddTwoTone />}
@@ -29,7 +31,7 @@ const ApplicationClientPage = ({
             size="small"
             onClick={applicationDialog.handleOpen}
           >
-            สร้างแอพพลิเคชั่น
+            {t("create_button")}
           </Button>
         </App.Header.Actions>
       </App.Header>
