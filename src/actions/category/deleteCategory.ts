@@ -1,13 +1,9 @@
 "use server";
 import { CategoryPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { Category } from "@prisma/client";
 
-const DeleteCategory = async (
-  id: number
-): Promise<ActionResponse<Category>> => {
+const deleteCategory = async (id: number) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -15,16 +11,17 @@ const DeleteCategory = async (
       where: {
         id: id,
         store_id: user.store,
-        creator_id: !user.hasPermission(CategoryPermissionEnum.DELETE)
-          ? user.employeeId
-          : undefined,
+        creator_id: user.hasPermission(CategoryPermissionEnum.DELETE)
+          ? undefined
+          : user.employeeId,
       },
     });
 
     return { success: true, data: data };
   } catch (error) {
-    return ActionError(error) as ActionResponse<Category>;
+    console.error(error);
+    return { success: false };
   }
 };
 
-export default DeleteCategory;
+export default deleteCategory;

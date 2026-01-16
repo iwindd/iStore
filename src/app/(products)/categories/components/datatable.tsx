@@ -1,6 +1,6 @@
 "use client";
-import DeleteCategory from "@/actions/category/delete";
-import GetCategories from "@/actions/category/get";
+import deleteCategory from "@/actions/category/deleteCategory";
+import getCategoryDatatable from "@/actions/category/getCategoryDatatable";
 import Datatable from "@/components/Datatable";
 import { CategoryPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,10 +10,10 @@ import { date, number, text } from "@/libs/formatter";
 import { DeleteTwoTone, EditTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Category as OriginalCategory } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSnackbar } from "notistack";
 import React from "react";
-import { CategoryFormDialog } from "./add-controller";
+import { CategoryFormDialog } from "./CategoryFormDialog";
 
 interface Category extends OriginalCategory {
   _count: {
@@ -36,6 +36,24 @@ const CategoryDatatable = () => {
       Category.creator_id === user?.userStoreId,
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => await deleteCategory(id),
+    onSuccess: async () => {
+      enqueueSnackbar("ลบรายการประเภทสินค้าสำเร็จแล้ว!", {
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["categories"],
+        type: "active",
+      });
+    },
+    onError: () => {
+      enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        variant: "error",
+      });
+    },
+  });
+
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
     text: "คุณต้องการที่จะลบประเภทสินค้าหรือไม่",
@@ -43,42 +61,32 @@ const CategoryDatatable = () => {
       color: "error",
       startIcon: <DeleteTwoTone />,
     },
-    onConfirm: async (id: number) => {
-      try {
-        const resp = await DeleteCategory(id);
-
-        if (!resp.success) throw Error("error");
-        enqueueSnackbar("ลบรายการประเภทสินค้าสำเร็จแล้ว!", {
-          variant: "success",
-        });
-        await queryClient.refetchQueries({
-          queryKey: ["categories"],
-          type: "active",
-        });
-      } catch (error) {
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
-          variant: "error",
-        });
-      }
-    },
+    onConfirm: async (id: number) => deleteMutation.mutate(id),
   });
 
-  const menu = {
-    edit: React.useCallback(
-      (category: Category) => () => {
-        setCategory(category);
-        editDialog.handleOpen();
-      },
-      [setCategory, editDialog]
-    ),
-    delete: React.useCallback(
-      (category: Category) => () => {
-        confirmation.with(category.id);
-        confirmation.handleOpen();
-      },
-      [confirmation]
-    ),
-  };
+  const editAction = React.useCallback(
+    (category: Category) => () => {
+      setCategory(category);
+      editDialog.handleOpen();
+    },
+    [setCategory, editDialog]
+  );
+
+  const deleteAction = React.useCallback(
+    (category: Category) => () => {
+      confirmation.with(category.id);
+      confirmation.handleOpen();
+    },
+    [confirmation]
+  );
+
+  const menu = React.useMemo(
+    () => ({
+      edit: editAction,
+      delete: deleteAction,
+    }),
+    [editAction, deleteAction]
+  );
 
   const columns = (): GridColDef[] => {
     return [
@@ -104,14 +112,7 @@ const CategoryDatatable = () => {
         flex: 3,
         editable: false,
       },
-      {
-        field: "overstock",
-        sortable: false,
-        headerName: "การเบิก",
-        flex: 2,
-        editable: false,
-        renderCell: ({ value }) => (value ? "อณุญาต" : "ไม่อนุญาต"),
-      },
+
       {
         field: "_count",
         sortable: false,
@@ -151,7 +152,7 @@ const CategoryDatatable = () => {
       <Datatable
         name={"categories"}
         columns={columns()}
-        fetch={GetCategories}
+        fetch={getCategoryDatatable}
         height={700}
       />
 

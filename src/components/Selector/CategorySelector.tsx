@@ -1,12 +1,14 @@
 "use client";
-import CreateCategory from "@/actions/category/create";
 import findCategory from "@/actions/category/find";
 import SearchCategories, { SearchCategory } from "@/actions/category/search";
+import upsertCategory from "@/actions/category/upsertCategory";
+import { useQueryClient } from "@tanstack/react-query";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
 type CategorySelectorProps = BaseSelectorProps<SearchCategory>;
 
 const CategorySelector = (props_: CategorySelectorProps) => {
+  const queryClient = useQueryClient();
   const props = {
     ...props_,
     label: props_.label || "กรุณาเลือกประเภทสินค้า",
@@ -37,14 +39,20 @@ const CategorySelector = (props_: CategorySelectorProps) => {
         </>
       )}
       onCreate={async (label) => {
-        const resp = await CreateCategory({
+        const resp = await upsertCategory({
           label,
-          active: true,
-          overstock: false,
+          active: false,
         });
+
         if (resp.success && resp.data) {
+          queryClient.invalidateQueries({
+            queryKey: ["categories"],
+            type: "active",
+          });
+
           return resp.data;
         }
+
         return null;
       }}
       {...props}

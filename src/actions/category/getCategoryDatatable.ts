@@ -1,15 +1,11 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
 import { CategoryPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { filter, order } from "@/libs/formatter";
 import { getUser } from "@/libs/session";
-import { Category } from "@prisma/client";
 
-const GetCategories = async (
-  table: TableFetch
-): Promise<ActionResponse<Category[]>> => {
+const getCategoryDatatable = async (table: TableFetch) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -54,8 +50,13 @@ const GetCategories = async (
       total: categories[1],
     };
   } catch (error) {
-    return ActionError(error) as ActionResponse<Category[]>;
+    console.error(error);
+    return {
+      success: false,
+      data: [],
+      total: 0,
+    };
   }
 };
 
-export default GetCategories;
+export default getCategoryDatatable;
