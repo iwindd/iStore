@@ -4,8 +4,10 @@ import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { getPath } from "@/router";
 import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 const Breadcrumb = () => {
+  const t = useTranslations("ROUTES");
   const activeRouteTrail = useActiveRouteTrail().filter(
     (route) => !route.disabledBreadcrumb
   );
@@ -16,7 +18,7 @@ const Breadcrumb = () => {
 
     return isActive ? (
       <Typography color="text.primary" key={route.name}>
-        {route.label}
+        {t(route.label)}
       </Typography>
     ) : (
       <Link
@@ -25,7 +27,7 @@ const Breadcrumb = () => {
         href={getPath(route.name, params as Record<string, any>)}
         key={route.name}
       >
-        {route.label}
+        {t(route.label)}
       </Link>
     );
   });
@@ -35,7 +37,7 @@ const Breadcrumb = () => {
   return (
     <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
       <Link underline="hover" color="inherit" href={getPath("overview")}>
-        ภาพรวม
+        {t("overview.label")}
       </Link>
       {items}
     </Breadcrumbs>

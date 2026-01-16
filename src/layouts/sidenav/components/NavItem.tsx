@@ -8,11 +8,13 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import RouterLink from "next/link";
 
 function NavItem(route: Readonly<Route>): React.JSX.Element {
   const activeRouteTrail = useActiveRouteTrail();
   const isActive = activeRouteTrail.some((item) => item.name === route.name);
+  const t = useTranslations("ROUTES");
 
   return (
     <ListItem
@@ -80,7 +82,7 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
         )}
 
         <ListItemText
-          primary={route.label}
+          primary={t(route.label)}
           slotProps={{
             primary: {
               sx: {

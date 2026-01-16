@@ -1,1 +1,115 @@
-{}
+{
+  "ROUTES": {
+    "overview": {
+      "label": "ภาพรวม"
+    },
+    "dashboard": {
+      "label": "ภาพรวม",
+      "report": {
+        "label": "รายงาน"
+      }
+    },
+    "cashier": {
+      "label": "ขายสินค้า"
+    },
+    "products": {
+      "label": "สินค้า",
+      "product": {
+        "label": "ข้อมูลสินค้า",
+        "information": {
+          "label": "ข้อมูลสินค้า"
+        },
+        "stock": {
+          "label": "สต็อก"
+        },
+        "history": {
+          "label": "ประวัติการขาย"
+        }
+      }
+    },
+    "categories": {
+      "label": "หมวดหมู่"
+    },
+    "stocks": {
+      "label": "จัดการสต๊อก",
+      "create": {
+        "label": "สร้างรายการจัดการสต๊อก"
+      },
+      "stock": {
+        "label": "รายละเอียดการจัดการสต๊อก"
+      }
+    },
+    "histories": {
+      "label": "ประวัติการขาย",
+      "history": {
+        "label": "รายละเอียดประวัติการขาย"
+      }
+    },
+    "account": {
+      "label": "บัญชีของฉัน"
+    },
+    "roles": {
+      "label": "ตำแหน่ง"
+    },
+    "employees": {
+      "label": "พนักงาน"
+    },
+    "store": {
+      "label": "ร้านค้า"
+    },
+    "broadcasts": {
+      "label": "ประชาสัมพันธ์",
+      "broadcast": {
+        "label": "รายละเอียดประชาสัมพันธ์",
+        "edit": {
+          "label": "แก้ไข"
+        }
+      },
+      "create": {
+        "label": "สร้างใหม่"
+      }
+    },
+    "promotions": {
+      "label": "โปรโมชั่น",
+      "create": {
+        "label": "สร้างโปรโมชั่น",
+        "buyXgetY": {
+          "label": "สร้างโปรโมชั่น ซื้อ X ได้ Y"
+        }
+      },
+      "buyXgetY": {
+        "label": "รายละเอียดโปรโมชั่น"
+      }
+    },
+    "applications": {
+      "label": "แอพพลิเคชั่น",
+      "create": {
+        "label": "สร้างแอพพลิเคชั่น",
+        "line": {
+          "label": "สร้างแอพพลิเคชั่น Line"
+        }
+      },
+      "line": {
+        "label": "รายละเอียดแอพพลิเคชั่น Line"
+      }
+    },
+    "auth": {
+      "label": "ยืนยันตัวตน",
+      "signin": {
+        "label": "เข้าสู่ระบบ"
+      },
+      "signup": {
+        "label": "สมัครสมาชิก"
+      }
+    },
+    "preorders": {
+      "label": "พรีออเดอร์"
+    },
+    "consignments": {
+      "label": "ฝากขาย",
+      "consignment": {
+        "label": "รายละเอียดการฝากขาย"
+      }
+    }
+  }
+}

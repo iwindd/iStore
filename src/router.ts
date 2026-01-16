@@ -8,7 +8,6 @@ import {
   LocalOffer,
   Login,
   Person,
-  ReceiptLong,
   RotateRight,
   Settings,
   SettingsApplications,
@@ -21,19 +20,19 @@ import { buildRouteUtility, ROUTER } from "./libs/route/route";
 const ROUTES = ROUTER({
   overview: {
     path: "/",
-    label: "ภาพรวม",
+    label: "overview.label",
     icon: Store,
     disabledBreadcrumb: true,
     children: {
       dashboard: {
         path: "/dashboard",
-        label: "ภาพรวม",
+        label: "dashboard.label",
         icon: Store,
         disabledBreadcrumb: true,
         children: {
           report: {
             path: "/dashboard/report",
-            label: "รายงาน",
+            label: "dashboard.report.label",
           },
         },
       },
@@ -41,29 +40,29 @@ const ROUTES = ROUTER({
   },
   cashier: {
     path: "/cashier",
-    label: "ขายสินค้า",
+    label: "cashier.label",
     icon: ShoppingCart,
   },
   products: {
     path: "/products",
-    label: "สินค้า",
+    label: "products.label",
     icon: Work,
     children: {
       product: {
         path: "/products/:id",
-        label: "ข้อมูลสินค้า",
+        label: "products.product.label",
         children: {
           information: {
             path: "/products/:id/information",
-            label: "ข้อมูลสินค้า",
+            label: "products.product.information.label",
           },
           stock: {
             path: "/products/:id/stock",
-            label: "สต็อก",
+            label: "products.product.stock.label",
           },
           history: {
             path: "/products/:id/history",
-            label: "ประวัติการขาย",
+            label: "products.product.history.label",
           },
         },
       },
@@ -71,165 +70,150 @@ const ROUTES = ROUTER({
   },
   categories: {
     path: "/categories",
-    label: "หมวดหมู่",
+    label: "categories.label",
     icon: Category,
   },
   stocks: {
     path: "/stocks",
-    label: "จัดการสต๊อก",
+    label: "stocks.label",
     icon: AllInbox,
     children: {
       create: {
         path: "/stocks/create",
-        label: "สร้างรายการจัดการสต๊อก",
+        label: "stocks.create.label",
       },
       stock: {
         path: "/stocks/:id",
-        label: "รายละเอียดการจัดการสต๊อก",
-      },
-    },
-  },
-  overstocks: {
-    path: "/overstocks",
-    label: "สินค้าถูกจอง",
-    icon: RotateRight,
-  },
-  purchase: {
-    path: "/purchase",
-    label: "การสั่งซื้อ",
-    icon: ReceiptLong,
-    children: {
-      purchase: {
-        path: "/purchase/:id",
-        label: "รายละเอียดการสั่งซื้อ",
+        label: "stocks.stock.label",
       },
     },
   },
   histories: {
     path: "/histories",
-    label: "ประวัติการขาย",
+    label: "histories.label",
     icon: History,
     children: {
       history: {
         path: "/histories/:id",
-        label: "รายละเอียดการขาย",
+        label: "histories.history.label",
       },
     },
   },
   account: {
     path: "/account",
-    label: "บัญชีของฉัน",
+    label: "account.label",
     icon: Person,
   },
   roles: {
     path: "/roles",
-    label: "ตำแหน่ง",
+    label: "roles.label",
     icon: Badge,
   },
   employees: {
     path: "/employees",
-    label: "พนักงาน",
+    label: "employees.label",
     icon: Group,
   },
   store: {
     path: "/store",
-    label: "ร้านค้า",
+    label: "store.label",
     icon: Settings,
   },
   broadcasts: {
     path: "/broadcasts",
-    label: "ประชาสัมพันธ์",
+    label: "broadcasts.label",
     icon: Campaign,
     children: {
       broadcast: {
         path: "/broadcasts/:id",
-        label: "รายละเอียดประชาสัมพันธ์",
+        label: "broadcasts.broadcast.label",
         children: {
           edit: {
             path: "/broadcasts/:id/edit",
-            label: "แก้ไข",
+            label: "broadcasts.broadcast.edit.label",
           },
         },
       },
       create: {
         path: "/broadcasts/new",
-        label: "สร้างใหม่",
+        label: "broadcasts.create.label",
       },
     },
   },
   promotions: {
     path: "/promotions",
-    label: "โปรโมชั่น",
+    label: "promotions.label",
     icon: LocalOffer,
     children: {
       create: {
         path: "/promotions/create",
-        label: "create",
+        label: "promotions.create.label",
         disabledBreadcrumb: true,
         children: {
           buyXgetY: {
             path: "/promotions/create/buyXgetY",
-            label: "สร้างโปรโมชั่น ซื้อ X ได้ Y",
+            label: "promotions.create.buyXgetY.label",
           },
         },
       },
       buyXgetY: {
         path: "/promotions/buyXgetY/:id",
-        label: "รายละเอียดโปรโมชั่น",
+        label: "promotions.buyXgetY.label",
       },
     },
   },
   applications: {
     path: "/applications",
-    label: "แอพพลิเคชั่น",
+    label: "applications.label",
     icon: SettingsApplications,
     children: {
       create: {
         path: "/applications/create",
-        label: "create",
+        label: "applications.create.label",
+        disabledBreadcrumb: true,
         children: {
           line: {
             path: "/applications/create/line",
-            label: "line",
+            label: "applications.create.line.label",
           },
         },
       },
       line: {
         path: "/applications/line/:id",
-        label: "line",
+        label: "applications.line.label",
       },
     },
   },
   auth: {
     path: "/auth",
-    label: "auth",
+    label: "auth.label",
     icon: Login,
     children: {
       signin: {
         path: "/auth/signin",
-        label: "signin",
+        label: "auth.signin.label",
         icon: Login,
       },
       signup: {
         path: "/auth/signup",
-        label: "signup",
+        label: "auth.signup.label",
         icon: Login,
       },
     },
   },
   preorders: {
     path: "/preorders",
-    label: "พรีออเดอร์",
+    label: "preorders.label",
     icon: RotateRight,
   },
   consignments: {
     path: "/consignments",
-    label: "ฝากขาย",
+    label: "consignments.label",
     icon: AllInbox,
     children: {
       consignment: {
         path: "/consignments/:id",
-        label: "รายละเอียดการฝากขาย",
+        label: "consignments.consignment.label",
       },
     },
   },
