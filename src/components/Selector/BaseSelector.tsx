@@ -15,11 +15,13 @@ import { createFilterOptions } from "@mui/material/Autocomplete";
 import { useQuery } from "@tanstack/react-query";
 import match from "autosuggest-highlight/match";
 import parse from "autosuggest-highlight/parse";
+import { useTranslations } from "next-intl";
 import React, { useEffect } from "react";
 
 export interface BaseSelectorProps<T> {
   label?: string;
   placeholder?: string;
+  noOptionsText?: string;
   fieldProps?: Omit<
     TextFieldProps,
     | "label"
@@ -40,7 +42,6 @@ export interface BaseSelectorProps<T> {
 
 export interface BuildSelectorProps<T> extends BaseSelectorProps<T> {
   id: string;
-  noOptionsText?: string;
   fetchItem(id: number): Promise<T | null>;
   searchItems(query: string): Promise<readonly T[]>;
   getItemLabel(item: T | string): string;
@@ -50,6 +51,7 @@ export interface BuildSelectorProps<T> extends BaseSelectorProps<T> {
 }
 
 const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
+  const t = useTranslations("COMPONENTS.selector");
   const [value, setValue] = React.useState<T | null>(null);
   const [inputValue, setInputValue] = React.useState("");
   const [options, setOptions] = React.useState<readonly T[]>([]);
@@ -140,7 +142,7 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
       autoComplete
       filterSelectedOptions
       value={value}
-      noOptionsText={props.noOptionsText || "ไม่พบข้อมูล"}
+      noOptionsText={props.noOptionsText || t("no_options")}
       readOnly={isBackdrop}
       onChange={(_: any, newValue: any | null) => {
         if (newValue?._is_create_option) {
@@ -174,8 +176,8 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
           fullWidth
           placeholder={
             isLoading || defaultItemLoading
-              ? "กรุณารอสักครู่"
-              : props.placeholder || `ค้นหา${props.label}`
+              ? t("searching")
+              : props.placeholder || `${t("search")}${props.label}`
           }
           error={props.error}
           helperText={props.helperText}
@@ -202,7 +204,7 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
             <li key={key} {...optionProps}>
               <Grid container sx={{ alignItems: "center", width: "100%" }}>
                 <Typography color="primary">
-                  สร้าง "{option._create_label}" ใหม่
+                  {t("create_new", { label: option._create_label })}
                 </Typography>
               </Grid>
             </li>

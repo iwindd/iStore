@@ -7,6 +7,7 @@ import {
   DialogContent,
   TextField,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 const PreOrderDialog = ({
@@ -20,6 +21,7 @@ const PreOrderDialog = ({
   product_id: number;
   defaultValue: number;
 }) => {
+  const t = useTranslations("CASHIER.cart.preorder_dialog");
   const [quantity, setQuantity] = useState("");
   const dispatch = useAppDispatch();
 
@@ -44,7 +46,7 @@ const PreOrderDialog = ({
         <TextField
           autoFocus
           margin="dense"
-          label="จำนวนที่ต้องการพรีออเดอร์"
+          label={t("title")}
           placeholder={defaultValue.toString()}
           fullWidth
           variant="standard"
@@ -59,9 +61,9 @@ const PreOrderDialog = ({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>ยกเลิก</Button>
+        <Button onClick={handleClose}>{t("cancel")}</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">
-          ยืนยัน
+          {t("confirm")}
         </Button>
       </DialogActions>
     </Dialog>

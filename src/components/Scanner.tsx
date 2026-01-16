@@ -1,14 +1,17 @@
 "use client";
 import { KeyboardReturn, QrCodeScanner } from "@mui/icons-material";
 import { Box, TextField, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import React, { useEffect } from "react";
 
 interface ScannerProps {
   onSubmit(serial: string): void;
+  placeholder?: string;
 }
 
 const Scanner = (props: ScannerProps) => {
   const ref = React.useRef<HTMLInputElement | null>(null);
+  const t = useTranslations("COMPONENTS.scanner");
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,7 +33,7 @@ const Scanner = (props: ScannerProps) => {
       <TextField
         autoFocus
         fullWidth
-        placeholder="รหัสสินค้า / สแกนสินค้า..."
+        placeholder={props.placeholder || t("placeholder")}
         variant="outlined"
         inputRef={ref}
         slotProps={{
@@ -59,7 +62,7 @@ const Scanner = (props: ScannerProps) => {
                   fontWeight="bold"
                   color="text.secondary"
                 >
-                  Enter
+                  {t("enter")}
                 </Typography>
               </Box>
             ),

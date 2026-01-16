@@ -9,11 +9,13 @@ import {
 } from "@/reducers/cartReducer";
 import { Button, Divider, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
+import { useTranslations } from "next-intl";
 import React from "react";
 import CartSections from "./components/Cart";
 import CashierTab from "./components/CashierTab";
 
 const CashierPage = () => {
+  const t = useTranslations("CASHIER");
   const [selectProduct, setSelectProduct] =
     React.useState<SearchProduct | null>(null);
   const dispatch = useAppDispatch();
@@ -32,7 +34,7 @@ const CashierPage = () => {
               selectProduct && dispatch(addProductToCartById(selectProduct.id))
             }
           >
-            เพิ่ม
+            {t("add_product_from_selector")}
           </Button>
         </Stack>
         <Divider sx={{ my: 1 }} />

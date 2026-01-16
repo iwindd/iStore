@@ -16,8 +16,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 const MostSellerTab = () => {
+  const t = useTranslations("CASHIER.tabs.most_seller");
   const dispatch = useAppDispatch();
   const {
     data: products,
@@ -33,7 +35,7 @@ const MostSellerTab = () => {
   }
 
   if (error) {
-    return <Typography>เกิดข้อผิดพลาดในการโหลดข้อมูล</Typography>;
+    return <Typography>{t("load_error")}</Typography>;
   }
 
   return (
@@ -41,10 +43,10 @@ const MostSellerTab = () => {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>รหัสสินค้า</TableCell>
-            <TableCell>ชื่อสินค้า</TableCell>
-            <TableCell>จำนวนสินค้าในสต๊อก</TableCell>
-            <TableCell align="right">จัดการ</TableCell>
+            <TableCell>{t("serial")}</TableCell>
+            <TableCell>{t("name")}</TableCell>
+            <TableCell>{t("stock")}</TableCell>
+            <TableCell align="right">{t("manage")}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -52,7 +54,7 @@ const MostSellerTab = () => {
             <TableRow>
               <TableCell colSpan={4}>
                 <Typography color="text.secondary" align="center">
-                  ยังไม่มีรายการ
+                  {t("empty")}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -66,17 +68,17 @@ const MostSellerTab = () => {
                     {product.label}
                     {product.category && (
                       <Typography variant="caption" color={"text.secondary"}>
-                        ประเภท: {product.category.label}
+                        {t("category")} {product.category.label}
                       </Typography>
                     )}
                   </Stack>
                 </TableCell>
                 <TableCell>
                   <Stack>
-                    {product.stock?.quantity} รายการ
+                    {product.stock?.quantity} {t("items_unit")}
                     {product.category?.overstock && (
                       <Typography variant="caption" color={"text.secondary"}>
-                        (สามารถค้างสินค้าได้)
+                        {t("backorder_allowed")}
                       </Typography>
                     )}
                   </Stack>

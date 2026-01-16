@@ -111,5 +111,87 @@
         "label": "รายละเอียดการฝากขาย"
       }
     }
+  },
+  "CASHIER": {
+    "add_product_from_selector": "เพิ่ม",
+    "cart": {
+      "title": "ตะกร้าสินค้า",
+      "empty": "ไม่มีสินค้าภายในตะกร้า",
+      "confirmation": {
+        "clearCart": {
+          "label": "ล้างตะกร้า",
+          "confirm_title": "แจ้งเตือน",
+          "confirm_text": "คุณต้องการจะล้างตะกร้าหรือไม่? สินค้าภายในตะกร้าจะถูกลบและไม่สามารถย้อนกลับได้!"
+        },
+        "removeProduct": {
+          "confirm_title": "แจ้งเตือน",
+          "confirm_text": "คุณต้องการที่จะลบสินค้าหรือไม่ ?"
+        }
+      },
+      "summary": {
+        "products": "สินค้า",
+        "preorder": "พรีออเดอร์",
+        "total": "ยอดรวม"
+      },
+      "checkout": "ชำระเงิน",
+      "consignment": "ฝากขาย",
+      "warnings": {
+        "preorder_consignment": "สินค้าพรีออเดอร์ไม่สามารถฝากขายได้",
+        "promotion_consignment": "ไม่ได้รับสินค้าโปรโมชั่นเมื่อเป็นรายการฝากขาย"
+      },
+      "product": {
+        "serial": "รหัสสินค้า",
+        "preorder_label": "พรีออเดอร์",
+        "preorder_status": "สินค้าพรีออเดอร์",
+        "free": "ฟรี",
+        "note": "หมายเหตุ",
+        "promotion_tooltip": "สินค้าแถมฟรีจากโปรโมชั่นประเภท ซื้อ X แถม Y",
+        "promotion_label": "โปรโมชั่น"
+      },
+      "preorder_dialog": {
+        "title": "จำนวนที่ต้องการพรีออเดอร์",
+        "cancel": "ยกเลิก",
+        "confirm": "ยืนยัน"
+      }
+    },
+    "tabs": {
+      "related_promotion": {
+        "title": "โปรโมชั่นที่เกี่ยวข้อง",
+        "buy_items": "สินค้าที่ต้องซื้อ",
+        "get_items": "สินค้าที่ได้รับ",
+        "expires": "หมดอายุ",
+        "empty": "ไม่พบโปรโมชั่นที่เกี่ยวข้อง"
+      },
+      "most_seller": {
+        "title": "สินค้าขายดี",
+        "serial": "รหัสสินค้า",
+        "name": "ชื่อสินค้า",
+        "stock": "จำนวนสินค้าในสต๊อก",
+        "manage": "จัดการ",
+        "empty": "ยังไม่มีรายการ",
+        "category": "ประเภท:",
+        "items_unit": "รายการ",
+        "backorder_allowed": "(สามารถค้างสินค้าได้)",
+        "load_error": "เกิดข้อผิดพลาดในการโหลดข้อมูล"
+      }
+    }
+  },
+  "COMPONENTS": {
+    "selector": {
+      "search": "ค้นหา",
+      "searching": "กรุณารอสักครู่",
+      "no_options": "ไม่พบข้อมูล",
+      "create_new": "สร้าง \"{label}\" ใหม่"
+    },
+    "product_selector": {
+      "label": "กรุณาเลือกสินค้า",
+      "placeholder": "ค้นหาสินค้า",
+      "empty": "ไม่พบสินค้า",
+      "option": "จำนวน: {quantity} | รหัส: {serial}"
+    },
+    "scanner": {
+      "placeholder": "รหัสสินค้า / สแกนสินค้า...",
+      "enter": "ENTER"
+    }
   }
 }

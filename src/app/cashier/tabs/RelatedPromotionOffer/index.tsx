@@ -13,8 +13,10 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 const RelatedPromotionOfferTab = () => {
+  const t = useTranslations("CASHIER.tabs.related_promotion");
   const cartProducts: CartProduct[] = useAppSelector(
     (state) => state.cart.products
   );
@@ -32,9 +34,9 @@ const RelatedPromotionOfferTab = () => {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>สินค้าที่ต้องซื้อ</TableCell>
-            <TableCell>สินค้าที่ได้รับ</TableCell>
-            <TableCell align="right">หมดอายุ</TableCell>
+            <TableCell>{t("buy_items")}</TableCell>
+            <TableCell>{t("get_items")}</TableCell>
+            <TableCell align="right">{t("expires")}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -42,7 +44,7 @@ const RelatedPromotionOfferTab = () => {
             <TableRow>
               <TableCell colSpan={4}>
                 <Typography color="text.secondary" align="center">
-                  ไม่พบโปรโมชั่นที่เกี่ยวข้อง
+                  {t("empty")}
                 </Typography>
               </TableCell>
             </TableRow>

@@ -27,7 +27,10 @@ import CartPreorder from "./components/CartPreorder";
 import CartProduct from "./components/CartProduct";
 import CartPromotionOffer from "./components/CartPromotionOffer";
 
+import { useTranslations } from "next-intl";
+
 const CartSections = () => {
+  const t = useTranslations("CASHIER.cart");
   const dispatch = useAppDispatch();
   const payment = usePayment();
   const cart = useAppSelector((state) => state.cart.products);
@@ -38,13 +41,13 @@ const CartSections = () => {
   const total = totalProduct + totalPreOrder;
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการจะล้างตะกร้าหรือไม่? สินค้าภายในตะกร้าจะถูกลบและไม่สามารถย้อนกลับได้!",
+    title: t("confirmation.clearCart.confirm_title"),
+    text: t("confirmation.clearCart.confirm_text"),
     confirmProps: {
       color: "warning",
       startIcon: <DeleteSweepTwoTone />,
     },
-    confirm: "ล้างตะกร้า",
+    confirm: t("confirmation.clearCart.label"),
     onConfirm: async () => {
       dispatch(clearProductCart());
     },
@@ -114,7 +117,7 @@ const CartSections = () => {
               flex={1}
             >
               <Typography variant="h6" color="text.secondary">
-                ไม่มีสินค้าภายในตะกร้า
+                {t("empty")}
               </Typography>
             </Stack>
           )}
@@ -126,7 +129,7 @@ const CartSections = () => {
           {totalPreOrder > 0 && checkoutMode == CheckoutMode.CASHOUT && (
             <>
               <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography variant="body1">สินค้า</Typography>
+                <Typography variant="body1">{t("summary.products")}</Typography>
                 <Typography
                   variant="body1"
                   fontWeight={800}
@@ -136,7 +139,7 @@ const CartSections = () => {
                 </Typography>
               </Stack>
               <Stack direction={"row"} justifyContent={"space-between"}>
-                <Typography variant="body1">พรีออเดอร์</Typography>
+                <Typography variant="body1">{t("summary.preorder")}</Typography>
                 <Typography
                   variant="body1"
                   fontWeight={800}
@@ -150,7 +153,7 @@ const CartSections = () => {
           <Divider sx={{ borderStyle: "dashed" }} />
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Typography variant="h6" fontWeight="bold">
-              ยอดรวม
+              {t("summary.total")}
             </Typography>
             <Typography variant="h6" fontWeight={800} color="primary.main">
               {money(
@@ -183,7 +186,9 @@ const CartSections = () => {
               }}
               onClick={payment.toggle}
             >
-              {checkoutMode === CheckoutMode.CASHOUT ? "ชำระเงิน" : "ฝากขาย"}
+              {checkoutMode === CheckoutMode.CASHOUT
+                ? t("checkout")
+                : t("consignment")}
             </Button>
           </Stack>
           <ToggleButtonGroup
@@ -195,21 +200,25 @@ const CartSections = () => {
             }}
             fullWidth
           >
-            <ToggleButton value={CheckoutMode.CASHOUT}>ชำระเงิน</ToggleButton>
-            <ToggleButton value={CheckoutMode.CONSIGNMENT}>ฝากขาย</ToggleButton>
+            <ToggleButton value={CheckoutMode.CASHOUT}>
+              {t("checkout")}
+            </ToggleButton>
+            <ToggleButton value={CheckoutMode.CONSIGNMENT}>
+              {t("consignment")}
+            </ToggleButton>
           </ToggleButtonGroup>
 
           {checkoutMode == CheckoutMode.CONSIGNMENT &&
             cartPreOrder.length > 0 && (
               <Alert severity="warning">
-                สินค้าพรีออเดอร์ไม่สามารถฝากขายได้
+                {t("warnings.preorder_consignment")}
               </Alert>
             )}
 
           {checkoutMode == CheckoutMode.CONSIGNMENT &&
             mergedPromotionQuantities.length > 0 && (
               <Alert severity="warning">
-                ไม่ได้รับสินค้าโปรโมชั่นเมื่อเป็นรายการฝากขาย
+                {t("warnings.promotion_consignment")}
               </Alert>
             )}
         </Stack>

@@ -2,16 +2,19 @@
 import findProductById from "@/actions/product/findById";
 import SearchProducts, { SearchProduct } from "@/actions/product/search";
 import { Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
 type ProductSelectorProps = Omit<BaseSelectorProps<SearchProduct>, "canCreate">;
 
 const ProductSelector = (props_: ProductSelectorProps) => {
+  const t = useTranslations("COMPONENTS.product_selector");
   const props = {
     ...props_,
-    label: props_.label || "กรุณาเลือกสินค้า",
-    placeholder: props_.placeholder || "ค้นหาสินค้า",
+    label: props_.label || t("label"),
+    placeholder: props_.placeholder || t("placeholder"),
+    noOptionsText: props_.noOptionsText || t("empty"),
   };
 
   const fetchItem = useCallback(async (id: number) => {
@@ -36,7 +39,6 @@ const ProductSelector = (props_: ProductSelectorProps) => {
   return (
     <BaseSelector<SearchProduct>
       id="product-selector"
-      noOptionsText="ไม่พบสินค้า"
       fetchItem={fetchItem}
       searchItems={searchItems}
       getItemLabel={(option) =>
@@ -46,7 +48,10 @@ const ProductSelector = (props_: ProductSelectorProps) => {
       renderCustomOption={(option) => (
         <div>
           <Typography variant="caption" color="text.secondary">
-            จำนวน: {option.stock?.quantity || 0} | รหัส: {option.serial}
+            {t("option", {
+              quantity: option.stock?.quantity || 0,
+              serial: option.serial,
+            })}
           </Typography>
         </div>
       )}

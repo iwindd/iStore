@@ -1,11 +1,13 @@
 import { MergedPromotionQuantity } from "@/libs/promotion";
 import { Paper, Stack, Tooltip, Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 const CartPromotionOffer = ({
   promotion,
 }: {
   promotion: MergedPromotionQuantity;
 }) => {
+  const t = useTranslations("CASHIER.cart");
   return (
     <Paper
       variant="outlined"
@@ -31,14 +33,14 @@ const CartPromotionOffer = ({
               {promotion.data.label}
             </Typography>
             <Stack direction={"row"} spacing={1}>
-              <Tooltip title={"สินค้าแถมฟรีจากโปรโมชั่นประเภท ซื้อ X แถม Y"}>
+              <Tooltip title={t("product.promotion_tooltip")}>
                 <Typography variant="caption" color="warning" noWrap>
-                  โปรโมชั่น
+                  {t("product.promotion_label")}
                 </Typography>
               </Tooltip>
               {promotion.data.serial && (
                 <Typography variant="caption" color="text.secondary" noWrap>
-                  รหัสสินค้า {promotion.data.serial}
+                  {t("product.serial")} {promotion.data.serial}
                 </Typography>
               )}
             </Stack>
@@ -51,7 +53,7 @@ const CartPromotionOffer = ({
               whiteSpace="nowrap"
               color="success.main"
             >
-              ฟรี
+              {t("product.free")}
             </Typography>
           </Stack>
         </Stack>

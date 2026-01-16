@@ -20,17 +20,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import NumberStepperPreorder from "./NumberStepperPreorder";
 
 const CartPreorder = ({ product }: { product: CartProductType }) => {
+  const t = useTranslations("CASHIER.cart");
   const [expand, setExpand] = useState(false);
   const [note, setNote] = useState(product.note ?? "");
   const dispatch = useAppDispatch();
 
   const confirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการที่จะลบสินค้าหรือไม่ ?",
+    title: t("confirmation.removeProduct.confirm_title"),
+    text: t("confirmation.removeProduct.confirm_text"),
     confirmProps: {
       startIcon: <DeleteTwoTone />,
       color: "error",
@@ -59,7 +61,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
             <Stack direction={"row"} spacing={1}>
               {product.data?.serial && (
                 <Typography variant="caption" color="text.secondary" noWrap>
-                  รหัสสินค้า {product.data.serial}
+                  {t("product.serial")} {product.data.serial}
                 </Typography>
               )}
             </Stack>
@@ -68,7 +70,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
               fontWeight="bold"
               color="primary.main"
             >
-              สินค้าพรีออเดอร์
+              {t("product.preorder_status")}
             </Typography>
           </Stack>
 
@@ -82,7 +84,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
             >
               {(product.data?.price || 0) > 0
                 ? money(product.data?.price || 0)
-                : "ฟรี"}
+                : t("product.free")}
             </Typography>
 
             <Stack direction={"row"} spacing={1} justifyContent={"end"}>
@@ -115,7 +117,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
             onBlur={() =>
               dispatch(setProductPreOrderNote({ id: product.id, note }))
             }
-            label="หมายเหตุ"
+            label={t("product.note")}
             variant="filled"
             sx={{
               width: "100%",

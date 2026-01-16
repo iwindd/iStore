@@ -1,22 +1,10 @@
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import MostSellerTab from "../../tabs/MostSeller";
 import RelatedPromotionOfferTab from "../../tabs/RelatedPromotionOffer";
-
-const CASHIER_TAB = [
-  {
-    name: "RELATED_PROMOTION",
-    label: "โปรโมชั่นที่เกี่ยวข้อง",
-    component: RelatedPromotionOfferTab,
-  },
-  {
-    name: "MOST_SELLER",
-    label: "สินค้าขายดี",
-    component: MostSellerTab,
-  },
-];
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -40,7 +28,21 @@ function CustomTabPanel(props: Readonly<TabPanelProps>) {
 }
 
 const CashierTab = () => {
+  const t = useTranslations("CASHIER.tabs");
   const [value, setValue] = useState(0);
+
+  const CASHIER_TAB = [
+    {
+      name: "RELATED_PROMOTION",
+      label: t("related_promotion.title"),
+      component: RelatedPromotionOfferTab,
+    },
+    {
+      name: "MOST_SELLER",
+      label: t("most_seller.title"),
+      component: MostSellerTab,
+    },
+  ];
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
