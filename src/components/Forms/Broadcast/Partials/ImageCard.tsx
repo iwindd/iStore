@@ -1,5 +1,6 @@
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { Card, CardContent, Divider, Tab, Tabs } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import AiTab from "./tabs/AiTab";
@@ -11,6 +12,7 @@ export type ImageCardProps = {
 };
 
 const ImageCard = (props: ImageCardProps) => {
+  const t = useTranslations("BROADCASTS.form.sections.image.tabs");
   const [tab, setTab] = useState<"ai" | "upload">("ai");
 
   const onTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -20,8 +22,8 @@ const ImageCard = (props: ImageCardProps) => {
   return (
     <Card>
       <Tabs value={tab} onChange={onTabChange}>
-        <Tab label="AI Generate" value={"ai"} sx={{ px: 2 }} />
-        <Tab label="อัพโหลด" value={"upload"} sx={{ px: 2 }} />
+        <Tab label={t("ai")} value={"ai"} sx={{ px: 2 }} />
+        <Tab label={t("upload")} value={"upload"} sx={{ px: 2 }} />
       </Tabs>
       <Divider />
       <CardContent>

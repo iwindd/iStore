@@ -7,6 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
@@ -20,6 +21,7 @@ const UploadTab = ({
   },
   disabled,
 }: ImageCardProps) => {
+  const t = useTranslations("BROADCASTS.form");
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -49,7 +51,7 @@ const UploadTab = ({
         setValue("image_url", publicUrl);
       } catch (error) {
         console.error("Upload error:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดในการอัพโหลดรูปภาพ", {
+        enqueueSnackbar(t("sections.image.upload.error"), {
           variant: "error",
         });
         setIsUploading(false);
@@ -63,6 +65,7 @@ const UploadTab = ({
     if (selectedImageFile) {
       handleImageChange(selectedImageFile);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedImageFile]);
 
   return (
@@ -75,7 +78,7 @@ const UploadTab = ({
           <FormControl fullWidth error={!!errors.image_url}>
             <Box sx={{ mb: 1 }}>
               <Typography variant="body2" color="text.secondary">
-                รูปภาพประกอบ (ถ้ามี)
+                {t("sections.image.upload.label")}
               </Typography>
             </Box>
             <ImageUpload

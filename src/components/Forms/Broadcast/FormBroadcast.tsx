@@ -22,6 +22,7 @@ import {
 import Grid from "@mui/material/Grid";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { useForm } from "react-hook-form";
 import ImageCard from "./Partials/ImageCard";
@@ -46,6 +47,7 @@ const FormBroadcast = ({
   disabled: propsDisabled,
   onSubmit,
 }: FormBroadcastProps) => {
+  const t = useTranslations("BROADCASTS.form");
   const form = useForm<CreateBroadcastValues>({
     resolver: zodResolver(CreateBroadcastSchema),
     defaultValues: {
@@ -63,7 +65,6 @@ const FormBroadcast = ({
     formState: { errors },
     handleSubmit,
     setValue,
-    watch,
   } = form;
 
   const handleFormSubmit = async (data: CreateBroadcastValues) => {
@@ -111,7 +112,7 @@ const FormBroadcast = ({
             id="broadcast-form"
           >
             <Card>
-              <CardHeader title="เลือกโปรโมชั่น" />
+              <CardHeader title={t("sections.promotion.title")} />
               <Divider />
               <CardContent>
                 <Stack spacing={1}>
@@ -141,7 +142,7 @@ const FormBroadcast = ({
                     <Grid size={6}>
                       <FormControl fullWidth error={!!errors.event_id}>
                         <TextField
-                          label="ชื่อประกาศ"
+                          label={t("sections.promotion.name")}
                           fullWidth
                           disabled={disabled}
                           error={!!errors.title}
@@ -152,7 +153,7 @@ const FormBroadcast = ({
                     </Grid>
                   </Grid>
                   <TextField
-                    label="ข้อความประกาศ"
+                    label={t("sections.promotion.message")}
                     fullWidth
                     multiline
                     rows={4}
@@ -166,7 +167,7 @@ const FormBroadcast = ({
                         shrink: true,
                       },
                     }}
-                    placeholder="เขียนข้อความประกาศ..."
+                    placeholder={t("sections.promotion.message_placeholder")}
                     {...register("message")}
                   />
                 </Stack>
@@ -180,7 +181,7 @@ const FormBroadcast = ({
         <Stack spacing={1}>
           <SettingCard form={form} disabled={disabled} />
           <Card>
-            <CardHeader title="ตัวอย่าง" />
+            <CardHeader title={t("sections.preview.title")} />
             <Divider />
             <CardContent>
               <Stack spacing={2}>
@@ -195,7 +196,7 @@ const FormBroadcast = ({
 
       <AppFooter justifyContent={"space-between"} alignItems={"center"}>
         <Typography variant="subtitle1" color="secondary">
-          จัดการสต๊อก
+          {t("footer.label")}
         </Typography>
         <Stack direction={"row"} spacing={1}>
           <Button
@@ -205,7 +206,7 @@ const FormBroadcast = ({
             endIcon={<SendTwoTone />}
             form="broadcast-form"
           >
-            เผยแพร่
+            {t("submit")}
           </Button>
         </Stack>
       </AppFooter>

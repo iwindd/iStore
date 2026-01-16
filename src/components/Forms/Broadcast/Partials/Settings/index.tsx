@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 
@@ -32,9 +33,8 @@ const SettingCard = ({
   },
   disabled,
 }: SettingCardProps) => {
-  const [selectedEvent, setSelectedEvent] = useState<EventSelectorItem | null>(
-    null
-  );
+  const t = useTranslations("BROADCASTS.form.sections.settings");
+  const [selectedEvent] = useState<EventSelectorItem | null>(null);
   const selectedEventId = watch("event_id");
   const scheduledAt = watch("scheduled_at");
   const type = watch("type");
@@ -57,36 +57,34 @@ const SettingCard = ({
 
   return (
     <Card>
-      <CardHeader title="การเผยแพร่" />
+      <CardHeader title={t("title")} />
       <Divider />
       <CardContent>
         <Stack spacing={1}>
           <FormControl fullWidth>
-            <InputLabel>รูปแบบการเผยแพร่</InputLabel>
+            <InputLabel>{t("type")}</InputLabel>
             <Controller
               name="type"
               control={control}
               render={({ field }) => (
-                <Select {...field} label="รูปแบบการเผยแพร่">
-                  <MenuItem value="DRAFT">แบบร่าง (Draft)</MenuItem>
-                  <MenuItem value="INSTANT">ส่งทันที (Instant)</MenuItem>
-                  <MenuItem value="SCHEDULED">ตั้งเวลา (Scheduled)</MenuItem>
+                <Select {...field} label={t("type")}>
+                  <MenuItem value="DRAFT">{t("types.DRAFT")}</MenuItem>
+                  <MenuItem value="INSTANT">{t("types.INSTANT")}</MenuItem>
+                  <MenuItem value="SCHEDULED">{t("types.SCHEDULED")}</MenuItem>
                 </Select>
               )}
             />
           </FormControl>
           {type !== "SCHEDULED" && (
             <Alert color="info">
-              {type === "DRAFT"
-                ? "บันทึกเป็นแบบร่าง จะยังไม่มีการส่ง Broadcast"
-                : "ระบบจะส่ง Broadcast ทันทีหลังจากกดบันทึก"}
+              {type === "DRAFT" ? t("alerts.DRAFT") : t("alerts.INSTANT")}
             </Alert>
           )}
 
           {type == "SCHEDULED" && (
             <FormControl fullWidth error={!!errors.scheduled_at}>
               <DateTimePicker
-                label="วันและเวลาที่จะส่ง"
+                label={t("scheduled_at")}
                 value={dayjs(scheduledAt)}
                 onChange={(date) => {
                   if (date) {
@@ -104,9 +102,10 @@ const SettingCard = ({
               )}
               {selectedEvent && (
                 <FormHelperText>
-                  ต้องอยู่ในช่วง{" "}
-                  {dayjs(selectedEvent.start_at).format("DD/MM/YYYY")} -{" "}
-                  {dayjs(selectedEvent.end_at).format("DD/MM/YYYY")}
+                  {t("constraints.range", {
+                    start: dayjs(selectedEvent.start_at).format("DD/MM/YYYY"),
+                    end: dayjs(selectedEvent.end_at).format("DD/MM/YYYY"),
+                  })}
                 </FormHelperText>
               )}
             </FormControl>

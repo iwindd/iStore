@@ -22,27 +22,26 @@ import {
 import { Button, Chip, ChipProps } from "@mui/material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { enqueueSnackbar } from "notistack";
 import { useCallback } from "react";
 
-const STATUS_CHIP_PROPS: Record<
-  string,
-  { label: string; color: ChipProps["color"] }
-> = {
-  DRAFT: { label: "ร่าง", color: "default" },
-  SCHEDULED: { label: "รอส่ง", color: "info" },
-  SENT: { label: "ส่งแล้ว", color: "success" },
-  CANCELLED: { label: "ยกเลิก", color: "warning" },
-  FAILED: { label: "ล้มเหลว", color: "error" },
+const STATUS_CHIP_COLORS: Record<string, ChipProps["color"]> = {
+  DRAFT: "default",
+  SCHEDULED: "info",
+  SENT: "success",
+  CANCELLED: "warning",
+  FAILED: "error",
 };
 
 const BroadcastPage = () => {
+  const t = useTranslations("BROADCASTS");
   const queryClient = useQueryClient();
 
   const cancelConfirmation = useConfirm({
-    title: "ยืนยันการยกเลิก",
-    text: "คุณต้องการยกเลิกประกาศนี้หรือไม่?",
+    title: t("datatable.confirmations.cancel.title"),
+    text: t("datatable.confirmations.cancel.text"),
     confirmProps: {
       color: "warning",
       startIcon: <CancelTwoTone />,
@@ -55,12 +54,12 @@ const BroadcastPage = () => {
           queryKey: ["broadcasts"],
           type: "active",
         });
-        enqueueSnackbar("ยกเลิก Broadcast เรียบร้อยแล้ว!", {
+        enqueueSnackbar(t("datatable.confirmations.cancel.success"), {
           variant: "success",
         });
       } catch (error) {
         console.error("Error cancelling broadcast:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง", {
+        enqueueSnackbar(t("datatable.confirmations.cancel.error"), {
           variant: "error",
         });
       }
@@ -68,8 +67,8 @@ const BroadcastPage = () => {
   });
 
   const deleteConfirmation = useConfirm({
-    title: "ยืนยันการลบ",
-    text: "คุณต้องการลบประกาศนี้หรือไม่?",
+    title: t("datatable.confirmations.delete.title"),
+    text: t("datatable.confirmations.delete.text"),
     confirmProps: {
       color: "error",
       startIcon: <DeleteTwoTone />,
@@ -82,12 +81,12 @@ const BroadcastPage = () => {
           queryKey: ["broadcasts"],
           type: "active",
         });
-        enqueueSnackbar("ลบประกาศเรียบร้อยแล้ว!", {
+        enqueueSnackbar(t("datatable.confirmations.delete.success"), {
           variant: "success",
         });
       } catch (error) {
         console.error("Error deleting broadcast:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง", {
+        enqueueSnackbar(t("datatable.confirmations.delete.error"), {
           variant: "error",
         });
       }
@@ -95,8 +94,8 @@ const BroadcastPage = () => {
   });
 
   const sendConfirmation = useConfirm({
-    title: "แจ้งเตือน",
-    text: "คุณต้องการจะส่งประกาศนี้หรือไม่",
+    title: t("datatable.confirmations.send.title"),
+    text: t("datatable.confirmations.send.text"),
     confirmProps: {
       color: "warning",
       startIcon: <NotificationsTwoTone />,
@@ -109,12 +108,12 @@ const BroadcastPage = () => {
           queryKey: ["broadcasts"],
           type: "active",
         });
-        enqueueSnackbar("ส่งแจ้งเตือนประชาสัมพันธ์เรียบร้อยแล้ว!", {
+        enqueueSnackbar(t("datatable.confirmations.send.success"), {
           variant: "success",
         });
       } catch (error) {
         console.error("Error disabling promotion offer:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
+        enqueueSnackbar(t("datatable.confirmations.send.error"), {
           variant: "error",
         });
       }
@@ -151,30 +150,28 @@ const BroadcastPage = () => {
     columns: [
       {
         field: "status",
-        headerName: "สถานะ",
+        headerName: t("datatable.headers.status"),
         width: 100,
         renderCell: ({ row }) => {
-          const status =
-            STATUS_CHIP_PROPS[row.status] || STATUS_CHIP_PROPS.DRAFT;
-          return (
-            <Chip label={status.label} color={status.color} size="small" />
-          );
+          const statusLabel = t(`datatable.status.${row.status}`);
+          const statusColor = STATUS_CHIP_COLORS[row.status] || "default";
+          return <Chip label={statusLabel} color={statusColor} size="small" />;
         },
       },
       {
         field: "title",
-        headerName: "หัวข้อ",
+        headerName: t("datatable.headers.title"),
         flex: 1,
       },
       {
         field: "note",
-        headerName: "โปรโมชั่น",
+        headerName: t("datatable.headers.promotion"),
         flex: 1,
         renderCell: ({ row }) => row.event.id,
       },
       {
         field: "scheduled_at",
-        headerName: "ตั้งเวลาส่ง",
+        headerName: t("datatable.headers.scheduled_at"),
         flex: 1,
         renderCell: ({ row }) =>
           date(row.scheduled_at, {
@@ -185,7 +182,7 @@ const BroadcastPage = () => {
       },
       {
         field: "sent_at",
-        headerName: "ส่งจริงเมื่อ",
+        headerName: t("datatable.headers.sent_at"),
         flex: 1,
         renderCell: ({ row }) =>
           row.sent_at
@@ -198,14 +195,15 @@ const BroadcastPage = () => {
       },
       {
         field: "creator.user.name",
-        headerName: "ผู้สร้าง",
+        headerName: t("datatable.headers.creator"),
         flex: 1,
-        renderCell: ({ row }) => row.creator?.user.name || "ไม่ระบุ",
+        renderCell: ({ row }) =>
+          row.creator?.user.name || t("datatable.placeholders.not_specified"),
       },
       {
         field: "actions",
         type: "actions",
-        headerName: "เครื่องมือ",
+        headerName: t("datatable.headers.actions"),
         flex: 0,
         getActions: ({ row }) => {
           const canCancel = ["DRAFT", "SCHEDULED"].includes(row.status);
@@ -217,13 +215,13 @@ const BroadcastPage = () => {
               key="view"
               to={`${getPath("broadcasts.broadcast", { id: row.id.toString() })}`}
               icon={<ViewAgendaTwoTone />}
-              label="ดูรายละเอียด"
+              label={t("datatable.actions.view")}
               showInMenu
             />,
             <GridActionsCellItem
               key="cancel"
               icon={<CancelTwoTone />}
-              label="ยกเลิก"
+              label={t("datatable.actions.cancel")}
               onClick={menu.cancel(row)}
               showInMenu
               disabled={!canCancel}
@@ -231,7 +229,7 @@ const BroadcastPage = () => {
             <GridActionsCellItem
               key="delete"
               icon={<DeleteTwoTone />}
-              label="ลบ"
+              label={t("datatable.actions.delete")}
               onClick={menu.delete(row)}
               showInMenu
               disabled={!canDelete}
@@ -239,7 +237,7 @@ const BroadcastPage = () => {
             <GridActionsCellItem
               key="send"
               icon={<SendTwoTone />}
-              label="ส่ง"
+              label={t("datatable.actions.send")}
               onClick={menu.sendBroadcast(row)}
               showInMenu
               disabled={!canSend}
@@ -253,7 +251,7 @@ const BroadcastPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>ประชาสัมพันธ์</App.Header.Title>
+        <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
           <Button
             component={Link}
@@ -262,7 +260,7 @@ const BroadcastPage = () => {
             variant="contained"
             size="small"
           >
-            สร้างประชาสัมพันธ์
+            {t("create_button")}
           </Button>
         </App.Header.Actions>
       </App.Header>

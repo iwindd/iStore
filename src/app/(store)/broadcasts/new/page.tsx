@@ -7,11 +7,13 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { getPath } from "@/router";
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
 const BroadcastNewPage = () => {
+  const t = useTranslations("BROADCASTS.form");
   const { setBackdrop } = useInterface();
   const [isCreated, setIsCreated] = useState(false);
   const router = useRouter();
@@ -25,7 +27,7 @@ const BroadcastNewPage = () => {
     },
     onSuccess: async () => {
       setIsCreated(true);
-      enqueueSnackbar("สร้างประกาศใหม่เรียบร้อยแล้ว!", { variant: "success" });
+      enqueueSnackbar(t("save_success"), { variant: "success" });
       await queryClient.refetchQueries({
         queryKey: ["broadcasts"],
         type: "active",
@@ -34,7 +36,7 @@ const BroadcastNewPage = () => {
     },
     onError: (error) => {
       console.log("error creating broadcast", error);
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง", {
+      enqueueSnackbar(error.message || t("save_error"), {
         variant: "error",
       });
     },
@@ -46,7 +48,7 @@ const BroadcastNewPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>สร้างประกาศใหม่</App.Header.Title>
+        <App.Header.Title>{t("create_title")}</App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBroadcast

@@ -18,12 +18,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ImageCardProps } from "../ImageCard";
 
 const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
+  const t = useTranslations("BROADCASTS.form");
   const [isGenerating, setIsGenerating] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const currentImageUrl = form.watch("image_url");
@@ -42,12 +44,12 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
       const result = await generateImageAction(data);
       if (result.success && result.imageUrl) {
         form.setValue("image_url", result.imageUrl);
-        enqueueSnackbar("สร้างรูปภาพสำเร็จ", { variant: "success" });
+        enqueueSnackbar(t("sections.image.ai.success"), { variant: "success" });
       } else {
         throw new Error(result.message || "Failed to generate image");
       }
     } catch (error: any) {
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาดในการสร้างรูปภาพ", {
+      enqueueSnackbar(error.message || t("sections.image.ai.error"), {
         variant: "error",
       });
     } finally {
@@ -63,7 +65,7 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
         <Stack spacing={2}>
           <TextField
             {...register("prompt")}
-            label="อธิบายรูปภาพ"
+            label={t("sections.image.ai.prompt_label")}
             fullWidth
             multiline
             rows={4}
@@ -75,7 +77,7 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
                 shrink: true,
               },
             }}
-            placeholder="เช่น: คูปองส่วนลดสำหรับสินค้าประเภทเบเกอรี่ มู้ดแอนด์โทนสีอุ่นๆ มีรูปขนมปังประกอบ..."
+            placeholder={t("sections.image.ai.prompt_placeholder")}
           />
           <Stack direction={"row"} justifyContent={"flex-end"}>
             <Button
@@ -90,7 +92,9 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
                 )
               }
             >
-              {isGenerating ? "กำลังสร้าง..." : "สร้างรูปภาพ"}
+              {isGenerating
+                ? t("sections.image.ai.generating_button")
+                : t("sections.image.ai.generate_button")}
             </Button>
           </Stack>
         </Stack>
@@ -105,7 +109,7 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
             gap={1}
           >
             <CheckCircleTwoTone color="success" fontSize="small" />{" "}
-            รูปภาพที่ถูกสร้างล่าสุด
+            {t("sections.image.ai.latest_image")}
           </Typography>
           <Box
             sx={{
@@ -133,18 +137,17 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
         alignItems={"center"}
       >
         <Typography variant="subtitle1" color="secondary">
-          จัดการประชาสัมพันธ์
+          {t("footer.label")}
         </Typography>
         <Stack direction={"row"} spacing={1}>
           <Button
             variant="contained"
             startIcon={<SaveTwoTone />}
             type="submit"
-            form="stock-form"
-            name="saveAndUpdate"
+            form="broadcast-form"
             disabled={disabled}
           >
-            เผยแพร่
+            {t("submit")}
           </Button>
         </Stack>
       </AppFooter>

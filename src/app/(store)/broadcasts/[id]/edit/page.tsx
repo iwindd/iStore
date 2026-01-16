@@ -8,11 +8,13 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { getPath } from "@/router";
 import { UpdateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
 const BroadcastEditPage = () => {
+  const t = useTranslations("BROADCASTS");
   const params = useParams<{ id: string }>();
   const broadcastId = Number.parseInt(params.id);
   const { setBackdrop } = useInterface();
@@ -34,7 +36,7 @@ const BroadcastEditPage = () => {
     },
     onSuccess: async () => {
       setIsUpdated(true);
-      enqueueSnackbar("อัปเดตประกาศเรียบร้อยแล้ว!", {
+      enqueueSnackbar(t("form.update_success"), {
         variant: "success",
       });
       await queryClient.refetchQueries({
@@ -45,7 +47,7 @@ const BroadcastEditPage = () => {
     },
     onError: (error) => {
       console.log("error updating broadcast", error);
-      enqueueSnackbar(error.message || "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง", {
+      enqueueSnackbar(error.message || t("form.save_error"), {
         variant: "error",
       });
     },
@@ -60,7 +62,7 @@ const BroadcastEditPage = () => {
     return (
       <Wrapper>
         <App.Header>
-          <App.Header.Title>กำลังโหลด...</App.Header.Title>
+          <App.Header.Title>{t("view.loading")}</App.Header.Title>
         </App.Header>
       </Wrapper>
     );
@@ -70,7 +72,7 @@ const BroadcastEditPage = () => {
     return (
       <Wrapper>
         <App.Header>
-          <App.Header.Title>ไม่พบ Broadcast</App.Header.Title>
+          <App.Header.Title>{t("view.not_found")}</App.Header.Title>
         </App.Header>
       </Wrapper>
     );
@@ -81,7 +83,9 @@ const BroadcastEditPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>แก้ไขประกาศ: {broadcast.title}</App.Header.Title>
+        <App.Header.Title>
+          {t("form.edit_title")}: {broadcast.title}
+        </App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBroadcast

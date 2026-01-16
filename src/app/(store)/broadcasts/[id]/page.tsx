@@ -19,22 +19,21 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
-const STATUS_CHIP_PROPS: Record<
-  string,
-  { label: string; color: ChipProps["color"] }
-> = {
-  DRAFT: { label: "ร่าง", color: "default" },
-  SCHEDULED: { label: "รอส่ง", color: "info" },
-  SENT: { label: "ส่งแล้ว", color: "success" },
-  CANCELLED: { label: "ยกเลิก", color: "warning" },
-  FAILED: { label: "ล้มเหลว", color: "error" },
+const STATUS_CHIP_COLORS: Record<string, ChipProps["color"]> = {
+  DRAFT: "default",
+  SCHEDULED: "info",
+  SENT: "success",
+  CANCELLED: "warning",
+  FAILED: "error",
 };
 
 const BroadcastViewPage = () => {
+  const t = useTranslations("BROADCASTS");
   const params = useParams<{ id: string }>();
   const broadcastId = Number.parseInt(params.id);
   const queryClient = useQueryClient();
@@ -46,8 +45,8 @@ const BroadcastViewPage = () => {
   });
 
   const cancelConfirmation = useConfirm({
-    title: "ยืนยันการยกเลิก",
-    text: "คุณต้องการยกเลิก Broadcast นี้หรือไม่?",
+    title: t("datatable.confirmations.cancel.title"),
+    text: t("datatable.confirmations.cancel.text"),
     confirmProps: {
       color: "warning",
       startIcon: <CancelTwoTone />,
@@ -62,12 +61,12 @@ const BroadcastViewPage = () => {
         await queryClient.refetchQueries({
           queryKey: ["broadcasts"],
         });
-        enqueueSnackbar("ยกเลิก Broadcast เรียบร้อยแล้ว!", {
+        enqueueSnackbar(t("datatable.confirmations.cancel.success"), {
           variant: "success",
         });
       } catch (error) {
         console.error("Error cancelling broadcast:", error);
-        enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง", {
+        enqueueSnackbar(t("datatable.confirmations.cancel.error"), {
           variant: "error",
         });
       }
@@ -78,7 +77,7 @@ const BroadcastViewPage = () => {
     return (
       <Wrapper>
         <App.Header>
-          <App.Header.Title>กำลังโหลด...</App.Header.Title>
+          <App.Header.Title>{t("view.loading")}</App.Header.Title>
         </App.Header>
       </Wrapper>
     );
@@ -88,21 +87,22 @@ const BroadcastViewPage = () => {
     return (
       <Wrapper>
         <App.Header>
-          <App.Header.Title>ไม่พบประกาศ</App.Header.Title>
+          <App.Header.Title>{t("view.not_found")}</App.Header.Title>
         </App.Header>
       </Wrapper>
     );
   }
 
   const broadcast = broadcastQuery.data;
-  const status = STATUS_CHIP_PROPS[broadcast.status] || STATUS_CHIP_PROPS.DRAFT;
+  const statusLabel = t(`datatable.status.${broadcast.status}`);
+  const statusColor = STATUS_CHIP_COLORS[broadcast.status] || "default";
   const canEdit = ["DRAFT", "SCHEDULED"].includes(broadcast.status);
   const canCancel = ["DRAFT", "SCHEDULED"].includes(broadcast.status);
 
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>รายละเอียด Broadcast</App.Header.Title>
+        <App.Header.Title>{t("view.title")}</App.Header.Title>
         <App.Header.Actions>
           {canEdit && (
             <Button
@@ -114,7 +114,7 @@ const BroadcastViewPage = () => {
               variant="outlined"
               size="small"
             >
-              แก้ไข
+              {t("view.edit")}
             </Button>
           )}
           {canCancel && (
@@ -125,7 +125,7 @@ const BroadcastViewPage = () => {
               size="small"
               onClick={() => cancelConfirmation.handleOpen()}
             >
-              ยกเลิก
+              {t("view.cancel")}
             </Button>
           )}
         </App.Header.Actions>
@@ -135,14 +135,14 @@ const BroadcastViewPage = () => {
           <Card>
             <CardHeader
               title={broadcast.title}
-              action={<Chip label={status.label} color={status.color} />}
+              action={<Chip label={statusLabel} color={statusColor} />}
             />
             <Divider />
             <CardContent>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    โปรโมชั่น
+                    {t("view.sections.content.promotion")}
                   </Typography>
                   <Typography variant="body1">
                     {broadcast.event.note || `Promotion #${broadcast.event.id}`}
@@ -150,7 +150,7 @@ const BroadcastViewPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    ช่วงเวลาโปรโมชั่น
+                    {t("view.sections.content.promotion_period")}
                   </Typography>
                   <Typography variant="body1">
                     {date(broadcast.event.start_at, {
@@ -166,7 +166,7 @@ const BroadcastViewPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    ข้อความ
+                    {t("view.sections.content.message")}
                   </Typography>
                   <Typography variant="body1" sx={{ whiteSpace: "pre-wrap" }}>
                     {broadcast.message}
@@ -175,11 +175,11 @@ const BroadcastViewPage = () => {
                 {broadcast.image_url && (
                   <Grid size={{ xs: 12 }}>
                     <Typography variant="subtitle2" color="text.secondary">
-                      รูปภาพ
+                      {t("view.sections.content.image")}
                     </Typography>
                     <img
                       src={broadcast.image_url}
-                      alt="รูปประกาศ"
+                      alt={t("view.sections.content.image_alt")}
                       style={{ maxWidth: "300px", borderRadius: "8px" }}
                     />
                   </Grid>
@@ -189,13 +189,13 @@ const BroadcastViewPage = () => {
           </Card>
 
           <Card>
-            <CardHeader title="ข้อมูลการส่ง" />
+            <CardHeader title={t("view.sections.delivery.title")} />
             <Divider />
             <CardContent>
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 4 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    ตั้งเวลาส่ง
+                    {t("view.sections.delivery.scheduled_at")}
                   </Typography>
                   <Typography variant="body1">
                     {date(broadcast.scheduled_at, {
@@ -206,7 +206,7 @@ const BroadcastViewPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 4 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    ส่งจริงเมื่อ
+                    {t("view.sections.delivery.sent_at")}
                   </Typography>
                   <Typography variant="body1">
                     {broadcast.sent_at
@@ -219,10 +219,11 @@ const BroadcastViewPage = () => {
                 </Grid>
                 <Grid size={{ xs: 12, md: 4 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    ผู้สร้าง
+                    {t("view.sections.delivery.creator")}
                   </Typography>
                   <Typography variant="body1">
-                    {broadcast.creator?.user.name || "ไม่ระบุ"}
+                    {broadcast.creator?.user.name ||
+                      t("datatable.placeholders.not_specified")}
                   </Typography>
                 </Grid>
               </Grid>
@@ -231,7 +232,7 @@ const BroadcastViewPage = () => {
 
           {broadcast.logs && broadcast.logs.length > 0 && (
             <Card>
-              <CardHeader title="ประวัติการส่ง" />
+              <CardHeader title={t("view.sections.history.title")} />
               <Divider />
               <CardContent>
                 <Stack spacing={1}>
