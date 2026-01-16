@@ -21,10 +21,12 @@ export interface PaymentDialogContentProps extends PaymentDialogProps {
   onSubmit(payload: any, form: UseFormReturn<any>): void;
 }
 
-const PaymentDialog =  ({ open, onClose }: PaymentDialogProps) => {
+const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
   const { setBackdrop } = useInterface();
   const checkoutMode = useAppSelector((state) => state.cart.checkoutMode);
-  const total = useAppSelector((state) => state.cart.total);
+  const totalProduct = useAppSelector((state) => state.cart.total);
+  const totalPreOrder = useAppSelector((state) => state.cart.totalPreOrder);
+  const total = totalProduct + totalPreOrder;
   const dispatch = useAppDispatch();
 
   const onCashout = async (
@@ -58,7 +60,7 @@ const PaymentDialog =  ({ open, onClose }: PaymentDialogProps) => {
       open={open}
       onClose={onClose}
       onSubmit={onConsignment}
-      total={total}
+      total={totalProduct}
     />
   ) : (
     <CashoutContent

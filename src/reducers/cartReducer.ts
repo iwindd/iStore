@@ -10,7 +10,6 @@ import {
   CashoutSchema,
   ConsignmentInputValues,
   ConsignmentSchema,
-  ConsignmentValues,
 } from "@/schema/Payment";
 import {
   createAsyncThunk,
@@ -37,6 +36,7 @@ export interface CartState {
   products: CartProduct[];
   preOrderProducts: CartProduct[];
   total: number;
+  totalPreOrder: number;
   hasSomeProductOverstock: boolean;
   checkoutMode: CheckoutMode;
 }
@@ -159,6 +159,7 @@ const initialState: CartState = {
   products: [],
   preOrderProducts: [],
   total: 0,
+  totalPreOrder: 0,
   hasSomeProductOverstock: false,
   checkoutMode: CheckoutMode.CASHOUT,
 };
@@ -167,14 +168,6 @@ const getTotalPrice = (products: CartProduct[]) => {
   return products.reduce(
     (total, product) => total + (product.data?.price || 0) * product.quantity,
     0
-  );
-};
-
-const getHasSomeProductOverstock = (products: CartProduct[]) => {
-  return products.some(
-    (product) =>
-      product.quantity > (product.data?.stock?.quantity || 0) &&
-      product.data?.category?.overstock
   );
 };
 
@@ -271,6 +264,7 @@ const cartSlice = createSlice({
       state.preOrderProducts = [];
       state.hasSomeProductOverstock = false;
       state.total = 0;
+      state.totalPreOrder = 0;
     },
     removeProductFromCart: (state, action: PayloadAction<number>) => {
       state.products = state.products.filter((p) => p.id != action.payload);
@@ -280,7 +274,7 @@ const cartSlice = createSlice({
       state.preOrderProducts = state.preOrderProducts.filter(
         (p) => p.id != action.payload
       );
-      state.total = getTotalPrice(state.preOrderProducts);
+      state.totalPreOrder = getTotalPrice(state.preOrderProducts);
     },
     setProductQuantity: (state, action) => {
       CartHelper.setQuantity(state.products, action, {
@@ -290,7 +284,7 @@ const cartSlice = createSlice({
     },
     setProductPreOrderQuantity: (state, action) => {
       CartHelper.setQuantity(state.preOrderProducts, action);
-      state.total = getTotalPrice(state.products);
+      state.totalPreOrder = getTotalPrice(state.preOrderProducts);
     },
     setProductNote: (state, action) =>
       CartHelper.setNote(state.products, action),
@@ -314,6 +308,7 @@ const cartSlice = createSlice({
 
       if (existingPreOrderProduct) {
         existingPreOrderProduct.quantity = quantity;
+        state.totalPreOrder = getTotalPrice(state.preOrderProducts);
         return;
       }
 
@@ -322,6 +317,7 @@ const cartSlice = createSlice({
         quantity: quantity,
         note: "",
       });
+      state.totalPreOrder = getTotalPrice(state.preOrderProducts);
     },
     setCheckoutMode: (state, action: PayloadAction<CheckoutMode>) => {
       state.checkoutMode = action.payload;
@@ -337,7 +333,7 @@ const cartSlice = createSlice({
       state.products = [];
       state.preOrderProducts = [];
       state.total = 0;
-      state.hasSomeProductOverstock = false;
+      state.totalPreOrder = 0;
     });
     builder.addCase(consignmentCart.fulfilled, (state) => {
       enqueueSnackbar(`ทำรายการฝากขายสำเร็จแล้ว!`, {
@@ -346,7 +342,7 @@ const cartSlice = createSlice({
       state.products = [];
       state.preOrderProducts = [];
       state.total = 0;
-      state.hasSomeProductOverstock = false;
+      state.totalPreOrder = 0;
       state.checkoutMode = CheckoutMode.CASHOUT;
     });
   },

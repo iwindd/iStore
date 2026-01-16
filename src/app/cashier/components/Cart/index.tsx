@@ -32,8 +32,10 @@ const CartSections = () => {
   const payment = usePayment();
   const cart = useAppSelector((state) => state.cart.products);
   const cartPreOrder = useAppSelector((state) => state.cart.preOrderProducts);
-  const total = useAppSelector((state) => state.cart.total);
+  const totalProduct = useAppSelector((state) => state.cart.total);
+  const totalPreOrder = useAppSelector((state) => state.cart.totalPreOrder);
   const checkoutMode = useAppSelector((state) => state.cart.checkoutMode);
+  const total = totalProduct + totalPreOrder;
 
   const confirmation = useConfirm({
     title: "แจ้งเตือน",
@@ -121,21 +123,41 @@ const CartSections = () => {
       {/* Cart Footer Summary */}
       <Box>
         <Stack spacing={1} mb={2}>
+          {totalPreOrder > 0 && checkoutMode == CheckoutMode.CASHOUT && (
+            <>
+              <Stack direction={"row"} justifyContent={"space-between"}>
+                <Typography variant="body1">สินค้า</Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight={800}
+                  color="primary.main"
+                >
+                  {money(totalProduct)}
+                </Typography>
+              </Stack>
+              <Stack direction={"row"} justifyContent={"space-between"}>
+                <Typography variant="body1">พรีออเดอร์</Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight={800}
+                  color="primary.main"
+                >
+                  {money(totalPreOrder)}
+                </Typography>
+              </Stack>
+            </>
+          )}
           <Divider sx={{ borderStyle: "dashed" }} />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              pt: 1,
-            }}
-          >
+          <Stack direction={"row"} justifyContent={"space-between"}>
             <Typography variant="h6" fontWeight="bold">
               ยอดรวม
             </Typography>
             <Typography variant="h6" fontWeight={800} color="primary.main">
-              {money(total)}
+              {money(
+                checkoutMode == CheckoutMode.CASHOUT ? total : totalProduct
+              )}
             </Typography>
-          </Box>
+          </Stack>
         </Stack>
 
         <Stack spacing={1}>

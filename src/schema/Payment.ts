@@ -16,10 +16,21 @@ const ProductShape = z.object({
 
 export const CashoutSchema = z
   .object({
-    products: z.array(ProductShape).min(1, "ต้องมีสินค้าอย่างน้อย 1 รายการ"),
+    products: z.array(ProductShape),
     preOrderProducts: z.array(ProductShape),
   })
-  .merge(CashoutInputSchema);
+  .merge(CashoutInputSchema)
+  .superRefine((data, ctx) => {
+    const total = data.products.length + data.preOrderProducts.length;
+
+    if (total === 0) {
+      ctx.addIssue({
+        path: ["products"],
+        code: z.ZodIssueCode.custom,
+        message: "ต้องมีสินค้าอย่างน้อย 1 รายการ",
+      });
+    }
+  });
 
 export type CashoutValues = z.infer<typeof CashoutSchema>;
 
