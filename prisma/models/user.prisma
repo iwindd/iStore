@@ -1,11 +1,11 @@
 model User {
-  id         Int         @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   name       String
-  email      String      @unique
+  email      String     @unique
   password   String
-  created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
-  employees Employee[]
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  employees  Employee[]
 
   @@map("users")
 }
@@ -19,23 +19,23 @@ model Employee {
   store_id   String
   creator_id Int?
 
-  user           User           @relation(fields: [user_id], references: [id])
-  role           Role           @relation("EmployeeRole", fields: [role_id], references: [id])
-  categories     Category[]
-  products       Product[]
-  orders              Order[]
-  returned_preorders  OrderPreOrder[] @relation("ReturnedPreOrders")
-  cancelled_preorders OrderPreOrder[] @relation("CancelledPreOrders")
-  stock_receipts StockReceipt[]
-  roles          Role[]
-  store          Store          @relation(fields: [store_id], references: [id])
-  creator        Employee?      @relation("EmployeeToEmployee", fields: [creator_id], references: [id])
-  employees      Employee[]     @relation("EmployeeToEmployee")
-  events         Event[]
-  broadcasts     Broadcast[]
-  consignments   Consignment[]
-  completed_consignments Consignment[] @relation("CompletedConsignments")
-  cancelled_consignments Consignment[] @relation("CancelledConsignments")
+  user                   User            @relation(fields: [user_id], references: [id])
+  role                   Role            @relation("EmployeeRole", fields: [role_id], references: [id])
+  categories             Category[]
+  products               Product[]
+  orders                 Order[]
+  returned_preorders     OrderPreOrder[] @relation("ReturnedPreOrders")
+  cancelled_preorders    OrderPreOrder[] @relation("CancelledPreOrders")
+  stock_receipts         StockReceipt[]
+  roles                  Role[]
+  store                  Store           @relation(fields: [store_id], references: [id])
+  creator                Employee?       @relation("EmployeeToEmployee", fields: [creator_id], references: [id])
+  employees              Employee[]      @relation("EmployeeToEmployee")
+  events                 Event[]
+  broadcasts             Broadcast[]
+  consignments           Consignment[]
+  completed_consignments Consignment[]   @relation("CompletedConsignments")
+  cancelled_consignments Consignment[]   @relation("CancelledConsignments")
 
   @@unique([user_id, store_id])
   @@map("employees")

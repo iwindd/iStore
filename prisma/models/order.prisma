@@ -1,46 +1,46 @@
 model Order {
-  id         Int             @id @default(autoincrement())
-  cost       Decimal
-  profit     Decimal
-  total      Decimal
-  method     Method          @default(CASH)
-  type       OrderType       @default(CASHOUT)
-  note       String?
-  store_id   String
-  creator_id Int?
-  created_at DateTime        @default(now())
-  updated_at DateTime        @updatedAt
+  id             Int       @id @default(autoincrement())
+  cost           Decimal
+  profit         Decimal
+  total          Decimal
+  method         Method    @default(CASH)
+  type           OrderType @default(CASHOUT)
+  note           String?
+  store_id       String
+  creator_id     Int?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
   consignment_id Int?
 
-  store           Store          @relation(fields: [store_id], references: [id])
-  creator         Employee?      @relation(fields: [creator_id], references: [id])
-  consignment     Consignment?      @relation(fields: [consignment_id], references: [id])
-  products        OrderProduct[]
-  preOrders       OrderPreOrder[]
-  productStockMovements  ProductStockMovement[]
+  store                 Store                  @relation(fields: [store_id], references: [id])
+  creator               Employee?              @relation(fields: [creator_id], references: [id])
+  consignment           Consignment?           @relation(fields: [consignment_id], references: [id])
+  products              OrderProduct[]
+  preOrders             OrderPreOrder[]
+  productStockMovements ProductStockMovement[]
 
   @@map("orders")
 }
 
 model OrderProduct {
-  id              Int               @id @default(autoincrement())
-  order_id        Int
-  product_id      Int
-  note            String?
-  count           Int
-  total           Decimal
-  profit          Decimal
-  cost            Decimal
+  id         Int     @id @default(autoincrement())
+  order_id   Int
+  product_id Int
+  note       String?
+  count      Int
+  total      Decimal
+  profit     Decimal
+  cost       Decimal
 
-  product         Product         @relation(fields: [product_id], references: [id])
+  product         Product          @relation(fields: [product_id], references: [id])
   order           Order            @relation(fields: [order_id], references: [id])
   promotionOffers PromotionOffer[]
 
   @@map("order_products")
 }
 
-model OrderPreOrder{
-  id              Int               @id @default(autoincrement())
+model OrderPreOrder {
+  id              Int            @id @default(autoincrement())
   order_id        Int
   product_id      Int
   note            String?
@@ -48,16 +48,16 @@ model OrderPreOrder{
   total           Decimal
   profit          Decimal
   cost            Decimal
-  status          PreOrderStatus    @default(PENDING)
+  status          PreOrderStatus @default(PENDING)
   returned_at     DateTime?
   returned_by_id  Int?
   cancelled_at    DateTime?
   cancelled_by_id Int?
 
-  product         Product         @relation(fields: [product_id], references: [id])
-  order           Order            @relation(fields: [order_id], references: [id])
-  returned_by     Employee?       @relation("ReturnedPreOrders", fields: [returned_by_id], references: [id])
-  cancelled_by    Employee?       @relation("CancelledPreOrders", fields: [cancelled_by_id], references: [id])
+  product      Product   @relation(fields: [product_id], references: [id])
+  order        Order     @relation(fields: [order_id], references: [id])
+  returned_by  Employee? @relation("ReturnedPreOrders", fields: [returned_by_id], references: [id])
+  cancelled_by Employee? @relation("CancelledPreOrders", fields: [cancelled_by_id], references: [id])
 
   @@map("order_preorders")
 }
