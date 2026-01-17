@@ -50,7 +50,7 @@ export default function MainLayout({
           }}
         >
           <MainNav />
-          <Stack p={2} spacing={1}>
+          <Stack px={8} mt={1} spacing={1}>
             {children}
           </Stack>
         </Box>
