@@ -1,8 +1,19 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, StackProps } from "@mui/material";
+import Image, { ImageProps } from "next/image";
 import iStoreLogo from "./logo.png";
-import Image from "next/image";
 
-const Logo = () => {
+const Logo = ({
+  width = 42,
+  height = 42,
+  slotProps,
+}: {
+  width?: number;
+  height?: number;
+  slotProps?: {
+    stack?: StackProps;
+    image?: ImageProps;
+  };
+}) => {
   return (
     <Stack
       direction={"row"}
@@ -10,13 +21,17 @@ const Logo = () => {
       justifyContent={"center"}
       alignItems={"center"}
       sx={{
-        width: '100%'
+        width: "100%",
       }}
+      {...slotProps?.stack}
     >
-      <Image width={42} height={42} src={iStoreLogo} alt="istore"></Image>
-      <Typography color="text.primary" variant="h3">
-        iStore
-      </Typography>
+      <Image
+        width={width}
+        height={height}
+        src={iStoreLogo}
+        alt="istore"
+        {...slotProps?.image}
+      ></Image>
     </Stack>
   );
 };

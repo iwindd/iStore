@@ -18,53 +18,49 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
 
   return (
     <ListItem
-      {...(route.path
-        ? {
-            component: RouterLink,
-            href: getPath(route.name),
-          }
-        : { role: "button" })}
       sx={{
-        alignItems: "center",
-        borderRadius: 0.3,
-        cursor: "pointer",
-        display: "flex",
-        flex: "0 0 auto",
-        gap: 1,
-        position: "relative",
-        textDecoration: "none",
-        whiteSpace: "nowrap",
-        transition: "0.1s background ease",
-        minHeight: "40px",
-        margin: "0 0 6px 0",
-        padding: "0 0",
-        ...(route.disabled && {
-          bgcolor: "var(--NavItem-disabled-background)",
-          color: "var(--NavItem-disabled-color)",
-          cursor: "not-allowed",
-        }),
-        ...(isActive
-          ? {
-              bgcolor: "var(--NavItem-active-background)",
-              color: "var(--NavItem-active-color)",
-            }
-          : {
-              color: "var(--NavItem-color)",
-              "&:hover": {
-                bgcolor: "var(--NavItem-hover-background)",
-              },
-            }),
+        p: 0,
       }}
     >
       <ListItemButton
-        disableRipple
-        disableTouchRipple
+        {...(route.path
+          ? {
+              component: RouterLink,
+              href: getPath(route.name),
+            }
+          : { role: "button" })}
+        data-active={isActive ? "true" : "false"}
         sx={{
-          background: "transparent",
-          "&:hover": {
-            background: "transparent",
+          alignItems: "center",
+          borderRadius: 1,
+          cursor: "pointer",
+          display: "flex",
+          flex: "0 0 auto",
+          gap: 1,
+          position: "relative",
+          textDecoration: "none",
+          whiteSpace: "nowrap",
+          transition: "0.2s background ease",
+          minHeight: "45px",
+          margin: "0 0 6px 0",
+          padding: "0 0",
+          width: "100%",
+          color: "var(--NavItem-color)",
+          "&.Mui-focusVisible": {
+            color: "var(--NavItem-color)",
+            bgcolor: "var(--NavItem-hover-background)",
           },
-          padding: "0 5px",
+          "&[data-active='true']": {
+            bgcolor: "var(--NavItem-active-background)",
+            color: "var(--NavItem-active-color)",
+
+            "&:hover": {
+              bgcolor: "var(--NavItem-hover-active-background)",
+            },
+          },
+          "&:not([data-active='true']):hover": {
+            bgcolor: "var(--NavItem-hover-background)",
+          },
         }}
       >
         {route.icon && (
@@ -74,7 +70,7 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
                 ? "var(--NavItem-icon-active-color)"
                 : "var(--NavItem-icon-color)",
               minWidth: "0px",
-              marginRight: "0.6em",
+              marginX: "0.6em",
             }}
           >
             {<route.icon fontSize={"medium"} />}

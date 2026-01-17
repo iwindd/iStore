@@ -97,3 +97,17 @@ export const stormGrey = {
   900: "#212636",
   950: "#121621",
 } satisfies PaletteRange;
+
+export const copperSulphate = {
+  50: "#e3f8ff",
+  100: "#ceebff",
+  200: "#9ed5fc",
+  300: "#6bbdf9",
+  400: "#43a9f7",
+  500: "#2b9df6",
+  600: "#1a97f7",
+  700: "#078dee",
+  800: "#0074c6",
+  900: "#0064b0",
+  950: "#0054a0",
+} satisfies PaletteRange;

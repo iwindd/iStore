@@ -1,26 +1,30 @@
 "use client";
-import Logo from "@/components/core/logo";
-import { getPath } from "@/router";
-import { Box, Stack } from "@mui/material";
-import RouterLink from "next/link";
+import { alpha, Box, useTheme } from "@mui/material";
 import NavItems from "./components";
+import NavLogo from "./components/NavLogo";
 
 const DesktopNav = () => {
+  const theme = useTheme();
+
   return (
     <Box
       sx={{
         "--SideNav-color": "var(--mui-palette-common-white)",
         "--SideNav-background": "var(--mui-palette-background-paper)",
-        "--MobileNav-color": "var(--mui-palette-common-white)",
-        "--NavItem-color": "var(--mui-palette-text-primary)",
+        "--NavItem-color": alpha(theme.palette.secondary.light, 0.9),
         "--NavItem-hover-background": "rgba(0, 0, 0, 0.04)",
-        "--NavItem-active-background": "var(--mui-palette-primary-main)",
-        "--NavItem-active-color": "var(--mui-palette-primary-contrastText)",
-        "--NavItem-disabled-color": "var(--mui-palette-neutral-500)",
-        "--NavItem-icon-color": "var(--mui-palette-secondary-400)",
-        "--NavItem-icon-active-color":
-          "var(--mui-palette-primary-contrastText)",
-        "--NavItem-icon-disabled-color": "var(--mui-palette-neutral-600)",
+        "--NavItem-active-background": alpha(theme.palette.primary.main, 0.08),
+        "--NavItem-hover-active-background": alpha(
+          theme.palette.primary.main,
+          0.2,
+        ),
+        "--NavItem-active-color": theme.palette.primary.dark,
+        "--NavItem-icon-color": alpha(theme.palette.secondary.light, 0.9),
+        "--NavItem-icon-active-color": theme.palette.primary.dark,
+        "--NavItem-group-label-color": alpha(
+          theme.palette.secondary.light,
+          0.9,
+        ),
         bgcolor: "var(--SideNav-background)",
         color: "var(--SideNav-color)",
         display: { xs: "none", lg: "flex" },
@@ -36,15 +40,7 @@ const DesktopNav = () => {
         zIndex: "var(--SideNav-zIndex)",
       }}
     >
-      <Stack spacing={2} sx={{ p: 3 }}>
-        <Box
-          component={RouterLink}
-          href={getPath("overview")}
-          sx={{ display: "inline-flex", textDecoration: "none" }}
-        >
-          <Logo />
-        </Box>
-      </Stack>
+      <NavLogo />
 
       <Box
         component="nav"

@@ -1,6 +1,7 @@
 "use client";
-import { Box, Drawer } from "@mui/material";
+import { alpha, Box, Drawer, useTheme } from "@mui/material";
 import NavItems from "./components";
+import NavLogo from "./components/NavLogo";
 
 export interface MobileNavProps {
   onClose?: () => void;
@@ -8,6 +9,8 @@ export interface MobileNavProps {
 }
 
 const MobileNav = ({ open, onClose }: MobileNavProps) => {
+  const theme = useTheme();
+
   return (
     <Drawer
       onClose={onClose}
@@ -15,17 +18,27 @@ const MobileNav = ({ open, onClose }: MobileNavProps) => {
       slotProps={{
         paper: {
           sx: {
-            "--MobileNav-background": "var(--mui-palette-neutral-950)",
             "--MobileNav-color": "var(--mui-palette-common-white)",
-            "--NavItem-color": "var(--mui-palette-neutral-300)",
-            "--NavItem-hover-background": "rgba(255, 255, 255, 0.04)",
-            "--NavItem-active-background": "var(--mui-palette-primary-main)",
-            "--NavItem-active-color": "var(--mui-palette-primary-contrastText)",
+            "--MobileNav-background": "var(--mui-palette-background-paper)",
+            "--NavItem-color": alpha(theme.palette.secondary.light, 0.9),
+            "--NavItem-hover-background": "rgba(0, 0, 0, 0.04)",
+            "--NavItem-active-background": alpha(
+              theme.palette.primary.main,
+              0.08,
+            ),
+            "--NavItem-hover-active-background": alpha(
+              theme.palette.primary.main,
+              0.2,
+            ),
+            "--NavItem-active-color": theme.palette.primary.dark,
             "--NavItem-disabled-color": "var(--mui-palette-neutral-500)",
-            "--NavItem-icon-color": "var(--mui-palette-neutral-400)",
-            "--NavItem-icon-active-color":
-              "var(--mui-palette-primary-contrastText)",
+            "--NavItem-icon-color": alpha(theme.palette.secondary.light, 0.9),
+            "--NavItem-icon-active-color": theme.palette.primary.dark,
             "--NavItem-icon-disabled-color": "var(--mui-palette-neutral-600)",
+            "--NavItem-group-label-color": alpha(
+              theme.palette.secondary.light,
+              0.9,
+            ),
             bgcolor: "var(--MobileNav-background)",
             color: "var(--MobileNav-color)",
             display: "flex",
@@ -39,6 +52,20 @@ const MobileNav = ({ open, onClose }: MobileNavProps) => {
         },
       }}
     >
+      <NavLogo
+        slotProps={{
+          stack: {
+            sx: {
+              position: "sticky",
+              top: 0,
+              background: "var(--MobileNav-background)",
+              zIndex: "var(--SideNav-zIndex)",
+              p: 2,
+              pt: 2,
+            },
+          },
+        }}
+      />
       <Box component="nav" sx={{ flex: "1 1 auto", p: "12px" }}>
         {NavItems()}
       </Box>
