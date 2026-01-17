@@ -1,14 +1,22 @@
 import { TypographyVariantsOptions } from "@mui/material";
-import { Sarabun } from "next/font/google";
+import { Bai_Jamjuree, Barlow } from "next/font/google";
 
-const sarabun = Sarabun({
+const barlow = Barlow({
   weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-barlow",
+});
+
+const jamjuree = Bai_Jamjuree({
+  weight: ["300", "400", "500", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jamjuree",
 });
 
 export const typography = {
-  fontFamily: sarabun.style.fontFamily,
+  fontFamily: `${barlow.style.fontFamily}, ${jamjuree.style.fontFamily}, sans-serif`,
   body1: { fontSize: "1rem", fontWeight: 400 },
   body2: { fontSize: "0.875rem", fontWeight: 400 },
   button: { fontWeight: 500 },
