@@ -15,7 +15,7 @@ export interface SearchProduct {
 }
 
 const SearchProducts = async (
-  input: string
+  input: string,
 ): Promise<ActionResponse<SearchProduct[]>> => {
   try {
     const user = await getUser();
@@ -32,9 +32,6 @@ const SearchProducts = async (
 
     const products = await db.product.findMany({
       take: 5,
-      orderBy: {
-        sold: "desc",
-      },
       where,
       select: {
         id: true,

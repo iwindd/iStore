@@ -2,6 +2,30 @@
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
+import { Prisma } from "@prisma/client";
+
+type BroadcastWithRelations = Prisma.BroadcastGetPayload<{
+  include: {
+    event: {
+      select: {
+        id: true;
+        note: true;
+        start_at: true;
+        end_at: true;
+      };
+    };
+    creator: {
+      select: {
+        user: {
+          select: {
+            name: true;
+          };
+        };
+      };
+    };
+    logs: true;
+  };
+}>;
 
 export const getBroadcast = async (id: number) => {
   try {
@@ -42,7 +66,7 @@ export const getBroadcast = async (id: number) => {
       throw new Error("ไม่พบ Broadcast");
     }
 
-    return broadcast;
+    return broadcast as BroadcastWithRelations;
   } catch (error) {
     console.error(error);
     throw ActionError(error);
