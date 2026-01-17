@@ -7,7 +7,6 @@ export const MuiCard = {
   styleOverrides: {
     root: ({ theme }) => {
       return {
-        borderRadius: 16,
         [`&.${paperClasses.elevation1}`]: {
           boxShadow:
             theme.palette.mode === "dark"

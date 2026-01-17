@@ -80,7 +80,7 @@ const Stats = () => {
   ];
 
   return (
-    <Grid container spacing={1}>
+    <Grid container>
       {config.map((stat) => (
         <Grid
           key={stat.name}
