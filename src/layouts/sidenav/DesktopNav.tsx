@@ -27,7 +27,7 @@ const DesktopNav = () => {
         ),
         bgcolor: "var(--SideNav-background)",
         color: "var(--SideNav-color)",
-        display: { xs: "none", lg: "flex" },
+        display: { xs: "none", md: "flex" },
         flexDirection: "column",
         height: "100%",
         left: 0,

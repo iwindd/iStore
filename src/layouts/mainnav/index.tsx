@@ -43,12 +43,16 @@ export function MainNav(): React.JSX.Element {
             alignItems: "center",
             justifyContent: "space-between",
             minHeight: "64px",
-            px: 2,
+            px: {
+              xs: 1,
+              md: 2,
+              xl: 3,
+            },
           }}
         >
           <Stack sx={{ alignItems: "center" }} direction="row" spacing={2}>
             <IconButton
-              sx={{ display: { lg: "none" } }}
+              sx={{ display: { md: "none" } }}
               onClick={(): void => {
                 setOpenNav(true);
               }}

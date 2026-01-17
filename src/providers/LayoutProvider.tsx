@@ -46,11 +46,23 @@ export default function MainLayout({
             display: "flex",
             flex: "1 1 auto",
             flexDirection: "column",
-            pl: { lg: "var(--SideNav-width)" },
+            pl: { md: "var(--SideNav-width)" },
           }}
         >
           <MainNav />
-          <Stack px={8} mt={1} spacing={1}>
+          <Stack
+            px={{
+              xs: 2,
+              sm: 3,
+              md: 4,
+              lg: 5,
+              xl: 8,
+            }}
+            mt={{
+              xs: 1,
+            }}
+            spacing={1}
+          >
             {children}
           </Stack>
         </Box>
