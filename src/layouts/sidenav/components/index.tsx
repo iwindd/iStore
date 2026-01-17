@@ -134,8 +134,7 @@ const NavItems = () => {
             </React.Fragment>
           );
         } else {
-          const item = renderNormalItem(navItem);
-          if (!item) return null;
+          return renderNormalItem(navItem);
         }
       })}
     </List>
