@@ -1,17 +1,17 @@
 model StockReceipt {
-  id         Int                @id @default(autoincrement())
+  id         Int             @id @default(autoincrement())
   note       String?
-  status     StockReceiptStatus @default(DRAFT)
-  action_at  DateTime           @default(now())
-  created_at DateTime           @default(now())
-  updated_at DateTime           @updatedAt
+  status     StockReceiptStatus      @default(DRAFT)
+  action_at  DateTime        @default(now())
+  created_at DateTime        @default(now())
+  updated_at DateTime        @updatedAt
   store_id   String
   creator_id Int
 
-  store                 Store                  @relation(fields: [store_id], references: [id])
-  creator               Employee?              @relation(fields: [creator_id], references: [id])
-  stock_recept_products StockReceiptProduct[]
-  productStockMovements ProductStockMovement[]
+  store      Store          @relation(fields: [store_id], references: [id])
+  creator    Employee?      @relation(fields: [creator_id], references: [id])
+  stock_recept_products   StockReceiptProduct[]
+  productStockMovements  ProductStockMovement[]
 
   @@map("stock_recepts")
 }
@@ -25,13 +25,14 @@ enum StockReceiptStatus {
 }
 
 model StockReceiptProduct {
-  id         Int @id @default(autoincrement())
-  quantity   Int
-  stock_id   Int
-  product_id Int
+  id              Int            @id @default(autoincrement())
+  quantity        Int
+  stock_id        Int
+  product_id      Int
 
-  stock_receipt StockReceipt @relation(fields: [stock_id], references: [id])
-  product       Product      @relation(fields: [product_id], references: [id])
+  stock_receipt   StockReceipt   @relation(fields: [stock_id], references: [id])
+  product         Product        @relation(fields: [product_id], references: [id])
 
   @@map("stock_receipt_products")
 }
+

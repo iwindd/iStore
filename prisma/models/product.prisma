@@ -1,13 +1,13 @@
 model Category {
-  id         Int       @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   label      String
-  overstock  Boolean   @default(false)
+  overstock  Boolean     @default(false)
   store_id   String
   creator_id Int?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  store      Store     @relation(fields: [store_id], references: [id])
-  creator    Employee? @relation(fields: [creator_id], references: [id])
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  store      Store       @relation(fields: [store_id], references: [id])
+  creator    Employee?   @relation(fields: [creator_id], references: [id])
   product    Product[]
 
   @@unique([label, store_id])
@@ -15,20 +15,20 @@ model Category {
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  serial      String
-  label       String
-  price       Int       @default(0)
-  cost        Int       @default(0)
-  sold        Int       @default(0)
-  category_id Int?
-  store_id    String
-  creator_id  Int?
-  keywords    String    @default("")
-  usePreorder Boolean   @default(false)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-  deleted_at  DateTime?
+  id                     Int                      @id @default(autoincrement())
+  serial                 String
+  label                  String
+  price                  Int                      @default(0)
+  cost                   Int                      @default(0)
+  sold                   Int                      @default(0)
+  category_id            Int?
+  store_id               String
+  creator_id             Int?
+  keywords               String                   @default("")
+  usePreorder            Boolean                  @default(false)
+  created_at             DateTime                 @default(now())
+  updated_at             DateTime                 @updatedAt
+  deleted_at             DateTime?
 
   store                  Store                   @relation(fields: [store_id], references: [id])
   category               Category?               @relation(fields: [category_id], references: [id], onDelete: SetNull)
@@ -38,11 +38,11 @@ model Product {
   promotionOfferGetItems PromotionOfferGetItem[]
   orderProduct           OrderProduct[]
   orderPreOrders         OrderPreOrder[]
-  stock                  ProductStock?
+  stock           ProductStock?     
   productStockMovements  ProductStockMovement[]
-  consignmentProducts    ConsigmentProduct[]
+  consignmentProducts ConsigmentProduct[]
 
-  @@unique([serial, store_id])
+  @@unique([serial,      store_id])
   @@map("products")
 }
 
@@ -54,27 +54,27 @@ model ProductStock {
   product_id Int      @unique
   updatedAt  DateTime @updatedAt
 
-  product Product @relation(fields: [product_id], references: [id])
+  product    Product  @relation(fields: [product_id], references: [id])
 
   @@map("product_stocks")
 }
 
-model ProductStockMovement {
-  id               String                   @id @default(cuid())
-  type             ProductStockMovementType
-  quantity         Int
-  quantity_before  Int
-  quantity_after   Int
-  product_id       Int
-  stock_receipt_id Int?
-  order_id         Int?
-  consignment_id   Int?
-  createdAt        DateTime                 @default(now())
+model ProductStockMovement{
+  id                String        @id @default(cuid())
+  type              ProductStockMovementType
+  quantity          Int     
+  quantity_before   Int
+  quantity_after    Int
+  product_id        Int
+  stock_receipt_id  Int?
+  order_id          Int?
+  consignment_id    Int?
+  createdAt         DateTime      @default(now())
 
-  product       Product       @relation(fields: [product_id], references: [id])
-  stock_receipt StockReceipt? @relation(fields: [stock_receipt_id], references: [id])
-  order         Order?        @relation(fields: [order_id], references: [id])
-  consignment   Consignment?  @relation(fields: [consignment_id], references: [id])
+  product           Product       @relation(fields: [product_id], references: [id])
+  stock_receipt     StockReceipt? @relation(fields: [stock_receipt_id], references: [id])
+  order             Order?        @relation(fields: [order_id], references: [id])
+  consignment       Consignment?  @relation(fields: [consignment_id], references: [id])
 
   @@index([product_id])
   @@map("product_stock_movements")
