@@ -90,8 +90,7 @@ export const colorSchemes = {
         level3: "var(--mui-palette-neutral-200)",
       },
       common: { black: "#000000", white: "#ffffff" },
-      divider: "var(--mui-palette-neutral-200)",
-      dividerChannel: "220 223 228",
+      divider: "var(--mui-palette-neutral-100)",
       error: {
         ...redOrange,
         light: redOrange[400],

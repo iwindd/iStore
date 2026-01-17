@@ -9,7 +9,7 @@ import { usePopover } from "@/hooks/use-popover";
 
 import { useAuth } from "@/hooks/use-auth";
 import { MenuTwoTone } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { alpha, Typography, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import Breadcrumb from "../breadcrumb";
 import UserPopover from "../popover";
@@ -17,8 +17,8 @@ import MobileNav from "../sidenav/MobileNav";
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-
   const { user } = useAuth();
+  const theme = useTheme();
   const userPopover = usePopover<HTMLDivElement>();
   const pathname = usePathname();
   React.useEffect(() => setOpenNav(false), [pathname]);
@@ -28,8 +28,8 @@ export function MainNav(): React.JSX.Element {
       <Box
         component="header"
         sx={{
-          borderBottom: "1px solid var(--mui-palette-divider)",
-          backgroundColor: "var(--mui-palette-background-paper)",
+          backgroundColor: `${alpha(theme.palette.background.paper, 0.8)}`,
+          backdropFilter: "blur(20px)",
           position: "sticky",
           top: 0,
           zIndex: "var(--mui-zIndex-appBar)",
