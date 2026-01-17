@@ -1,10 +1,10 @@
 model Store {
-  id             String         @id @default(cuid())
+  id             String            @id @default(cuid())
   name           String
   categories     Category[]
   products       Product[]
   orders         Order[]
-  stock_receipts         StockReceipt[]
+  stock_receipts StockReceipt[]
   employees      Employee[]
   roles          Role[]
   events         Event[]
@@ -18,7 +18,7 @@ model Store {
   province       String?
   postalcode     String?
   lineBotConfig  LineBotConfig?
-  api_key        String?        @unique
+  api_key        String?           @unique
 
   @@map("stores")
 }
