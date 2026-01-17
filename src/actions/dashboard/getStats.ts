@@ -25,7 +25,6 @@ export const getStats = async (range: DashboardRange): Promise<StatResult> => {
   };
 
   const filterRange = await getDashboardRangeDate(range);
-  console.log(filterRange);
 
   try {
     const user = await getUser();
