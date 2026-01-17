@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 const Breadcrumb = () => {
   const t = useTranslations("ROUTES");
   const activeRouteTrail = useActiveRouteTrail().filter(
-    (route) => !route.disabledBreadcrumb
+    (route) => !route.disabledBreadcrumb,
   );
   const params = useActiveRouteParams();
 
@@ -32,13 +32,11 @@ const Breadcrumb = () => {
     );
   });
 
-  if (items.length <= 0) return null;
+  if (items.length <= 1) return null;
 
   return (
     <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
-      <Link underline="hover" color="inherit" href={getPath("overview")}>
-        {t("overview.label")}
-      </Link>
+      <div></div>
       {items}
     </Breadcrumbs>
   );

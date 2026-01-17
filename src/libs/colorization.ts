@@ -3,7 +3,7 @@ import { StockReceiptStatus } from "@prisma/client";
 
 export class Colorization {
   static getGridCellColorForQuantity(
-    params: GridCellParams<any, any, any, GridTreeNode>
+    params: GridCellParams<any, any, any, GridTreeNode>,
   ) {
     if (params.field != "quantity") return "";
 
@@ -11,7 +11,7 @@ export class Colorization {
   }
 
   static getGridCellColorForStockReceiptStatus(
-    params: GridCellParams<any, any, any, GridTreeNode>
+    params: GridCellParams<any, any, any, GridTreeNode>,
   ) {
     if (params.field != "state") return "";
 
@@ -32,7 +32,7 @@ export class Colorization {
   }
 
   static getGridCellColorForConsignmentStatus(
-    params: GridCellParams<any, any, any, GridTreeNode>
+    params: GridCellParams<any, any, any, GridTreeNode>,
   ) {
     if (params.field != "status") return "";
 
@@ -46,5 +46,17 @@ export class Colorization {
       default:
         return "text-color-secondary";
     }
+  }
+
+  static getStoreBackgroundColor(index: number) {
+    const colors = [
+      "primary.main",
+      "secondary.main",
+      "error.main",
+      "warning.main",
+      "info.main",
+      "success.main",
+    ];
+    return colors[index % colors.length];
   }
 }

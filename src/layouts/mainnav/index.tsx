@@ -12,6 +12,7 @@ import { MenuTwoTone } from "@mui/icons-material";
 import { alpha, Typography, useTheme } from "@mui/material";
 import { usePathname } from "next/navigation";
 import Breadcrumb from "../breadcrumb";
+import StoreSelector from "../getStoreSwitcher";
 import UserPopover from "../popover";
 import MobileNav from "../sidenav/MobileNav";
 
@@ -54,7 +55,10 @@ export function MainNav(): React.JSX.Element {
             >
               <MenuTwoTone />
             </IconButton>
-            <Breadcrumb />
+            <Stack spacing={0} direction={"row"} alignItems={"center"}>
+              <StoreSelector />
+              <Breadcrumb />
+            </Stack>
           </Stack>
           <Stack
             direction="row"
