@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import {
   Method,
   OrderType,
@@ -5,13 +6,19 @@ import {
   ProductStockMovementType,
 } from "@prisma/client";
 import bcrypt from "bcrypt";
+import "dotenv/config";
 import _ from "lodash";
-import orders from "./data/orders.json";
-import permissions from "./data/permissions.json";
-import products from "./data/products.json";
-import stores from "./data/stores.json";
+import { Pool } from "pg";
+import orders from "./data/orders.json" with { type: "json" };
+import permissions from "./data/permissions.json" with { type: "json" };
+import products from "./data/products.json" with { type: "json" };
+import stores from "./data/stores.json" with { type: "json" };
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL!;
+
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 const DEFAULT_PASSWORD = "password";
 
 const getOrders = async () => {
@@ -132,10 +139,10 @@ async function main() {
                       store: {
                         connect: { id: store.id },
                       },
-                    })
+                    }),
                   ),
                 },
-              })
+              }),
             ),
           },
         },
@@ -183,7 +190,7 @@ async function main() {
   const chunks = _.chunk(ordersData, 100);
 
   console.log(
-    `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`
+    `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`,
   );
 
   for (const [i, chunk] of chunks.entries()) {
@@ -200,7 +207,7 @@ async function main() {
       {
         maxWait: 60000,
         timeout: 60000,
-      }
+      },
     );
     console.log(`✅ Seeded chunk ${i + 1}/${chunks.length}`);
   }
@@ -215,7 +222,7 @@ async function main() {
     `Created ${await prisma.category.count()} categories\n`,
     `Created ${await prisma.order.count()} orders (${await prisma.orderProduct.count()} products)\n`,
 
-    `--------------------------------\n`
+    `--------------------------------\n`,
   );
 }
 

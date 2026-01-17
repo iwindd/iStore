@@ -1,40 +1,30 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
-import { createSoftDeleteExtension } from "prisma-extension-soft-delete";
 import { datatableFetchExtension } from "./prismaExtensions/Datatable";
 import { promotionExtension } from "./prismaExtensions/Promotion";
 
-export type Tx = Parameters<Parameters<typeof db.$transaction>[0]>[0];
-
 const prismaClientSingleton = () => {
-  const prisma = new PrismaClient()
-    .$extends(withAccelerate())
-    .$extends(datatableFetchExtension)
-    .$extends(promotionExtension)
-    .$extends(
-      createSoftDeleteExtension({
-        models: {
-          Product: true,
-        },
-        defaultConfig: {
-          field: "deleted_at",
-          createValue: (deleted) => {
-            if (deleted) return new Date();
-            return null;
-          },
-        },
-      })
-    );
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+  });
 
-  return prisma;
+  const client = new PrismaClient({
+    adapter,
+  })
+    .$extends(datatableFetchExtension)
+    .$extends(promotionExtension);
+
+  return client;
 };
 
-declare const globalThis: {
-  prismaGlobal: ReturnType<typeof prismaClientSingleton>;
-} & typeof global;
+export type ExtendedPrismaClient = ReturnType<typeof prismaClientSingleton>;
 
-const db = globalThis.prismaGlobal ?? prismaClientSingleton();
+const globalForPrisma = globalThis as unknown as {
+  prisma: ExtendedPrismaClient | undefined;
+};
+
+const db = globalForPrisma.prisma ?? prismaClientSingleton();
 
 export default db;
 
-if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = db;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db;

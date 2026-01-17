@@ -2,7 +2,7 @@
 
 import db from "@/libs/db";
 import { PreOrderStatus } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from "@prisma/client/runtime/client";
 
 const getProductOrderData = async (productId: number) => {
   const orderProduct = await db.orderProduct.aggregate({

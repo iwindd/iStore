@@ -1,15 +1,16 @@
 import "dotenv/config";
-import path from "node:path";
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({
-  schema: path.join("prisma"),
+  schema: "prisma/",
   migrations: {
-    path: path.join("prisma", "migrations"),
-    seed: `tsx prisma/seed.ts`,
+    path: "prisma/migrations",
+    seed: "ts-node prisma/seed.ts",
   },
-  engine: "classic",
   datasource: {
+    // Prefer DIRECT TCP via DATABASE_URL
     url: env("DATABASE_URL"),
+    // Optionally support shadow DB if present:
+    // shadowDatabaseUrl: env('SHADOW_DATABASE_URL'),
   },
 });

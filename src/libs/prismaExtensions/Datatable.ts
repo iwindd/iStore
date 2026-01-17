@@ -1,5 +1,5 @@
 import { TableFetch } from "@/components/Datatable";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../prisma/generated/prisma/client";
 import { filter, order } from "../formatter";
 
 export interface DatatableFetchResult<T> {
@@ -18,7 +18,7 @@ export const datatableFetchExtension = Prisma.defineExtension((client) => {
             table,
             filter: columnFilter,
             ...args
-          }: A & { table: TableFetch; filter?: string[] }
+          }: A & { table: TableFetch; filter?: string[] },
         ) {
           const skip = table.pagination.page * table.pagination.pageSize;
           const take = table.pagination.pageSize;

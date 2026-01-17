@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../../../prisma/generated/prisma/client";
 
 interface RelatedPromotionOfferArgs {
   productIds: number[];
@@ -12,14 +12,14 @@ export const promotionExtension = Prisma.defineExtension((client) => {
       promotionOffer: {
         async findRelatedPromotionOffer<
           T,
-          A extends Prisma.Args<T, "findMany">
+          A extends Prisma.Args<T, "findMany">,
         >(
           this: T,
           {
             productIds,
             disableOnlyActive,
             ...args
-          }: A & RelatedPromotionOfferArgs
+          }: A & RelatedPromotionOfferArgs,
         ): Promise<Prisma.PromotionOfferGetPayload<A>[]> {
           const isDisableOnlyActive = disableOnlyActive ?? true;
           const result = (this as any).findMany({

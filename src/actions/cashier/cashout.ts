@@ -5,8 +5,9 @@ import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
-import {CashoutHelper} from './cashout-helpers';
+
+import { Decimal } from "@prisma/client/runtime/client";
+import { CashoutHelper } from "./cashout-helpers";
 
 export type ValidateProduct = {
   id: number;
@@ -21,7 +22,7 @@ export type ValidateProduct = {
 export const validateProducts = async (
   store_id: string,
   cartProducts: CashoutValues["products"],
-  preOrderProducts?: CashoutValues["preOrderProducts"]
+  preOrderProducts?: CashoutValues["preOrderProducts"],
 ) => {
   const allRelateProductIds = [
     ...cartProducts.map((p) => p.id),
@@ -59,7 +60,7 @@ export const validateProducts = async (
 
   const validateProduct = (
     cartProduct: CashoutValues["products"][number],
-    isPreOrder?: boolean
+    isPreOrder?: boolean,
   ) => {
     const product = findProduct(cartProduct.id);
 
@@ -127,7 +128,7 @@ const Cashout = async (payload: CashoutValues) => {
       await validateProducts(
         user.store,
         validated.products,
-        validated.preOrderProducts
+        validated.preOrderProducts,
       );
 
     const order = await db.$transaction(async (tx) => {
