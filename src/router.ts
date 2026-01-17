@@ -167,20 +167,16 @@ const ROUTES = ROUTER({
     label: "applications.label",
     icon: SettingsApplications,
     children: {
-      create: {
-        path: "/applications/create",
-        label: "applications.create.label",
-        disabledBreadcrumb: true,
-        children: {
-          line: {
-            path: "/applications/create/line",
-            label: "applications.create.line.label",
-          },
-        },
-      },
       line: {
         path: "/applications/line/:id",
         label: "applications.line.label",
+        children: {
+          create: {
+            path: "/applications/line/create",
+            label: "applications.create.label",
+            disabledBreadcrumb: true,
+          },
+        },
       },
     },
   },

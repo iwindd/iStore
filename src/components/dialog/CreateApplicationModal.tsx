@@ -32,7 +32,7 @@ const CreateApplicationModal = ({
     event.preventDefault();
 
     if (applicationType === "line") {
-      router.push(getPath("applications.create.line"));
+      router.push(getPath("applications.line.create"));
     } else {
       console.log("Unknown application type");
     }
