@@ -1,11 +1,11 @@
-model LineApplication{
-  id Int @id @default(autoincrement())
+model LineApplication {
+  id   Int    @id @default(autoincrement())
   name String
 
   channelAccessToken String
-  channelSecret String
-  key String @unique
-  
+  channelSecret      String
+  key                String @unique
+
   useAsChatbot   Boolean @default(false)
   useAsBroadcast Boolean @default(false)
 
@@ -13,7 +13,7 @@ model LineApplication{
   updated_at DateTime @updatedAt
 
   store_id String
-  store Store @relation(fields: [store_id], references: [id])
+  store    Store  @relation(fields: [store_id], references: [id])
 
   @@map("line_applications")
 }
@@ -42,7 +42,7 @@ model Broadcast {
 
   event   Event          @relation(fields: [event_id], references: [id])
   store   Store          @relation(fields: [store_id], references: [id])
-  creator Employee?     @relation(fields: [creator_id], references: [id])
+  creator Employee?      @relation(fields: [creator_id], references: [id])
   logs    BroadcastLog[]
 
   @@index([scheduled_at, status])
