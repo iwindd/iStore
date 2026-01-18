@@ -1,5 +1,4 @@
 import { useAppDispatch } from "@/hooks";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
 import { money } from "@/libs/formatter";
 import {
@@ -7,12 +6,7 @@ import {
   removeProductFromCart,
   setProductNote,
 } from "@/reducers/cartReducer";
-import {
-  Delete,
-  DeleteTwoTone,
-  ExpandLess,
-  ExpandMore,
-} from "@mui/icons-material";
+import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Collapse,
   IconButton,
@@ -34,19 +28,10 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
   const preOrderDialog = useDialog();
   const dispatch = useAppDispatch();
 
-  const confirmation = useConfirm({
-    title: t("confirmation.removeProduct.confirm_title"),
-    text: t("confirmation.removeProduct.confirm_text"),
-    confirmProps: {
-      startIcon: <DeleteTwoTone />,
-      color: "error",
-    },
-    onConfirm: async () => dispatch(removeProductFromCart(product.id)),
-  });
-
   return (
     <Paper
       variant="outlined"
+      elevation={2}
       sx={{
         p: 1,
         borderStyle: "dashed",
@@ -56,7 +41,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
         <Stack direction={"row"} spacing={1}>
           <NumberStepper product={product} />
           <Stack flex={1} minWidth={0} mr={1}>
-            <Typography variant="h6" fontWeight="bold" noWrap sx={{ pr: 1 }}>
+            <Typography variant="h6" noWrap sx={{ pr: 1 }}>
               {product.data?.label}
             </Typography>
 
@@ -89,7 +74,10 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
 
             <Stack direction={"row"} spacing={1}>
               <div>
-                <IconButton size="small" onClick={confirmation.handleOpen}>
+                <IconButton
+                  size="small"
+                  onClick={() => dispatch(removeProductFromCart(product.id))}
+                >
                   <Delete fontSize="small" />
                 </IconButton>
               </div>
@@ -135,7 +123,6 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
         product_id={product.id}
         defaultValue={product.quantity}
       />
-      <Confirmation {...confirmation.props} />
     </Paper>
   );
 };

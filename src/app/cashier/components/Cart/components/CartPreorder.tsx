@@ -1,17 +1,11 @@
 import { useAppDispatch } from "@/hooks";
-import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { money } from "@/libs/formatter";
 import {
   CartProduct as CartProductType,
   removePreOrderProductFromCart,
   setProductPreOrderNote,
 } from "@/reducers/cartReducer";
-import {
-  Delete,
-  DeleteTwoTone,
-  ExpandLess,
-  ExpandMore,
-} from "@mui/icons-material";
+import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
   Collapse,
   IconButton,
@@ -30,16 +24,6 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
   const [note, setNote] = useState(product.note ?? "");
   const dispatch = useAppDispatch();
 
-  const confirmation = useConfirm({
-    title: t("confirmation.removeProduct.confirm_title"),
-    text: t("confirmation.removeProduct.confirm_text"),
-    confirmProps: {
-      startIcon: <DeleteTwoTone />,
-      color: "error",
-    },
-    onConfirm: async () => dispatch(removePreOrderProductFromCart(product.id)),
-  });
-
   return (
     <Paper
       variant="outlined"
@@ -54,7 +38,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
         <Stack direction={"row"} spacing={1}>
           <NumberStepperPreorder product={product} />
           <Stack flex={1} minWidth={0} mr={1}>
-            <Typography variant="h6" fontWeight="bold" noWrap sx={{ pr: 1 }}>
+            <Typography variant="h6" noWrap sx={{ pr: 1 }}>
               {product.data?.label}
             </Typography>
 
@@ -89,7 +73,12 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
 
             <Stack direction={"row"} spacing={1} justifyContent={"end"}>
               <div>
-                <IconButton size="small" onClick={confirmation.handleOpen}>
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    dispatch(removePreOrderProductFromCart(product.id))
+                  }
+                >
                   <Delete fontSize="small" />
                 </IconButton>
               </div>
@@ -130,8 +119,6 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
           />
         </Stack>
       </Collapse>
-
-      <Confirmation {...confirmation.props} />
     </Paper>
   );
 };

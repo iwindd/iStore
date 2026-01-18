@@ -65,13 +65,13 @@ const CartSections = () => {
         flexDirection: "column",
         zIndex: 10,
         borderRadius: 0,
+        height: "100%",
+        pb: 7,
       }}
     >
       {/* Cart Items List */}
       <Stack
-        height={"40vh"}
-        minHeight={"40vh"}
-        maxHeight={"60vh"}
+        height={"100%"}
         flex={1}
         spacing={1}
         pb={1}
@@ -157,7 +157,7 @@ const CartSections = () => {
             </Typography>
             <Typography variant="h6" fontWeight={800} color="primary.main">
               {money(
-                checkoutMode == CheckoutMode.CASHOUT ? total : totalProduct
+                checkoutMode == CheckoutMode.CASHOUT ? total : totalProduct,
               )}
             </Typography>
           </Stack>

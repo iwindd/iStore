@@ -29,7 +29,7 @@ const CartPromotionOffer = ({
             </Typography>
           </Stack>
           <Stack flex={1} minWidth={0} mr={1}>
-            <Typography variant="h6" fontWeight="bold" noWrap sx={{ pr: 1 }}>
+            <Typography variant="h6" noWrap sx={{ pr: 1 }}>
               {promotion.data.label}
             </Typography>
             <Stack direction={"row"} spacing={1}>
