@@ -11,13 +11,10 @@ import GridLinkAction from "@/components/GridLinkAction";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useDialog } from "@/hooks/use-dialog";
 import * as ff from "@/libs/formatter";
-import { useInterface } from "@/providers/InterfaceProvider";
 import { getPath } from "@/router";
 import {
   DeleteTwoTone,
-  EditTwoTone,
   QrCodeTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
@@ -27,15 +24,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
-import { ProductFormDialog } from "./add-controller";
 import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = () => {
   const t = useTranslations("PRODUCTS.datatable");
-  const editDialog = useDialog();
-  const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
-  const [product, setProduct] = useState<ProductDatatableInstance | null>(null);
   const [barcodeProduct, setBarcodeProduct] =
     useState<ProductDatatableInstance | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
@@ -77,13 +70,6 @@ const ProductDatatable = () => {
   });
 
   const menu = {
-    edit: React.useCallback(
-      (product: ProductDatatableInstance) => () => {
-        setProduct(product);
-        editDialog.handleOpen();
-      },
-      [editDialog, setProduct],
-    ),
     delete: React.useCallback(
       (product: ProductDatatableInstance) => () => {
         confirmation.with(product.id);
@@ -226,11 +212,10 @@ const ProductDatatable = () => {
             showInMenu
           />,
           <GridActionsCellItem
-            key="edit"
-            icon={<EditTwoTone />}
-            onClick={menu.edit(row)}
-            label={t("actions.edit")}
-            disabled={!permissions(row).canEditProduct}
+            key="barcode"
+            icon={<QrCodeTwoTone />}
+            onClick={menu.barcode(row)}
+            label={t("actions.barcode")}
             showInMenu
           />,
           <GridActionsCellItem
@@ -239,13 +224,6 @@ const ProductDatatable = () => {
             onClick={menu.delete(row)}
             label={t("actions.delete")}
             disabled={!permissions(row).canRemoveProduct}
-            showInMenu
-          />,
-          <GridActionsCellItem
-            key="barcode"
-            icon={<QrCodeTwoTone />}
-            onClick={menu.barcode(row)}
-            label={t("actions.barcode")}
             showInMenu
           />,
         ],
@@ -262,12 +240,6 @@ const ProductDatatable = () => {
         height={700}
       />
 
-      <ProductFormDialog
-        open={editDialog.open && !isBackdrop}
-        onClose={editDialog.handleClose}
-        setLoading={setBackdrop}
-        product={product}
-      />
       <Confirmation {...confirmation.props} />
       <BarcodeDialog
         product={barcodeProduct}
