@@ -1,5 +1,4 @@
 import type { Components } from "@mui/material/styles";
-
 import type { Theme } from "../types";
 import { MuiAutocomplete } from "./auto-complete";
 import { MuiAvatar } from "./avatar";
@@ -39,4 +38,21 @@ export const components = {
   MuiTextField,
   MuiTabs,
   MuiSwitch,
+  // @ts-ignore
+  MuiDataGrid: {
+    styleOverrides: {
+      root: {
+        borderRadius: "5px",
+        border: 0,
+      },
+      cell: {
+        display: "flex",
+        alignItems: "center",
+        fontSize: "0.875rem",
+        "&:focus, &:focus-within": {
+          outline: "none",
+        },
+      },
+    },
+  },
 } satisfies Components<Theme>;

@@ -3,7 +3,6 @@ import { ButtonProps, Card, CardContent } from "@mui/material";
 import {
   DataGrid,
   DataGridProps,
-  gridClasses,
   GridColDef,
   GridFilterModel,
   GridPaginationModel,
@@ -126,45 +125,11 @@ const Datatable = ({
               },
             },
           }}
-          sx={{
-            borderRadius: "5px",
-            border: 0,
-            "& .MuiDataGrid-row:last-child": {
-              "& .MuiDataGrid-cell": {
-                borderBottomWidth: 0,
-              },
-            },
-            "& .MuiDataGrid-colCell": {
-              backgroundColor: "var(--mui-palette-background-level1)",
-              color: "var(--mui-palette-text-secondary)",
-              lineHeight: 1,
-            },
-            "& .MuiDataGrid-checkboxInput": {
-              padding: "0 0 0 24px",
-            },
-            [`& .${gridClasses.columnHeader}`]: {
-              backgroundColor: "var(--mui-palette-background-level1)",
-              color: "var(--mui-palette-text-secondary)",
-            },
-            [`& .text-color-primary`]: {
-              color: "var(--mui-palette-primary-main)",
-            },
-            [`& .text-color-secondary`]: {
-              color: "var(--mui-palette-secondary-dark)",
-            },
-            [`& .text-color-info`]: { color: "var(--mui-palette-info-main)" },
-            [`& .text-color-warning`]: {
-              color: "var(--mui-palette-warning-main)",
-            },
-            [`& .text-color-success`]: {
-              color: "var(--mui-palette-success-main)",
-            },
-            [`& .text-color-error`]: { color: "var(--mui-palette-error-main)" },
-          }}
           showToolbar
           paginationMode="server"
           sortingMode="server"
           filterMode="server"
+          paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           onSortModelChange={setSortModel}
           onFilterModelChange={setFilterModel}
