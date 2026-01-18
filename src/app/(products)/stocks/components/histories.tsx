@@ -2,7 +2,7 @@
 import CancelStock from "@/actions/stock/cancel";
 import getExportStockData from "@/actions/stock/getExportStockReceiptData";
 import getStockReceiptDatatable, {
-  StockDatatableInstance,
+  StockReceiptDatatableInstance,
 } from "@/actions/stock/getStockReceiptDatatable";
 import StockReceiptStatusChip from "@/components/Chips/StockReceiptStatusChip";
 import Datatable from "@/components/Datatable";
@@ -39,7 +39,7 @@ const HistoryDatatable = () => {
     "all" | "completed" | "draft" | "cancelled"
   >("all");
 
-  const permissions = (stock: StockDatatableInstance) => ({
+  const permissions = (stock: StockReceiptDatatableInstance) => ({
     canCancelStock:
       user?.hasPermission(StockPermissionEnum.DELETE) ||
       stock.creator?.id === user?.userStoreId,
@@ -114,21 +114,21 @@ const HistoryDatatable = () => {
 
   const menu = {
     cancel: React.useCallback(
-      (row: StockDatatableInstance) => () => {
+      (row: StockReceiptDatatableInstance) => () => {
         cancelConfirmation.with(row.id);
         cancelConfirmation.handleOpen();
       },
       [cancelConfirmation],
     ),
     export: React.useCallback(
-      (row: StockDatatableInstance) => () => {
+      (row: StockReceiptDatatableInstance) => () => {
         onExport(row.id);
       },
       [onExport],
     ),
   };
 
-  const columns = (): GridColDef<StockDatatableInstance>[] => {
+  const columns = (): GridColDef<StockReceiptDatatableInstance>[] => {
     return [
       {
         field: "action_at",
