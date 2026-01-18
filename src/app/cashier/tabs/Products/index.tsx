@@ -1,5 +1,5 @@
 "use client";
-import GetProducts from "@/actions/product/get";
+import getProductDatatable from "@/actions/product/getProductDatatable";
 import { useAppSelector } from "@/hooks";
 import { Grid, Stack, Typography } from "@mui/material";
 import { GridSortModel } from "@mui/x-data-grid";
@@ -19,25 +19,15 @@ const ProductsTab = () => {
   } = useQuery({
     queryKey: ["cashier-products", searchQuery],
     queryFn: async () =>
-      await GetProducts({
+      await getProductDatatable({
         pagination: {
           page: 0,
           pageSize: 12,
         },
         sort: [] as GridSortModel,
         filter: {
-          items: [
-            {
-              field: "serial",
-              operator: "contains",
-              value: searchQuery,
-            },
-            {
-              field: "label",
-              operator: "contains",
-              value: searchQuery,
-            },
-          ],
+          quickFilterValues: searchQuery.split(" "),
+          items: [],
         },
       }),
   });
@@ -67,28 +57,18 @@ const ProductsTab = () => {
       {/* Products Grid */}
       {!isLoading && !error && products.length > 0 && (
         <Grid container spacing={1}>
-          {products.map(
-            (product: {
-              id: number;
-              serial: string;
-              label: string;
-              price: number;
-              stock: {
-                quantity: number;
-              };
-            }) => (
-              <Grid size={3} key={product.id}>
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  serial={product.serial}
-                  label={product.label}
-                  price={product.price}
-                  stock={product.stock?.quantity || 0}
-                />
-              </Grid>
-            ),
-          )}
+          {products.map((product) => (
+            <Grid size={3} key={product.id}>
+              <ProductCard
+                key={product.id}
+                id={product.id}
+                serial={product.serial}
+                label={product.label}
+                price={product.price}
+                stock={product.stock?.quantity || 0}
+              />
+            </Grid>
+          ))}
         </Grid>
       )}
     </Stack>

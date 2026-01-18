@@ -1,6 +1,11 @@
 "use client";
 import DeleteProduct from "@/actions/product/delete";
-import GetProducts from "@/actions/product/get";
+import getProductDatatable, {
+  ProductDatatableInstance,
+} from "@/actions/product/getProductDatatable";
+import ProductCategoryChip from "@/components/Chips/ProductCategoryChip";
+import ProductKeywordChips from "@/components/Chips/ProductKeywordChips";
+import ProductStockStatusChip from "@/components/Chips/ProductStockStatusChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import { ProductPermissionEnum } from "@/enums/permission";
@@ -16,8 +21,8 @@ import {
   QrCodeTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
+import { Stack, Tooltip, Typography } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
@@ -30,17 +35,18 @@ const ProductDatatable = () => {
   const editDialog = useDialog();
   const { setBackdrop, isBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [barcodeProduct, setBarcodeProduct] = useState<Product | null>(null);
+  const [product, setProduct] = useState<ProductDatatableInstance | null>(null);
+  const [barcodeProduct, setBarcodeProduct] =
+    useState<ProductDatatableInstance | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const permissions = (product: Product) => ({
+  const permissions = (product: ProductDatatableInstance) => ({
     canEditProduct:
-      (product && user && product.creator_id == user.id) ||
+      (product && user && product.creator?.user.id == user.id) ||
       user?.hasPermission(ProductPermissionEnum.UPDATE),
     canRemoveProduct:
-      (product && user && product.creator_id == user.id) ||
+      (product && user && product.creator?.user.id == user.id) ||
       user?.hasPermission(ProductPermissionEnum.DELETE),
   });
 
@@ -72,94 +78,146 @@ const ProductDatatable = () => {
 
   const menu = {
     edit: React.useCallback(
-      (product: Product) => () => {
+      (product: ProductDatatableInstance) => () => {
         setProduct(product);
         editDialog.handleOpen();
       },
-      [editDialog, setProduct]
+      [editDialog, setProduct],
     ),
     delete: React.useCallback(
-      (product: Product) => () => {
+      (product: ProductDatatableInstance) => () => {
         confirmation.with(product.id);
         confirmation.handleOpen();
       },
-      [confirmation]
+      [confirmation],
     ),
     barcode: React.useCallback(
-      (product: Product) => () => {
+      (product: ProductDatatableInstance) => () => {
         setBarcodeProduct(product);
         setShowBarcode(true);
       },
-      [setShowBarcode]
+      [setShowBarcode],
     ),
   };
 
-  const columns = (): GridColDef[] => {
+  const columns = (): GridColDef<ProductDatatableInstance>[] => {
     return [
       {
-        field: "serial",
-        sortable: false,
-        headerName: t("headers.serial"),
-        flex: 1,
-      },
-      {
         field: "label",
-        sortable: false,
+        sortable: true,
         headerName: t("headers.label"),
-        flex: 1,
+        flex: 2,
+        renderCell: ({ row }) => (
+          <Stack justifyContent={"center"} height={"100%"}>
+            <Typography variant="subtitle2">{row.label}</Typography>
+            <Typography variant="caption" color="text.secondary">
+              {row.serial}
+            </Typography>
+          </Stack>
+        ),
       },
       {
-        field: "creator",
-        sortable: true,
-        headerName: t("headers.creator"),
+        field: "status",
+        headerName: t("headers.status"),
         flex: 1,
-        renderCell: (data: any) =>
-          ff.text(data.value?.user?.name || t("not_specified")),
-      },
-      {
-        field: "keywords",
-        sortable: true,
-        headerName: t("headers.keywords"),
-        flex: 1,
-        renderCell: (data: any) => ff.text(data.value),
+        renderCell: ({ row }) => (
+          <ProductStockStatusChip
+            quantity={row.stock?.quantity || 0}
+            useAlert={row.stock?.useAlert}
+            alertCount={row.stock?.alertCount}
+            usePreorder={row.usePreorder}
+          />
+        ),
       },
       {
         field: "category",
         sortable: true,
         headerName: t("headers.category"),
         flex: 1,
-        renderCell: ({ row }: any) => row.category?.label || t("no_category"),
+        renderCell: ({ row }) => (
+          <ProductCategoryChip label={row.category?.label} />
+        ),
+      },
+      {
+        field: "keywords",
+        sortable: true,
+        headerName: t("headers.keywords"),
+        flex: 1,
+        renderCell: ({ row }) => (
+          <ProductKeywordChips keywords={row.keywords} />
+        ),
       },
       {
         field: "price",
         sortable: true,
         headerName: t("headers.price"),
-        flex: 1,
+        flex: 0.7,
         type: "number",
-        renderCell: ({ value }) => ff.money(value),
+        renderCell: ({ row }) => (
+          <Typography color="primary.main">{ff.money(row.price)}</Typography>
+        ),
       },
       {
         field: "cost",
         sortable: true,
         headerName: t("headers.cost"),
-        flex: 1,
+        flex: 0.7,
         type: "number",
-        renderCell: ({ value }) => ff.money(value),
+        renderCell: ({ row }) => (
+          <Typography color="text.secondary">{ff.money(row.cost)}</Typography>
+        ),
+      },
+      {
+        field: "profit",
+        headerName: t("headers.profit"),
+        flex: 0.7,
+        type: "number",
+        valueGetter: (params, row) => row.price - row.cost,
+        renderCell: ({ row }) => (
+          <Typography
+            color={row.price - row.cost >= 0 ? "success.main" : "error.main"}
+          >
+            {ff.money(row.price - row.cost)}
+          </Typography>
+        ),
+      },
+      {
+        field: "margin",
+        headerName: t("headers.margin"),
+        flex: 0.7,
+        type: "number",
+        valueGetter: (params, row) => {
+          if (row.price === 0) return 0;
+          return ((row.price - row.cost) / row.price) * 100;
+        },
+        renderCell: ({ row }) => (
+          <Tooltip
+            title={`${((row.price - row.cost) / row.price) * 100} Margin`}
+          >
+            <Typography
+              variant="body2"
+              fontWeight="medium"
+              color={row.price - row.cost >= 0 ? "success.dark" : "error.dark"}
+            >
+              {ff.number(((row.price - row.cost) / row.price) * 100)}%
+            </Typography>
+          </Tooltip>
+        ),
       },
       {
         field: "stock",
         sortable: true,
         headerName: t("headers.stock"),
-        flex: 1,
+        flex: 0.8,
         type: "number",
-        renderCell: (data: any) => ff.number(data.value),
+        renderCell: ({ row }) => ff.number(row.stock?.quantity || 0),
       },
       {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 1,
-        getActions: ({ row }: { row: Product }) => [
+        flex: 0.7,
+        getActions: ({ row }) => [
           <GridLinkAction
             key="view"
             to={getPath("products.product", { id: row.id.toString() })}
@@ -200,7 +258,7 @@ const ProductDatatable = () => {
       <Datatable
         name={"products"}
         columns={columns()}
-        fetch={GetProducts}
+        fetch={getProductDatatable}
         height={700}
       />
 

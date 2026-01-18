@@ -374,8 +374,17 @@
         "category": "ประเภทสินค้า",
         "price": "ราคา",
         "cost": "ต้นทุน",
-        "stock": "ของในสต๊อก",
+        "profit": "กำไร",
+        "margin": "มาร์จิ้น (%)",
+        "stock": "สต๊อก",
+        "status": "สถานะ",
         "actions": "เครื่องมือ"
+      },
+      "status": {
+        "in_stock": "มีของ",
+        "low_stock": "ของเหลือน้อย",
+        "out_of_stock": "สินค้าหมด",
+        "preorder": "พรีออเดอร์"
       },
       "not_specified": "ไม่ระบุ",
       "no_category": "ไม่มีประเภท",
@@ -998,6 +1007,12 @@
       "pending": "รอส่งคืน",
       "returned": "ส่งคืนแล้ว",
       "cancelled": "ยกเลิกแล้ว"
+    },
+    "product_stock_status": {
+      "in_stock": "มีของ",
+      "low_stock": "ของเหลือน้อย",
+      "out_of_stock": "สินค้าหมด",
+      "preorder": "พรีออเดอร์"
     }
   }
 }

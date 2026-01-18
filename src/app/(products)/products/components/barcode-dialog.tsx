@@ -7,7 +7,6 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import { Product } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import React from "react";
 import Barcode from "react-barcode";
@@ -17,12 +16,15 @@ const BarcodeDialog = ({
   open,
   onClose: handleClose,
 }: {
-  product: Product | null;
+  product: {
+    serial: string;
+    label: string;
+  } | null;
   open: boolean;
   onClose: (
     event:
       | React.MouseEvent<HTMLButtonElement>
-      | React.KeyboardEvent<HTMLDivElement>
+      | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 }) => {
   const t = useTranslations("PRODUCTS.barcode_dialog");

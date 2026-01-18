@@ -1,6 +1,7 @@
 "use client";
 import CreateProduct from "@/actions/product/create";
 import GetProduct from "@/actions/product/find";
+import { ProductDatatableInstance } from "@/actions/product/getProductDatatable";
 import recoveryProduct from "@/actions/product/recoveryProduct";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
@@ -34,7 +35,6 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { Product } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -49,11 +49,11 @@ interface AddDialogProps {
 }
 
 export interface SearchDialogProps extends AddDialogProps {
-  onSubmit: (product?: Product) => void;
+  onSubmit: (product?: ProductDatatableInstance) => void;
 }
 
 export interface ProductFormDialogProps extends AddDialogProps {
-  product: Product | null;
+  product: ProductDatatableInstance | null;
 }
 
 function SearchDialog({
@@ -77,7 +77,7 @@ function SearchDialog({
   const { enqueueSnackbar } = useSnackbar();
 
   const searchSubmit: SubmitHandler<ProductFindValues> = async (
-    payload: ProductFindValues
+    payload: ProductFindValues,
   ) => {
     setLoading(true);
 
@@ -198,7 +198,7 @@ export function ProductFormDialog({
   }, [product]);
 
   const submitProduct: SubmitHandler<ProductValues> = async (
-    payload: ProductValues
+    payload: ProductValues,
   ) => {
     try {
       if (product?.deleted_at) {
@@ -209,7 +209,7 @@ export function ProductFormDialog({
         const resp = await CreateProduct(payload);
         if (!resp.success) throw new Error(resp.message);
         router.push(
-          getPath("products.product", { id: resp?.data?.id.toString() })
+          getPath("products.product", { id: resp?.data?.id.toString() }),
         );
       }
 
