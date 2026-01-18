@@ -38,11 +38,7 @@ const Scanner = (props: ScannerProps) => {
         inputRef={ref}
         slotProps={{
           input: {
-            startAdornment: (
-              <Box sx={{ color: "primary.main", mr: 1, display: "flex" }}>
-                <QrCodeScanner />
-              </Box>
-            ),
+            startAdornment: <QrCodeScanner sx={{ mr: 1 }} />,
             endAdornment: (
               <Box
                 sx={{
