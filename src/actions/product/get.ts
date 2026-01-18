@@ -1,14 +1,10 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
 import { ProductPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { Product } from "@prisma/client";
 
-const GetProducts = async (
-  table: TableFetch
-): Promise<ActionResponse<Product[]>> => {
+const GetProducts = async (table: TableFetch) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -32,6 +28,11 @@ const GetProducts = async (
             },
           },
         },
+        stock: {
+          select: {
+            quantity: true,
+          },
+        },
       },
       where: {
         store_id: user.store,
@@ -44,9 +45,12 @@ const GetProducts = async (
       ...datatable,
     };
   } catch (error) {
-    console.log("catch", error);
-
-    return ActionError(error) as ActionResponse<Product[]>;
+    console.error(error);
+    return {
+      success: true,
+      data: [],
+      total: 0,
+    };
   }
 };
 

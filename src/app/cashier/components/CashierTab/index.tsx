@@ -3,7 +3,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import MostSellerTab from "../../tabs/MostSeller";
+import ProductsTab from "../../tabs/Products";
 import RelatedPromotionOfferTab from "../../tabs/RelatedPromotionOffer";
 
 interface TabPanelProps {
@@ -38,9 +38,9 @@ const CashierTab = () => {
       component: RelatedPromotionOfferTab,
     },
     {
-      name: "MOST_SELLER",
-      label: t("most_seller.title"),
-      component: MostSellerTab,
+      name: "PRODUCTS",
+      label: t("products.title"),
+      component: ProductsTab,
     },
   ];
 

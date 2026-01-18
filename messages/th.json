@@ -169,6 +169,20 @@
         "items_unit": "รายการ",
         "backorder_allowed": "(สามารถค้างสินค้าได้)",
         "load_error": "เกิดข้อผิดพลาดในการโหลดข้อมูล"
+      },
+      "products": {
+        "title": "สินค้า",
+        "search_placeholder": "ค้นหาสินค้า...",
+        "total_products": "สินค้าทั้งหมด {count} รายการ",
+        "no_results": "ไม่พบสินค้า",
+        "empty": "ยังไม่มีสินค้า",
+        "loading": "กำลังโหลด...",
+        "add_to_cart": "เพิ่มในตะกร้า",
+        "load_error": "เกิดข้อผิดพลาดในการโหลดข้อมูล",
+        "card": {
+          "serial": "รหัสสินค้า {serial}",
+          "price": " {price}"
+        }
       }
     }
   },

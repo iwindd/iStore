@@ -38,6 +38,7 @@ export interface CartState {
   total: number;
   totalPreOrder: number;
   checkoutMode: CheckoutMode;
+  scanner: string;
 }
 
 export const addProductToCartById = createAsyncThunk(
@@ -53,7 +54,7 @@ export const addProductToCartById = createAsyncThunk(
     }
 
     return resp.data;
-  }
+  },
 );
 
 export const addProductToCartBySerial = createAsyncThunk(
@@ -72,7 +73,7 @@ export const addProductToCartBySerial = createAsyncThunk(
     }
 
     return resp.data;
-  }
+  },
 );
 
 export const cashoutCart = createAsyncThunk(
@@ -87,7 +88,7 @@ export const cashoutCart = createAsyncThunk(
 
     if (!payload.success) {
       const hasCartProductError = payload.error.errors.find((p) =>
-        p.path.find((path) => path == "products")
+        p.path.find((path) => path == "products"),
       );
 
       if (hasCartProductError) {
@@ -112,7 +113,7 @@ export const cashoutCart = createAsyncThunk(
     }
 
     return resp.data;
-  }
+  },
 );
 
 export const consignmentCart = createAsyncThunk(
@@ -126,7 +127,7 @@ export const consignmentCart = createAsyncThunk(
 
     if (!payload.success) {
       const hasCartProductError = payload.error.errors.find((p) =>
-        p.path.find((path) => path == "products")
+        p.path.find((path) => path == "products"),
       );
 
       if (hasCartProductError) {
@@ -151,7 +152,7 @@ export const consignmentCart = createAsyncThunk(
     }
 
     return resp.consignment;
-  }
+  },
 );
 
 const initialState: CartState = {
@@ -160,18 +161,19 @@ const initialState: CartState = {
   total: 0,
   totalPreOrder: 0,
   checkoutMode: CheckoutMode.CASHOUT,
+  scanner: "",
 };
 
 const getTotalPrice = (products: CartProduct[]) => {
   return products.reduce(
     (total, product) => total + (product.data?.price || 0) * product.quantity,
-    0
+    0,
   );
 };
 
 const onAddProductToCart = (
   state: WritableDraft<CartState>,
-  action: PayloadAction<FindProductByIdResult>
+  action: PayloadAction<FindProductByIdResult>,
 ) => {
   const product = action.payload;
   const existingProduct = state.products.find((p) => p.id === product.id);
@@ -199,7 +201,7 @@ const onAddProductToCart = (
     case "add_to_pre_order":
       (() => {
         const existingPreOrderProduct = state.preOrderProducts.find(
-          (p) => p.id === product.id
+          (p) => p.id === product.id,
         );
 
         if (existingPreOrderProduct) {
@@ -221,7 +223,7 @@ const onAddProductToCart = (
           variant: "info",
           key: `addPreOrderProductToCart-${product.id}`,
           preventDuplicate: true,
-        }
+        },
       );
       break;
     case "add_to_cart":
@@ -268,7 +270,7 @@ const cartSlice = createSlice({
     },
     removePreOrderProductFromCart: (state, action: PayloadAction<number>) => {
       state.preOrderProducts = state.preOrderProducts.filter(
-        (p) => p.id != action.payload
+        (p) => p.id != action.payload,
       );
       state.totalPreOrder = getTotalPrice(state.preOrderProducts);
     },
@@ -291,7 +293,7 @@ const cartSlice = createSlice({
       action: PayloadAction<{
         id: number;
         quantity: number;
-      }>
+      }>,
     ) => {
       let quantity = Number(action.payload.quantity);
       if (quantity <= 0) return;
@@ -299,7 +301,7 @@ const cartSlice = createSlice({
       if (!product) return;
       if (Number.isNaN(quantity)) quantity = product?.quantity;
       const existingPreOrderProduct = state.preOrderProducts.find(
-        (p) => p.id === action.payload.id
+        (p) => p.id === action.payload.id,
       );
 
       if (existingPreOrderProduct) {
@@ -317,6 +319,9 @@ const cartSlice = createSlice({
     },
     setCheckoutMode: (state, action: PayloadAction<CheckoutMode>) => {
       state.checkoutMode = action.payload;
+    },
+    setScanner: (state, action: PayloadAction<string>) => {
+      state.scanner = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -354,5 +359,6 @@ export const {
   setProductPreOrderQuantity,
   preOrderProduct,
   setCheckoutMode,
+  setScanner,
 } = cartSlice.actions;
 export default cartSlice.reducer;
