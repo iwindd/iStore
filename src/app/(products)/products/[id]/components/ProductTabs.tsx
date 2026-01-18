@@ -23,25 +23,22 @@ const ProductTabs = ({ productId }: ProductTabsProps) => {
   }
 
   return (
-    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+    <Box>
       <Tabs value={currentTab}>
         <Tab
           label={t("information")}
           component={Link}
           href={`/products/${productId}`}
-          sx={{ px: 2 }}
         />
         <Tab
           label={t("stock")}
           component={Link}
           href={`/products/${productId}/stock`}
-          sx={{ px: 2 }}
         />
         <Tab
           label={t("history")}
           component={Link}
           href={`/products/${productId}/history`}
-          sx={{ px: 2 }}
         />
       </Tabs>
     </Box>

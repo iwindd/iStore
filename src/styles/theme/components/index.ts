@@ -16,6 +16,7 @@ import { MuiTableBody } from "./table-body";
 import { MuiTableCell } from "./table-cell";
 import { MuiTableFooter } from "./table-footer";
 import { MuiTableHead } from "./table-head";
+import { MuiTabs } from "./tabs";
 import { MuiTextField } from "./textfield";
 
 export const components = {
@@ -35,4 +36,5 @@ export const components = {
   MuiTableHead,
   MuiTableFooter,
   MuiTextField,
+  MuiTabs,
 } satisfies Components<Theme>;

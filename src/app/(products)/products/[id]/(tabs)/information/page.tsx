@@ -19,7 +19,7 @@ const ProductInformationPage = () => {
           subheader={t("serial", { serial: product.serial })}
         />
         <CardContent>
-          <Grid container spacing={2}>
+          <Grid container>
             <Grid size={{ lg: 2, md: 4, sm: 4, xs: 6 }}>
               <SoldCount />
             </Grid>

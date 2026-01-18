@@ -54,7 +54,7 @@ const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
           <App.Header.Title>{product.label}</App.Header.Title>
         </App.Header>
         <App.Main>
-          <Stack spacing={1}>
+          <Stack spacing={3}>
             <ProductTabs productId={id} />
             {children}
           </Stack>
