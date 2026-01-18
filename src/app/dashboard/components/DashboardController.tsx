@@ -107,7 +107,7 @@ const DashboardController = () => {
         justifyContent={"space-between"}
       >
         <Stack>
-          <Typography variant="h5">{t("title")}</Typography>
+          <Typography variant="h4">{t("title")}</Typography>
         </Stack>
 
         <Stack direction={"row"} spacing={1} alignItems="center">
@@ -140,7 +140,7 @@ const DashboardController = () => {
               }}
               onChange={(e) =>
                 handleRangeChange(
-                  e.target.value as EnumDashboardRange | "custom"
+                  e.target.value as EnumDashboardRange | "custom",
                 )
               }
             >
