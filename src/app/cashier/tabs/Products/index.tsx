@@ -1,7 +1,7 @@
 "use client";
 import GetProducts from "@/actions/product/get";
 import { useAppSelector } from "@/hooks";
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Grid, Stack, Typography } from "@mui/material";
 import { GridSortModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -44,6 +44,14 @@ const ProductsTab = () => {
 
   const products = response?.data || [];
 
+  if (!isLoading && !error && products.length === 0) {
+    return (
+      <Typography color="text.secondary" align="center" py={4}>
+        {t("empty")}
+      </Typography>
+    );
+  }
+
   return (
     <Stack spacing={3}>
       {/* Loading State */}
@@ -52,7 +60,7 @@ const ProductsTab = () => {
       {/* Error State */}
       {error && (
         <Typography color="error" align="center">
-          {t("load_error")}
+          {searchQuery ? t("no_results") : t("empty")}
         </Typography>
       )}
 
@@ -82,22 +90,6 @@ const ProductsTab = () => {
             ),
           )}
         </Grid>
-      )}
-
-      {/* Empty State */}
-      {!isLoading && !error && products.length === 0 && (
-        <Box
-          sx={{
-            py: 8,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {/*   <Typography variant="body1" color="text.secondary">
-            {searchQuery ? t("no_results") : t("empty")}
-          </Typography> */}
-        </Box>
       )}
     </Stack>
   );
