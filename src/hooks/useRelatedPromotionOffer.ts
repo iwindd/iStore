@@ -15,8 +15,6 @@ const useRelatedPromotionOffer = ({
   const { data, isLoading } = useQuery({
     queryKey: ["relatedPromotionOffers", productIds],
     queryFn: async () => {
-      if (productIds.length === 0) return [];
-
       return await fetchRelatedPromotionOffer(productIds);
     },
   });
