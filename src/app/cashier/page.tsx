@@ -7,15 +7,14 @@ import {
   addProductToCartById,
   addProductToCartBySerial,
 } from "@/reducers/cartReducer";
-import { Button, Divider, Stack } from "@mui/material";
+import { AddTwoTone } from "@mui/icons-material";
+import { Button, Stack } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { useTranslations } from "next-intl";
 import React from "react";
 import CartSections from "./components/Cart";
 import CashierTab from "./components/CashierTab";
 
 const CashierPage = () => {
-  const t = useTranslations("CASHIER");
   const [selectProduct, setSelectProduct] =
     React.useState<SearchProduct | null>(null);
   const dispatch = useAppDispatch();
@@ -23,21 +22,24 @@ const CashierPage = () => {
   return (
     <Grid container spacing={1} direction={"row-reverse"}>
       <Grid size={{ xs: 12, lg: 3 }}>
-        <Stack direction={"row"} spacing={0.3}>
+        <Stack direction={"row"} spacing={1} mb={1}>
           <ProductSelector
             onSubmit={(product) => setSelectProduct(product || null)}
           />
           <Button
-            variant={selectProduct == null ? "text" : "contained"}
+            variant={"contained"}
+            color="secondary"
+            sx={{
+              width: 20,
+            }}
             disabled={selectProduct == null}
             onClick={() =>
               selectProduct && dispatch(addProductToCartById(selectProduct.id))
             }
           >
-            {t("add_product_from_selector")}
+            <AddTwoTone />
           </Button>
         </Stack>
-        <Divider sx={{ my: 1 }} />
         <CartSections />
       </Grid>
       <Grid size={{ xs: 12, lg: 9 }}>
@@ -46,7 +48,6 @@ const CashierPage = () => {
             dispatch(addProductToCartBySerial(serial));
           }}
         />
-        <Divider sx={{ my: 1 }} />
         <CashierTab />
       </Grid>
     </Grid>

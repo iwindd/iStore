@@ -51,21 +51,14 @@ const CashierTab = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Tabs value={value} onChange={handleChange}>
+      <Tabs value={value} onChange={handleChange} sx={{ mb: 3, mt: 2 }}>
         {CASHIER_TAB.map((tab, index) => (
-          <Tab
-            id={`cashier-tab-${index}`}
-            key={tab.name}
-            label={tab.label}
-            sx={{
-              px: 2,
-            }}
-          />
+          <Tab id={`cashier-tab-${index}`} key={tab.name} label={tab.label} />
         ))}
       </Tabs>
 
       {CASHIER_TAB.map((tab, index) => (
-        <CustomTabPanel key={tab.name} value={value} index={index}>
+        <CustomTabPanel value={value} index={index} key={tab.name}>
           <tab.component />
         </CustomTabPanel>
       ))}

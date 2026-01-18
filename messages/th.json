@@ -110,7 +110,6 @@
     }
   },
   "CASHIER": {
-    "add_product_from_selector": "เพิ่ม",
     "cart": {
       "title": "ตะกร้าสินค้า",
       "empty": "ไม่มีสินค้าภายในตะกร้า",
