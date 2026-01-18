@@ -30,7 +30,13 @@ const StockDetailPage = () => {
     },
   });
 
-  return <StockForm stock={stock} onSubmit={updateStockMutation.mutate} />;
+  return (
+    <StockForm
+      stock={stock}
+      onSubmit={updateStockMutation.mutate}
+      isLoading={updateStockMutation.isPending}
+    />
+  );
 };
 
 export default StockDetailPage;

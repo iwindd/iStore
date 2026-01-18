@@ -1,6 +1,5 @@
 "use client";
 
-import AppFooter from "@/layouts/App/Footer";
 import {
   LineApplicationSchema,
   LineApplicationSchemaType,
@@ -24,7 +23,7 @@ import { useForm } from "react-hook-form";
 
 type FormLineApplicationProps = {
   onSubmit?: (
-    data: LineApplicationSchemaType
+    data: LineApplicationSchemaType,
   ) => void | Promise<boolean | void>;
   application?: LineApplication;
 };
@@ -64,7 +63,7 @@ const FormLineApplication = ({
     <Stack
       component={"form"}
       onSubmit={handleSubmit(handleFormSubmit)}
-      spacing={1}
+      spacing={2}
     >
       <Card>
         <CardHeader title={t("general_title")} />
@@ -130,8 +129,9 @@ const FormLineApplication = ({
         </CardContent>
       </Card>
 
-      {!application || isDirty ? (
-        <AppFooter
+      <Card>
+        <CardContent
+          component={Stack}
           direction={"row"}
           justifyContent={"space-between"}
           alignItems={"center"}
@@ -147,8 +147,8 @@ const FormLineApplication = ({
           >
             {t("save_button")}
           </Button>
-        </AppFooter>
-      ) : null}
+        </CardContent>
+      </Card>
     </Stack>
   );
 };

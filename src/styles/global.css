@@ -6,6 +6,11 @@
     rgba(255, 255, 255, 1) 67%,
     rgba(213, 240, 240, 0.6) 99%
   );
+
+  --custom-shadow-1-dark:
+    0 5px 22px 0 rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  --custom-shadow-1-light:
+    0 5px 22px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 
 .MuiPopper-root.MuiDataGrid-panel .MuiDataGrid-paper {

@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Divider,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -58,7 +57,6 @@ const SettingCard = ({
   return (
     <Card>
       <CardHeader title={t("title")} />
-      <Divider />
       <CardContent>
         <Stack spacing={1}>
           <FormControl fullWidth>

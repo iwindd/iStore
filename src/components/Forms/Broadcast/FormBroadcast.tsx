@@ -1,7 +1,6 @@
 import { EventSelectorItem } from "@/actions/broadcast/eventActions";
 import { generateAdMessage } from "@/actions/broadcast/generateMessage";
 import EventSelector from "@/components/Selector/EventSelector";
-import AppFooter from "@/layouts/App/Footer";
 import {
   CreateBroadcastSchema,
   CreateBroadcastValues,
@@ -13,7 +12,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Divider,
   FormControl,
   Stack,
   TextField,
@@ -102,9 +100,9 @@ const FormBroadcast = ({
   };
 
   return (
-    <Grid container spacing={1}>
+    <Grid container>
       <Grid size={8}>
-        <Stack spacing={1}>
+        <Stack spacing={3}>
           <Stack
             spacing={2}
             component="form"
@@ -113,10 +111,9 @@ const FormBroadcast = ({
           >
             <Card>
               <CardHeader title={t("sections.promotion.title")} />
-              <Divider />
               <CardContent>
-                <Stack spacing={1}>
-                  <Grid container spacing={1}>
+                <Stack spacing={3}>
+                  <Grid container spacing={3}>
                     <Grid size={6}>
                       <FormControl fullWidth error={!!errors.event_id}>
                         <EventSelector
@@ -178,11 +175,32 @@ const FormBroadcast = ({
         </Stack>
       </Grid>
       <Grid size={4}>
-        <Stack spacing={1}>
+        <Stack spacing={3}>
           <SettingCard form={form} disabled={disabled} />
           <Card>
+            <CardContent
+              component={Stack}
+              direction={"row"}
+              justifyContent={"space-between"}
+            >
+              <Typography variant="subtitle1" color="secondary">
+                {t("footer.label")}
+              </Typography>
+              <Stack direction={"row"} spacing={1}>
+                <Button
+                  variant="contained"
+                  type="submit"
+                  disabled={disabled}
+                  endIcon={<SendTwoTone />}
+                  form="broadcast-form"
+                >
+                  {t("submit")}
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+          <Card>
             <CardHeader title={t("sections.preview.title")} />
-            <Divider />
             <CardContent>
               <Stack spacing={2}>
                 <Typography variant="body2" color="text.secondary">
@@ -193,23 +211,6 @@ const FormBroadcast = ({
           </Card>
         </Stack>
       </Grid>
-
-      <AppFooter justifyContent={"space-between"} alignItems={"center"}>
-        <Typography variant="subtitle1" color="secondary">
-          {t("footer.label")}
-        </Typography>
-        <Stack direction={"row"} spacing={1}>
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={disabled}
-            endIcon={<SendTwoTone />}
-            form="broadcast-form"
-          >
-            {t("submit")}
-          </Button>
-        </Stack>
-      </AppFooter>
     </Grid>
   );
 };

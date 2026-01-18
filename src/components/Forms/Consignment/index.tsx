@@ -2,7 +2,6 @@
 import { ConsignmentDetail } from "@/actions/consignment/getConsignment";
 import CashoutContent from "@/components/dialog/PaymentDialog/components/CashoutContent";
 import { useDialog } from "@/hooks/use-dialog";
-import AppFooter from "@/layouts/App/Footer";
 import { money } from "@/libs/formatter";
 import { ConsignmentSchema, ConsignmentValues } from "@/schema/Consignment";
 import { CashoutInputValues } from "@/schema/Payment";
@@ -79,7 +78,7 @@ const ConsignmentForm = ({
 
   const onCashoutFormSubmit = (
     data: CashoutInputValues,
-    form: UseFormReturn<CashoutInputValues>
+    form: UseFormReturn<CashoutInputValues>,
   ) => {
     if (!submitData) return;
     form.reset();
@@ -173,33 +172,40 @@ const ConsignmentForm = ({
             </TableContainer>
           </CardContent>
         </Card>
-      </Stack>
-      <AppFooter
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Typography variant="subtitle1" color="secondary">
-          {t("footer.manage")}
-        </Typography>
-        <Stack direction={"row"} spacing={1}>
-          {disabled && consignment.status !== ConsignmentStatus.PENDING ? (
-            <Typography variant="body2" color="success.main">
-              {t("footer.completed")}
-            </Typography>
-          ) : (
-            <Button
-              variant="contained"
-              startIcon={<SaveTwoTone />}
-              type="submit"
-              form="consignment-form"
-              disabled={disabled}
+
+        <Card>
+          <CardContent>
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
             >
-              {t("footer.save")}
-            </Button>
-          )}
-        </Stack>
-      </AppFooter>
+              <Typography variant="subtitle1" color="secondary">
+                {t("footer.manage")}
+              </Typography>
+              <Stack direction={"row"} spacing={1}>
+                {disabled &&
+                consignment.status !== ConsignmentStatus.PENDING ? (
+                  <Typography variant="body2" color="success.main">
+                    {t("footer.completed")}
+                  </Typography>
+                ) : (
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveTwoTone />}
+                    type="submit"
+                    form="consignment-form"
+                    disabled={disabled}
+                  >
+                    {t("footer.save")}
+                  </Button>
+                )}
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Stack>
+
       {consignment.status === ConsignmentStatus.PENDING && !disabled && (
         <CashoutContent
           onSubmit={onCashoutFormSubmit}

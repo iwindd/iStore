@@ -4,7 +4,6 @@ import ProductSelector from "@/components/Selector/ProductSelector";
 import STOCK_CONFIG from "@/config/Stock";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
-import AppFooter from "@/layouts/App/Footer";
 import { StockSchema, StockValues } from "@/schema/Stock";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Delete, PanToolAltTwoTone, SaveTwoTone } from "@mui/icons-material";
@@ -200,7 +199,7 @@ const StockForm = ({
                             onSubmit={(product) => {
                               setValue(
                                 `products.${index}.product_id`,
-                                product?.id as number
+                                product?.id as number,
                               );
                             }}
                           />
@@ -291,49 +290,55 @@ const StockForm = ({
             </TableContainer>
           </CardContent>
         </Card>
-      </Stack>
-      <AppFooter
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Typography variant="subtitle1" color="secondary">
-          {t("footer_title")}
-        </Typography>
-        <Stack direction={"row"} spacing={1}>
-          {isLoading ||
-          (stock && stock?.status !== StockReceiptStatus.DRAFT) ? (
-            <Typography variant="body2" color="secondary">
-              {stock?.status === StockReceiptStatus.DRAFT
-                ? t("status_saving")
-                : t("status_completed")}
+
+        <Card>
+          <CardContent
+            component={Stack}
+            justifyContent={"space-between"}
+            direction={"row"}
+          >
+            <Typography variant="subtitle1" color="secondary">
+              {t("footer_title")}
             </Typography>
-          ) : (
-            <>
-              <Button
-                variant="outlined"
-                color="secondary"
-                type="submit"
-                form="stock-form"
-                name="draft"
-                disabled={disabled}
-              >
-                {t("save_draft")}
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<SaveTwoTone />}
-                type="submit"
-                form="stock-form"
-                name="saveAndUpdate"
-                disabled={disabled}
-              >
-                {t("save_and_manage")}
-              </Button>
-            </>
-          )}
-        </Stack>
-      </AppFooter>
+            <Stack direction={"row"} spacing={1}>
+              {isLoading ||
+              (stock && stock?.status !== StockReceiptStatus.DRAFT) ? (
+                <Typography variant="body2" color="secondary">
+                  {stock?.status === StockReceiptStatus.DRAFT
+                    ? t("status_saving")
+                    : t("status_completed")}
+                </Typography>
+              ) : (
+                <>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    type="submit"
+                    form="stock-form"
+                    name="draft"
+                    disabled={disabled}
+                    loading={isLoading}
+                  >
+                    {t("save_draft")}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveTwoTone />}
+                    type="submit"
+                    form="stock-form"
+                    name="saveAndUpdate"
+                    disabled={disabled}
+                    loading={isLoading}
+                  >
+                    {t("save_and_manage")}
+                  </Button>
+                </>
+              )}
+            </Stack>
+          </CardContent>
+        </Card>
+      </Stack>
+
       <Confirmation {...submitConfirmation.props} />
       <ToolDialog
         open={toolDialog.open}

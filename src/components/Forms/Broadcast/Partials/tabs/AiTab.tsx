@@ -1,15 +1,10 @@
 import { generateImageAction } from "@/actions/broadcast/generateImage";
-import AppFooter from "@/layouts/App/Footer";
 import {
   AiImagePromptSchema,
   AiImagePromptValues,
 } from "@/schema/Broadcast/AiImage";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CheckCircleTwoTone,
-  RefreshTwoTone,
-  SaveTwoTone,
-} from "@mui/icons-material";
+import { CheckCircleTwoTone, RefreshTwoTone } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -130,27 +125,6 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
           </Box>
         </Stack>
       )}
-
-      <AppFooter
-        direction={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Typography variant="subtitle1" color="secondary">
-          {t("footer.label")}
-        </Typography>
-        <Stack direction={"row"} spacing={1}>
-          <Button
-            variant="contained"
-            startIcon={<SaveTwoTone />}
-            type="submit"
-            form="broadcast-form"
-            disabled={disabled}
-          >
-            {t("submit")}
-          </Button>
-        </Stack>
-      </AppFooter>
     </Stack>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 import { Backdrop, CircularProgress } from "@mui/material";
-import React, { createContext, useContext, ReactNode } from "react";
 import { SnackbarProvider } from "notistack";
+import React, { createContext, ReactNode, useContext } from "react";
 
 interface BackdropInterface {
   setBackdrop: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,22 +20,29 @@ export function useInterface() {
   return context;
 }
 
-export function InterfaceProvider({ children }: { children: ReactNode }) {
-  const [isBackdrop, setBackdrop] = React.useState<boolean>(false);
+export function InterfaceProvider({
+  children,
+}: Readonly<{ children: ReactNode }>) {
+  const [isBackdrop, setIsBackdrop] = React.useState<boolean>(false);
+
+  /* TODO:: BACKDROP WILL REMOVE SOON */
+  const memo = React.useMemo(
+    () => ({
+      setBackdrop: setIsBackdrop,
+      isBackdrop: isBackdrop,
+    }),
+    [isBackdrop],
+  );
 
   return (
-    <InterfaceContext.Provider
-      value={{
-        setBackdrop: setBackdrop,
-        isBackdrop: isBackdrop,
-      }}
-    >
+    <InterfaceContext.Provider value={memo}>
       <SnackbarProvider
-        maxSnack={5}
+        maxSnack={2}
         anchorOrigin={{
           horizontal: "right",
           vertical: "bottom",
         }}
+        autoHideDuration={3000}
       >
         {children}
       </SnackbarProvider>
