@@ -57,9 +57,8 @@ const getHistoryDatatable = async (
       where.note = null;
     }
 
-    const { data, total } = await db.order.datatableFetch({
-      table: table,
-      filter: ["note"],
+    const { data, total } = await db.order.getDatatable({
+      query: table,
       select: {
         id: true,
         total: true,
@@ -97,6 +96,30 @@ const getHistoryDatatable = async (
         },
       },
       where,
+      searchable: {
+        note: { mode: "insensitive" },
+        products: {
+          some: {
+            product: {
+              serial: { mode: "insensitive" },
+              label: { mode: "insensitive" },
+            },
+          },
+        },
+        preOrders: {
+          some: {
+            product: {
+              serial: { mode: "insensitive" },
+              label: { mode: "insensitive" },
+            },
+          },
+        },
+        creator: {
+          user: {
+            name: { mode: "insensitive" },
+          },
+        },
+      },
     });
 
     return {
