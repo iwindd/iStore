@@ -127,7 +127,7 @@ const ProductDatatable = () => {
     ),
   };
 
-  const columns = (): GridColDef<ProductDatatableInstance>[] => {
+  const columns = React.useMemo((): GridColDef<ProductDatatableInstance>[] => {
     return [
       {
         field: "label",
@@ -147,6 +147,7 @@ const ProductDatatable = () => {
         field: "status",
         headerName: t("headers.status"),
         flex: 1,
+        sortable: false,
         renderCell: ({ row }) => (
           <ProductStockStatusChip
             quantity={row.stock?.quantity || 0}
@@ -157,8 +158,7 @@ const ProductDatatable = () => {
         ),
       },
       {
-        field: "category",
-        sortable: true,
+        field: "category.label",
         headerName: t("headers.category"),
         flex: 1,
         renderCell: ({ row }) => (
@@ -198,6 +198,7 @@ const ProductDatatable = () => {
         field: "profit",
         headerName: t("headers.profit"),
         flex: 0.7,
+        sortable: false,
         type: "number",
         valueGetter: (params, row) => row.price - row.cost,
         renderCell: ({ row }) => (
@@ -212,6 +213,7 @@ const ProductDatatable = () => {
         field: "margin",
         headerName: t("headers.margin"),
         flex: 0.7,
+        sortable: false,
         type: "number",
         valueGetter: (params, row) => {
           if (row.price === 0) return 0;
@@ -232,7 +234,7 @@ const ProductDatatable = () => {
         ),
       },
       {
-        field: "stock",
+        field: "stock.quantity",
         sortable: true,
         headerName: t("headers.stock"),
         flex: 0.8,
@@ -281,7 +283,7 @@ const ProductDatatable = () => {
         ],
       },
     ];
-  };
+  }, [t, user]);
 
   return (
     <>
@@ -302,7 +304,7 @@ const ProductDatatable = () => {
 
       <Datatable
         name={"products"}
-        columns={columns()}
+        columns={columns}
         fetch={getProductDatatable}
         bridge={[filterType]}
       />
