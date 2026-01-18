@@ -147,14 +147,11 @@ const StoreSwitcher = () => {
         onClose={handleClose}
         slotProps={{
           paper: {
-            elevation: 3, // Premium shadow
             sx: {
               mt: 1,
               minWidth: 220,
               borderRadius: 2,
-              border: `1px solid ${theme.palette.divider}`,
               backgroundImage: "none", // Reset for potential dark mode noise
-              boxShadow: "0px 5px 15px rgba(0,0,0,0.1)", // Custom softer shadow
             },
           },
         }}

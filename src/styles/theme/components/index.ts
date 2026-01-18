@@ -1,6 +1,7 @@
 import type { Components } from "@mui/material/styles";
 
 import type { Theme } from "../types";
+import { MuiAutocomplete } from "./auto-complete";
 import { MuiAvatar } from "./avatar";
 import { MuiButton } from "./button";
 import { MuiCard } from "./card";
@@ -8,6 +9,7 @@ import { MuiCardContent } from "./card-content";
 import { MuiCardHeader } from "./card-header";
 import { MuiGrid } from "./grid";
 import { MuiLink } from "./link";
+import { MuiPopover } from "./pop-over";
 import { MuiStack } from "./stack";
 import { MuiTab } from "./tab";
 import { MuiTableBody } from "./table-body";
@@ -23,6 +25,8 @@ export const components = {
   MuiCardContent,
   MuiCardHeader,
   MuiLink,
+  MuiPopover,
+  MuiAutocomplete,
   MuiStack,
   MuiGrid,
   MuiTab,

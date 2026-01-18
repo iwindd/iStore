@@ -5,6 +5,7 @@ import LocalizationProvider from "@/providers/LocalizationProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvder";
 import StoreProvider from "@/providers/StoreProvider";
+import "@/styles/global.css";
 import ThemeRegistry from "@/styles/ThemeRegistry";
 import { NextIntlClientProvider } from "next-intl";
 
