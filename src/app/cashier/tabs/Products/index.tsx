@@ -22,7 +22,7 @@ const ProductsTab = () => {
       await GetProducts({
         pagination: {
           page: 0,
-          pageSize: 16,
+          pageSize: 12,
         },
         sort: [] as GridSortModel,
         filter: {
@@ -55,7 +55,7 @@ const ProductsTab = () => {
   return (
     <Stack spacing={3}>
       {/* Loading State */}
-      {isLoading && <ProductGridSkeleton count={16} />}
+      {isLoading && <ProductGridSkeleton count={12} />}
 
       {/* Error State */}
       {error && (
