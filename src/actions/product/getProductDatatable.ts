@@ -33,6 +33,8 @@ const getProductDatatable = async (
       where.deleted_at = { not: null };
     }
 
+    console.log(where);
+
     const datatable = await db.product.getDatatable({
       query: table,
       searchable: {

@@ -11,26 +11,32 @@ import ProductGridSkeleton from "./ProductGridSkeleton";
 const ProductsTab = () => {
   const t = useTranslations("CASHIER.tabs.products");
   const searchQuery = useAppSelector((state) => state.cart.scanner);
+  const filter = searchQuery.split(" ");
 
   const {
     data: response,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ["cashier-products", searchQuery],
+    queryKey: ["cashier-products", filter],
     queryFn: async () =>
-      await getProductDatatable({
-        pagination: {
-          page: 0,
-          pageSize: 12,
+      await getProductDatatable(
+        {
+          pagination: {
+            page: 0,
+            pageSize: 12,
+          },
+          sort: [] as GridSortModel,
+          filter: {
+            quickFilterValues: filter,
+            items: [],
+          },
         },
-        sort: [] as GridSortModel,
-        filter: {
-          quickFilterValues: searchQuery.split(" "),
-          items: [],
-        },
-      }),
+        "all",
+      ),
   });
+
+  console.log(response);
 
   const products = response?.data || [];
 

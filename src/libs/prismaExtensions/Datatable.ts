@@ -78,12 +78,10 @@ export const datatableFetchExtension = Prisma.defineExtension((client) => {
               return DatatableHelpers.buildPrismaSearchOr(value, searchable);
             });
 
-            where.OR = OR;
+            if (OR.length > 0) where.OR = OR;
           }
 
-          if (args?.where) {
-            where.AND.push(args.where);
-          }
+          if (args?.where) where.AND.push(args.where);
 
           const data = await context.findMany({
             where,
