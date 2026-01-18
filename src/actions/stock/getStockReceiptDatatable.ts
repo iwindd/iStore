@@ -6,12 +6,12 @@ import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import { Prisma } from "@prisma/client";
 
-export type StockDatatableInstance = Prisma.StockReceiptGetPayload<{
+export type StockReceiptDatatableInstance = Prisma.StockReceiptGetPayload<{
   select: {
     id: true;
     action_at: true;
     note: true;
-    state: true;
+    status: true;
     creator: {
       select: {
         id: true;
@@ -22,6 +22,11 @@ export type StockDatatableInstance = Prisma.StockReceiptGetPayload<{
         };
       };
     };
+    stock_recept_products: {
+      select: {
+        quantity: true;
+      };
+    };
     _count: {
       select: {
         stock_recept_products: true;
@@ -30,17 +35,30 @@ export type StockDatatableInstance = Prisma.StockReceiptGetPayload<{
   };
 }>;
 
-const fetchStockDatatable = async (table: TableFetch) => {
+const getStockReceiptDatatable = async (
+  query: TableFetch,
+  filterType?: "all" | "completed" | "draft" | "cancelled",
+) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
 
-    return await db.stockReceipt.datatableFetch({
-      table,
-      where: {
-        store_id: user.store,
-        creator_id: user.limitPermission(StockPermissionEnum.READ),
-      },
+    let where: any = {
+      store_id: user.store,
+      creator_id: user.limitPermission(StockPermissionEnum.READ),
+    };
+
+    if (filterType === "completed") {
+      where.status = "COMPLETED";
+    } else if (filterType === "draft") {
+      where.status = { in: ["DRAFT", "CREATING", "PROCESSING"] };
+    } else if (filterType === "cancelled") {
+      where.status = "CANCEL";
+    }
+
+    return await db.stockReceipt.getDatatable({
+      query,
+      where,
       select: {
         id: true,
         action_at: true,
@@ -56,10 +74,27 @@ const fetchStockDatatable = async (table: TableFetch) => {
             },
           },
         },
+        stock_recept_products: {
+          select: {
+            quantity: true,
+          },
+        },
         _count: {
           select: {
             stock_recept_products: true,
           },
+        },
+      },
+      searchable: {
+        creator: {
+          user: {
+            name: {
+              mode: "insensitive",
+            },
+          },
+        },
+        note: {
+          mode: "insensitive",
         },
       },
     });
@@ -69,4 +104,4 @@ const fetchStockDatatable = async (table: TableFetch) => {
   }
 };
 
-export default fetchStockDatatable;
+export default getStockReceiptDatatable;

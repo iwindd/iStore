@@ -1,16 +1,16 @@
 "use client";
 import CancelStock from "@/actions/stock/cancel";
-import fetchStockDatatable, {
-  StockDatatableInstance,
-} from "@/actions/stock/fetchStockDatatable";
 import getExportStockData from "@/actions/stock/getExportStockReceiptData";
+import getStockReceiptDatatable, {
+  StockDatatableInstance,
+} from "@/actions/stock/getStockReceiptDatatable";
+import StockReceiptStatusChip from "@/components/Chips/StockReceiptStatusChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import { StockPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useExport } from "@/hooks/use-export";
-import { Colorization } from "@/libs/colorization";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { getPath } from "@/router";
@@ -19,19 +19,26 @@ import {
   DownloadTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
+import { Box, Tab, Tabs } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { StockReceiptStatus } from "@prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { enqueueSnackbar } from "notistack";
-import React from "react";
+import { useSnackbar } from "notistack";
+import React, { useState } from "react";
 
 const HistoryDatatable = () => {
   const t = useTranslations("STOCKS.datatable");
   const ts = useTranslations("STOCKS.status");
   const { setBackdrop } = useInterface();
   const { user } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+
+  const [filterType, setFilterType] = useState<
+    "all" | "completed" | "draft" | "cancelled"
+  >("all");
+
   const permissions = (stock: StockDatatableInstance) => ({
     canCancelStock:
       user?.hasPermission(StockPermissionEnum.DELETE) ||
@@ -60,7 +67,7 @@ const HistoryDatatable = () => {
           t("confirmation.cancel_success", { id: ff.number(id) }),
           {
             variant: "success",
-          }
+          },
         );
         await queryClient.refetchQueries({
           queryKey: ["stocks_histories"],
@@ -90,7 +97,7 @@ const HistoryDatatable = () => {
             cost: item.product.cost,
             delta: item.quantity,
             keywords: item.product.keywords,
-          }))
+          })),
         );
         Export();
       } catch (error) {
@@ -102,7 +109,7 @@ const HistoryDatatable = () => {
         setBackdrop(false);
       }
     },
-    [setBackdrop, setItems, Export, t]
+    [setBackdrop, setItems, Export, t, enqueueSnackbar],
   );
 
   const menu = {
@@ -111,13 +118,13 @@ const HistoryDatatable = () => {
         cancelConfirmation.with(row.id);
         cancelConfirmation.handleOpen();
       },
-      [cancelConfirmation]
+      [cancelConfirmation],
     ),
     export: React.useCallback(
       (row: StockDatatableInstance) => () => {
         onExport(row.id);
       },
-      [onExport]
+      [onExport],
     ),
   };
 
@@ -151,6 +158,17 @@ const HistoryDatatable = () => {
           }),
       },
       {
+        field: "total_quantity",
+        sortable: false,
+        headerName: t("headers.total_quantity"),
+        flex: 2,
+        editable: false,
+        renderCell: ({ row }) =>
+          ff.number(
+            row.stock_recept_products.reduce((a, b) => a + b.quantity, 0),
+          ),
+      },
+      {
         field: "note",
         sortable: true,
         headerName: t("headers.note"),
@@ -160,12 +178,12 @@ const HistoryDatatable = () => {
           ff.text(row.note || t("placeholders.not_specified")),
       },
       {
-        field: "state",
+        field: "status",
         sortable: true,
         headerName: t("headers.status"),
         flex: 2,
         editable: false,
-        renderCell: ({ row }) => ff.stockReceiptStatus(row.state),
+        renderCell: ({ row }) => <StockReceiptStatusChip status={row.status} />,
       },
       {
         field: "actions",
@@ -186,7 +204,7 @@ const HistoryDatatable = () => {
             onClick={menu.cancel(row)}
             disabled={
               !permissions(row).canCancelStock ||
-              row.state !== StockReceiptStatus.DRAFT
+              row.status !== StockReceiptStatus.DRAFT
             }
             label={t("actions.cancel")}
             showInMenu
@@ -205,12 +223,26 @@ const HistoryDatatable = () => {
 
   return (
     <>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+        <Tabs
+          value={filterType}
+          onChange={(_, value) => setFilterType(value)}
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab label={ts("all")} value="all" />
+          <Tab label={ts("completed")} value="completed" />
+          <Tab label={ts("draft")} value="draft" />
+          <Tab label={ts("cancelled")} value="cancelled" />
+        </Tabs>
+      </Box>
+
       <Datatable
         name={"stocks_histories"}
         columns={columns()}
-        fetch={fetchStockDatatable}
+        fetch={getStockReceiptDatatable}
+        bridge={[filterType]}
         height={700}
-        getCellClassName={Colorization.getGridCellColorForStockReceiptStatus}
       />
 
       {ExportHandler}
