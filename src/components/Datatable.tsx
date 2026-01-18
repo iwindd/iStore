@@ -1,5 +1,5 @@
 "use client";
-import { ButtonProps, Paper } from "@mui/material";
+import { ButtonProps, Card, CardContent } from "@mui/material";
 import {
   DataGrid,
   DataGridProps,
@@ -27,8 +27,9 @@ export interface TableFetch {
   filter: GridFilterModel;
 }
 
-export interface DatatableProps<T extends GridValidRowModel = any>
-  extends DataGridProps {
+export interface DatatableProps<
+  T extends GridValidRowModel = any,
+> extends DataGridProps {
   columns: GridColDef<T>[];
   name: string;
   height?: string | number;
@@ -71,7 +72,7 @@ const Datatable = ({
           pagination: paginationModel,
           filter: filterModel,
         },
-        ...(bridge || [])
+        ...(bridge || []),
       );
     },
   });
@@ -94,74 +95,83 @@ const Datatable = ({
   }, [data, setRows, setTotal]);
 
   return (
-    <Paper
+    <Card
       sx={{
         height: height ?? 700,
         width: "100%",
       }}
     >
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        loading={isLoading || props.loading}
-        rowCount={total}
-        localeText={thTHGrid}
-        pageSizeOptions={[15, 30, 50, 100]}
-        slotProps={{
-          toolbar: {
-            showQuickFilter: true,
-            csvOptions: {
-              utf8WithBom: true,
-            },
-            printOptions: {
-              disableToolbarButton: true,
-            },
-          },
-        }}
+      <CardContent
         sx={{
-          borderRadius: "5px",
-          "& .MuiDataGrid-row:last-child": {
-            "& .MuiDataGrid-cell": {
-              borderBottomWidth: 0,
-            },
-          },
-          "& .MuiDataGrid-colCell": {
-            backgroundColor: "var(--mui-palette-background-level1)",
-            color: "var(--mui-palette-text-secondary)",
-            lineHeight: 1,
-          },
-          "& .MuiDataGrid-checkboxInput": {
-            padding: "0 0 0 24px",
-          },
-          [`& .${gridClasses.columnHeader}`]: {
-            backgroundColor: "var(--mui-palette-background-level1)",
-            color: "var(--mui-palette-text-secondary)",
-          },
-          [`& .text-color-primary`]: {
-            color: "var(--mui-palette-primary-main)",
-          },
-          [`& .text-color-secondary`]: {
-            color: "var(--mui-palette-secondary-dark)",
-          },
-          [`& .text-color-info`]: { color: "var(--mui-palette-info-main)" },
-          [`& .text-color-warning`]: {
-            color: "var(--mui-palette-warning-main)",
-          },
-          [`& .text-color-success`]: {
-            color: "var(--mui-palette-success-main)",
-          },
-          [`& .text-color-error`]: { color: "var(--mui-palette-error-main)" },
+          p: 0,
+
+          height: "100%",
         }}
-        showToolbar
-        paginationMode="server"
-        sortingMode="server"
-        filterMode="server"
-        onPaginationModelChange={setPaginationModel}
-        onSortModelChange={setSortModel}
-        onFilterModelChange={setFilterModel}
-        {...props}
-      />
-    </Paper>
+      >
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          loading={isLoading || props.loading}
+          rowCount={total}
+          localeText={thTHGrid}
+          pageSizeOptions={[15, 30, 50, 100]}
+          slotProps={{
+            toolbar: {
+              showQuickFilter: true,
+              csvOptions: {
+                utf8WithBom: true,
+              },
+              printOptions: {
+                disableToolbarButton: true,
+              },
+            },
+          }}
+          sx={{
+            borderRadius: "5px",
+            border: 0,
+            "& .MuiDataGrid-row:last-child": {
+              "& .MuiDataGrid-cell": {
+                borderBottomWidth: 0,
+              },
+            },
+            "& .MuiDataGrid-colCell": {
+              backgroundColor: "var(--mui-palette-background-level1)",
+              color: "var(--mui-palette-text-secondary)",
+              lineHeight: 1,
+            },
+            "& .MuiDataGrid-checkboxInput": {
+              padding: "0 0 0 24px",
+            },
+            [`& .${gridClasses.columnHeader}`]: {
+              backgroundColor: "var(--mui-palette-background-level1)",
+              color: "var(--mui-palette-text-secondary)",
+            },
+            [`& .text-color-primary`]: {
+              color: "var(--mui-palette-primary-main)",
+            },
+            [`& .text-color-secondary`]: {
+              color: "var(--mui-palette-secondary-dark)",
+            },
+            [`& .text-color-info`]: { color: "var(--mui-palette-info-main)" },
+            [`& .text-color-warning`]: {
+              color: "var(--mui-palette-warning-main)",
+            },
+            [`& .text-color-success`]: {
+              color: "var(--mui-palette-success-main)",
+            },
+            [`& .text-color-error`]: { color: "var(--mui-palette-error-main)" },
+          }}
+          showToolbar
+          paginationMode="server"
+          sortingMode="server"
+          filterMode="server"
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
+          onFilterModelChange={setFilterModel}
+          {...props}
+        />
+      </CardContent>
+    </Card>
   );
 };
 
