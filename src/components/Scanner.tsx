@@ -45,6 +45,7 @@ const Scanner = (props: ScannerProps) => {
         variant="outlined"
         inputRef={ref}
         value={value}
+        color="primary"
         onChange={(e) => setValue(e.target.value)}
         slotProps={{
           input: {
