@@ -3,6 +3,7 @@ import DeleteProduct from "@/actions/product/delete";
 import getProductDatatable, {
   ProductDatatableInstance,
 } from "@/actions/product/getProductDatatable";
+import recoveryProduct from "@/actions/product/recoveryProduct";
 import ProductCategoryChip from "@/components/Chips/ProductCategoryChip";
 import ProductKeywordChips from "@/components/Chips/ProductKeywordChips";
 import ProductStockStatusChip from "@/components/Chips/ProductStockStatusChip";
@@ -16,48 +17,28 @@ import { getPath } from "@/router";
 import {
   DeleteTwoTone,
   QrCodeTwoTone,
+  RestoreTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
 import { Box, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = () => {
   const t = useTranslations("PRODUCTS.datatable");
   const { enqueueSnackbar } = useSnackbar();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
 
   const [barcodeProduct, setBarcodeProduct] =
     useState<ProductDatatableInstance | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
 
-  const currentFilter = searchParams.get("filter") as any;
   const [filterType, setFilterType] = useState<
     "all" | "preorder" | "outOfStock" | "stock" | "deleted"
-  >(
-    ["all", "preorder", "outOfStock", "stock", "deleted"].includes(
-      currentFilter,
-    )
-      ? currentFilter
-      : "all",
-  );
-
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (filterType === "all") {
-      params.delete("filter");
-    } else {
-      params.set("filter", filterType);
-    }
-    router.replace(`${pathname}?${params.toString()}`);
-  }, [filterType, pathname, router, searchParams]);
+  >("all");
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -85,7 +66,7 @@ const ProductDatatable = () => {
         enqueueSnackbar(t("confirmation.delete_success"), {
           variant: "success",
         });
-        await queryClient.refetchQueries({
+        await queryClient.invalidateQueries({
           queryKey: ["products"],
           type: "active",
         });
@@ -96,7 +77,40 @@ const ProductDatatable = () => {
     },
   });
 
+  const recoveryConfirmation = useConfirm({
+    title: t("confirmation.recovery_title"),
+    text: t("confirmation.recovery_text"),
+    confirmProps: {
+      color: "success",
+      startIcon: <RestoreTwoTone />,
+    },
+    onConfirm: async (id: number) => {
+      try {
+        const resp = await recoveryProduct(id);
+
+        if (!resp.success) throw new Error((resp as any).message);
+        enqueueSnackbar(t("confirmation.recovery_success"), {
+          variant: "success",
+        });
+        await queryClient.invalidateQueries({
+          queryKey: ["products"],
+          type: "active",
+        });
+      } catch (error) {
+        console.error(error);
+        enqueueSnackbar(t("confirmation.recovery_error"));
+      }
+    },
+  });
+
   const menu = {
+    recovery: React.useCallback(
+      (product: ProductDatatableInstance) => () => {
+        recoveryConfirmation.with(product.id);
+        recoveryConfirmation.handleOpen();
+      },
+      [recoveryConfirmation],
+    ),
     delete: React.useCallback(
       (product: ProductDatatableInstance) => () => {
         confirmation.with(product.id);
@@ -245,14 +259,25 @@ const ProductDatatable = () => {
             label={t("actions.barcode")}
             showInMenu
           />,
-          <GridActionsCellItem
-            key="delete"
-            icon={<DeleteTwoTone />}
-            onClick={menu.delete(row)}
-            label={t("actions.delete")}
-            disabled={!permissions(row).canRemoveProduct}
-            showInMenu
-          />,
+          row.deleted_at ? (
+            <GridActionsCellItem
+              key="recovery"
+              icon={<RestoreTwoTone />}
+              onClick={menu.recovery(row)}
+              label={t("actions.recovery")}
+              disabled={!permissions(row).canEditProduct}
+              showInMenu
+            />
+          ) : (
+            <GridActionsCellItem
+              key="delete"
+              icon={<DeleteTwoTone />}
+              onClick={menu.delete(row)}
+              label={t("actions.delete")}
+              disabled={!permissions(row).canRemoveProduct}
+              showInMenu
+            />
+          ),
         ],
       },
     ];
@@ -280,10 +305,10 @@ const ProductDatatable = () => {
         columns={columns()}
         fetch={getProductDatatable}
         bridge={[filterType]}
-        height={700}
       />
 
       <Confirmation {...confirmation.props} />
+      <Confirmation {...recoveryConfirmation.props} />
       <BarcodeDialog
         product={barcodeProduct}
         open={showBarcode}
