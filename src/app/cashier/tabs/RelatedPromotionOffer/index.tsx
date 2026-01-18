@@ -1,4 +1,3 @@
-import Loading from "@/components/loading";
 import { useAppSelector } from "@/hooks";
 import useRelatedPromotionOffer from "@/hooks/useRelatedPromotionOffer";
 import { date } from "@/libs/formatter";
@@ -6,6 +5,7 @@ import { CartProduct } from "@/reducers/cartReducer";
 import { ArrowRightAlt } from "@mui/icons-material";
 import { Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
+import RelatedPromotionSkeleton from "./RelatedPromotionSkeleton";
 
 const RelatedPromotionOfferTab = () => {
   const t = useTranslations("CASHIER.tabs.related_promotion");
@@ -17,9 +17,11 @@ const RelatedPromotionOfferTab = () => {
     productIds: cartProducts.map((p) => p.id),
   });
 
-  if (isLoading || !relatedPromotionOffers) {
-    return <Loading centered m={5} />;
+  if (isLoading) {
+    return <RelatedPromotionSkeleton />;
   }
+
+  if (!relatedPromotionOffers) return null;
 
   if (relatedPromotionOffers.length === 0) {
     return (
