@@ -69,7 +69,11 @@ export const datatableFetchExtension = Prisma.defineExtension((client) => {
           const take = query.pagination.pageSize;
           const orderBy = DatatableHelpers.buildPrismaSort(query.sort);
 
-          if (searchable && query?.filter.quickFilterValues) {
+          if (
+            searchable &&
+            query?.filter.quickFilterValues &&
+            query.filter.quickFilterValues.length > 0
+          ) {
             const OR = query.filter.quickFilterValues.flatMap((value) => {
               return DatatableHelpers.buildPrismaSearchOr(value, searchable);
             });

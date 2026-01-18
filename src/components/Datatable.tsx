@@ -61,7 +61,7 @@ const Datatable = ({
       `datatable:${name}`,
       paginationModel,
       sortModel,
-      filterModel,
+      filterModel.quickFilterValues,
       bridge,
     ],
     queryFn: async () => {
@@ -128,7 +128,9 @@ const Datatable = ({
           showToolbar
           paginationMode="server"
           sortingMode="server"
-          filterMode="server"
+          filterMode="client"
+          filterModel={filterModel}
+          filterDebounceMs={400}
           paginationModel={paginationModel}
           onPaginationModelChange={setPaginationModel}
           onSortModelChange={setSortModel}
