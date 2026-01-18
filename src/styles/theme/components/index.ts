@@ -11,6 +11,7 @@ import { MuiGrid } from "./grid";
 import { MuiLink } from "./link";
 import { MuiPopover } from "./pop-over";
 import { MuiStack } from "./stack";
+import { MuiSwitch } from "./switch";
 import { MuiTab } from "./tab";
 import { MuiTableBody } from "./table-body";
 import { MuiTableCell } from "./table-cell";
@@ -37,4 +38,5 @@ export const components = {
   MuiTableFooter,
   MuiTextField,
   MuiTabs,
+  MuiSwitch,
 } satisfies Components<Theme>;
