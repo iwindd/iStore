@@ -48,7 +48,7 @@ const Datatable = ({
   const [total, setTotal] = React.useState<number>(0);
   const [paginationModel, setPaginationModel] = React.useState({
     page: 0,
-    pageSize: 15,
+    pageSize: 10,
   });
   const [sortModel, setSortModel] = React.useState<GridSortModel>([]);
   const [filterModel, setFilterModel] = React.useState<GridFilterModel>({
@@ -96,7 +96,7 @@ const Datatable = ({
   return (
     <Card
       sx={{
-        height: height ?? 700,
+        height: height ?? 701,
         width: "100%",
       }}
     >
@@ -113,7 +113,7 @@ const Datatable = ({
           loading={isLoading || props.loading}
           rowCount={total}
           localeText={thTHGrid}
-          pageSizeOptions={[15, 30, 50, 100]}
+          pageSizeOptions={[10, 25, 50, 100]}
           slotProps={{
             toolbar: {
               showQuickFilter: true,
