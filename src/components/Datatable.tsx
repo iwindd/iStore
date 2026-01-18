@@ -60,9 +60,9 @@ const Datatable = ({
       name, // will be removed soon (use datatable:name instead)
       `datatable:${name}`,
       paginationModel,
-      paginationModel,
       sortModel,
       filterModel,
+      bridge,
     ],
     queryFn: async () => {
       return await fetch(

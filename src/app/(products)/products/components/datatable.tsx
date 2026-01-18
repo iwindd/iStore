@@ -18,20 +18,47 @@ import {
   QrCodeTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
-import { Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = () => {
   const t = useTranslations("PRODUCTS.datatable");
   const { enqueueSnackbar } = useSnackbar();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [barcodeProduct, setBarcodeProduct] =
     useState<ProductDatatableInstance | null>(null);
   const [showBarcode, setShowBarcode] = useState<boolean>(false);
+
+  const currentFilter = searchParams.get("filter") as any;
+  const [filterType, setFilterType] = useState<
+    "all" | "preorder" | "outOfStock" | "stock" | "deleted"
+  >(
+    ["all", "preorder", "outOfStock", "stock", "deleted"].includes(
+      currentFilter,
+    )
+      ? currentFilter
+      : "all",
+  );
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (filterType === "all") {
+      params.delete("filter");
+    } else {
+      params.set("filter", filterType);
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [filterType, pathname, router, searchParams]);
+
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const permissions = (product: ProductDatatableInstance) => ({
@@ -233,10 +260,26 @@ const ProductDatatable = () => {
 
   return (
     <>
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+        <Tabs
+          value={filterType}
+          onChange={(_, value) => setFilterType(value)}
+          textColor="primary"
+          indicatorColor="primary"
+        >
+          <Tab label={t("filters.all")} value="all" />
+          <Tab label={t("filters.stock")} value="stock" />
+          <Tab label={t("filters.out_of_stock")} value="outOfStock" />
+          <Tab label={t("filters.preorder")} value="preorder" />
+          <Tab label={t("filters.deleted")} value="deleted" />
+        </Tabs>
+      </Box>
+
       <Datatable
         name={"products"}
         columns={columns()}
         fetch={getProductDatatable}
+        bridge={[filterType]}
         height={700}
       />
 

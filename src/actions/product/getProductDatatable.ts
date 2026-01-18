@@ -8,12 +8,31 @@ export type ProductDatatableInstance = Awaited<
   ReturnType<typeof getProductDatatable>
 >["data"][number];
 
-const getProductDatatable = async (table: TableFetch) => {
+const getProductDatatable = async (
+  table: TableFetch,
+  filterType?: "all" | "preorder" | "outOfStock" | "stock" | "deleted",
+) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(ProductPermissionEnum.READ))
       throw new Error("Forbidden");
+
+    let where: any = {
+      store_id: user.store,
+      deleted_at: null,
+    };
+
+    if (filterType === "preorder") {
+      where.usePreorder = true;
+    } else if (filterType === "outOfStock") {
+      where.stock = { quantity: { lte: 0 } };
+    } else if (filterType === "stock") {
+      where.stock = { quantity: { gt: 0 } };
+    } else if (filterType === "deleted") {
+      where.deleted_at = { not: null };
+    }
+
     const datatable = await db.product.getDatatable({
       query: table,
       searchable: {
@@ -72,10 +91,7 @@ const getProductDatatable = async (table: TableFetch) => {
         },
         deleted_at: true,
       },
-      where: {
-        store_id: user.store,
-        deleted_at: null,
-      },
+      where,
     });
 
     return {
