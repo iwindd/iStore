@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardContent, Divider, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import AllProductsDatatable from "./datatables/AllProductsDatatable";
@@ -13,18 +13,23 @@ interface HistoryTabsProps {
 const HistoryTabs = ({ orderId }: HistoryTabsProps) => {
   const t = useTranslations("HISTORIES.detail.tabs");
   const [currentTab, setCurrentTab] = useState<"all" | "product" | "preorder">(
-    "all"
+    "all",
   );
 
   return (
-    <Card sx={{ borderBottom: 1, borderColor: "divider" }}>
-      <Tabs value={currentTab} onChange={(e, v) => setCurrentTab(v)}>
-        <Tab value="all" label={t("all")} sx={{ px: 2 }} />
-        <Tab value="product" label={t("product")} sx={{ px: 2 }} />
-        <Tab value="preorder" label={t("preorder")} sx={{ px: 2 }} />
+    <Stack>
+      <Tabs
+        value={currentTab}
+        onChange={(e, v) => setCurrentTab(v)}
+        sx={{
+          my: 3,
+        }}
+      >
+        <Tab value="all" label={t("all")} />
+        <Tab value="product" label={t("product")} />
+        <Tab value="preorder" label={t("preorder")} />
       </Tabs>
-      <Divider />
-      <CardContent sx={{ px: 0 }}>
+      <Stack>
         {currentTab === "all" && <AllProductsDatatable orderId={orderId} />}
         {currentTab === "product" && (
           <OrderProductDatatable orderId={orderId} />
@@ -32,8 +37,8 @@ const HistoryTabs = ({ orderId }: HistoryTabsProps) => {
         {currentTab === "preorder" && (
           <OrderPreOrderDatatable orderId={orderId} />
         )}
-      </CardContent>
-    </Card>
+      </Stack>
+    </Stack>
   );
 };
 

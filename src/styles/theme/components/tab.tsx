@@ -3,7 +3,9 @@ import type { Components } from "@mui/material/styles";
 import type { Theme } from "../types";
 
 export const MuiTab = {
-  defaultProps: {},
+  defaultProps: {
+    disableRipple: true,
+  },
   styleOverrides: {
     root: {
       fontSize: "14px",
