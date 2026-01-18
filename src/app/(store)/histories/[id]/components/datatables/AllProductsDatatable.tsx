@@ -114,10 +114,28 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         renderCell: (data: any) => getStatusChip(data.value),
       },
       {
+        field: "promotions",
+        sortable: false,
+        headerName: t("headers.promotion"),
+        flex: 1.2,
+        editable: false,
+        renderCell: (data: any) =>
+          data.value ? (
+            <Chip
+              label={data.value}
+              size="small"
+              color="info"
+              variant="outlined"
+            />
+          ) : (
+            "-"
+          ),
+      },
+      {
         field: "note",
         sortable: false,
         headerName: t("headers.note"),
-        flex: 1.2,
+        flex: 1,
         editable: false,
         renderCell: (data: any) => ff.text(data.value),
       },

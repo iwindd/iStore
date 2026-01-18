@@ -1,16 +1,27 @@
 "use client";
 import getHistoryDatatable from "@/actions/order/getHistoryDatatable";
+import PaymentMethodChip from "@/components/Chips/PaymentMethodChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import * as ff from "@/libs/formatter";
 import { getPath } from "@/router";
-import { ViewAgendaTwoTone } from "@mui/icons-material";
+import { InventoryTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
+import { Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "@prisma/client";
 import { useTranslations } from "next-intl";
+import React from "react";
+import { HistoryFilter } from "../types";
+import HistoryFilterComponent from "./filter";
 
 const HistoryDatatable = () => {
   const t = useTranslations("HISTORIES.datatable");
+  const [filter, setFilter] = React.useState<HistoryFilter>({});
+
+  const handleFilterChange = (newFilter: HistoryFilter) => {
+    setFilter(newFilter);
+  };
+
   const columns = (): GridColDef[] => {
     return [
       {
@@ -31,11 +42,20 @@ const HistoryDatatable = () => {
           ff.text(data?.value?.user?.name || t("placeholders.not_specified")),
       },
       {
+        field: "method",
+        sortable: true,
+        headerName: t("headers.method"),
+        flex: 0.8,
+        editable: false,
+        renderCell: (data: any) => <PaymentMethodChip method={data.value} />,
+      },
+      {
         field: "total",
         sortable: true,
         headerName: t("headers.total"),
         flex: 1,
         editable: false,
+        renderCell: (data: any) => ff.money(data.value),
       },
       {
         field: "cost",
@@ -54,10 +74,33 @@ const HistoryDatatable = () => {
         renderCell: (data: any) => ff.money(data.value),
       },
       {
+        field: "consignment",
+        sortable: false,
+        headerName: t("headers.consignment"),
+        flex: 0.8,
+        editable: false,
+        renderCell: (data: any) =>
+          data.row.consignment_id ? (
+            <Tooltip
+              title={t("consignment_tooltip", { id: data.row.consignment_id })}
+            >
+              <Chip
+                label={`#${data.row.consignment_id}`}
+                size="small"
+                color="secondary"
+                icon={<InventoryTwoTone />}
+                variant="outlined"
+              />
+            </Tooltip>
+          ) : (
+            "-"
+          ),
+      },
+      {
         field: "products",
         sortable: false,
         headerName: t("headers.products"),
-        flex: 1,
+        flex: 1.5,
         editable: false,
         renderCell: (data: any) =>
           data.value
@@ -67,7 +110,7 @@ const HistoryDatatable = () => {
                 product: {
                   label: string;
                 };
-              }) => `${item.count}x${item.product.label}`
+              }) => `${item.count}x${item.product.label}`,
             )
             .join(", ") || t("placeholders.no_products"),
       },
@@ -83,7 +126,7 @@ const HistoryDatatable = () => {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 1,
+        flex: 0.8,
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
@@ -98,12 +141,16 @@ const HistoryDatatable = () => {
   };
 
   return (
-    <Datatable
-      name={"histories"}
-      columns={columns()}
-      fetch={getHistoryDatatable}
-      height={700}
-    />
+    <Stack spacing={1}>
+      <HistoryFilterComponent onFilterChange={handleFilterChange} />
+      <Datatable
+        name={"histories"}
+        columns={columns()}
+        fetch={getHistoryDatatable}
+        bridge={[filter]}
+        height={600}
+      />
+    </Stack>
   );
 };
 

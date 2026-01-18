@@ -611,13 +611,35 @@
   },
   "HISTORIES": {
     "title": "ประวัติการซื้อขายสินค้า",
+    "filter": {
+      "title": "ตัวกรอง",
+      "active_count": "เปิดใช้งาน {count} ตัวกรอง",
+      "expand": "ขยาย",
+      "collapse": "ย่อ",
+      "start_date": "วันเริ่มต้น",
+      "end_date": "วันสิ้นสุด",
+      "method": "วิธีชำระเงิน",
+      "all": "ทั้งหมด",
+      "cash": "เงินสด",
+      "bank": "โอนเงิน",
+      "creator": "ผู้คิดเงิน",
+      "min_total": "ยอดขั้นต่ำ",
+      "max_total": "ยอดสูงสุด",
+      "has_note": "หมายเหตุ",
+      "has_note_yes": "มีหมายเหตุ",
+      "has_note_no": "ไม่มีหมายเหตุ",
+      "apply": "ค้นหา",
+      "clear": "ล้าง"
+    },
     "datatable": {
       "headers": {
         "date": "วันทำรายการ",
         "creator": "ผู้คิดเงิน",
+        "method": "วิธีชำระเงิน",
         "total": "ยอดรวม",
         "cost": "ต้นทุน",
         "profit": "กำไร",
+        "consignment": "ฝากขาย",
         "products": "สินค้า",
         "note": "หมายเหตุ",
         "actions": "เครื่องมือ"
@@ -628,7 +650,8 @@
       "placeholders": {
         "not_specified": "ไม่ระบุ",
         "no_products": "ไม่พบสินค้า"
-      }
+      },
+      "consignment_tooltip": "รายการฝากขาย #{id}"
     },
     "detail": {
       "title": "ประวัติการทำรายการ",
@@ -658,7 +681,12 @@
           "profit": "กำไร",
           "count": "จำนวน",
           "status": "สถานะ",
-          "note": "หมายเหตุ"
+          "note": "หมายเหตุ",
+          "promotion": "โปรโมชั่น",
+          "returned_at": "วันที่คืน",
+          "returned_by": "ผู้รับคืน",
+          "cancelled_at": "วันที่ยกเลิก",
+          "cancelled_by": "ผู้ยกเลิก"
         },
         "types": {
           "product": "สินค้า",
@@ -1030,6 +1058,12 @@
       "low_stock": "ของเหลือน้อย",
       "out_of_stock": "สินค้าหมด",
       "preorder": "พรีออเดอร์"
+    }
+  },
+  "COMMON": {
+    "payment_method": {
+      "cash": "เงินสด",
+      "bank": "โอนเงิน"
     }
   }
 }

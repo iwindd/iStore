@@ -35,6 +35,16 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
             },
           },
         },
+        promotionOffers: {
+          select: {
+            id: true,
+            event: {
+              select: {
+                note: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -74,6 +84,9 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
         ...item,
         type: "PRODUCT" as const,
         status: null,
+        promotions: item.promotionOffers
+          .map((p) => p.event?.note || `#${p.id}`)
+          .join(", "),
       })),
       ...preOrderProducts.map((item) => ({
         ...item,
