@@ -1,5 +1,4 @@
 "use server";
-import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
 import {
@@ -52,9 +51,7 @@ export type CreatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
   };
 }>;
 
-const CreatePromotionOffer = async (
-  payload: AddPromotionOfferValues,
-): Promise<ActionResponse<CreatedPromotionOffer>> => {
+const CreatePromotionOffer = async (payload: AddPromotionOfferValues) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
@@ -128,9 +125,9 @@ const CreatePromotionOffer = async (
       },
     });
 
-    return { success: true, data: promotionOffer as CreatedPromotionOffer };
+    return { success: true, data: promotionOffer };
   } catch (error) {
-    return ActionError(error) as ActionResponse<CreatedPromotionOffer>;
+    return { success: false, error: error };
   }
 };
 

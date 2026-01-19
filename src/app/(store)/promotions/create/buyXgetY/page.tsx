@@ -32,7 +32,7 @@ const PromotionOfferCreatePage = () => {
         type: "active",
       });
       router.push(
-        getPath("promotions.buyXgetY", { id: data.data.id.toString() }),
+        getPath("promotions.buyXgetY", { id: data.data?.id.toString() }),
       );
     },
     onError: (error) => {
