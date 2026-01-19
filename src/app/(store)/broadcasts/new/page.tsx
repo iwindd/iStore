@@ -28,7 +28,7 @@ const BroadcastNewPage = () => {
     onSuccess: async () => {
       setIsCreated(true);
       enqueueSnackbar(t("save_success"), { variant: "success" });
-      await queryClient.refetchQueries({
+      queryClient.invalidateQueries({
         queryKey: ["broadcasts"],
         type: "active",
       });
