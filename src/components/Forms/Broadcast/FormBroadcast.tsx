@@ -1,6 +1,4 @@
-import { EventSelectorItem } from "@/actions/broadcast/eventActions";
 import { generateAdMessage } from "@/actions/broadcast/generateMessage";
-import EventSelector from "@/components/Selector/EventSelector";
 import {
   CreateBroadcastSchema,
   CreateBroadcastValues,
@@ -21,9 +19,9 @@ import Grid from "@mui/material/Grid";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
-import React from "react";
 import { useForm } from "react-hook-form";
 import ImageCard from "./Partials/ImageCard";
+import PromotionSelectionCard from "./Partials/PromotionSelectionCard";
 import SettingCard from "./Partials/Settings";
 
 export interface FormBroadcastProps {
@@ -83,24 +81,10 @@ const FormBroadcast = ({
     },
   });
 
-  // Track selected event for date constraints
-  const [selectedEvent, setSelectedEvent] =
-    React.useState<EventSelectorItem | null>(null);
-
   const disabled = isLoading || propsDisabled;
 
-  const handleEventChange = (event: EventSelectorItem | null) => {
-    if (event) {
-      setValue("event_id", event.id);
-      setSelectedEvent(event);
-    } else {
-      setValue("event_id", 0);
-      setSelectedEvent(null);
-    }
-  };
-
   return (
-    <Grid container>
+    <Grid container columns={12} spacing={3}>
       <Grid size={8}>
         <Stack spacing={3}>
           <Stack
@@ -109,35 +93,15 @@ const FormBroadcast = ({
             onSubmit={handleSubmit(handleFormSubmit)}
             id="broadcast-form"
           >
+            <PromotionSelectionCard form={form} disabled={disabled} />
+
             <Card>
               <CardHeader title={t("sections.promotion.title")} />
               <CardContent>
                 <Stack spacing={3}>
                   <Grid container spacing={3}>
-                    <Grid size={6}>
-                      <FormControl fullWidth error={!!errors.event_id}>
-                        <EventSelector
-                          onSubmit={handleEventChange}
-                          defaultValue={broadcast?.event_id}
-                          error={!!errors.event_id}
-                          helperText={errors.event_id?.message}
-                          fieldProps={{
-                            disabled,
-                          }}
-                        />
-                      </FormControl>
-                      {selectedEvent?.note && (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ mt: 1 }}
-                        >
-                          {selectedEvent.note}
-                        </Typography>
-                      )}
-                    </Grid>
-                    <Grid size={6}>
-                      <FormControl fullWidth error={!!errors.event_id}>
+                    <Grid size={12}>
+                      <FormControl fullWidth error={!!errors.title}>
                         <TextField
                           label={t("sections.promotion.name")}
                           fullWidth

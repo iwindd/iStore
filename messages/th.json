@@ -926,6 +926,11 @@
           "message": "ข้อความประกาศ",
           "message_placeholder": "เขียนข้อความประกาศ..."
         },
+        "promotion_selection": {
+          "title": "โปรโมชั่น",
+          "buy": "ซื้อ",
+          "get": "ได้รับ"
+        },
         "image": {
           "title": "รูปภาพ",
           "tabs": {

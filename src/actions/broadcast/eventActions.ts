@@ -14,7 +14,7 @@ export interface EventSelectorItem {
  * Search events by note for selector dropdown
  */
 export const searchEvents = async (
-  query: string
+  query: string,
 ): Promise<EventSelectorItem[]> => {
   try {
     const user = await getUser();
@@ -51,7 +51,7 @@ export const searchEvents = async (
  * Find a single event by ID
  */
 export const findEvent = async (
-  id: number
+  id: number,
 ): Promise<EventSelectorItem | null> => {
   try {
     const user = await getUser();
@@ -71,6 +71,42 @@ export const findEvent = async (
     });
 
     return event;
+  } catch (error) {
+    console.error(error);
+    throw ActionError(error);
+  }
+};
+
+/**
+ * Find promotion details by event ID
+ */
+export const getEventPromotionDetails = async (eventId: number) => {
+  try {
+    const user = await getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const offer = await db.promotionOffer.findFirst({
+      where: {
+        event_id: eventId,
+        event: {
+          store_id: user.store,
+        },
+      },
+      include: {
+        buyItems: {
+          include: {
+            product: true,
+          },
+        },
+        getItems: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    return offer;
   } catch (error) {
     console.error(error);
     throw ActionError(error);
