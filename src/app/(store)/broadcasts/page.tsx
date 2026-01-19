@@ -5,6 +5,7 @@ import fetchBroadcastDatatable, {
   BroadcastDatatableInstance,
 } from "@/actions/broadcast/fetchBroadcastDatatable";
 import { sendBroadcast } from "@/actions/broadcast/sendBroadcast";
+import BroadcastStatusChip from "@/components/Chips/BroadcastStatusChip";
 import GridLinkAction from "@/components/GridLinkAction";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import useDatatable from "@/hooks/useDatatable";
@@ -19,21 +20,13 @@ import {
   SendTwoTone,
   ViewAgendaTwoTone,
 } from "@mui/icons-material";
-import { Button, Chip, ChipProps } from "@mui/material";
+import { Button } from "@mui/material";
 import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { enqueueSnackbar } from "notistack";
 import { useCallback } from "react";
-
-const STATUS_CHIP_COLORS: Record<string, ChipProps["color"]> = {
-  DRAFT: "default",
-  SCHEDULED: "info",
-  SENT: "success",
-  CANCELLED: "warning",
-  FAILED: "error",
-};
 
 const BroadcastPage = () => {
   const t = useTranslations("BROADCASTS");
@@ -126,21 +119,21 @@ const BroadcastPage = () => {
         cancelConfirmation.with(broadcast.id);
         cancelConfirmation.handleOpen();
       },
-      [cancelConfirmation]
+      [cancelConfirmation],
     ),
     delete: useCallback(
       (broadcast: BroadcastDatatableInstance) => () => {
         deleteConfirmation.with(broadcast.id);
         deleteConfirmation.handleOpen();
       },
-      [deleteConfirmation]
+      [deleteConfirmation],
     ),
     sendBroadcast: useCallback(
       (broadcast: BroadcastDatatableInstance) => () => {
         sendConfirmation.with(broadcast.id);
         sendConfirmation.handleOpen();
       },
-      [sendConfirmation]
+      [sendConfirmation],
     ),
   };
 
@@ -151,12 +144,8 @@ const BroadcastPage = () => {
       {
         field: "status",
         headerName: t("datatable.headers.status"),
-        width: 100,
-        renderCell: ({ row }) => {
-          const statusLabel = t(`datatable.status.${row.status}`);
-          const statusColor = STATUS_CHIP_COLORS[row.status] || "default";
-          return <Chip label={statusLabel} color={statusColor} size="small" />;
-        },
+        width: 120,
+        renderCell: ({ row }) => <BroadcastStatusChip status={row.status} />,
       },
       {
         field: "title",
@@ -167,7 +156,8 @@ const BroadcastPage = () => {
         field: "note",
         headerName: t("datatable.headers.promotion"),
         flex: 1,
-        renderCell: ({ row }) => row.event.id,
+        renderCell: ({ row }) =>
+          row.event.note || t("datatable.placeholders.not_specified"),
       },
       {
         field: "scheduled_at",
