@@ -745,6 +745,8 @@
     "add_button": "เพิ่มรายการ",
     "datatable": {
       "headers": {
+        "name": "ชื่อโปรโมชั่น",
+        "status": "สถานะ",
         "duration": "ระยะเวลาโปรโมชั่น",
         "note": "หมายเหตุ",
         "buy_count": "จำนวนสินค้าที่ซื้อ",
@@ -1074,6 +1076,12 @@
       "low_stock": "ของเหลือน้อย",
       "out_of_stock": "สินค้าหมด",
       "preorder": "พรีออเดอร์"
+    },
+    "promotion_status": {
+      "active": "เปิดใช้งาน",
+      "scheduled": "รอเริ่ม",
+      "expired": "หมดอายุ",
+      "disabled": "ปิดใช้งาน"
     }
   },
   "COMMON": {

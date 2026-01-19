@@ -12,6 +12,7 @@ export type PromotionDatatableInstance = Prisma.PromotionOfferGetPayload<{
     event: {
       select: {
         id: true;
+        name: true;
         note: true;
         start_at: true;
         end_at: true;
@@ -51,7 +52,7 @@ export type PromotionDatatableInstance = Prisma.PromotionOfferGetPayload<{
 }>;
 
 const fetchPromotionDatatable = async (
-  table: TableFetch
+  table: TableFetch,
 ): Promise<DatatableFetchResult<PromotionDatatableInstance>> => {
   try {
     const user = await getUser();
@@ -78,6 +79,7 @@ const fetchPromotionDatatable = async (
         event: {
           select: {
             id: true,
+            name: true,
             note: true,
             start_at: true,
             end_at: true,

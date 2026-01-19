@@ -3,6 +3,7 @@ import fetchPromotionDatatable, {
   PromotionDatatableInstance,
 } from "@/actions/promotion/fetchPromotionDatatable";
 import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
+import PromotionStatusChip from "@/components/Chips/PromotionStatusChip";
 import GridLinkAction from "@/components/GridLinkAction";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import useDatatable from "@/hooks/useDatatable";
@@ -26,7 +27,7 @@ import CreatePromotionModal from "./components/CreatePromotionModal";
 const MAPPING_PRODUCT_LABEL = (
   items:
     | PromotionDatatableInstance["getItems"]
-    | PromotionDatatableInstance["buyItems"]
+    | PromotionDatatableInstance["buyItems"],
 ) => {
   return items
     .map((item) => `${item.product.label} (x${item.quantity})`)
@@ -70,7 +71,7 @@ const PromotionPage = () => {
         disableConfirmation.with(promotion.id);
         disableConfirmation.handleOpen();
       },
-      [disableConfirmation]
+      [disableConfirmation],
     ),
   };
 
@@ -78,6 +79,18 @@ const PromotionPage = () => {
     name: "promotions",
     fetch: fetchPromotionDatatable,
     columns: [
+      {
+        field: "event.name",
+        headerName: t("datatable.headers.name"),
+        flex: 1,
+        renderCell: ({ row }) => row.event.name || "-",
+      },
+      {
+        field: "status",
+        headerName: t("datatable.headers.status"),
+        flex: 0.8,
+        renderCell: ({ row }) => <PromotionStatusChip event={row.event} />,
+      },
       {
         flex: 1,
         field: "created_at",
