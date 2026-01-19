@@ -1,14 +1,10 @@
-import findProductById from "@/actions/product/findById";
-import useFormValidate from "@/hooks/useFormValidate";
-import { useInterface } from "@/providers/InterfaceProvider";
-import { AddProductDialogValues } from "@/schema/Promotion/AddProductToOffer";
+"use client";
 import {
   AddPromotionOfferSchema,
   AddPromotionOfferValues,
   UpdatePromotionOfferSchema,
 } from "@/schema/Promotion/Offer";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AddTwoTone } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -27,15 +23,19 @@ import Grid from "@mui/material/Grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
-import { enqueueSnackbar } from "notistack";
 import { useEffect, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import z from "zod";
-import AddProductDialog from "./components/AddProductDialog";
-import ProductTable, { ProductTableRow } from "./components/ProductTable";
+import ProductArrayField from "./components/ProductArrayField";
 
 enum PromotionStatus {
   SCHEDULED = "scheduled",
   IMMEDIATE = "immediate",
+}
+
+export interface ProductTableRow {
+  product: { id: number; serial: string; label: string };
+  quantity: number;
 }
 
 export interface FormBuyXGetYProps {
@@ -59,21 +59,30 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
   const isStarted = isInProgress || dayjs().isAfter(startAt);
   const isEnded = dayjs().isAfter(endAt);
 
-  const [modalNeedOpen, setModalNeedOpen] = useState(false);
-  const [modalOfferOpen, setModalOfferOpen] = useState(false);
-  const [needProducts, setNeedProducts] = useState<ProductTableRow[]>(
-    props.buyXgetY?.needProducts || []
-  );
-  const [offerProducts, setOfferProducts] = useState<ProductTableRow[]>(
-    props.buyXgetY?.offerProducts || []
-  );
   const [status, setStatus] = useState<PromotionStatus>(
-    props.buyXgetY ? PromotionStatus.SCHEDULED : PromotionStatus.IMMEDIATE
+    props.buyXgetY ? PromotionStatus.SCHEDULED : PromotionStatus.IMMEDIATE,
   );
-  const { setBackdrop } = useInterface();
+
   const schema = props.buyXgetY
     ? UpdatePromotionOfferSchema
     : AddPromotionOfferSchema;
+
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      note: props.buyXgetY?.note || "",
+      needProducts: props.buyXgetY?.needProducts.map((p) => ({
+        product_id: p.product.id,
+        quantity: p.quantity,
+      })) || [{ product_id: 0, quantity: 1 }],
+      offerProducts: props.buyXgetY?.offerProducts.map((p) => ({
+        product_id: p.product.id,
+        quantity: p.quantity,
+      })) || [{ product_id: 0, quantity: 1 }],
+      start_at: props.buyXgetY?.start_at || dayjs().toDate(),
+      end_at: props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
+    },
+  });
 
   const {
     register,
@@ -81,86 +90,8 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
     handleSubmit,
     setValue,
     getValues,
-  } = useFormValidate<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      note: props.buyXgetY?.note || "",
-      needProducts: props.buyXgetY?.needProducts || [],
-      offerProducts: props.buyXgetY?.offerProducts || [],
-      start_at: props.buyXgetY?.start_at || dayjs().toDate(),
-      end_at: props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
-    },
-  });
-
-  const onAddHandler = async (
-    data: AddProductDialogValues,
-    type: "need" | "offer"
-  ) => {
-    try {
-      const { success, data: product } = await findProductById(data.product_id);
-      if (!success || !product) throw new Error("product_not_found");
-
-      const onAddProduct = (prev: ProductTableRow[]) => {
-        const existingIndex = prev.findIndex(
-          (p) => p.product.id === product.id
-        );
-        if (existingIndex === -1) {
-          return [
-            ...prev,
-            {
-              product: product,
-              quantity: data.quantity,
-            },
-          ];
-        } else {
-          const updated = [...prev];
-          updated[existingIndex].quantity += data.quantity;
-          return updated;
-        }
-      };
-
-      if (type === "need") {
-        setNeedProducts(onAddProduct);
-      } else {
-        setOfferProducts(onAddProduct);
-      }
-
-      enqueueSnackbar(t("add_product_dialog.success"), {
-        variant: "success",
-      });
-      setModalNeedOpen(false);
-      setModalOfferOpen(false);
-    } catch (error) {
-      console.error("error adding product to promotion offer: ", error);
-      enqueueSnackbar(t("add_product_dialog.error"), {
-        variant: "error",
-      });
-    } finally {
-      setBackdrop(false);
-    }
-  };
-
-  const onAddProductNeed = (data: AddProductDialogValues) =>
-    onAddHandler(data, "need");
-  const onAddProductOffer = (data: AddProductDialogValues) =>
-    onAddHandler(data, "offer");
-
-  useEffect(() => {
-    setValue(
-      "needProducts",
-      needProducts.map((p) => ({
-        product_id: p.product.id,
-        quantity: p.quantity,
-      }))
-    );
-    setValue(
-      "offerProducts",
-      offerProducts.map((p) => ({
-        product_id: p.product.id,
-        quantity: p.quantity,
-      }))
-    );
-  }, [needProducts, offerProducts, setValue]);
+    control,
+  } = form;
 
   useEffect(() => {
     if (status === PromotionStatus.IMMEDIATE) {
@@ -172,7 +103,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
   const disabled = isLoading || props.disabled;
 
   return (
-    <>
+    <FormProvider {...form}>
       <Stack
         spacing={2}
         component={"form"}
@@ -181,69 +112,39 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
-              <CardHeader
-                title={t("cards.need_products.title")}
-                action={
-                  <Button
-                    startIcon={<AddTwoTone />}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => setModalNeedOpen(true)}
+              <CardHeader title={t("cards.need_products.title")} />
+              <CardContent sx={{ p: 0 }}>
+                <FormControl error={!!errors.needProducts} fullWidth>
+                  <ProductArrayField
+                    name="needProducts"
+                    control={control}
+                    errors={errors}
                     disabled={disabled || isStarted}
-                  >
-                    {t("cards.need_products.add")}
-                  </Button>
-                }
-              />
-              <Divider />
-              <CardContent>
-                <Stack spacing={2}>
-                  <FormControl error={!!errors.needProducts}>
-                    <ProductTable
-                      products={needProducts}
-                      setProducts={setNeedProducts}
-                      disabled={disabled || isStarted}
-                    />
-                    <FormHelperText>
-                      {errors.needProducts?.message ||
-                        (isStarted && t("cards.need_products.started_helper"))}
-                    </FormHelperText>
-                  </FormControl>
-                </Stack>
+                  />
+                  <FormHelperText>
+                    {(errors.needProducts as any)?.message ||
+                      (isStarted && t("cards.need_products.started_helper"))}
+                  </FormHelperText>
+                </FormControl>
               </CardContent>
             </Card>
           </Grid>
           <Grid size={{ xs: 12, md: 6, lg: 6 }}>
             <Card>
-              <CardHeader
-                title={t("cards.offer_products.title")}
-                action={
-                  <Button
-                    startIcon={<AddTwoTone />}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => setModalOfferOpen(true)}
+              <CardHeader title={t("cards.offer_products.title")} />
+              <CardContent sx={{ p: 0 }}>
+                <FormControl error={!!errors.offerProducts} fullWidth>
+                  <ProductArrayField
+                    name="offerProducts"
+                    control={control}
+                    errors={errors}
                     disabled={disabled || isStarted}
-                  >
-                    {t("cards.offer_products.add")}
-                  </Button>
-                }
-              />
-              <Divider />
-              <CardContent>
-                <Stack spacing={2}>
-                  <FormControl error={!!errors.offerProducts}>
-                    <ProductTable
-                      products={offerProducts}
-                      setProducts={setOfferProducts}
-                      disabled={disabled || isStarted}
-                    />
-                    <FormHelperText>
-                      {errors.offerProducts?.message ||
-                        (isStarted && t("cards.offer_products.started_helper"))}
-                    </FormHelperText>
-                  </FormControl>
-                </Stack>
+                  />
+                  <FormHelperText>
+                    {(errors.offerProducts as any)?.message ||
+                      (isStarted && t("cards.offer_products.started_helper"))}
+                  </FormHelperText>
+                </FormControl>
               </CardContent>
             </Card>
           </Grid>
@@ -353,20 +254,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           </CardContent>
         </Card>
       </Stack>
-
-      <AddProductDialog
-        title={t("add_product_dialog.title_need")}
-        onSubmit={onAddProductNeed}
-        open={modalNeedOpen}
-        onClose={() => setModalNeedOpen(false)}
-      />
-      <AddProductDialog
-        title={t("add_product_dialog.title_offer")}
-        onSubmit={onAddProductOffer}
-        open={modalOfferOpen}
-        onClose={() => setModalOfferOpen(false)}
-      />
-    </>
+    </FormProvider>
   );
 };
 

@@ -827,6 +827,17 @@
         "quantity": "จำนวน",
         "remove": "ลบ",
         "empty": "ยังไม่มีรายการ"
+      },
+      "array_field": {
+        "headers": {
+          "index": "#",
+          "product": "สินค้า",
+          "quantity": "จำนวน",
+          "actions": "เครื่องมือ"
+        },
+        "empty": "ยังไม่มีสินค้า",
+        "add_product": "เพิ่มสินค้า",
+        "max_limit": "สูงสุด {max} รายการ"
       }
     }
   },
