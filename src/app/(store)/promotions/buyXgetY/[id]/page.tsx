@@ -23,8 +23,8 @@ const BuyXGetYPage = () => {
     },
     onSuccess: async () => {
       enqueueSnackbar(t("save_success"), { variant: "success" });
-      await queryClient.refetchQueries({
-        queryKey: ["datatable:promotions"],
+      await queryClient.invalidateQueries({
+        queryKey: ["promotions"],
         type: "active",
       });
     },

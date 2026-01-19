@@ -13,9 +13,6 @@ import {
   Divider,
   FormControl,
   FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
 } from "@mui/material";
@@ -27,11 +24,6 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import z from "zod";
 import ProductArrayField from "./components/ProductArrayField";
-
-enum PromotionStatus {
-  SCHEDULED = "scheduled",
-  IMMEDIATE = "immediate",
-}
 
 export interface ProductTableRow {
   product: { id: number; serial: string; label: string };
@@ -56,12 +48,16 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
   const t = useTranslations("PROMOTIONS.buyXgetY");
   const startAt = dayjs(props.buyXgetY?.start_at);
   const endAt = dayjs(props.buyXgetY?.end_at);
-  const isInProgress = dayjs().isBetween(startAt, endAt);
-  const isStarted = isInProgress || dayjs().isAfter(startAt);
-  const isEnded = dayjs().isAfter(endAt);
+  const isInProgress = dayjs().isBetween(startAt, endAt) && !!props.buyXgetY;
+  const isStarted =
+    isInProgress || (dayjs().isAfter(startAt) && !!props.buyXgetY);
+  const isEnded = dayjs().isAfter(endAt) && !!props.buyXgetY;
 
-  const [status, setStatus] = useState<PromotionStatus>(
-    props.buyXgetY ? PromotionStatus.SCHEDULED : PromotionStatus.IMMEDIATE,
+  const [startAtValue, setStartAtValue] = useState<Date>(
+    props.buyXgetY?.start_at || dayjs().toDate(),
+  );
+  const [endAtValue, setEndAtValue] = useState<Date>(
+    props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
   );
 
   const schema = props.buyXgetY
@@ -81,8 +77,8 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
         product_id: p.product.id,
         quantity: p.quantity,
       })) || [{ product_id: 0, quantity: 1 }],
-      start_at: props.buyXgetY?.start_at || dayjs().toDate(),
-      end_at: props.buyXgetY?.end_at || dayjs().add(7, "day").toDate(),
+      start_at: startAtValue,
+      end_at: endAtValue,
     },
   });
 
@@ -91,16 +87,13 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
     formState: { errors },
     handleSubmit,
     setValue,
-    getValues,
     control,
   } = form;
 
   useEffect(() => {
-    if (status === PromotionStatus.IMMEDIATE) {
-      const now = new Date();
-      setValue("start_at", now);
-    }
-  }, [status, setValue]);
+    setValue("start_at", startAtValue);
+    setValue("end_at", endAtValue);
+  }, [startAtValue, endAtValue, setValue]);
 
   const disabled = isLoading || props.disabled;
 
@@ -190,58 +183,31 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
               direction={"row"}
             >
               <Stack spacing={2} direction={"row"}>
-                <FormControl>
-                  <InputLabel id="status">
-                    {t("cards.others.status")}
-                  </InputLabel>
-                  <Select
-                    labelId="status"
-                    label={t("cards.others.status")}
-                    value={status}
+                <FormControl error={!!errors.start_at}>
+                  <DatePicker
+                    name="start"
+                    format="DD/MM/YYYY"
+                    label={t("cards.others.start_date")}
+                    value={dayjs(startAtValue)}
+                    onChange={(date) => setStartAtValue(new Date(date as any))}
                     disabled={disabled || isStarted}
-                    onChange={(e) =>
-                      setStatus(e.target.value as PromotionStatus)
-                    }
-                  >
-                    <MenuItem value="scheduled">
-                      {t("cards.others.status_options.scheduled")}
-                    </MenuItem>
-                    <MenuItem value="immediate">
-                      {t("cards.others.status_options.immediate")}
-                    </MenuItem>
-                  </Select>
+                    disablePast={!props.buyXgetY}
+                  />
+                  <FormHelperText>
+                    {errors.start_at?.message ||
+                      (isStarted &&
+                        t("cards.others.started_start_date_helper"))}
+                  </FormHelperText>
                 </FormControl>
-                {status === PromotionStatus.SCHEDULED && (
-                  <FormControl error={!!errors.start_at}>
-                    <DatePicker
-                      name="start"
-                      format="DD/MM/YYYY"
-                      label={t("cards.others.start_date")}
-                      value={dayjs(getValues().start_at)}
-                      disabled={disabled || isStarted}
-                      onChange={(date) =>
-                        setValue("start_at", new Date(date as any))
-                      }
-                      disablePast={!props.buyXgetY}
-                    />
-                    <FormHelperText>
-                      {errors.start_at?.message ||
-                        (isStarted &&
-                          t("cards.others.started_start_date_helper"))}
-                    </FormHelperText>
-                  </FormControl>
-                )}
                 <FormControl error={!!errors.end_at}>
                   <DatePicker
                     name="end"
                     format="DD/MM/YYYY"
                     label={t("cards.others.end_date")}
-                    minDate={dayjs(getValues().start_at).add(1, "day")}
-                    value={dayjs(getValues().end_at)}
+                    minDate={dayjs(startAtValue).add(1, "day")}
+                    value={dayjs(endAtValue)}
+                    onChange={(date) => setEndAtValue(new Date(date as any))}
                     disabled={disabled || isEnded}
-                    onChange={(date) =>
-                      setValue("end_at", new Date(date as any))
-                    }
                     disablePast={!props.buyXgetY}
                   />
                   <FormHelperText>

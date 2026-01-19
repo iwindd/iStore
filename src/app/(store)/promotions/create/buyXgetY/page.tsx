@@ -24,14 +24,16 @@ const PromotionOfferCreatePage = () => {
     onMutate: () => {
       setBackdrop(true);
     },
-    onSuccess: async () => {
+    onSuccess: (data) => {
       setIsCreated(true);
       enqueueSnackbar(t("save_success"), { variant: "success" });
-      await queryClient.refetchQueries({
-        queryKey: ["datatable:promotions"],
+      queryClient.invalidateQueries({
+        queryKey: ["promotions"],
         type: "active",
       });
-      router.push(getPath("promotions"));
+      router.push(
+        getPath("promotions.buyXgetY", { id: data.data.id.toString() }),
+      );
     },
     onError: (error) => {
       console.log("error creating promotion offer", error);

@@ -799,12 +799,7 @@
           "label": "หมายเหตุ (Note)"
         },
         "others": {
-          "title": "อื่นๆ",
-          "status": "สถานะ",
-          "status_options": {
-            "scheduled": "กำหนดเวลาเผยแพร่",
-            "immediate": "เผยแพร่ทันที"
-          },
+          "title": "กำหนดการ",
           "start_date": "วันเริ่มต้น",
           "end_date": "สิ้นสุด",
           "started_start_date_helper": "ข้อเสนอนี้เริ่มแล้ว ไม่สามารถแก้ไขวันเริ่มต้นได้",
