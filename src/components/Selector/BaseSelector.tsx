@@ -123,7 +123,7 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
 
         const { inputValue } = params;
         const exists = options.some(
-          (option) => props.getItemLabel(option) === inputValue
+          (option) => props.getItemLabel(option) === inputValue,
         );
 
         if (inputValue !== "" && !exists && props.canCreate) {
@@ -198,10 +198,13 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
       )}
       renderOption={(props_, option: any) => {
         const { key, ...optionProps } = props_;
+        const itemKey = option._is_create_option
+          ? `create-${option._create_label}`
+          : props.getItemKey(option);
 
         if (option._is_create_option) {
           return (
-            <li key={key} {...optionProps}>
+            <li key={itemKey} {...optionProps}>
               <Grid container sx={{ alignItems: "center", width: "100%" }}>
                 <Typography color="primary">
                   {t("create_new", { label: option._create_label })}
@@ -213,14 +216,13 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
 
         const label = props.getItemLabel(option);
         const parts = parse(label, match(label, inputValue));
-
         return (
-          <li key={key} {...optionProps}>
+          <li key={itemKey} {...optionProps}>
             <Grid container sx={{ alignItems: "center", width: "100%" }}>
               <Grid sx={{ width: "calc(100% - 44px)", wordWrap: "break-word" }}>
-                {parts.map((part) => (
+                {parts.map((part, index) => (
                   <Box
-                    key={part.text}
+                    key={`${itemKey}-${index}`}
                     component="span"
                     sx={{ fontWeight: part.highlight ? "bold" : "regular" }}
                   >
