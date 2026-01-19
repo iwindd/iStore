@@ -18,7 +18,7 @@ const CategorySelector = (props_: CategorySelectorProps) => {
 
   return (
     <BaseSelector<SearchCategory>
-      id="product-selector"
+      id="category-selector"
       noOptionsText="ไม่พบประเภทสินค้า"
       fetchItem={async (id) => {
         const resp = await findCategory(id);
