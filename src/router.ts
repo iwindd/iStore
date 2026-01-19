@@ -127,12 +127,6 @@ const ROUTES = ROUTER({
       broadcast: {
         path: "/broadcasts/:id",
         label: "broadcasts.broadcast.label",
-        children: {
-          edit: {
-            path: "/broadcasts/:id/edit",
-            label: "broadcasts.broadcast.edit.label",
-          },
-        },
       },
       create: {
         path: "/broadcasts/new",

@@ -25,18 +25,18 @@ const BroadcastNewPage = () => {
     onMutate: () => {
       setBackdrop(true);
     },
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       setIsCreated(true);
       enqueueSnackbar(t("save_success"), { variant: "success" });
       queryClient.invalidateQueries({
         queryKey: ["broadcasts"],
         type: "active",
       });
-      router.push(getPath("broadcasts"));
+      router.push(getPath("broadcasts.broadcast", { id: data.id.toString() }));
     },
     onError: (error) => {
       console.log("error creating broadcast", error);
-      enqueueSnackbar(error.message || t("save_error"), {
+      enqueueSnackbar(t("save_error"), {
         variant: "error",
       });
     },
