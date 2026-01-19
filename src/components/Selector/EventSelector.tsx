@@ -30,7 +30,7 @@ const EventSelector = (props_: EventSelectorProps) => {
       getItemLabel={(option) =>
         typeof option === "string"
           ? option
-          : option.note || `Promotion #${option.id}`
+          : option.name || option.note || `Promotion #${option.id}`
       }
       getItemKey={(option) => option.id}
       renderCustomOption={(option) => (

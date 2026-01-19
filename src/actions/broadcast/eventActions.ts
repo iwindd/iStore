@@ -5,6 +5,7 @@ import { getUser } from "@/libs/session";
 
 export interface EventSelectorItem {
   id: number;
+  name: string | null;
   note: string | null;
   start_at: Date;
   end_at: Date;
@@ -25,13 +26,24 @@ export const searchEvents = async (
         store_id: user.store,
         disabled_at: null,
         end_at: { gte: new Date() },
-        note: {
-          contains: query,
-          mode: "insensitive",
-        },
+        OR: [
+          {
+            note: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+          {
+            name: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        ],
       },
       select: {
         id: true,
+        name: true,
         note: true,
         start_at: true,
         end_at: true,
@@ -64,6 +76,7 @@ export const findEvent = async (
       },
       select: {
         id: true,
+        name: true,
         note: true,
         start_at: true,
         end_at: true,
