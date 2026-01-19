@@ -1,5 +1,6 @@
 model Event {
   id          Int       @id @default(autoincrement())
+  name        String?   @default("Untitled")
   note        String?
   store_id    String
   creator_id  Int?

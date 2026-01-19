@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 
 const UpdatePromotionOffer = async (
   id: number,
-  payload: UpdatePromotionOfferValues
+  payload: UpdatePromotionOfferValues,
 ): Promise<ActionResponse<unknown>> => {
   try {
     const user = await getUser();
@@ -57,6 +57,7 @@ const UpdatePromotionOffer = async (
       data: {
         event: {
           update: {
+            name: validated.name,
             note: validated.note,
             start_at: dayjs(validated.start_at).startOf("day").toDate(),
             end_at: dayjs(validated.end_at).endOf("day").toDate(),

@@ -43,6 +43,7 @@ export interface FormBuyXGetYProps {
   disabled?: boolean;
   onSubmit: (data: AddPromotionOfferValues) => void;
   buyXgetY?: {
+    name?: string | null;
     note?: string;
     needProducts: ProductTableRow[];
     offerProducts: ProductTableRow[];
@@ -70,6 +71,7 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
+      name: (props.buyXgetY as any)?.name || "",
       note: props.buyXgetY?.note || "",
       needProducts: props.buyXgetY?.needProducts.map((p) => ({
         product_id: p.product.id,
@@ -155,13 +157,22 @@ const FormBuyXGetY = ({ isLoading, ...props }: FormBuyXGetYProps) => {
           <CardContent>
             <Stack spacing={2}>
               <TextField
+                label={t("cards.name.label")}
+                variant="outlined"
+                fullWidth
+                disabled={disabled}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+                {...register("name")}
+              />
+              <TextField
                 label={t("cards.note.label")}
                 variant="outlined"
                 fullWidth
                 multiline
                 rows={4}
                 disabled={disabled}
-                error={errors.note != undefined}
+                error={!!errors.note}
                 helperText={errors.note?.message}
                 {...register("note")}
               />

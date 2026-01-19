@@ -53,7 +53,7 @@ export type CreatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
 }>;
 
 const CreatePromotionOffer = async (
-  payload: AddPromotionOfferValues
+  payload: AddPromotionOfferValues,
 ): Promise<ActionResponse<CreatedPromotionOffer>> => {
   try {
     const user = await getUser();
@@ -62,6 +62,7 @@ const CreatePromotionOffer = async (
 
     const promotionOffer = await db.event.create({
       data: {
+        name: validated.name,
         note: validated.note,
         start_at: dayjs(validated.start_at).startOf("day").toDate(),
         end_at: dayjs(validated.end_at).endOf("day").toDate(),
@@ -86,6 +87,7 @@ const CreatePromotionOffer = async (
       },
       select: {
         id: true,
+        name: true,
         note: true,
         start_at: true,
         end_at: true,

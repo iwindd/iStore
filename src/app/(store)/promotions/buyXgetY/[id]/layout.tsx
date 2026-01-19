@@ -46,6 +46,7 @@ const BuyXGetYLayout = async ({
       id: true,
       event: {
         select: {
+          name: true,
           note: true,
           start_at: true,
           end_at: true,
@@ -67,6 +68,7 @@ const BuyXGetYLayout = async ({
     <BuyXGetYProvider
       value={{
         id: offer.id,
+        name: offer.event.name,
         note: offer.event.note,
         start_at: offer.event.start_at,
         end_at: offer.event.end_at,

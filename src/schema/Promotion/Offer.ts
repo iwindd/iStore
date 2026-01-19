@@ -7,6 +7,7 @@ const ProductQuantitySchema = z.object({
 
 export const AddPromotionOfferSchema = z
   .object({
+    name: z.string().optional(),
     note: z.string().optional(),
     start_at: z.date(),
     end_at: z.date(),
