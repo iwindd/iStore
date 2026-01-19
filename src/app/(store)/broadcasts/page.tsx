@@ -248,6 +248,7 @@ const BroadcastPage = () => {
             href={getPath("broadcasts.create")}
             startIcon={<AddTwoTone />}
             variant="contained"
+            color="secondary"
             size="small"
           >
             {t("create_button")}

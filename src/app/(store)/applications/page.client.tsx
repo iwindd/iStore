@@ -29,6 +29,7 @@ const ApplicationClientPage = ({
             startIcon={<AddTwoTone />}
             variant="contained"
             size="small"
+            color="secondary"
             onClick={applicationDialog.handleOpen}
           >
             {t("create_button")}

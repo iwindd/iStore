@@ -16,6 +16,7 @@ const AddController = () => {
         variant="contained"
         onClick={dialog.handleOpen}
         size="small"
+        color="secondary"
       >
         เพิ่มรายการ
       </Button>

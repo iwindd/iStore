@@ -19,6 +19,7 @@ const AddRoleController = ({ role }: AddRoleControllerProps) => {
         startIcon={<AddTwoTone />}
         variant="contained"
         onClick={dialog.handleOpen}
+        color="secondary"
         size="small"
       >
         เพิ่มตำแหน่ง

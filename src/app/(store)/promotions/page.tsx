@@ -174,6 +174,7 @@ const PromotionPage = () => {
             variant="contained"
             size="small"
             onClick={() => setIsOpen(true)}
+            color="secondary"
           >
             {t("add_button")}
           </Button>

@@ -21,6 +21,7 @@ const CategoryPage = () => {
             variant="contained"
             onClick={dialog.handleOpen}
             size="small"
+            color="secondary"
           >
             {t("add_button")}
           </Button>

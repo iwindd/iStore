@@ -14,7 +14,12 @@ const StockPage = () => {
         <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
           <Link href="/stocks/create" passHref>
-            <Button startIcon={<Add />} variant="contained" size="small">
+            <Button
+              startIcon={<Add />}
+              variant="contained"
+              color="secondary"
+              size="small"
+            >
               {t("add_button")}
             </Button>
           </Link>
