@@ -20,7 +20,31 @@ export const AddPromotionOfferSchema = z
   .refine((data) => data.end_at > data.start_at, {
     message: "วันสิ้นสุดต้องอยู่หลังวันเริ่มต้น",
     path: ["end_at"],
-  });
+  })
+  .refine(
+    (data) => {
+      const productIds = data.needProducts
+        .map((p) => p.product_id)
+        .filter((id) => id > 0);
+      return new Set(productIds).size === productIds.length;
+    },
+    {
+      message: "ไม่สามารถเพิ่มสินค้าซ้ำกันได้",
+      path: ["needProducts"],
+    },
+  )
+  .refine(
+    (data) => {
+      const productIds = data.offerProducts
+        .map((p) => p.product_id)
+        .filter((id) => id > 0);
+      return new Set(productIds).size === productIds.length;
+    },
+    {
+      message: "ไม่สามารถเพิ่มสินค้าซ้ำกันได้",
+      path: ["offerProducts"],
+    },
+  );
 
 export type AddPromotionOfferValues = z.infer<typeof AddPromotionOfferSchema>;
 
