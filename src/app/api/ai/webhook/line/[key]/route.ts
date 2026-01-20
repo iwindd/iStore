@@ -31,7 +31,7 @@ const onMessageEvent = async (
     event.source.userId
       ? {
           memory: {
-            thread: `LINE-APPLICATION-${application.id}`,
+            thread: event.source.userId,
             resource: event.source.userId,
           },
         }
