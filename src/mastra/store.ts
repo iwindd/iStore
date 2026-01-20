@@ -16,10 +16,7 @@ export const mastraStorage =
 export const assistantAgentMemory =
   globalThis.__assistantAgentMemory__ ??
   new Memory({
-    storage: new PostgresStore({
-      connectionString: process.env.AI_DATABASE_URL!,
-      schemaName: "memory",
-    }),
+    storage: mastraStorage,
     vector: new PgVector({
       connectionString: process.env.AI_DATABASE_URL!,
       schemaName: "memory",

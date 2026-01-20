@@ -5,10 +5,12 @@ import { LineApplication } from "@prisma/client";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
+export const runtime = "edge";
+
 const onMessageEvent = async (
   application: LineApplication,
   messagingApi: line.messagingApi.MessagingApiClient,
-  event: line.MessageEvent
+  event: line.MessageEvent,
 ) => {
   if (event.message.type != "text")
     return console.error("event.message.type is not text");
@@ -35,12 +37,12 @@ const onMessageEvent = async (
             resource: event.source.userId,
           },
         }
-      : undefined
+      : undefined,
   );
 
   if (!result.text) return console.error("result.text is empty");
 
-  messagingApi.replyMessage({
+  await messagingApi.replyMessage({
     replyToken: event.replyToken,
     messages: [
       {
@@ -53,7 +55,7 @@ const onMessageEvent = async (
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ key: string }> }
+  { params }: { params: Promise<{ key: string }> },
 ) {
   const { key } = await params;
   const signature = req.headers.get("x-line-signature");
@@ -73,7 +75,7 @@ export async function POST(
     if (hash !== signature)
       return NextResponse.json(
         { message: "Invalid signature" },
-        { status: 401 }
+        { status: 401 },
       );
 
     const body = JSON.parse(bodyText) as line.WebhookRequestBody;
@@ -84,7 +86,7 @@ export async function POST(
         } else {
           console.error("event.type is not message", event);
         }
-      })
+      }),
     );
 
     return NextResponse.json(
@@ -92,13 +94,13 @@ export async function POST(
         name: application.name,
         created_at: application.created_at,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Error processing line webhook:", error);
     return NextResponse.json(
       { message: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
