@@ -2,6 +2,10 @@ import { Agent } from "@mastra/core/agent";
 import { assistantAgentMemory } from "../store";
 import { getPromotionTool } from "../tools/assistant-tool/get-promotion";
 
+export type AssistantAgentContext = {
+  storeId: string;
+};
+
 const AGENT_CONFIG = {
   name: "Assistant Agent",
   instructions: `

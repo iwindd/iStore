@@ -1,6 +1,10 @@
 import { getMessagingApiByKey } from "@/libs/line";
 import { mastra } from "@/mastra";
+import { AssistantAgentContext } from "@/mastra/agents/assistant-agent";
 import * as line from "@line/bot-sdk";
+import { AgentExecutionOptions } from "@mastra/core/agent";
+import { MessageListInput } from "@mastra/core/agent/message-list";
+import { RuntimeContext } from "@mastra/core/runtime-context";
 import { LineApplication } from "@prisma/client";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -26,34 +30,35 @@ const onMessageEvent = async (
     return console.error("event.source.type is not user");
 
   const agent = mastra.getAgent("assistantAgent");
-  const result = await agent.generate(
-    [
-      {
-        role: "system",
-        content: `**เมื่อ Tools ถูกเรียกใช้แล้วต้องการค่า storeId ให้ระบุ "${application.store_id}" เท่านั้น**`,
-      },
-      {
-        role: "system",
-        content: `
+  const runtimeContext = new RuntimeContext<AssistantAgentContext>();
+  runtimeContext.set("storeId", application.store_id);
+
+  const messages: MessageListInput = [
+    {
+      role: "system",
+      content: `
           วันที่ปัจจุบัน: ${dayjs().tz("Asia/Bangkok").locale("th").format("dddd ที่ D MMMM BBBB")}
           เวลาปัจจุบัน: ${dayjs().tz("Asia/Bangkok").format("HH:mm")}
         `,
-      },
-      {
-        role: "user",
-        content: event.message.text,
-      },
-    ],
-    event.source.userId
-      ? {
-          memory: {
-            thread: `LINE-${event.source.userId}`,
-            resource: event.source.userId,
-          },
-        }
-      : undefined,
-  );
+    },
+    {
+      role: "user",
+      content: event.message.text,
+    },
+  ];
 
+  const options: AgentExecutionOptions<undefined, "mastra"> = {
+    runtimeContext,
+  };
+
+  if (event.source.userId) {
+    options.memory = {
+      thread: `LINE-${event.source.userId}`,
+      resource: event.source.userId,
+    };
+  }
+
+  const result = await agent.generate(messages, options);
   if (!result.text) return console.error("result.text is empty");
 
   await messagingApi.replyMessage({

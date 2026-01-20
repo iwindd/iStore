@@ -1,4 +1,5 @@
 import db from "@/libs/db";
+import { AssistantAgentContext } from "@/mastra/agents/assistant-agent";
 import { createTool } from "@mastra/core/tools";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
@@ -6,9 +7,6 @@ import { z } from "zod";
 export const getPromotionTool = createTool({
   id: "get-promotion",
   description: "ดึงข้อมูลโปรโมชั่น ส่วนลด ของร้านค้า",
-  inputSchema: z.object({
-    storeId: z.string().describe("StoreId"),
-  }),
   outputSchema: z.array(
     z.object({
       promotionType: z.enum(["buyXgetY"]),
@@ -18,19 +16,22 @@ export const getPromotionTool = createTool({
         z.object({
           name: z.string(),
           quantity: z.number(),
-        })
+        }),
       ),
       willGetFree: z.array(
         z.object({
           name: z.string(),
           quantity: z.number(),
-        })
+        }),
       ),
-    })
+    }),
   ),
-  execute: async ({ context }) => {
-    const { storeId } = context;
-    return await getPromotion(storeId);
+  execute: async ({ runtimeContext }) => {
+    const storeIdFromRuntime: AssistantAgentContext["storeId"] =
+      runtimeContext.get("storeId");
+
+    console.log(`Getting promotion for storeId: ${storeIdFromRuntime}`);
+    return await getPromotion(storeIdFromRuntime);
   },
 });
 
