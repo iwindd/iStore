@@ -2,6 +2,7 @@ import { getMessagingApiByKey } from "@/libs/line";
 import { mastra } from "@/mastra";
 import * as line from "@line/bot-sdk";
 import { LineApplication } from "@prisma/client";
+import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
@@ -22,6 +23,14 @@ const onMessageEvent = async (
       {
         role: "system",
         content: `**เมื่อ Tools ถูกเรียกใช้แล้วต้องการค่า storeId ให้ระบุ "${application.store_id}" เท่านั้น**`,
+      },
+      {
+        id: "date-time",
+        role: "data",
+        content: `
+          วันที่ปัจจุบัน: ${dayjs().format("DD/MM/YYYY")}
+          เวลาปัจจุบัน: ${dayjs().format("HH:mm:ss")}
+        `,
       },
       {
         role: "user",
