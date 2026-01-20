@@ -5,8 +5,6 @@ import { LineApplication } from "@prisma/client";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 
-export const runtime = "edge";
-
 const onMessageEvent = async (
   application: LineApplication,
   messagingApi: line.messagingApi.MessagingApiClient,
