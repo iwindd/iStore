@@ -25,8 +25,7 @@ const onMessageEvent = async (
         content: `**เมื่อ Tools ถูกเรียกใช้แล้วต้องการค่า storeId ให้ระบุ "${application.store_id}" เท่านั้น**`,
       },
       {
-        id: "date-time",
-        role: "data",
+        role: "system",
         content: `
           วันที่ปัจจุบัน: ${dayjs().format("DD/MM/YYYY")}
           เวลาปัจจุบัน: ${dayjs().format("HH:mm:ss")}
