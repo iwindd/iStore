@@ -3,8 +3,16 @@ import { mastra } from "@/mastra";
 import * as line from "@line/bot-sdk";
 import { LineApplication } from "@prisma/client";
 import dayjs from "dayjs";
+import "dayjs/locale/th";
+import buddhistEra from "dayjs/plugin/buddhistEra";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(buddhistEra);
 
 const onMessageEvent = async (
   application: LineApplication,
@@ -27,8 +35,8 @@ const onMessageEvent = async (
       {
         role: "system",
         content: `
-          วันที่ปัจจุบัน: ${dayjs().format("DD/MM/YYYY")}
-          เวลาปัจจุบัน: ${dayjs().format("HH:mm:ss")}
+          วันที่ปัจจุบัน: ${dayjs().tz("Asia/Bangkok").locale("th").format("dddd ที่ D MMMM BBBB")}
+          เวลาปัจจุบัน: ${dayjs().tz("Asia/Bangkok").format("HH:mm")}
         `,
       },
       {
