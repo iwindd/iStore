@@ -15,6 +15,36 @@
         "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งในภายหลัง!"
       }
     },
+    "createStore": {
+      "title": "สร้างร้านค้าใหม่",
+      "subtitle": "กรอกข้อมูลเพื่อสร้างโปรเจคร้านค้าใหม่",
+      "project_info": {
+        "title": "ข้อมูลโปรเจค",
+        "project_name": "ชื่อโปรเจค",
+        "project_name_helper": "ชื่อโปรเจคภาษาอังกฤษเท่านั้น",
+        "slug": "Slug (ID)",
+        "slug_helper": "รหัสเฉพาะสำหรับโปรเจค"
+      },
+      "store_info": {
+        "title": "ข้อมูลร้านค้า",
+        "store_name": "ชื่อร้านค้า"
+      },
+      "address": {
+        "title": "ที่อยู่ร้านค้า (ไม่บังคับ)",
+        "country": "ประเทศ",
+        "zipcode": "รหัสไปรษณีย์",
+        "province": "จังหวัด",
+        "district": "อำเภอ/เขต",
+        "sub_district": "ตำบล/แขวง",
+        "address_line": "ที่อยู่"
+      },
+      "action": {
+        "submit": "สร้างร้านค้า",
+        "submitting": "กำลังสร้าง...",
+        "success": "สร้างร้านค้าสำเร็จ!",
+        "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง"
+      }
+    },
     "store_card": {
       "description": "เข้าหน้าแดชบอร์ด"
     },
@@ -26,6 +56,9 @@
   "ROUTES": {
     "overview": {
       "label": "ภาพรวม",
+      "new": {
+        "label": "สร้างร้านค้าใหม่"
+      },
       "account": {
         "label": "บัญชีของฉัน"
       }
@@ -1074,7 +1107,17 @@
       "search": "ค้นหา",
       "searching": "กรุณารอสักครู่",
       "no_options": "ไม่พบข้อมูล",
-      "create_new": "สร้าง \"{label}\" ใหม่"
+      "create_new": "สร้าง \"{label}\" ใหม่",
+      "country": {
+        "label": "ประเทศ",
+        "placeholder": "ค้นหาประเทศ",
+        "no_options": "ไม่พบประเทศ"
+      },
+      "zipcode": {
+        "label": "รหัสไปรษณีย์",
+        "placeholder": "ค้นหารหัสไปรษณีย์",
+        "no_options": "ไม่พบรหัสไปรษณีย์"
+      }
     },
     "product_selector": {
       "label": "กรุณาเลือกสินค้า",

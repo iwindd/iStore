@@ -1,5 +1,6 @@
 model Store {
   id             String            @id @default(cuid())
+  slug           String            @unique
   name           String
   categories     Category[]
   products       Product[]

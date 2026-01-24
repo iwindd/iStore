@@ -190,6 +190,10 @@ const ROUTES = ROUTER({
     icon: Store,
     disabledBreadcrumb: true,
     children: {
+      new: {
+        path: "/new",
+        label: "overview.new.label",
+      },
       //account
       account: {
         path: "/account",

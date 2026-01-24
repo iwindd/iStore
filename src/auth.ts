@@ -4,7 +4,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import AuthConfig from "./config/AuthConfig";
 import { SuperPermissionEnum } from "./enums/permission";
 import db from "./libs/db";
-import { AddressValues, FormatAddress } from "./schema/Address";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
@@ -19,55 +18,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         return { ...token, ...session.user };
       }
 
-      const now = Math.floor(Date.now() / 1000);
-      const REVALIDATE_TIMEOUT =
-        process.env.NODE_ENV === "production" ? 90 : 10;
-
-      const shouldRevalidate =
-        !token.lastChecked || now - token.lastChecked > REVALIDATE_TIMEOUT;
-
-      if (shouldRevalidate && token.id) {
-        try {
-          const updatedUser = await db.user.findUnique({
-            where: { id: Number(token.id) },
-            select: {
-              name: true,
-              email: true,
-              employees: {
-                take: 1,
-                select: {
-                  id: true,
-                  store: true,
-                  role: {
-                    select: {
-                      permissions: true,
-                      is_super_admin: true,
-                    },
-                  },
-                },
-              },
-            },
-          });
-
-          if (updatedUser?.employees?.[0]) {
-            const employee = updatedUser.employees[0];
-            const role = employee.role;
-
-            token.name = updatedUser.name;
-            token.email = updatedUser.email;
-            token.store = employee.store.id;
-            token.employeeId = employee.id;
-            token.permissions = role.is_super_admin
-              ? [SuperPermissionEnum.ALL]
-              : role.permissions.flatMap((p) => p.name);
-            token.address = FormatAddress(employee.store as AddressValues);
-            token.lastChecked = now;
-          }
-        } catch (error) {
-          console.error("Error revalidating session:", error);
-        }
-      }
-
       return {
         id: token.id,
         store: token.store,
@@ -76,7 +26,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         email: token.email,
         permissions: token.permissions,
         address: token.address,
-        lastChecked: token.lastChecked || now,
         ...user,
       };
     },
@@ -128,7 +77,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             !user ||
             !(await bcrypt.compare(
               credentials.password as string,
-              user.password
+              user.password,
             ))
           )
             throw new Error("not_found_user");
@@ -148,7 +97,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             permissions: role.is_super_admin
               ? [SuperPermissionEnum.ALL]
               : role.permissions.flatMap((p) => p.name),
-            address: FormatAddress(employee.store as AddressValues),
+            //TODO : Fix address
+            address: {
+              address: "-",
+              district: "-",
+              area: "-",
+              province: "-",
+              postalcode: "-",
+            },
           };
         } catch (error) {
           console.error("Authorize error:", error);
@@ -156,6 +112,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }
       },
     }),
-  ], 
-  trustHost: true
+  ],
+  trustHost: true,
 });

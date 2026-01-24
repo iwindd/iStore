@@ -2,19 +2,54 @@
 
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { StoreSchema, StoreValues } from "@/schema/Store";
+import { CreateStoreSchema, CreateStoreValues } from "@/schema/Store";
 
-const createStore = async (payload: StoreValues) => {
+const createStore = async (payload: CreateStoreValues) => {
   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
-    const validated = StoreSchema.parse(payload);
+    const validated = CreateStoreSchema.parse(payload);
+
+    // Check if slug already exists
+    const existingStore = await db.store.findUnique({
+      where: { slug: validated.slug },
+    });
+    if (existingStore) {
+      return {
+        success: false,
+        error: "Slug already exists",
+      };
+    }
 
     const result = await db.$transaction(async (tx) => {
+      // Create store
       const store = await tx.store.create({
-        data: validated,
+        data: {
+          slug: validated.slug,
+          name: validated.storeName,
+        },
       });
 
+      // Create address if provided
+      if (validated.address) {
+        const address = await tx.address.create({
+          data: {
+            sub_district_id: validated.address.subDistrictId,
+            address_line: validated.address.addressLine || "",
+            zipcode_snapshot: validated.address.zipcodeSnapshot,
+          },
+        });
+
+        await tx.storeAddress.create({
+          data: {
+            store_id: store.id,
+            address_id: address.id,
+            is_main: true,
+          },
+        });
+      }
+
+      // Create default admin role
       const role = await tx.role.create({
         data: {
           label: "ผู้ดูแล",
@@ -23,6 +58,7 @@ const createStore = async (payload: StoreValues) => {
         },
       });
 
+      // Assign user as employee with admin role
       await tx.employee.create({
         data: {
           user_id: user.id,
