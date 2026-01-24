@@ -143,7 +143,7 @@ const PromotionPage = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={`${getPath("promotions.buyXgetY", { id: row.id.toString() })}`}
+            to={`${getPath("store.promotions.buyXgetY", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
             label={t("datatable.actions.view")}
             showInMenu

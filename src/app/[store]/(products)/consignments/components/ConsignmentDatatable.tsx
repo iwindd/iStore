@@ -72,7 +72,9 @@ const ConsignmentDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={getPath("consignments.consignment", { id: row.id.toString() })}
+            to={getPath("store.consignments.consignment", {
+              id: row.id.toString(),
+            })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
             showInMenu

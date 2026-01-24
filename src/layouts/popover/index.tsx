@@ -70,7 +70,7 @@ function UserPopover({
         disablePadding
         sx={{ p: "8px", "& .MuiMenuItem-root": { borderRadius: 1 } }}
       >
-        <MenuItem component={Link} href={getPath("account")}>
+        <MenuItem component={Link} href={getPath("store.account")}>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

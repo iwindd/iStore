@@ -32,7 +32,9 @@ const BroadcastNewPage = () => {
         queryKey: ["broadcasts"],
         type: "active",
       });
-      router.push(getPath("broadcasts.broadcast", { id: data.id.toString() }));
+      router.push(
+        getPath("store.broadcasts.broadcast", { id: data.id.toString() }),
+      );
     },
     onError: (error) => {
       console.log("error creating broadcast", error);

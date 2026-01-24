@@ -203,7 +203,7 @@ const BroadcastPage = () => {
           return [
             <GridLinkAction
               key="view"
-              to={`${getPath("broadcasts.broadcast", { id: row.id.toString() })}`}
+              to={`${getPath("store.broadcasts.broadcast", { id: row.id.toString() })}`}
               icon={<ViewAgendaTwoTone />}
               label={t("datatable.actions.view")}
               showInMenu
@@ -245,7 +245,7 @@ const BroadcastPage = () => {
         <App.Header.Actions>
           <Button
             component={Link}
-            href={getPath("broadcasts.create")}
+            href={getPath("store.broadcasts.create")}
             startIcon={<AddTwoTone />}
             variant="contained"
             color="secondary"

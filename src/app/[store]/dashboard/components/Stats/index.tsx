@@ -42,7 +42,7 @@ const Stats = () => {
   const config: StatConfig[] = [
     {
       name: "orders",
-      route: getRoute("histories"),
+      route: getRoute("store.histories"),
       label: t("sold"),
       icon: <Receipt />,
       render: (stats) => t("items_unit", { count: number(stats.order.sold) }),
@@ -50,7 +50,7 @@ const Stats = () => {
     },
     {
       name: "consignments",
-      route: getRoute("consignments"),
+      route: getRoute("store.consignments"),
       label: t("consignment"),
       icon: <BackHand />,
       render: (stats) => t("items_unit", { count: number(stats.consignment) }),
@@ -59,7 +59,7 @@ const Stats = () => {
     },
     {
       name: "preorders",
-      route: getRoute("preorders"),
+      route: getRoute("store.preorders"),
       label: t("preorder"),
       icon: <RotateRight />,
       render: (stats) =>
@@ -69,7 +69,7 @@ const Stats = () => {
     },
     {
       name: "low_stock",
-      route: getRoute("products"),
+      route: getRoute("store.products"),
       label: t("low_stock"),
       icon: <Warning />,
       render: (stats) =>

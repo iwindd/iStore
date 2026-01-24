@@ -60,7 +60,9 @@ const ProductFormDialog = ({
     onSuccess: async (data) => {
       reset();
       enqueueSnackbar(t("save_success"), { variant: "success" });
-      router.push(getPath("products.product", { id: data.id.toString() }));
+      router.push(
+        getPath("store.products.product", { id: data.id.toString() }),
+      );
       await queryClient.invalidateQueries({
         queryKey: ["products"],
         type: "active",

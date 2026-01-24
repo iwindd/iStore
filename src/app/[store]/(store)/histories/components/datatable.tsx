@@ -130,7 +130,7 @@ const HistoryDatatable = () => {
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
-            to={`${getPath("histories.history", { id: row.id.toString() })}`}
+            to={`${getPath("store.histories.history", { id: row.id.toString() })}`}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
             showInMenu

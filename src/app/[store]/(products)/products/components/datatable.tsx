@@ -249,7 +249,7 @@ const ProductDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={getPath("products.product", { id: row.id.toString() })}
+            to={getPath("store.products.product", { id: row.id.toString() })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
             showInMenu

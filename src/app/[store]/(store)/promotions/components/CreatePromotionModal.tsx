@@ -32,7 +32,7 @@ const CreatePromotionModal = ({
     event.preventDefault();
 
     if (promotionType === "offer") {
-      return router.push(getPath("promotions.create.buyXgetY"));
+      return router.push(getPath("store.promotions.create.buyXgetY"));
     }
     console.log("Unknown promotion type");
   };

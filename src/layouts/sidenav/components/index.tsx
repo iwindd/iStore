@@ -1,5 +1,6 @@
 "use client";
-import NavbarItems, { NavbarItem } from "@/config/Navbar";
+import { NavbarItem } from "@/config/Navbar";
+import StoreNavbarItems from "@/config/Navbar/store";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
@@ -11,7 +12,7 @@ import NavItem from "./NavItem";
 function getDefaultExpand(activeRouteTrail: Route[]) {
   const expandItems: Record<string, boolean> = {};
 
-  NavbarItems.forEach((navItem: NavbarItem) => {
+  StoreNavbarItems.forEach((navItem: NavbarItem) => {
     if ("defaultExpand" in navItem && navItem.defaultExpand) {
       expandItems[navItem.key] = true;
     } else if ("routes" in navItem) {
@@ -25,7 +26,9 @@ function getDefaultExpand(activeRouteTrail: Route[]) {
   return expandItems;
 }
 
-const NavItems = () => {
+const NavItems = ({
+  items = StoreNavbarItems,
+}: Readonly<{ items?: NavbarItem[] }>) => {
   const { user } = useAuth();
   const activeRouteTrail = useActiveRouteTrail();
 
@@ -48,7 +51,7 @@ const NavItems = () => {
 
   return (
     <List sx={{ py: 0 }}>
-      {NavbarItems.map((navItem: NavbarItem) => {
+      {items.map((navItem: NavbarItem) => {
         if ("routes" in navItem) {
           const items = navItem.routes
             .map((item) => renderNormalItem(item))

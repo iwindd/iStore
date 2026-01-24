@@ -19,7 +19,7 @@ const CreateStockPage = () => {
         message: t("success"),
         variant: "success",
       });
-      router.push(getPath("stocks.stock", { id: data.id.toString() }));
+      router.push(getPath("store.stocks.stock", { id: data.id.toString() }));
     },
     onError: (error) => {
       console.error(error);

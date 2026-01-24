@@ -33,7 +33,7 @@ export const RangeChange = async (
 
   const headersList = await headers();
   const storeId = headersList.get("x-store-id");
-  const path = storeId ? getPath("overview", { store: storeId }) : "/";
+  const path = storeId ? getPath("store.overview", { store: storeId }) : "/";
   revalidatePath(path);
 };
 

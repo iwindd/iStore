@@ -18,7 +18,7 @@ const LineApplicationCreatePage = () => {
       const result = await createLineApplication(data);
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
-        router.push(getPath("applications"));
+        router.push(getPath("store.applications"));
         return true;
       } else {
         enqueueSnackbar(result.message, { variant: "error" });

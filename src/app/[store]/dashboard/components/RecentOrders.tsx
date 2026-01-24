@@ -81,7 +81,7 @@ export function RecentOrders() {
                           size="small"
                           variant="text"
                           component={Link}
-                          href={getPath("histories.history", {
+                          href={getPath("store.histories.history", {
                             id: order.id.toString(),
                           })}
                         >
@@ -102,7 +102,7 @@ export function RecentOrders() {
           size="small"
           variant="text"
           component={Link}
-          href={getPath("histories")}
+          href={getPath("store.histories")}
         >
           {t("view_all")}
         </Button>

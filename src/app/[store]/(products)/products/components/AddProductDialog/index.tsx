@@ -34,7 +34,7 @@ const AddProductDialogTrigger = () => {
   const onSubmit = (foundProduct?: ProductDatatableInstance) => {
     if (foundProduct?.id && !foundProduct?.deleted_at) {
       router.push(
-        getPath("products.product", { id: foundProduct.id.toString() }),
+        getPath("store.products.product", { id: foundProduct.id.toString() }),
       );
 
       return;

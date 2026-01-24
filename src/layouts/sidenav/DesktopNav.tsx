@@ -1,9 +1,9 @@
-"use client";
+import { NavbarItem } from "@/config/Navbar";
 import { alpha, Box, useTheme } from "@mui/material";
 import NavItems from "./components";
 import NavLogo from "./components/NavLogo";
 
-const DesktopNav = () => {
+const DesktopNav = ({ items }: Readonly<{ items?: NavbarItem[] }>) => {
   const theme = useTheme();
 
   return (
@@ -51,7 +51,7 @@ const DesktopNav = () => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        {NavItems()}
+        <NavItems items={items} />
       </Box>
     </Box>
   );
