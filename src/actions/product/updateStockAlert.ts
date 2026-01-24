@@ -1,26 +1,25 @@
 "use server";
-import { ProductPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   ProductStockAlertSchema,
   ProductStockAlertValues,
 } from "@/schema/Product";
 
 const updateStockAlert = async (
-  payload: ProductStockAlertValues,
-  product_id: number
+  storeSlug: string,
+  payload: ProductStockAlertValues & { id: number },
 ) => {
-  const user = await getUser();
-  if (!user) throw new Error("Unauthorized");
-  if (!user.hasPermission(ProductPermissionEnum.UPDATE))
-    throw new Error("Unauthorized");
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
   const validated = ProductStockAlertSchema.parse(payload);
 
   const stockAlert = await db.productStock.upsert({
-    where: { product_id },
+    where: { product_id: payload.id },
     create: {
-      product_id,
+      product_id: payload.id,
       alertCount: validated.alertCount,
       useAlert: validated.useAlert,
     },

@@ -1,5 +1,5 @@
 "use client";
-import DeleteProduct from "@/actions/product/delete";
+import { default as deleteProduct } from "@/actions/product/deleteProduct";
 import getProductDatatable, {
   ProductDatatableInstance,
 } from "@/actions/product/getProductDatatable";
@@ -9,10 +9,11 @@ import ProductKeywordChips from "@/components/Chips/ProductKeywordChips";
 import ProductStockStatusChip from "@/components/Chips/ProductStockStatusChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { ProductPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import * as ff from "@/libs/formatter";
+import { usePermission } from "@/providers/PermissionProvider";
 import { getPath } from "@/router";
 import {
   DeleteTwoTone,
@@ -22,8 +23,9 @@ import {
 } from "@mui/icons-material";
 import { Box, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 import BarcodeDialog from "./barcode-dialog";
@@ -42,13 +44,39 @@ const ProductDatatable = () => {
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const permissions = (product: ProductDatatableInstance) => ({
-    canEditProduct:
-      (product && user && product.creator?.user.id == user.id) ||
-      user?.hasPermission(ProductPermissionEnum.UPDATE),
-    canRemoveProduct:
-      (product && user && product.creator?.user.id == user.id) ||
-      user?.hasPermission(ProductPermissionEnum.DELETE),
+  const permission = usePermission();
+  const params = useParams<{ store: string }>();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => deleteProduct(params.store, id),
+    onSuccess: () => {
+      enqueueSnackbar(t("confirmation.delete_success"), {
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+        type: "active",
+      });
+    },
+    onError: (error) => {
+      enqueueSnackbar(t("confirmation.delete_error"));
+    },
+  });
+
+  const recoveryMutation = useMutation({
+    mutationFn: (id: number) => recoveryProduct(params.store, id),
+    onSuccess: () => {
+      enqueueSnackbar(t("confirmation.recovery_success"), {
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+        type: "active",
+      });
+    },
+    onError: (error) => {
+      enqueueSnackbar(t("confirmation.recovery_error"));
+    },
   });
 
   const confirmation = useConfirm({
@@ -58,23 +86,7 @@ const ProductDatatable = () => {
       color: "error",
       startIcon: <DeleteTwoTone />,
     },
-    onConfirm: async (id: number) => {
-      try {
-        const resp = await DeleteProduct(id);
-
-        if (!resp.success) throw new Error(resp.message);
-        enqueueSnackbar(t("confirmation.delete_success"), {
-          variant: "success",
-        });
-        await queryClient.invalidateQueries({
-          queryKey: ["products"],
-          type: "active",
-        });
-      } catch (error) {
-        console.error(error);
-        enqueueSnackbar(t("confirmation.delete_error"));
-      }
-    },
+    onConfirm: async (id: number) => deleteMutation.mutate(id),
   });
 
   const recoveryConfirmation = useConfirm({
@@ -84,23 +96,7 @@ const ProductDatatable = () => {
       color: "success",
       startIcon: <RestoreTwoTone />,
     },
-    onConfirm: async (id: number) => {
-      try {
-        const resp = await recoveryProduct(id);
-
-        if (!resp.success) throw new Error((resp as any).message);
-        enqueueSnackbar(t("confirmation.recovery_success"), {
-          variant: "success",
-        });
-        await queryClient.invalidateQueries({
-          queryKey: ["products"],
-          type: "active",
-        });
-      } catch (error) {
-        console.error(error);
-        enqueueSnackbar(t("confirmation.recovery_error"));
-      }
-    },
+    onConfirm: async (id: number) => recoveryMutation.mutate(id),
   });
 
   const menu = {
@@ -269,7 +265,11 @@ const ProductDatatable = () => {
               icon={<RestoreTwoTone />}
               onClick={menu.recovery(row)}
               label={t("actions.recovery")}
-              disabled={!permissions(row).canEditProduct}
+              disabled={
+                !permission.hasStorePermission(
+                  StorePermissionEnum.PRODUCT_MANAGEMENT,
+                )
+              }
               showInMenu
             />
           ) : (
@@ -278,7 +278,11 @@ const ProductDatatable = () => {
               icon={<DeleteTwoTone />}
               onClick={menu.delete(row)}
               label={t("actions.delete")}
-              disabled={!permissions(row).canRemoveProduct}
+              disabled={
+                !permission.hasStorePermission(
+                  StorePermissionEnum.PRODUCT_MANAGEMENT,
+                )
+              }
               showInMenu
             />
           ),

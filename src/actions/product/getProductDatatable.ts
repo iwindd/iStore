@@ -1,8 +1,7 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { ProductPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { Prisma } from "@prisma/client";
 
 export type ProductDatatableInstance = Awaited<
   ReturnType<typeof getProductDatatable>
@@ -13,13 +12,10 @@ const getProductDatatable = async (
   filterType?: "all" | "preorder" | "outOfStock" | "stock" | "deleted",
 ) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(ProductPermissionEnum.READ))
-      throw new Error("Forbidden");
-
-    let where: any = {
-      store_id: user.store,
+    let where: Prisma.ProductWhereInput = {
+      store: {
+        slug: table.storeIdentifier,
+      },
       deleted_at: null,
     };
 
@@ -32,8 +28,6 @@ const getProductDatatable = async (
     } else if (filterType === "deleted") {
       where.deleted_at = { not: null };
     }
-
-    console.log(where);
 
     const datatable = await db.product.getDatatable({
       query: table,
@@ -54,7 +48,10 @@ const getProductDatatable = async (
         },
         creator: {
           user: {
-            name: {
+            first_name: {
+              mode: "insensitive",
+            },
+            last_name: {
               mode: "insensitive",
             },
           },
@@ -74,16 +71,6 @@ const getProductDatatable = async (
             label: true,
           },
         },
-        creator: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-        },
         stock: {
           select: {
             quantity: true,
@@ -101,7 +88,7 @@ const getProductDatatable = async (
       ...datatable,
     };
   } catch (error) {
-    console.error(error);
+    console.error("getProductDatatable error:", error);
     return {
       success: true,
       data: [],

@@ -1,6 +1,5 @@
-import getUserGlobalPermission from "@/actions/user/getUserGlobalPermission";
-import getUserStorePermission from "@/actions/user/getUserStorePermission";
 import db from "@/libs/db";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { getUser } from "@/libs/session";
 import MainLayout from "@/providers/LayoutProvider";
 import PermissionProvider from "@/providers/PermissionProvider";
@@ -17,7 +16,7 @@ export default async function StoreLayout({
   const user = await getUser();
   if (!user) return notFound();
 
-  const employeeStoreData = await db.employee.findFirst({
+  const storeData = await db.employee.findFirst({
     where: {
       user_id: user.id,
       store: {
@@ -26,24 +25,17 @@ export default async function StoreLayout({
     },
     select: {
       id: true,
-      store: {
-        select: { id: true },
-      },
     },
   });
 
-  if (!employeeStoreData) return notFound();
+  if (!storeData) return notFound();
 
-  const globalPermissions = await getUserGlobalPermission();
-  const storePermissions = await getUserStorePermission(
-    employeeStoreData.id,
-    employeeStoreData.store.id,
-  );
+  const ctx = await getPermissionContext(store);
 
   return (
     <PermissionProvider
-      globalPermissions={globalPermissions}
-      storePermissions={storePermissions}
+      globalPermissions={Array.from(ctx.globalPermissions)}
+      storePermissions={Array.from(ctx.storePermissions)}
     >
       <MainLayout>{children}</MainLayout>
     </PermissionProvider>

@@ -1,5 +1,5 @@
 "use client";
-import GetProduct from "@/actions/product/find";
+import findProductToCreate from "@/actions/product/findProductToCreate";
 import { randomEan } from "@/libs/ean";
 import { ProductFindSchema, ProductFindValues } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +30,7 @@ const SearchDialog = ({
   onSubmit,
 }: Readonly<SearchDialogProps>): React.JSX.Element => {
   const t = useTranslations("PRODUCTS.search_dialog");
+  const params = useParams<{ store: string }>();
   const [isRandomSerial, setIsRandomSerial] = React.useState<string>();
   const {
     register,
@@ -45,7 +47,7 @@ const SearchDialog = ({
 
   const findProductMutation = useMutation({
     mutationFn: async (payload: ProductFindValues) => {
-      const resp = await GetProduct(payload.serial, true);
+      const resp = await findProductToCreate(params.store, payload.serial);
       if (!resp.success) throw new Error("not_found");
       return resp?.data;
     },

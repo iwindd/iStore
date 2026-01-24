@@ -1,8 +1,10 @@
 "use client";
-import UpdateStock from "@/actions/product/updateStock";
+import adjustProductStock from "@/actions/product/adjustProductStock";
+import { StorePermissionEnum } from "@/enums/permission";
+import { usePermission } from "@/providers/PermissionProvider";
 import {
-  ProductUpdateStockSchema,
-  ProductUpdateStockValues,
+  ProductAdjustStockSchema,
+  ProductAdjustStockValues,
 } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -16,8 +18,9 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -28,9 +31,9 @@ const ProductUpdateStockForm = () => {
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-
   const [openDialog, setOpenDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const params = useParams<{ store: string }>();
+  const permission = usePermission();
 
   const {
     register,
@@ -38,45 +41,50 @@ const ProductUpdateStockForm = () => {
     formState: { errors, isDirty },
     watch,
     reset,
-    getValues,
-  } = useForm<ProductUpdateStockValues>({
-    resolver: zodResolver(ProductUpdateStockSchema),
+  } = useForm<ProductAdjustStockValues>({
+    resolver: zodResolver(ProductAdjustStockSchema),
     defaultValues: {
       stock: product.stock?.quantity || 0,
       note: "",
     },
   });
 
-  const onSubmit = async (data: ProductUpdateStockValues) => {
-    setLoading(true);
-    try {
-      const resp = await UpdateStock(data, product.id);
-      if (!resp.success) throw new Error(resp.message);
-
+  const adjustStockMutation = useMutation({
+    mutationFn: (payload: ProductAdjustStockValues) =>
+      adjustProductStock(params.store, { ...payload, id: product.id }),
+    onSettled: () => {
+      setOpenDialog(false);
+    },
+    onSuccess: (data) => {
+      enqueueSnackbar(t("success"), { variant: "success" });
+      router.refresh();
+      reset({
+        stock: data.quantity_after,
+        note: "",
+      });
       updateProduct({
         stock: {
           ...product.stock,
-          quantity: resp.data.stock,
+          quantity: data.quantity_after,
         },
       });
-      reset(getValues(), { keepValues: true });
-      enqueueSnackbar(t("success"), { variant: "success" });
-      setOpenDialog(false);
-      router.refresh();
-    } catch (error: any) {
-      console.log(error);
+    },
+    onError: () => {
       enqueueSnackbar(t("error"), {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   const onCancel = () => {
     setOpenDialog(false);
     reset();
   };
+
+  const hasPermission = permission.hasStorePermission(
+    StorePermissionEnum.PRODUCT_MANAGEMENT,
+  );
+  const disabled = adjustStockMutation.isPending || !hasPermission;
 
   return (
     <>
@@ -95,15 +103,15 @@ const ProductUpdateStockForm = () => {
               {...register("stock", { valueAsNumber: true })}
               error={!!errors.stock}
               helperText={errors.stock?.message}
+              disabled={disabled}
             />
           </Grid>
         </Grid>
 
-        {isDirty && (
+        {isDirty && !disabled && (
           <Button
             startIcon={<SaveTwoTone />}
             type="submit"
-            disabled={loading}
             color="success"
             variant="contained"
             sx={{ mt: 2 }}
@@ -113,36 +121,43 @@ const ProductUpdateStockForm = () => {
         )}
       </form>
 
-      <Dialog open={openDialog} onClose={onCancel} maxWidth="xs" fullWidth>
-        <DialogTitle>{t("dialog.title")}</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 2 }}>
-            {t("dialog.text", { label: product.label, count: watch("stock") })}
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("dialog.note")}
-            fullWidth
-            variant="standard"
-            multiline
-            rows={2}
-            {...register("note")}
-            error={!!errors.note}
-            helperText={errors.note?.message}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCancel}>{t("dialog.cancel")}</Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            color="primary"
-          >
-            {t("dialog.confirm")}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {hasPermission && (
+        <Dialog open={openDialog} onClose={onCancel} maxWidth="xs" fullWidth>
+          <DialogTitle>{t("dialog.title")}</DialogTitle>
+          <DialogContent>
+            <DialogContentText sx={{ mb: 2 }}>
+              {t("dialog.text", {
+                label: product.label,
+                count: watch("stock"),
+              })}
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("dialog.note")}
+              fullWidth
+              variant="standard"
+              multiline
+              rows={2}
+              {...register("note")}
+              error={!!errors.note}
+              helperText={errors.note?.message}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onCancel}>{t("dialog.cancel")}</Button>
+            <Button
+              onClick={handleSubmit((data) => adjustStockMutation.mutate(data))}
+              variant="contained"
+              color="primary"
+              disabled={adjustStockMutation.isPending}
+              loading={adjustStockMutation.isPending}
+            >
+              {t("dialog.confirm")}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   );
 };

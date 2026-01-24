@@ -1,7 +1,5 @@
 "use client";
 import { ProductDatatableInstance } from "@/actions/product/getProductDatatable";
-import { ProductPermissionEnum } from "@/enums/permission";
-import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
 import { getPath } from "@/router";
 import { AddTwoTone } from "@mui/icons-material";
@@ -16,7 +14,6 @@ const AddProductDialogTrigger = () => {
   const t = useTranslations("PRODUCTS");
   const [product, setProduct] = useState<ProductDatatableInstance | null>(null);
   const [isSearch, setIsSearch] = useState<boolean>(true);
-  const { user } = useAuth();
   const dialogInfo = useDialog();
   const router = useRouter();
 
@@ -45,9 +42,6 @@ const AddProductDialogTrigger = () => {
     setProduct(foundProduct ?? null);
     setIsSearch(false);
   };
-
-  if (!user) return null;
-  if (!user.hasPermission(ProductPermissionEnum.CREATE)) return null;
 
   const currentDialog = dialogInfo.open
     ? isSearch

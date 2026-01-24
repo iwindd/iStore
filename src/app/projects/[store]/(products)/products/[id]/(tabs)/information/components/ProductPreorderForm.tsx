@@ -1,6 +1,8 @@
 "use client";
 
 import updatePreorder from "@/actions/product/updatePreorder";
+import { StorePermissionEnum } from "@/enums/permission";
+import { usePermission } from "@/providers/PermissionProvider";
 import { ProductPreorderSchema, ProductPreorderValues } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -16,7 +18,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Controller, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
@@ -26,6 +28,8 @@ const ProductPreorderForm = () => {
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
+  const params = useParams<{ store: string }>();
+  const permission = usePermission();
 
   const {
     handleSubmit,
@@ -42,7 +46,10 @@ const ProductPreorderForm = () => {
 
   const updatePreorderMutation = useMutation({
     mutationFn: async (data: ProductPreorderValues) => {
-      const response = await updatePreorder(data, product.id);
+      const response = await updatePreorder(params.store, {
+        ...data,
+        id: product.id,
+      });
       return response;
     },
     onSuccess: (data) => {
@@ -66,6 +73,10 @@ const ProductPreorderForm = () => {
     },
   });
 
+  const disabled =
+    updatePreorderMutation.isPending ||
+    !permission.hasStorePermission(StorePermissionEnum.PRODUCT_MANAGEMENT);
+
   return (
     <Card>
       <CardContent>
@@ -79,10 +90,12 @@ const ProductPreorderForm = () => {
                   <Controller
                     name="usePreorder"
                     control={control}
+                    disabled={disabled}
                     render={({ field }) => (
                       <Switch
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
+                        disabled={disabled}
                       />
                     )}
                   />
@@ -101,7 +114,7 @@ const ProductPreorderForm = () => {
             <Button
               startIcon={<SaveTwoTone />}
               type="submit"
-              disabled={updatePreorderMutation.isPending}
+              disabled={disabled}
               color="success"
               variant="contained"
               sx={{ mt: 2 }}

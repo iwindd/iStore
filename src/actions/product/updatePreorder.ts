@@ -1,28 +1,24 @@
 "use server";
-import { ProductPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { ProductPreorderSchema, ProductPreorderValues } from "@/schema/Product";
 
 const updatePreorder = async (
-  payload: ProductPreorderValues,
-  product_id: number
+  storeSlug: string,
+  payload: ProductPreorderValues & { id: number },
 ) => {
-  const user = await getUser();
-  if (!user) throw new Error("Unauthorized");
-  if (!user.hasPermission(ProductPermissionEnum.UPDATE))
-    throw new Error("Unauthorized");
-
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
   const validated = ProductPreorderSchema.parse(payload);
 
-  const product = await db.product.update({
-    where: { id: product_id },
+  return await db.product.update({
+    where: { id: payload.id, store_id: ctx.storeId! },
     data: {
       usePreorder: validated.usePreorder,
     },
   });
-
-  return product;
 };
 
 export default updatePreorder;

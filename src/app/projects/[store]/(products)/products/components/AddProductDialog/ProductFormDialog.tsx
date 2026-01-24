@@ -1,5 +1,5 @@
 "use client";
-import CreateProduct from "@/actions/product/create";
+import createProduct from "@/actions/product/createProduct";
 import recoveryProduct from "@/actions/product/recoveryProduct";
 import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -44,24 +44,28 @@ const ProductFormDialog = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const { user } = useAuth();
+  const params = useParams<{ store: string }>();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (payload: ProductValues) => {
-      if (product?.deleted_at) {
-        const resp = await recoveryProduct(product.id);
-        if (!resp.success) throw new Error("error");
-        return { type: "recovery", id: product.id };
-      }
+      if (product?.deleted_at)
+        return {
+          type: "recovery",
+          data: await recoveryProduct(params.store, product.id),
+        };
 
-      const resp = await CreateProduct(payload);
-      if (!resp.success) throw new Error(resp.message);
-      return { type: "create", id: resp?.data?.id };
+      return {
+        type: "create",
+        data: await createProduct(params.store, payload),
+      };
     },
-    onSuccess: async (data) => {
+    onSuccess: async ({ data }) => {
       reset();
       enqueueSnackbar(t("save_success"), { variant: "success" });
       router.push(
-        getPath("projects.store.products.product", { id: data.id.toString() }),
+        getPath("projects.store.products.product", {
+          id: data.id.toString(),
+        }),
       );
       await queryClient.invalidateQueries({
         queryKey: ["products"],

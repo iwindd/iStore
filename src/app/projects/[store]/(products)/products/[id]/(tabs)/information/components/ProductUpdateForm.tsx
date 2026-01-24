@@ -1,5 +1,4 @@
 "use client";
-import UpdateProduct from "@/actions/product/update";
 import CategorySelector from "@/components/Selector/CategorySelector";
 import { ProductUpdateSchema, ProductUpdateValues } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,11 +13,14 @@ import {
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
-import { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import { SearchCategory } from "@/actions/category/search";
-import { useRouter } from "next/navigation";
+import updateProduct from "@/actions/product/update";
+import { StorePermissionEnum } from "@/enums/permission";
+import { usePermission } from "@/providers/PermissionProvider";
+import { useMutation } from "@tanstack/react-query";
+import { useParams, useRouter } from "next/navigation";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateForm = () => {
@@ -26,7 +28,8 @@ const ProductUpdateForm = () => {
   const { product } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const params = useParams<{ store: string }>();
+  const permission = usePermission();
 
   const {
     register,
@@ -46,29 +49,37 @@ const ProductUpdateForm = () => {
     setValue("category_id", category?.id || 0, { shouldDirty: true });
   };
 
-  const onSubmit: SubmitHandler<ProductUpdateValues> = async (payload) => {
-    setLoading(true);
-    try {
-      const resp = await UpdateProduct(payload, product.id);
-      if (!resp.success) throw new Error(resp.message);
-
+  const updateProductMutation = useMutation({
+    mutationFn: (payload: ProductUpdateValues) =>
+      updateProduct(params.store, { ...payload, id: product.id }),
+    onSuccess: (data) => {
       enqueueSnackbar(t("success"), { variant: "success" });
       router.refresh();
-      reset(payload); // Reset dirty state with new values
-    } catch (error: any) {
-      enqueueSnackbar(error.message || t("error"), {
+      reset({
+        label: data.label,
+        price: data.price,
+        cost: data.cost,
+        category_id: data.category_id,
+      });
+    },
+    onError: () => {
+      enqueueSnackbar(t("error"), {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
+
+  const disabled =
+    updateProductMutation.isPending ||
+    !permission.hasStorePermission(StorePermissionEnum.PRODUCT_MANAGEMENT);
 
   return (
     <Card>
       <CardHeader title={t("title")} subheader={t("subheader")} />
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form
+          onSubmit={handleSubmit((data) => updateProductMutation.mutate(data))}
+        >
           <Grid container spacing={2} maxWidth={"500px"}>
             <Grid size={12}>
               <TextField
@@ -77,6 +88,7 @@ const ProductUpdateForm = () => {
                 {...register("label")}
                 error={!!errors.label}
                 helperText={errors.label?.message}
+                disabled={disabled}
               />
             </Grid>
 
@@ -84,6 +96,7 @@ const ProductUpdateForm = () => {
               <CategorySelector
                 onSubmit={onSelectCategory}
                 defaultValue={product.category?.id || 0}
+                disabled={disabled}
               />
             </Grid>
 
@@ -95,6 +108,7 @@ const ProductUpdateForm = () => {
                 {...register("price", { valueAsNumber: true })}
                 error={!!errors.price}
                 helperText={errors.price?.message}
+                disabled={disabled}
               />
             </Grid>
 
@@ -106,6 +120,7 @@ const ProductUpdateForm = () => {
                 {...register("cost", { valueAsNumber: true })}
                 error={!!errors.cost}
                 helperText={errors.cost?.message}
+                disabled={disabled}
               />
             </Grid>
           </Grid>
@@ -113,11 +128,11 @@ const ProductUpdateForm = () => {
           {isDirty && (
             <Button
               startIcon={<SaveTwoTone />}
-              onClick={handleSubmit(onSubmit)}
-              disabled={loading || !isDirty}
+              disabled={!isDirty || disabled}
               color="success"
               variant="contained"
               sx={{ mt: 2 }}
+              type="submit"
             >
               {t("save")}
             </Button>

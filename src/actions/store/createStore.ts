@@ -1,6 +1,9 @@
 "use server";
 
+import { GlobalPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
+import { assertGlobalCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { getUser } from "@/libs/session";
 import { CreateStoreSchema, CreateStoreValues } from "@/schema/Store";
 
@@ -9,6 +12,8 @@ const createStore = async (payload: CreateStoreValues) => {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     const validated = CreateStoreSchema.parse(payload);
+    const ctx = await getPermissionContext();
+    assertGlobalCan(ctx, GlobalPermissionEnum.STORE_CREATE);
 
     // Check if slug already exists
     const existingStore = await db.store.findUnique({

@@ -4,22 +4,15 @@ import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-const recoveryProduct = async (storeSlug: string, id: number) => {
+const deleteProduct = async (storeSlug: string, id: number) => {
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
-
-  return await db.product.update({
+  return await db.product.delete({
     where: {
       id: id,
       store_id: ctx.storeId!,
-      deleted_at: {
-        not: null,
-      },
-    },
-    data: {
-      deleted_at: null,
     },
   });
 };
 
-export default recoveryProduct;
+export default deleteProduct;

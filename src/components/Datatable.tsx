@@ -10,6 +10,7 @@ import {
   GridValidRowModel,
 } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import React from "react";
 import thTHGrid from "./locale/datatable";
 
@@ -24,6 +25,7 @@ export interface TableFetch {
   sort: GridSortModel;
   pagination: GridPaginationModel;
   filter: GridFilterModel;
+  storeIdentifier: string;
 }
 
 export interface DatatableProps<
@@ -55,6 +57,7 @@ const Datatable = ({
     items: [],
   });
 
+  const params = useParams<{ store: string }>();
   const { data, isLoading } = useQuery({
     queryKey: [
       name, // will be removed soon (use datatable:name instead)
@@ -70,6 +73,7 @@ const Datatable = ({
           sort: sortModel,
           pagination: paginationModel,
           filter: filterModel,
+          storeIdentifier: params.store,
         },
         ...(bridge || []),
       );

@@ -132,3 +132,14 @@ export type PermissionEnum =
 export enum GlobalPermissionEnum {
   STORE_CREATE = "Store.Create",
 }
+
+export enum StorePermissionEnum {
+  CASHIER_CASHOUT = "Cashier.Cashout",
+  PRODUCT_MANAGEMENT = "Product.Management",
+  CONSIGNMENT_MANAGEMENT = "Consignment.Management",
+  PREORDER_MANAGEMENT = "Preorder.Management",
+  APPLICATION_MANAGEMENT = "Application.Management",
+  PROMOTION_MANAGEMENT = "Promotion.Management",
+  EMPLOYEE_MANAGEMENT = "Employee.Management",
+  HISTORY_READ_ALL = "History.ReadAll",
+}

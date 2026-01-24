@@ -33,12 +33,12 @@ export const ProductUpdateSchema = z.object({
 
 export type ProductUpdateValues = z.infer<typeof ProductUpdateSchema>;
 
-export const ProductUpdateStockSchema = z.object({
+export const ProductAdjustStockSchema = z.object({
   stock: z.number().min(0),
   note: z.string().max(255),
 });
 
-export type ProductUpdateStockValues = z.infer<typeof ProductUpdateStockSchema>;
+export type ProductAdjustStockValues = z.infer<typeof ProductAdjustStockSchema>;
 
 export const ProductStockAlertSchema = z.object({
   alertCount: z.number().min(0),

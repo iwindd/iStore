@@ -1,7 +1,7 @@
-import getUserGlobalPermission from "@/actions/user/getUserGlobalPermission";
 import OverviewSidebarItems from "@/config/Navbar/overview";
 import OverviewNavbar from "@/layouts/Navbar/OverviewNavbar";
 import DesktopSidebar from "@/layouts/Sidenav/components/DesktopSidebar";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import PermissionProvider from "@/providers/PermissionProvider";
 import { Box, GlobalStyles, Stack } from "@mui/material";
 
@@ -10,11 +10,11 @@ export default async function OverviewLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const globalPermissions = await getUserGlobalPermission();
+  const permission = await getPermissionContext();
 
   return (
     <PermissionProvider
-      globalPermissions={globalPermissions}
+      globalPermissions={Array.from(permission.globalPermissions)}
       storePermissions={[]}
     >
       <GlobalStyles
