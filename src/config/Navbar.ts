@@ -17,7 +17,7 @@ import { getRoute } from "@/router";
  */
 
 const NavbarItems = [
-  getRoute("overview"),
+  getRoute("dashboard"),
   getRoute("cashier"),
 
   {

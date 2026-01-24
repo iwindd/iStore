@@ -23,18 +23,16 @@ const ROUTES = ROUTER({
     label: "overview.label",
     icon: Store,
     disabledBreadcrumb: true,
+  },
+  dashboard: {
+    path: "/:store/dashboard",
+    label: "dashboard.label",
+    icon: Store,
+    disabledBreadcrumb: true,
     children: {
-      dashboard: {
-        path: "/:store/dashboard",
-        label: "dashboard.label",
-        icon: Store,
-        disabledBreadcrumb: true,
-        children: {
-          report: {
-            path: "/:store/dashboard/report",
-            label: "dashboard.report.label",
-          },
-        },
+      report: {
+        path: "/:store/dashboard/report",
+        label: "dashboard.report.label",
       },
     },
   },

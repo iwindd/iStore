@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function StoreRootPage({
+export default async function StoreRootPage({
   params,
 }: {
-  params: { store: string };
+  params: Promise<{ store: string }>;
 }) {
-  redirect(`/${params.store}/dashboard`);
+  const paramsData = await params;
+  redirect(`/${paramsData.store}/dashboard`);
 }

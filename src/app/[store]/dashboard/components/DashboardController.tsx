@@ -115,7 +115,7 @@ const DashboardController = () => {
             <IconButton
               color="secondary"
               component={Link}
-              href={getPath("overview.dashboard.report")}
+              href={getPath("dashboard.report")}
             >
               <PrintTwoTone />
             </IconButton>
