@@ -21,7 +21,7 @@ import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-const AccountInfo = () => {
+const FormAccountInfo = () => {
   const t = useTranslations("ACCOUNT.info");
   const { user, setName } = useAuth();
   const { setBackdrop } = useInterface();
@@ -133,4 +133,4 @@ const AccountInfo = () => {
   );
 };
 
-export default AccountInfo;
+export default FormAccountInfo;

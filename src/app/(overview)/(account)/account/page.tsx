@@ -1,11 +1,11 @@
 "use client";
+import FormAccountInfo from "@/components/Forms/Account/FormAccountInfo";
+import FormPasswordChange from "@/components/Forms/Account/FormPasswordChange";
 import App, { Wrapper } from "@/layouts/App";
 import Grid from "@mui/material/Grid";
 import { useTranslations } from "next-intl";
-import AccountInfo from "./components/AccountInfo";
-import PasswordChanger from "./components/PasswordChanger";
 
-const Account = () => {
+const AccountPage = () => {
   const t = useTranslations("ACCOUNT");
 
   return (
@@ -16,10 +16,10 @@ const Account = () => {
       <App.Main>
         <Grid container spacing={2}>
           <Grid size={12}>
-            <AccountInfo />
+            <FormAccountInfo />
           </Grid>
           <Grid size={12}>
-            <PasswordChanger />
+            <FormPasswordChange />
           </Grid>
         </Grid>
       </App.Main>
@@ -27,4 +27,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default AccountPage;

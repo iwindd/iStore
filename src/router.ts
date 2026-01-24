@@ -95,11 +95,6 @@ const ROUTES = ROUTER({
           },
         },
       },
-      account: {
-        path: "/:store/account",
-        label: "account.label",
-        icon: Person,
-      },
       roles: {
         path: "/:store/roles",
         label: "roles.label",
@@ -186,6 +181,12 @@ const ROUTES = ROUTER({
           },
         },
       },
+      //account
+      account: {
+        path: "/:store/account",
+        label: "account.label",
+        icon: Person,
+      },
     },
   },
   overview: {
@@ -193,6 +194,14 @@ const ROUTES = ROUTER({
     label: "overview.label",
     icon: Store,
     disabledBreadcrumb: true,
+    children: {
+      //account
+      account: {
+        path: "/account",
+        label: "account.label",
+        icon: Person,
+      },
+    },
   },
   auth: {
     path: "/auth",

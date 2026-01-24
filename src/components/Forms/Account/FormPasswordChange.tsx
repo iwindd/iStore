@@ -18,7 +18,7 @@ import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-const PasswordChanger = () => {
+const FormPasswordChange = () => {
   const t = useTranslations("ACCOUNT.password");
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
@@ -120,4 +120,4 @@ const PasswordChanger = () => {
   );
 };
 
-export default PasswordChanger;
+export default FormPasswordChange;
