@@ -1,9 +1,9 @@
-import { NavbarItem } from "@/config/Navbar";
+import { SidebarItem } from "@/config/Navbar";
 import { alpha, Box, useTheme } from "@mui/material";
-import NavItems from "./components";
-import NavLogo from "./components/NavLogo";
+import SidebarItems from "..";
+import NavLogo from "./SidebarLogo";
 
-const DesktopNav = ({ items }: Readonly<{ items?: NavbarItem[] }>) => {
+const DesktopSidebar = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
   const theme = useTheme();
 
   return (
@@ -11,17 +11,20 @@ const DesktopNav = ({ items }: Readonly<{ items?: NavbarItem[] }>) => {
       sx={{
         "--SideNav-color": "var(--mui-palette-common-white)",
         "--SideNav-background": "var(--mui-palette-background-paper)",
-        "--NavItem-color": alpha(theme.palette.secondary.light, 0.9),
-        "--NavItem-hover-background": "rgba(0, 0, 0, 0.04)",
-        "--NavItem-active-background": alpha(theme.palette.primary.main, 0.08),
-        "--NavItem-hover-active-background": alpha(
+        "--SidebarItem-color": alpha(theme.palette.secondary.light, 0.9),
+        "--SidebarItem-hover-background": "rgba(0, 0, 0, 0.04)",
+        "--SidebarItem-active-background": alpha(
+          theme.palette.primary.main,
+          0.08,
+        ),
+        "--SidebarItem-hover-active-background": alpha(
           theme.palette.primary.main,
           0.2,
         ),
-        "--NavItem-active-color": theme.palette.primary.dark,
-        "--NavItem-icon-color": alpha(theme.palette.secondary.light, 0.9),
-        "--NavItem-icon-active-color": theme.palette.primary.dark,
-        "--NavItem-group-label-color": alpha(
+        "--SidebarItem-active-color": theme.palette.primary.dark,
+        "--SidebarItem-icon-color": alpha(theme.palette.secondary.light, 0.9),
+        "--SidebarItem-icon-active-color": theme.palette.primary.dark,
+        "--SidebarItem-group-label-color": alpha(
           theme.palette.secondary.light,
           0.9,
         ),
@@ -51,10 +54,10 @@ const DesktopNav = ({ items }: Readonly<{ items?: NavbarItem[] }>) => {
           "&::-webkit-scrollbar": { display: "none" },
         }}
       >
-        <NavItems items={items} />
+        <SidebarItems items={items} />
       </Box>
     </Box>
   );
 };
 
-export default DesktopNav;
+export default DesktopSidebar;

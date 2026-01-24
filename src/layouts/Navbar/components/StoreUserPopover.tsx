@@ -5,29 +5,29 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 import * as React from "react";
 
-import { useAuth } from "@/hooks/use-auth";
-import { clearProductCart } from "@/reducers/cartReducer";
-import { getPath } from "@/router";
-import { LogoutTwoTone, Settings } from "@mui/icons-material";
-import { signOut } from "next-auth/react";
+import {useAuth} from "@/hooks/use-auth";
+import {clearProductCart} from "@/reducers/cartReducer";
+import {getPath} from "@/router";
+import {LogoutTwoTone, Settings} from "@mui/icons-material";
+import {signOut} from "next-auth/react";
 import Link from "next/link";
-import { useSnackbar } from "notistack";
-import { useDispatch } from "react-redux";
+import {useSnackbar} from "notistack";
+import {useDispatch} from "react-redux";
 
-export interface UserPopoverProps {
+export interface StoreUserPopoverProps {
   anchorEl: Element | null;
   onClose: () => void;
   open: boolean;
 }
 
-function UserPopover({
+const StoreUserPopover = ({
   anchorEl,
   onClose,
   open,
-}: Readonly<UserPopoverProps>): React.JSX.Element {
+}: Readonly<StoreUserPopoverProps>) => {
   const router = useRouter();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -85,6 +85,6 @@ function UserPopover({
       </MenuList>
     </Popover>
   );
-}
+};
 
-export default UserPopover;
+export default StoreUserPopover;

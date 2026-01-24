@@ -11,7 +11,7 @@ import {
 import { useTranslations } from "next-intl";
 import RouterLink from "next/link";
 
-function NavItem(route: Readonly<Route>): React.JSX.Element {
+function SidebarItem(route: Readonly<Route>): React.JSX.Element {
   const activeRouteTrail = useActiveRouteTrail();
   const isActive = activeRouteTrail.some(
     (item: Route) => item.name === route.name,
@@ -47,21 +47,21 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
           margin: "0 0 6px 0",
           padding: "0 0",
           width: "100%",
-          color: "var(--NavItem-color)",
+          color: "var(--SidebarItem-color)",
           "&.Mui-focusVisible": {
-            color: "var(--NavItem-color)",
-            bgcolor: "var(--NavItem-hover-background)",
+            color: "var(--SidebarItem-color)",
+            bgcolor: "var(--SidebarItem-hover-background)",
           },
           "&[data-active='true']": {
-            bgcolor: "var(--NavItem-active-background)",
-            color: "var(--NavItem-active-color)",
+            bgcolor: "var(--SidebarItem-active-background)",
+            color: "var(--SidebarItem-active-color)",
 
             "&:hover": {
-              bgcolor: "var(--NavItem-hover-active-background)",
+              bgcolor: "var(--SidebarItem-hover-active-background)",
             },
           },
           "&:not([data-active='true']):hover": {
-            bgcolor: "var(--NavItem-hover-background)",
+            bgcolor: "var(--SidebarItem-hover-background)",
           },
         }}
       >
@@ -69,8 +69,8 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
           <ListItemIcon
             sx={{
               color: isActive
-                ? "var(--NavItem-icon-active-color)"
-                : "var(--NavItem-icon-color)",
+                ? "var(--SidebarItem-icon-active-color)"
+                : "var(--SidebarItem-icon-color)",
               minWidth: "0px",
               marginX: "0.6em",
             }}
@@ -85,8 +85,8 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
             primary: {
               sx: {
                 color: isActive
-                  ? "var(--NavItem-active-color)"
-                  : "var(--NavItem-color)",
+                  ? "var(--SidebarItem-active-color)"
+                  : "var(--SidebarItem-color)",
 
                 fontWeight: 500,
                 lineHeight: "28px",
@@ -100,4 +100,4 @@ function NavItem(route: Readonly<Route>): React.JSX.Element {
   );
 }
 
-export default NavItem;
+export default SidebarItem;

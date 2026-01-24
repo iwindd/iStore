@@ -1,26 +1,27 @@
 "use client";
-import OverviewNavbarItems from "@/config/Navbar/overview";
-import { useAuth } from "@/hooks/use-auth";
-import { usePopover } from "@/hooks/use-popover";
-import MobileNav from "@/layouts/sidenav/MobileNav";
-import { MenuTwoTone } from "@mui/icons-material";
-import {
-  alpha,
-  Avatar,
-  Box,
-  IconButton,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
-import { usePathname } from "next/navigation";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
 import * as React from "react";
 
-export function OverviewNav(): React.JSX.Element {
+import { usePopover } from "@/hooks/use-popover";
+
+import StoreSidebarItems from "@/config/Navbar/store";
+import { useAuth } from "@/hooks/use-auth";
+import { MenuTwoTone } from "@mui/icons-material";
+import { alpha, Typography, useTheme } from "@mui/material";
+import { usePathname } from "next/navigation";
+import MobileSidebar from "../Sidenav/components/MobileSidebar";
+import AppBreadcrumb from "./components/AppBreadcrumb";
+import StoreSelector from "./components/StoreSwitcher";
+import StoreUserPopover from "./components/StoreUserPopover";
+
+const StoreNavbar = () => {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const { user } = useAuth();
   const theme = useTheme();
-  const userPopover = usePopover<HTMLDivElement>();
+  const storeUserPopover = usePopover<HTMLDivElement>();
   const pathname = usePathname();
   React.useEffect(() => setOpenNav(false), [pathname]);
 
@@ -59,14 +60,16 @@ export function OverviewNav(): React.JSX.Element {
             >
               <MenuTwoTone />
             </IconButton>
-            <Stack spacing={0} direction={"row"} alignItems={"center"}></Stack>
+            <Stack spacing={0} direction={"row"} alignItems={"center"}>
+              <StoreSelector />
+              <AppBreadcrumb />
+            </Stack>
           </Stack>
           <Stack
             direction="row"
             spacing={2}
-            onClick={userPopover.handleOpen}
+            onClick={storeUserPopover.handleOpen}
             alignItems={"center"}
-            ref={userPopover.anchorRef}
             sx={{ cursor: "pointer" }}
           >
             <Stack sx={{ display: { xs: "none", sm: "block" } }}>
@@ -78,20 +81,19 @@ export function OverviewNav(): React.JSX.Element {
               </Typography>
             </Stack>
             <Avatar
-              onClick={userPopover.handleOpen}
-              ref={userPopover.anchorRef}
               sx={{ cursor: "pointer" }}
+              ref={storeUserPopover.anchorRef}
             />
           </Stack>
         </Stack>
       </Box>
-      {/*       <UserPopover
-        anchorEl={userPopover.anchorRef.current}
-        onClose={userPopover.handleClose}
-        open={userPopover.open}
-      /> */}
-      <MobileNav
-        items={OverviewNavbarItems}
+      <StoreUserPopover
+        anchorEl={storeUserPopover.anchorRef.current}
+        onClose={storeUserPopover.handleClose}
+        open={storeUserPopover.open}
+      />
+      <MobileSidebar
+        items={StoreSidebarItems}
         onClose={() => {
           setOpenNav(false);
         }}
@@ -99,4 +101,6 @@ export function OverviewNav(): React.JSX.Element {
       />
     </React.Fragment>
   );
-}
+};
+
+export default StoreNavbar;

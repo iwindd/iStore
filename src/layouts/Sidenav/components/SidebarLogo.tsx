@@ -3,7 +3,7 @@ import { getPath } from "@/router";
 import { Box, Stack, StackProps } from "@mui/material";
 import Link from "next/link";
 
-const NavLogo = ({
+const SidebarLogo = ({
   slotProps,
 }: {
   slotProps?: {
@@ -41,4 +41,4 @@ const NavLogo = ({
   );
 };
 
-export default NavLogo;
+export default SidebarLogo;

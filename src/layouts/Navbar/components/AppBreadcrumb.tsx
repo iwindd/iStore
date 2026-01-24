@@ -7,7 +7,7 @@ import { NavigateNextTwoTone } from "@mui/icons-material";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 
-const Breadcrumb = () => {
+const AppBreadcrumb = () => {
   const t = useTranslations("ROUTES");
   const activeRouteTrail = useActiveRouteTrail().filter(
     (route: Route) => !route.disabledBreadcrumb,
@@ -43,4 +43,4 @@ const Breadcrumb = () => {
   );
 };
 
-export default Breadcrumb;
+export default AppBreadcrumb;

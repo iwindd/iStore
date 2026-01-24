@@ -1,8 +1,9 @@
 "use client";
+import StoreSidebarItems from "@/config/Navbar/store";
 import { useAuth } from "@/hooks/use-auth";
-import DesktopNav from "@/layouts/sidenav/DesktopNav";
+import StoreNavbar from "@/layouts/Navbar/StoreNavbar";
+import DesktopSidebar from "@/layouts/Sidenav/components/DesktopSidebar";
 import { Box, GlobalStyles, Stack } from "@mui/material";
-import { MainNav } from "../layouts/mainnav";
 
 export default function MainLayout({
   children,
@@ -38,7 +39,7 @@ export default function MainLayout({
           minHeight: "100%",
         }}
       >
-        <DesktopNav />
+        <DesktopSidebar items={StoreSidebarItems} />
         <Box
           sx={{
             display: "flex",
@@ -47,7 +48,7 @@ export default function MainLayout({
             pl: { md: "var(--SideNav-width)" },
           }}
         >
-          <MainNav />
+          <StoreNavbar />
           <Stack
             px={{
               xs: 2,

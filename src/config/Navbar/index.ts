@@ -1,7 +1,7 @@
 import { PermissionEnum } from "@/enums/permission";
 import { Route } from "@/libs/route/route";
 
-export type NavbarItem = (
+export type SidebarItem = (
   | Route
   | {
       key: string;

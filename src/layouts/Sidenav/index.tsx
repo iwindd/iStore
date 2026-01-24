@@ -1,44 +1,41 @@
 "use client";
-import { NavbarItem } from "@/config/Navbar";
-import StoreNavbarItems from "@/config/Navbar/store";
+import { SidebarItem } from "@/config/Navbar";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
 import React, { useState } from "react";
-import NavItem from "./NavItem";
+import SidebarItemComponent from "./components/SidebarItem";
 
-function getDefaultExpand(activeRouteTrail: Route[]) {
+function getDefaultExpand(items: SidebarItem[], activeRouteTrail: Route[]) {
   const expandItems: Record<string, boolean> = {};
 
-  StoreNavbarItems.forEach((navItem: NavbarItem) => {
-    if ("defaultExpand" in navItem && navItem.defaultExpand) {
-      expandItems[navItem.key] = true;
-    } else if ("routes" in navItem) {
+  items.forEach((sidebarItem: SidebarItem) => {
+    if ("defaultExpand" in sidebarItem && sidebarItem.defaultExpand) {
+      expandItems[sidebarItem.key] = true;
+    } else if ("routes" in sidebarItem) {
       const isActive = activeRouteTrail.some((route) =>
-        navItem.routes.some((item) => item.name === route.name),
+        sidebarItem.routes.some((item) => item.name === route.name),
       );
-      expandItems[navItem.key] = isActive;
+      expandItems[sidebarItem.key] = isActive;
     }
   });
 
   return expandItems;
 }
 
-const NavItems = ({
-  items = StoreNavbarItems,
-}: Readonly<{ items?: NavbarItem[] }>) => {
+const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
   const { user } = useAuth();
   const activeRouteTrail = useActiveRouteTrail();
 
   const [expand, setExpand] = useState<Record<string, boolean>>(
-    getDefaultExpand(activeRouteTrail),
+    getDefaultExpand(items, activeRouteTrail),
   );
 
-  const renderNormalItem = (navItem: NavbarItem) => {
-    if ("routes" in navItem) return;
-    const { needSomePermissions, ...restPath } = navItem;
+  const renderNormalItem = (sidebarItem: SidebarItem) => {
+    if ("routes" in sidebarItem) return;
+    const { needSomePermissions, ...restPath } = sidebarItem;
 
     if (
       needSomePermissions &&
@@ -46,24 +43,32 @@ const NavItems = ({
     )
       return;
 
-    return <NavItem key={`navbar-item-${restPath.name}`} {...restPath} />;
+    return (
+      <SidebarItemComponent
+        key={`navbar-item-${restPath.name}`}
+        {...restPath}
+      />
+    );
   };
 
   return (
     <List sx={{ py: 0 }}>
-      {items.map((navItem: NavbarItem) => {
-        if ("routes" in navItem) {
-          const items = navItem.routes
+      {items.map((sidebarItem: SidebarItem) => {
+        if ("routes" in sidebarItem) {
+          const items = sidebarItem.routes
             .map((item) => renderNormalItem(item))
             .filter((item) => item !== undefined);
 
           if (items.length === 0) return null;
 
           return (
-            <React.Fragment key={`Group-${navItem.key}`}>
+            <React.Fragment key={`Group-${sidebarItem.key}`}>
               <ListItemButton
                 onClick={() => {
-                  setExpand({ ...expand, [navItem.key]: !expand[navItem.key] });
+                  setExpand({
+                    ...expand,
+                    [sidebarItem.key]: !expand[sidebarItem.key],
+                  });
                 }}
                 disableRipple
                 sx={{
@@ -82,7 +87,7 @@ const NavItems = ({
                   fontWeight: "bold",
                   backgroundColor: "transparent",
                   fontSize: "0.75em",
-                  color: "var(--NavItem-group-label-color)",
+                  color: "var(--SidebarItem-group-label-color)",
                   width: "fit-content",
                   "&:hover": {
                     backgroundColor: "transparent",
@@ -116,13 +121,13 @@ const NavItems = ({
                   },
                 }}
               >
-                {expand[navItem.key] ? (
+                {expand[sidebarItem.key] ? (
                   <ExpandMore className="nav-expand-icon" />
                 ) : (
                   <ExpandLess className="nav-expand-icon" />
                 )}
                 <ListItemText
-                  primary={navItem.title}
+                  primary={sidebarItem.title}
                   slotProps={{
                     primary: {
                       className: "nav-label",
@@ -131,17 +136,21 @@ const NavItems = ({
                 />
               </ListItemButton>
 
-              <Collapse in={expand[navItem.key]} timeout={"auto"} unmountOnExit>
+              <Collapse
+                in={expand[sidebarItem.key]}
+                timeout={"auto"}
+                unmountOnExit
+              >
                 {items}
               </Collapse>
             </React.Fragment>
           );
         } else {
-          return renderNormalItem(navItem);
+          return renderNormalItem(sidebarItem);
         }
       })}
     </List>
   );
 };
 
-export default NavItems;
+export default SidebarItems;

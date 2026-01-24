@@ -1,90 +1,9 @@
 {
   "ROUTES": {
     "overview": {
-      "label": "ภาพรวม"
-    },
-    "dashboard": {
       "label": "ภาพรวม",
-      "report": {
-        "label": "รายงาน"
-      }
-    },
-    "cashier": {
-      "label": "ขายสินค้า"
-    },
-    "products": {
-      "label": "สินค้า",
-      "product": {
-        "label": "ข้อมูลสินค้า",
-        "information": {
-          "label": "ข้อมูลสินค้า"
-        },
-        "stock": {
-          "label": "สต็อก"
-        },
-        "history": {
-          "label": "ประวัติการขาย"
-        }
-      }
-    },
-    "categories": {
-      "label": "หมวดหมู่"
-    },
-    "stocks": {
-      "label": "จัดการสต๊อก",
-      "create": {
-        "label": "สร้างรายการจัดการสต๊อก"
-      },
-      "stock": {
-        "label": "รายละเอียดการจัดการสต๊อก"
-      }
-    },
-    "histories": {
-      "label": "ประวัติการขาย",
-      "history": {
-        "label": "รายละเอียดประวัติการขาย"
-      }
-    },
-    "account": {
-      "label": "บัญชีของฉัน"
-    },
-    "roles": {
-      "label": "ตำแหน่ง"
-    },
-    "employees": {
-      "label": "พนักงาน"
-    },
-    "store": {
-      "label": "ร้านค้า"
-    },
-    "broadcasts": {
-      "label": "ประชาสัมพันธ์",
-      "broadcast": {
-        "label": "รายละเอียดประชาสัมพันธ์"
-      },
-      "create": {
-        "label": "สร้างใหม่"
-      }
-    },
-    "promotions": {
-      "label": "โปรโมชั่น",
-      "create": {
-        "label": "สร้างโปรโมชั่น",
-        "buyXgetY": {
-          "label": "สร้างโปรโมชั่น ซื้อ X ได้ Y"
-        }
-      },
-      "buyXgetY": {
-        "label": "รายละเอียดโปรโมชั่น"
-      }
-    },
-    "applications": {
-      "label": "แอพพลิเคชั่น",
-      "line": {
-        "label": "รายละเอียดแอพพลิเคชั่น Line",
-        "create": {
-          "label": "สร้างแอพพลิเคชั่น Line"
-        }
+      "account": {
+        "label": "บัญชีของฉัน"
       }
     },
     "auth": {
@@ -93,13 +12,98 @@
         "label": "เข้าสู่ระบบ"
       }
     },
-    "preorders": {
-      "label": "พรีออเดอร์"
-    },
-    "consignments": {
-      "label": "ฝากขาย",
-      "consignment": {
-        "label": "รายละเอียดการฝากขาย"
+    "store": {
+      "label": "ร้านค้า",
+      "dashboard": {
+        "label": "ภาพรวม",
+        "report": {
+          "label": "รายงาน"
+        }
+      },
+      "cashier": {
+        "label": "ขายสินค้า"
+      },
+      "products": {
+        "label": "สินค้า",
+        "product": {
+          "label": "ข้อมูลสินค้า",
+          "information": {
+            "label": "ข้อมูลสินค้า"
+          },
+          "stock": {
+            "label": "สต็อก"
+          },
+          "history": {
+            "label": "ประวัติการขาย"
+          }
+        }
+      },
+      "categories": {
+        "label": "หมวดหมู่"
+      },
+      "stocks": {
+        "label": "จัดการสต๊อก",
+        "create": {
+          "label": "สร้างรายการจัดการสต๊อก"
+        },
+        "stock": {
+          "label": "รายละเอียดการจัดการสต๊อก"
+        }
+      },
+      "histories": {
+        "label": "ประวัติการขาย",
+        "history": {
+          "label": "รายละเอียดประวัติการขาย"
+        }
+      },
+      "account": {
+        "label": "บัญชีของฉัน"
+      },
+      "roles": {
+        "label": "ตำแหน่ง"
+      },
+      "employees": {
+        "label": "พนักงาน"
+      },
+
+      "broadcasts": {
+        "label": "ประชาสัมพันธ์",
+        "broadcast": {
+          "label": "รายละเอียดประชาสัมพันธ์"
+        },
+        "create": {
+          "label": "สร้างใหม่"
+        }
+      },
+      "promotions": {
+        "label": "โปรโมชั่น",
+        "create": {
+          "label": "สร้างโปรโมชั่น",
+          "buyXgetY": {
+            "label": "สร้างโปรโมชั่น ซื้อ X ได้ Y"
+          }
+        },
+        "buyXgetY": {
+          "label": "รายละเอียดโปรโมชั่น"
+        }
+      },
+      "applications": {
+        "label": "แอพพลิเคชั่น",
+        "line": {
+          "label": "รายละเอียดแอพพลิเคชั่น Line",
+          "create": {
+            "label": "สร้างแอพพลิเคชั่น Line"
+          }
+        }
+      },
+      "preorders": {
+        "label": "พรีออเดอร์"
+      },
+      "consignments": {
+        "label": "ฝากขาย",
+        "consignment": {
+          "label": "รายละเอียดการฝากขาย"
+        }
       }
     }
   },

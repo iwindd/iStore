@@ -1,7 +1,7 @@
 import { getRoute } from "@/router";
-import { NavbarItem } from ".";
+import { SidebarItem } from ".";
 
-const StoreNavbarItems = [
+const StoreSidebarItems = [
   getRoute("store.dashboard"),
   getRoute("store.cashier"),
 
@@ -44,6 +44,6 @@ const StoreNavbarItems = [
     title: "บัญชีของฉัน",
     routes: [getRoute("store.account")],
   },
-] as const satisfies NavbarItem[];
+] as const satisfies SidebarItem[];
 
-export default StoreNavbarItems;
+export default StoreSidebarItems;

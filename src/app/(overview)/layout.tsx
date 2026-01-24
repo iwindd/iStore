@@ -1,8 +1,8 @@
 "use client";
-import OverviewNavbarItems from "@/config/Navbar/overview";
-import DesktopNav from "@/layouts/sidenav/DesktopNav";
+import OverviewSidebarItems from "@/config/Navbar/overview";
+import OverviewNavbar from "@/layouts/Navbar/OverviewNavbar";
+import DesktopSidebar from "@/layouts/Sidenav/components/DesktopSidebar";
 import { Box, GlobalStyles, Stack } from "@mui/material";
-import { OverviewNav } from "./components/OverviewNav";
 
 export default function OverviewLayout({
   children,
@@ -32,7 +32,7 @@ export default function OverviewLayout({
           minHeight: "100%",
         }}
       >
-        <DesktopNav items={OverviewNavbarItems} />
+        <DesktopSidebar items={OverviewSidebarItems} />
         <Box
           sx={{
             display: "flex",
@@ -41,7 +41,7 @@ export default function OverviewLayout({
             pl: { md: "var(--SideNav-width)" },
           }}
         >
-          <OverviewNav />
+          <OverviewNavbar />
           <Stack
             px={{
               xs: 2,

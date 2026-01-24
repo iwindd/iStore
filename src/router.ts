@@ -20,11 +20,12 @@ import { buildRouteUtility, ROUTER } from "./libs/route/route";
 const ROUTES = ROUTER({
   store: {
     path: "/:store",
-    label: "overview.label",
+    label: "store.label",
+    disabledBreadcrumb: true,
     children: {
       dashboard: {
         path: "/:store/dashboard",
-        label: "dashboard.label",
+        label: "store.dashboard.label",
         icon: Store,
         disabledBreadcrumb: true,
         children: {
@@ -36,29 +37,29 @@ const ROUTES = ROUTER({
       },
       cashier: {
         path: "/:store/cashier",
-        label: "cashier.label",
+        label: "store.cashier.label",
         icon: ShoppingCart,
       },
       products: {
         path: "/:store/products",
-        label: "products.label",
+        label: "store.products.label",
         icon: Work,
         children: {
           product: {
             path: "/:store/products/:id",
-            label: "products.product.label",
+            label: "store.products.product.label",
             children: {
               information: {
                 path: "/:store/products/:id/information",
-                label: "products.product.information.label",
+                label: "store.products.product.information.label",
               },
               stock: {
                 path: "/:store/products/:id/stock",
-                label: "products.product.stock.label",
+                label: "store.products.product.stock.label",
               },
               history: {
                 path: "/:store/products/:id/history",
-                label: "products.product.history.label",
+                label: "store.products.product.history.label",
               },
             },
           },
@@ -66,99 +67,99 @@ const ROUTES = ROUTER({
       },
       categories: {
         path: "/:store/categories",
-        label: "categories.label",
+        label: "store.categories.label",
         icon: Category,
       },
       stocks: {
         path: "/:store/stocks",
-        label: "stocks.label",
+        label: "store.stocks.label",
         icon: AllInbox,
         children: {
           create: {
             path: "/:store/stocks/create",
-            label: "stocks.create.label",
+            label: "store.stocks.create.label",
           },
           stock: {
             path: "/:store/stocks/:id",
-            label: "stocks.stock.label",
+            label: "store.stocks.stock.label",
           },
         },
       },
       histories: {
         path: "/:store/histories",
-        label: "histories.label",
+        label: "store.histories.label",
         icon: History,
         children: {
           history: {
             path: "/:store/histories/:id",
-            label: "histories.history.label",
+            label: "store.histories.history.label",
           },
         },
       },
       roles: {
         path: "/:store/roles",
-        label: "roles.label",
+        label: "store.roles.label",
         icon: Badge,
       },
       employees: {
         path: "/:store/employees",
-        label: "employees.label",
+        label: "store.employees.label",
         icon: Group,
       },
       store: {
         path: "/:store/store",
-        label: "store.label",
+        label: "store.store.label",
         icon: Settings,
       },
       broadcasts: {
         path: "/:store/broadcasts",
-        label: "broadcasts.label",
+        label: "store.broadcasts.label",
         icon: Campaign,
         children: {
           broadcast: {
             path: "/:store/broadcasts/:id",
-            label: "broadcasts.broadcast.label",
+            label: "store.broadcasts.broadcast.label",
           },
           create: {
             path: "/:store/broadcasts/new",
-            label: "broadcasts.create.label",
+            label: "store.broadcasts.create.label",
           },
         },
       },
       promotions: {
         path: "/:store/promotions",
-        label: "promotions.label",
+        label: "store.promotions.label",
         icon: LocalOffer,
         children: {
           create: {
             path: "/:store/promotions/create",
-            label: "promotions.create.label",
+            label: "store.promotions.create.label",
             disabledBreadcrumb: true,
             children: {
               buyXgetY: {
                 path: "/:store/promotions/create/buyXgetY",
-                label: "promotions.create.buyXgetY.label",
+                label: "store.promotions.create.buyXgetY.label",
               },
             },
           },
           buyXgetY: {
             path: "/:store/promotions/buyXgetY/:id",
-            label: "promotions.buyXgetY.label",
+            label: "store.promotions.buyXgetY.label",
           },
         },
       },
       applications: {
         path: "/:store/applications",
-        label: "applications.label",
+        label: "store.applications.label",
         icon: SettingsApplications,
         children: {
           line: {
             path: "/:store/applications/line/:id",
-            label: "applications.line.label",
+            label: "store.applications.line.label",
             children: {
               create: {
                 path: "/:store/applications/line/create",
-                label: "applications.create.label",
+                label: "store.applications.create.label",
                 disabledBreadcrumb: true,
               },
             },
@@ -167,38 +168,38 @@ const ROUTES = ROUTER({
       },
       preorders: {
         path: "/:store/preorders",
-        label: "preorders.label",
+        label: "store.preorders.label",
         icon: RotateRight,
       },
       consignments: {
         path: "/:store/consignments",
-        label: "consignments.label",
+        label: "store.consignments.label",
         icon: AllInbox,
         children: {
           consignment: {
             path: "/:store/consignments/:id",
-            label: "consignments.consignment.label",
+            label: "store.consignments.consignment.label",
           },
         },
       },
       //account
       account: {
         path: "/:store/account",
-        label: "account.label",
+        label: "store.account.label",
         icon: Person,
       },
     },
   },
   overview: {
     path: "/",
-    label: "overview.label",
+    label: "store.overview.label",
     icon: Store,
     disabledBreadcrumb: true,
     children: {
       //account
       account: {
         path: "/account",
-        label: "account.label",
+        label: "store.account.label",
         icon: Person,
       },
     },

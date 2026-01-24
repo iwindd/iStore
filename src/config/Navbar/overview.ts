@@ -1,8 +1,8 @@
 import { getRoute } from "@/router";
-import { NavbarItem } from ".";
+import { SidebarItem } from ".";
 
-const OverviewNavbarItems = [
+const OverviewSidebarItems = [
   getRoute("overview"),
-] as const satisfies NavbarItem[];
+] as const satisfies SidebarItem[];
 
-export default OverviewNavbarItems;
+export default OverviewSidebarItems;

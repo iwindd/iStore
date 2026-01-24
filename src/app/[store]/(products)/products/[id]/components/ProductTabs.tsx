@@ -1,4 +1,5 @@
 "use client";
+import { getPath } from "@/router";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -28,17 +29,17 @@ const ProductTabs = ({ productId }: ProductTabsProps) => {
         <Tab
           label={t("information")}
           component={Link}
-          href={`/products/${productId}`}
+          href={getPath("store.products.product", { id: productId })}
         />
         <Tab
           label={t("stock")}
           component={Link}
-          href={`/products/${productId}/stock`}
+          href={getPath("store.products.product.stock", { id: productId })}
         />
         <Tab
           label={t("history")}
           component={Link}
-          href={`/products/${productId}/history`}
+          href={getPath("store.products.product.history", { id: productId })}
         />
       </Tabs>
     </Box>
