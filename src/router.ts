@@ -186,7 +186,7 @@ const ROUTES = ROUTER({
   },
   overview: {
     path: "/",
-    label: "store.overview.label",
+    label: "overview.label",
     icon: Store,
     disabledBreadcrumb: true,
     children: {
