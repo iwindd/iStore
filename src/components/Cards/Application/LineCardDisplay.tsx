@@ -25,7 +25,7 @@ const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
         component={Link}
-        href={getPath("store.applications.line", {
+        href={getPath("projects.store.applications.line", {
           id: application.id.toString(),
         })}
         sx={{

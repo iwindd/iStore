@@ -72,10 +72,10 @@ const OverviewNavbar = () => {
           >
             <Stack sx={{ display: { xs: "none", sm: "block" } }}>
               <Typography align="right" variant="subtitle2">
-                {user?.session.user.name}
+                {user?.displayName}
               </Typography>
               <Typography align="right" variant="caption">
-                {user?.session.user.email}
+                {user?.email}
               </Typography>
             </Stack>
             <Avatar ref={userPopover.anchorRef} sx={{ cursor: "pointer" }} />

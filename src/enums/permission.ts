@@ -128,3 +128,7 @@ export type PermissionEnum =
   | EmployeePermissionEnum
   | PromotionPermissionEnum
   | StorePermissionEnum;
+
+export enum GlobalPermissionEnum {
+  STORE_CREATE = "Store.Create",
+}

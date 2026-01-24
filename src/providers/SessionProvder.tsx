@@ -7,7 +7,7 @@ import {
 const SessionProvider = (
   props: SessionProviderProps & {
     children: React.ReactNode;
-  }
+  },
 ) => {
   return (
     <NextAuthSessionProvider {...props} refetchInterval={90}>

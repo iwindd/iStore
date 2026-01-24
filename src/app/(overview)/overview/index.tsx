@@ -1,5 +1,7 @@
 "use client";
 import getStoreSwitcher from "@/actions/user/getStoreSwitcher";
+import HasGlobalPermission from "@/components/Flagments/HasGlobalPermission";
+import { GlobalPermissionEnum } from "@/enums/permission";
 import App, { Wrapper } from "@/layouts/App";
 import AppHeader from "@/layouts/App/Header";
 import { getPath } from "@/router";
@@ -39,7 +41,7 @@ export default function OverviewPage() {
                 {data?.map((store) => (
                   <Card key={store.id} variant="outlined">
                     <CardActionArea
-                      href={getPath("store", { store: store.id })}
+                      href={getPath("projects.store", { store: store.slug })}
                     >
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight={600}>
@@ -65,7 +67,11 @@ export default function OverviewPage() {
                   </CardContent>
                 </Card>
               )}
-              <CreateStoreCard />
+              <HasGlobalPermission
+                permission={GlobalPermissionEnum.STORE_CREATE}
+              >
+                <CreateStoreCard />
+              </HasGlobalPermission>
             </>
           )}
         </Stack>

@@ -50,11 +50,15 @@ const createStore = async (payload: CreateStoreValues) => {
       }
 
       // Create default admin role
-      const role = await tx.role.create({
+      const allPermissions = await tx.storePermission.findMany();
+      const role = await tx.storeRole.create({
         data: {
-          label: "ผู้ดูแล",
-          is_super_admin: true,
+          name: "ผู้ดูแล",
+          is_removable: false,
           store_id: store.id,
+          permissions: {
+            connect: allPermissions.map((p) => ({ id: p.id })),
+          },
         },
       });
 

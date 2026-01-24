@@ -5,17 +5,17 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
-import {useAuth} from "@/hooks/use-auth";
-import {clearProductCart} from "@/reducers/cartReducer";
-import {getPath} from "@/router";
-import {LogoutTwoTone, Settings} from "@mui/icons-material";
-import {signOut} from "next-auth/react";
+import { useAuth } from "@/hooks/use-auth";
+import { clearProductCart } from "@/reducers/cartReducer";
+import { getPath } from "@/router";
+import { LogoutTwoTone, Settings } from "@mui/icons-material";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import {useSnackbar} from "notistack";
-import {useDispatch} from "react-redux";
+import { useSnackbar } from "notistack";
+import { useDispatch } from "react-redux";
 
 export interface StoreUserPopoverProps {
   anchorEl: Element | null;
@@ -70,7 +70,7 @@ const StoreUserPopover = ({
         disablePadding
         sx={{ p: "8px", "& .MuiMenuItem-root": { borderRadius: 1 } }}
       >
-        <MenuItem component={Link} href={getPath("store.account")}>
+        <MenuItem component={Link} href={getPath("projects.store.account")}>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

@@ -67,14 +67,18 @@ export const buildRouteUtility = (ROUTES: Record<string, Route>) => {
     const toPath = compile(route.path);
     let nextParams: Record<string, any> = params ? { ...params } : {};
 
-    if (route.path.includes(":store") && !nextParams.store) {
-      if (globalThis.window) {
-        const storeFromPath = globalThis.window.location.pathname
-          .split("/")
-          .find(Boolean);
+    if (
+      route.path.includes(":store") &&
+      !nextParams.store &&
+      globalThis.window
+    ) {
+      const pathName = globalThis.window.location.pathname;
+      const activeRoute = findActiveRoute(pathName);
+      if (activeRoute) {
+        const params = getParamsFromPath(activeRoute?.name, pathName);
 
-        if (storeFromPath) {
-          nextParams = { ...nextParams, store: storeFromPath };
+        if (params?.store) {
+          nextParams = { ...nextParams, ...params };
         }
       }
     }

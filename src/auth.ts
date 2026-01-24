@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthConfig from "./config/AuthConfig";
-import { SuperPermissionEnum } from "./enums/permission";
 import db from "./libs/db";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -20,12 +19,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
 
       return {
         id: token.id,
-        store: token.store,
-        employeeId: token.employeeId,
         name: token.name,
+        first_name: token.first_name,
+        last_name: token.last_name,
         email: token.email,
-        permissions: token.permissions,
-        address: token.address,
         ...user,
       };
     },
@@ -44,7 +41,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
       async authorize(credentials, req) {
         try {
+          console.error(credentials);
+
           if (!credentials) throw new Error("no_credentials");
+          console.error(credentials);
           if (!credentials.email || !credentials.password)
             throw new Error("missing_credentials");
 
@@ -54,24 +54,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
             select: {
               id: true,
+              first_name: true,
+              last_name: true,
               email: true,
               password: true,
-              name: true,
-              employees: {
-                take: 1,
-                select: {
-                  id: true,
-                  store: true,
-                  role: {
-                    select: {
-                      permissions: true,
-                      is_super_admin: true,
-                    },
-                  },
-                },
-              },
             },
           });
+
+          console.error(user);
 
           if (
             !user ||
@@ -82,29 +72,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           )
             throw new Error("not_found_user");
 
-          const employee = user?.employees?.[0];
-
-          if (!user || !employee) throw new Error("no_store");
-
-          const role = employee.role;
-
           return {
             id: String(user.id),
-            employeeId: employee.id,
-            store: employee.store.id,
-            name: user.name,
+            name: `${user.first_name} ${user.last_name}`,
+            first_name: user.first_name,
+            last_name: user.last_name,
             email: user.email,
-            permissions: role.is_super_admin
-              ? [SuperPermissionEnum.ALL]
-              : role.permissions.flatMap((p) => p.name),
-            //TODO : Fix address
-            address: {
-              address: "-",
-              district: "-",
-              area: "-",
-              province: "-",
-              postalcode: "-",
-            },
           };
         } catch (error) {
           console.error("Authorize error:", error);

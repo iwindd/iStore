@@ -2,7 +2,7 @@
 import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
-import { User } from "@/libs/user";
+import { User } from "@/libs/user.server";
 import { StockValues } from "@/schema/Stock";
 import {
   StockReceiptImportFromMinStockValueValues,
@@ -49,7 +49,7 @@ class StockReceiptImportTool {
 
   static async importFromMinStockValue(
     user: User,
-    validated: StockReceiptImportFromMinStockValueValues
+    validated: StockReceiptImportFromMinStockValueValues,
   ) {
     const productStocks = await db.productStock.findMany({
       where: {
@@ -85,7 +85,7 @@ class StockReceiptImportTool {
 
   static async importFromStockId(
     user: User,
-    validated: StockReceiptImportFromStockIdValues
+    validated: StockReceiptImportFromStockIdValues,
   ) {
     const stockReceipt = await db.stockReceipt.findFirstOrThrow({
       where: { id: validated.id, store_id: user.store },
@@ -107,7 +107,7 @@ class StockReceiptImportTool {
 }
 
 const ImportToolAction = async (
-  payload: StockReceiptImportValues
+  payload: StockReceiptImportValues,
 ): Promise<StockValues["products"]> => {
   try {
     const user = await getUser();
@@ -122,7 +122,7 @@ const ImportToolAction = async (
       case StockReceiptImportType.FromMinStockValue:
         return await StockReceiptImportTool.importFromMinStockValue(
           user,
-          validated
+          validated,
         );
       case StockReceiptImportType.FromStockId:
         return await StockReceiptImportTool.importFromStockId(user, validated);

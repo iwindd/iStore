@@ -1,12 +1,15 @@
 model User {
-  id         Int           @id @default(autoincrement())
-  name       String
-  email      String        @unique
-  password   String
-  created_at DateTime      @default(now())
-  updated_at DateTime      @updatedAt
-  employees  Employee[]
-  addresses  UserAddress[]
+  id             Int           @id @default(autoincrement())
+  first_name     String
+  last_name      String
+  email          String        @unique
+  password       String
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  employees      Employee[]
+  addresses      UserAddress[]
+  global_role_id Int?
+  global_role    GlobalRole?   @relation(fields: [global_role_id], references: [id])
 
   @@map("users")
 }
@@ -21,14 +24,15 @@ model Employee {
   creator_id Int?
 
   user                   User            @relation(fields: [user_id], references: [id])
-  role                   Role            @relation("EmployeeRole", fields: [role_id], references: [id])
+  role                   StoreRole       @relation("EmployeeRole", fields: [role_id], references: [id])
   categories             Category[]
   products               Product[]
   orders                 Order[]
   returned_preorders     OrderPreOrder[] @relation("ReturnedPreOrders")
   cancelled_preorders    OrderPreOrder[] @relation("CancelledPreOrders")
   stock_receipts         StockReceipt[]
-  roles                  Role[]
+  role_creations         StoreRole[]     @relation("StoreRoleCreations")
+  global_role_creations  GlobalRole[]    @relation("GlobalRoleCreations")
   store                  Store           @relation(fields: [store_id], references: [id])
   creator                Employee?       @relation("EmployeeToEmployee", fields: [creator_id], references: [id])
   employees              Employee[]      @relation("EmployeeToEmployee")

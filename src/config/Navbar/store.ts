@@ -2,28 +2,34 @@ import { getRoute } from "@/router";
 import { SidebarItem } from ".";
 
 const StoreSidebarItems = [
-  getRoute("store.dashboard"),
-  getRoute("store.cashier"),
+  getRoute("projects.store.dashboard"),
+  getRoute("projects.store.cashier"),
   {
     key: "work",
     title: "การขาย",
-    routes: [getRoute("store.preorders"), getRoute("store.consignments")],
+    routes: [
+      getRoute("projects.store.preorders"),
+      getRoute("projects.store.consignments"),
+    ],
     defaultExpand: true,
   },
   {
     key: "product",
     title: "สินค้า",
-    routes: [getRoute("store.products"), getRoute("store.stocks")],
+    routes: [
+      getRoute("projects.store.products"),
+      getRoute("projects.store.stocks"),
+    ],
     defaultExpand: true,
   },
   {
     key: "etc",
     title: "อื่นๆ",
     routes: [
-      getRoute("store.histories"),
-      getRoute("store.categories"),
-      getRoute("store.promotions"),
-      getRoute("store.broadcasts"),
+      getRoute("projects.store.histories"),
+      getRoute("projects.store.categories"),
+      getRoute("projects.store.promotions"),
+      getRoute("projects.store.broadcasts"),
     ],
     defaultExpand: true,
   },
@@ -31,16 +37,16 @@ const StoreSidebarItems = [
     key: "store",
     title: "ร้านค้า",
     routes: [
-      getRoute("store.applications"),
-      getRoute("store.roles"),
-      getRoute("store.employees"),
+      getRoute("projects.store.applications"),
+      getRoute("projects.store.roles"),
+      getRoute("projects.store.employees"),
     ],
   },
   {
     key: "account",
     title: "บัญชีของฉัน",
     defaultExpand: true,
-    routes: [getRoute("store.account")],
+    routes: [getRoute("projects.store.account")],
   },
 ] as const satisfies SidebarItem[];
 

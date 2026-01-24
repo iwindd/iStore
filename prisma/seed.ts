@@ -1,273 +1,241 @@
-import {
-  Method,
-  OrderType,
-  PrismaClient,
-  ProductStockMovementType,
-} from "@prisma/client";
-import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
+import { hash } from "bcrypt";
 import _ from "lodash";
-import orders from "./data/orders.json";
 import permissions from "./data/permissions.json";
-import products from "./data/products.json";
-import stores from "./data/stores.json";
 import th_geographies from "./data/th_geographies.json";
-const prisma = new PrismaClient();
-const DEFAULT_PASSWORD = "password";
 
-const transactionOptions = {
+// ============================================
+// Constants & Configuration
+// ============================================
+
+const prisma = new PrismaClient();
+
+const TRANSACTION_OPTIONS = {
   maxWait: 60000,
   timeout: 60000,
 };
 
-const getOrders = async () => {
-  const result = [];
+const CHUNK_SIZE = 100;
 
-  for (const order of orders) {
-    result.push({
-      cost: order.cost,
-      profit: order.profit,
-      total: order.price,
-      method: order.method as Method,
-      type: order.type as OrderType,
-      note: order.note,
-      created_at: new Date(order.created_at),
-      updated_at: new Date(order.updated_at),
-      store: {
-        connect: {
-          id: order.store_id,
-        },
-      },
-      products: {
-        create: order.products.map((product) => {
-          return {
-            product: {
-              connect: {
-                serial_store_id: {
-                  serial: product.serial,
-                  store_id: order.store_id,
-                },
-              },
-            },
-            total: product.price,
-            profit: product.price - product.cost,
-            cost: product.cost,
-            count: product.count,
-          };
-        }),
-      },
-      productStockMovements: {
-        create: [
-          ...order.products.map((product) => ({
-            type: ProductStockMovementType.ADJUST,
-            quantity: product.count,
-            quantity_before: 0,
-            quantity_after: product.count,
-            product: {
-              connect: {
-                serial_store_id: {
-                  serial: product.serial,
-                  store_id: order.store_id,
-                },
-              },
-            },
-          })),
-          ...order.products.map((product) => ({
-            type: ProductStockMovementType.SALE,
-            quantity: product.count,
-            quantity_before: product.count,
-            quantity_after: 0,
-            product: {
-              connect: {
-                serial_store_id: {
-                  serial: product.serial,
-                  store_id: order.store_id,
-                },
-              },
-            },
-          })),
-        ],
-      },
-    });
-  }
+const OWNER_CONFIG = {
+  id: 1,
+  email: "owner@gmail.com",
+  password: "password",
+  first_name: "Owner",
+  last_name: "Owner",
+} as const;
 
-  return result;
+const COUNTRY_CONFIG = {
+  code: "TH",
+  name: "ประเทศไทย",
+  nameEn: "Thailand",
+} as const;
+
+// ============================================
+// Types
+// ============================================
+
+interface ProvinceData {
+  code: string;
+  name: string;
+  nameEn: string;
+  geography_id: number;
+  districts: DistrictInput[];
+}
+
+interface DistrictData {
+  code: string;
+  name: string;
+  nameEn: string;
+  province_id: number;
+  subdistricts: SubDistrictInput[];
+}
+
+interface SubDistrictData {
+  code: string;
+  name: string;
+  nameEn: string;
+  district_id: number;
+  zipcode: string | number;
+}
+
+interface DistrictInput {
+  code: string;
+  name: string;
+  nameEn: string;
+  subdistricts: SubDistrictInput[];
+}
+
+interface SubDistrictInput {
+  code: string;
+  name: string;
+  nameEn: string;
+  zipcode: string | number;
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+
+const logger = {
+  section: (message: string) => console.log(`\n📦 ${message}`),
+  item: (message: string) => console.log(`   ├─ ${message}`),
+  progress: (current: number, total: number, message: string) =>
+    console.log(`   ├─ [${current}/${total}] ${message}`),
+  success: (message: string) => console.log(`   ✅ ${message}`),
+  summary: (lines: string[]) => {
+    console.log("\n" + "═".repeat(40));
+    lines.forEach((line) => console.log(`   ${line}`));
+    console.log("═".repeat(40) + "\n");
+  },
 };
 
-async function main() {
-  console.log("Seeding permissions...");
-  await prisma.$transaction(async () => {
-    for (const permissionName of permissions) {
-      await prisma.permission.upsert({
-        where: { name: permissionName.toUpperCase() },
+async function processInChunks<T>(
+  items: T[],
+  chunkSize: number,
+  processor: (
+    chunk: T[],
+    chunkIndex: number,
+    totalChunks: number,
+  ) => Promise<void>,
+): Promise<void> {
+  const chunks = _.chunk(items, chunkSize);
+  for (const [index, chunk] of chunks.entries()) {
+    await processor(chunk, index + 1, chunks.length);
+  }
+}
+
+// ============================================
+// Seeders
+// ============================================
+
+async function seedPermissions(): Promise<void> {
+  logger.section("Seeding permissions...");
+
+  await prisma.$transaction(async (tx) => {
+    for (const permission of permissions.GlobalPermission) {
+      await tx.globalPermission.upsert({
+        where: { name: permission.name },
         update: {},
-        create: {
-          name: permissionName.toUpperCase(),
-        },
+        create: { name: permission.name },
       });
     }
-  });
+    logger.item(`Global permissions: ${permissions.GlobalPermission.length}`);
 
-  console.log("Seeding stores...");
-  await prisma.$transaction(async () => {
-    const password = await bcrypt.hash(DEFAULT_PASSWORD, 15);
-    for (const store of stores) {
-      await prisma.store.upsert({
-        where: { id: store.id },
+    for (const permission of permissions.StorePermission) {
+      await tx.storePermission.upsert({
+        where: { name: permission.name },
         update: {},
-        create: {
-          id: store.id,
-          name: store.name,
-          roles: {
-            create: store.employees.map(
-              (employee: (typeof store.employees)[0]) => ({
-                label: employee.label,
-                permissions: {
-                  connect: employee.permissions.map((permission) => ({
-                    name: permission.toUpperCase(),
-                  })),
-                },
-                employees: {
-                  create: employee.users.map(
-                    (user: (typeof employee.users)[0]) => ({
-                      user: {
-                        create: {
-                          email: user.email,
-                          name: user.name,
-                          password: password,
-                        },
-                      },
-                      store: {
-                        connect: { id: store.id },
-                      },
-                    }),
-                  ),
-                },
-              }),
-            ),
-          },
-        },
+        create: { name: permission.name },
       });
     }
+    logger.item(`Store permissions: ${permissions.StorePermission.length}`);
   });
+}
 
-  console.log("Seeding products...");
-  await prisma.$transaction(async () => {
-    for (const category of products) {
-      await prisma.category.upsert({
-        where: {
-          label_store_id: {
-            label: category.label,
-            store_id: category.store_id,
-          },
-        },
-        update: {},
-        create: {
-          label: category.label,
-          store: {
-            connect: { id: category.store_id },
-          },
-          product: {
-            create: category.products.map((product) => ({
-              serial: product.serial,
-              label: product.label,
-              price: product.price,
-              cost: product.cost,
-              store: {
-                connect: { id: category.store_id },
-              },
-              stock: {
-                create: {
-                  quantity: 0,
-                },
-              },
-            })),
-          },
-        },
-      });
-    }
-  });
+async function seedOwnerRole(): Promise<{ id: number }> {
+  logger.section("Seeding owner role...");
 
-  console.log("Seeding country...");
-  const country = await prisma.country.upsert({
-    where: { code: "TH" },
+  const ownerRole = await prisma.globalRole.upsert({
+    where: { id: OWNER_CONFIG.id },
     update: {},
     create: {
-      code: "TH",
-      name: "ประเทศไทย",
-      nameEn: "Thailand",
+      id: OWNER_CONFIG.id,
+      label: "Owner",
+      is_removable: false,
+      permissions: {
+        connect: permissions.GlobalPermission.map((p) => ({ name: p.name })),
+      },
     },
   });
 
-  console.log("Seeding th geographies...");
+  logger.item(`Created role: ${ownerRole.label}`);
+  return ownerRole;
+}
 
-  const provinces: {
-    code: string;
-    name: string;
-    nameEn: string;
-    geography_id: number;
-    districts: {
-      code: string;
-      name: string;
-      nameEn: string;
-      subdistricts: {
-        code: string;
-        name: string;
-        nameEn: string;
-        zipcode: string | number;
-      }[];
-    }[];
-  }[] = [];
+async function seedOwnerUser(roleId: number): Promise<void> {
+  logger.section("Seeding owner user...");
+
+  const hashedPassword = await hash(OWNER_CONFIG.password, 15);
+
+  await prisma.user.upsert({
+    where: { email: OWNER_CONFIG.email },
+    update: {},
+    create: {
+      email: OWNER_CONFIG.email,
+      password: hashedPassword,
+      first_name: OWNER_CONFIG.first_name,
+      last_name: OWNER_CONFIG.last_name,
+      global_role: { connect: { id: roleId } },
+    },
+  });
+
+  logger.item(`Created user: ${OWNER_CONFIG.email}`);
+}
+
+async function seedCountry(): Promise<{ id: number }> {
+  logger.section("Seeding country...");
+
+  const country = await prisma.country.upsert({
+    where: { code: COUNTRY_CONFIG.code },
+    update: {},
+    create: {
+      code: COUNTRY_CONFIG.code,
+      name: COUNTRY_CONFIG.name,
+      nameEn: COUNTRY_CONFIG.nameEn,
+    },
+  });
+
+  logger.item(`Created country: ${country.name} (${country.code})`);
+  return country;
+}
+
+async function seedGeographies(countryId: number): Promise<ProvinceData[]> {
+  logger.section("Seeding geographies...");
+
+  const provinces: ProvinceData[] = [];
 
   await prisma.$transaction(async (tx) => {
-    for (const geographyData of th_geographies) {
+    for (const geoData of th_geographies) {
       const geography = await tx.geography.upsert({
         where: {
-          code_country_id: {
-            code: geographyData.code,
-            country_id: country.id,
-          },
+          code_country_id: { code: geoData.code, country_id: countryId },
         },
         update: {},
         create: {
-          code: geographyData.code,
-          name: geographyData.name,
-          nameEn: geographyData.nameEn,
-          country: {
-            connect: { id: country.id },
-          },
+          code: geoData.code,
+          name: geoData.name,
+          nameEn: geoData.nameEn,
+          country: { connect: { id: countryId } },
         },
       });
 
+      logger.item(`Geography: ${geography.name}`);
+
       provinces.push(
-        ...geographyData.provinces.map((province) => ({
-          code: province.code,
-          name: province.name,
-          nameEn: province.nameEn,
+        ...geoData.provinces.map((p) => ({
+          code: p.code,
+          name: p.name,
+          nameEn: p.nameEn,
           geography_id: geography.id,
-          districts: province.districts,
+          districts: p.districts,
         })),
       );
     }
-  }, transactionOptions);
+  }, TRANSACTION_OPTIONS);
 
-  console.log("Seeding th provinces...");
+  return provinces;
+}
 
-  const districts: {
-    code: string;
-    name: string;
-    nameEn: string;
-    province_id: number;
-    subdistricts: {
-      code: string;
-      name: string;
-      nameEn: string;
-      zipcode: string | number;
-    }[];
-  }[] = [];
+async function seedProvinces(
+  provinces: ProvinceData[],
+): Promise<DistrictData[]> {
+  logger.section("Seeding provinces...");
+
+  const districts: DistrictData[] = [];
 
   await prisma.$transaction(async (tx) => {
     for (const provinceData of provinces) {
-      console.log(`Seeding province ${provinceData.name} [${provinceData.code}]`)
       const province = await tx.province.upsert({
         where: {
           code_geography_id: {
@@ -280,142 +248,161 @@ async function main() {
           code: provinceData.code,
           name: provinceData.name,
           nameEn: provinceData.nameEn,
-          geography: {
-            connect: { id: provinceData.geography_id },
-          },
+          geography: { connect: { id: provinceData.geography_id } },
         },
       });
 
       districts.push(
-        ...provinceData.districts.map((district) => ({
-          code: district.code,
-          name: district.name,
-          nameEn: district.nameEn,
+        ...provinceData.districts.map((d) => ({
+          code: d.code,
+          name: d.name,
+          nameEn: d.nameEn,
           province_id: province.id,
-          subdistricts: district.subdistricts,
+          subdistricts: d.subdistricts,
         })),
       );
     }
-  }, transactionOptions);
+  }, TRANSACTION_OPTIONS);
 
-  console.log("Seeding th districts...");
+  logger.item(`Created ${provinces.length} provinces`);
+  return districts;
+}
 
-  const sub_districts: {
-    code: string;
-    name: string;
-    nameEn: string;
-    district_id: number;
-    zipcode: string | number;
-  }[] = [];
+async function seedDistricts(
+  districts: DistrictData[],
+): Promise<SubDistrictData[]> {
+  logger.section("Seeding districts...");
 
-  const districtChunks = _.chunk(districts, 100);
+  const subDistricts: SubDistrictData[] = [];
 
-  for (const [i, chunk] of districtChunks.entries()) {
-    await prisma.$transaction(async (tx) => {
-      for (const districtData of chunk) {
-        console.log(`[${i}/${districtChunks.length}] Seeding district ${districtData.name} [${districtData.code}]`)
-        const district = await tx.district.upsert({
-          where: {
-            code_province_id: {
-              code: districtData.code,
-              province_id: districtData.province_id,
-            },
-          },
-          update: {},
-          create: {
-            code: districtData.code,
-            name: districtData.name,
-            nameEn: districtData.nameEn,
-            province: {
-              connect: {id: districtData.province_id},
-            },
-          },
-        });
-
-        sub_districts.push(
-          ...districtData.subdistricts.map((sub_district) => ({
-            code: sub_district.code,
-            name: sub_district.name,
-            nameEn: sub_district.nameEn,
-            district_id: district.id,
-            zipcode: sub_district.zipcode,
-          })),
-        );
-      }
-    }, transactionOptions);
-  }
-
-  console.log("Seeding th sub-districts...");
-
-  const subDistrictChunks = _.chunk(sub_districts, 100);
-
-  for (const [i, chunk] of subDistrictChunks.entries()) {
-    await prisma.$transaction(async (tx) => {
-      for (const sub_districtData of chunk) {
-        console.log(`[${i}/${subDistrictChunks.length}] Seeding sub-district ${sub_districtData.name} [${sub_districtData.code}]`)
-        const sub_district = await tx.subDistrict.upsert({
-          where: {
-            code_district_id: {
-              code: sub_districtData.code,
-              district_id: sub_districtData.district_id,
-            },
-          },
-          update: {},
-          create: {
-            code: sub_districtData.code,
-            name: sub_districtData.name,
-            nameEn: sub_districtData.nameEn,
-            district: {
-              connect: {id: sub_districtData.district_id},
-            },
-            zipcodes: {
-              create: {
-                code: sub_districtData.zipcode.toString(),
+  await processInChunks(
+    districts,
+    CHUNK_SIZE,
+    async (chunk, current, total) => {
+      await prisma.$transaction(async (tx) => {
+        for (const districtData of chunk) {
+          const district = await tx.district.upsert({
+            where: {
+              code_province_id: {
+                code: districtData.code,
+                province_id: districtData.province_id,
               },
             },
-          },
-        });
-      }
-      console.log(`✅ Seeded chunk ${i + 1}/${subDistrictChunks.length}`);
-    }, transactionOptions);
-  }
+            update: {},
+            create: {
+              code: districtData.code,
+              name: districtData.name,
+              nameEn: districtData.nameEn,
+              province: { connect: { id: districtData.province_id } },
+            },
+          });
 
-  const ordersData = await getOrders();
-  const chunks = _.chunk(ordersData, 100);
+          subDistricts.push(
+            ...districtData.subdistricts.map((s) => ({
+              code: s.code,
+              name: s.name,
+              nameEn: s.nameEn,
+              district_id: district.id,
+              zipcode: s.zipcode,
+            })),
+          );
+        }
+      }, TRANSACTION_OPTIONS);
 
-  console.log(
-    `Seeding ${ordersData.length} orders in ${chunks.length} chunks...`,
+      logger.progress(current, total, `Districts chunk completed`);
+    },
   );
 
-  for (const [i, chunk] of chunks.entries()) {
-    await prisma.$transaction(async () => {
-      for (const order of chunk) {
-        await prisma.order.create({
-          data: {
-            ...order,
-          },
-        });
-      }
-    }, transactionOptions);
-    console.log(`✅ Seeded chunk ${i + 1}/${chunks.length}`);
-  }
-  console.log(
-    `✅ Seed completed successfully!\n`,
-    `--------------------------------\n`,
-    `Created ${await prisma.store.count()} stores\n`,
-    `Created ${await prisma.permission.count()} permissions\n`,
-    `Created ${await prisma.role.count()} roles\n`,
-    `Created ${await prisma.user.count()} users (default password: ${DEFAULT_PASSWORD})\n`,
-    `Created ${await prisma.product.count()} products\n`,
-    `Created ${await prisma.category.count()} categories\n`,
-    `Created ${await prisma.order.count()} orders (${await prisma.orderProduct.count()} products)\n`,
-    `Created ${await prisma.geography.count()} geographies\n`,
-    `Created ${await prisma.province.count()} provinces\n`,
-    `Created ${await prisma.district.count()} districts\n`,
-    `Created ${await prisma.subDistrict.count()} sub-districts\n`,
-    `Created ${await prisma.zipcode.count()} zipcodes\n`,
-    `--------------------------------\n`,
+  logger.success(`Created ${districts.length} districts`);
+  return subDistricts;
+}
+
+async function seedSubDistricts(
+  subDistricts: SubDistrictData[],
+): Promise<void> {
+  logger.section("Seeding sub-districts...");
+
+  await processInChunks(
+    subDistricts,
+    CHUNK_SIZE,
+    async (chunk, current, total) => {
+      await prisma.$transaction(async (tx) => {
+        for (const subDistrictData of chunk) {
+          await tx.subDistrict.upsert({
+            where: {
+              code_district_id: {
+                code: subDistrictData.code,
+                district_id: subDistrictData.district_id,
+              },
+            },
+            update: {},
+            create: {
+              code: subDistrictData.code,
+              name: subDistrictData.name,
+              nameEn: subDistrictData.nameEn,
+              district: { connect: { id: subDistrictData.district_id } },
+              zipcodes: {
+                create: { code: subDistrictData.zipcode.toString() },
+              },
+            },
+          });
+        }
+      }, TRANSACTION_OPTIONS);
+
+      logger.progress(current, total, `Sub-districts chunk completed`);
+    },
   );
+
+  logger.success(`Created ${subDistricts.length} sub-districts`);
+}
+
+async function printSummary(): Promise<void> {
+  const [
+    geographyCount,
+    provinceCount,
+    districtCount,
+    subDistrictCount,
+    zipcodeCount,
+  ] = await Promise.all([
+    prisma.geography.count(),
+    prisma.province.count(),
+    prisma.district.count(),
+    prisma.subDistrict.count(),
+    prisma.zipcode.count(),
+  ]);
+
+  logger.summary([
+    `🌍 Geographies: ${geographyCount}`,
+    `🏛️  Provinces: ${provinceCount}`,
+    `🏘️  Districts: ${districtCount}`,
+    `🏠 Sub-districts: ${subDistrictCount}`,
+    `📮 Zipcodes: ${zipcodeCount}`,
+    ``,
+    `🔑 Login: ${OWNER_CONFIG.email} / ${OWNER_CONFIG.password}`,
+  ]);
+}
+
+// ============================================
+// Main Entry Point
+// ============================================
+
+async function main(): Promise<void> {
+  console.log("🚀 Starting database seed...\n");
+
+  // Seed user & permissions
+  await seedPermissions();
+  const ownerRole = await seedOwnerRole();
+  await seedOwnerUser(ownerRole.id);
+
+  // Seed geography data
+  const country = await seedCountry();
+  const provinces = await seedGeographies(country.id);
+  const districts = await seedProvinces(provinces);
+  const subDistricts = await seedDistricts(districts);
+  await seedSubDistricts(subDistricts);
+
+  // Print summary
+  await printSummary();
 }
 
 main()
@@ -423,7 +410,7 @@ main()
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e);
+    console.error("❌ Seed failed:", e);
     await prisma.$disconnect();
     process.exit(1);
   });

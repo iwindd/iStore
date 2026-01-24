@@ -1,3 +1,4 @@
+"use client";
 import { SidebarItem } from "@/config/Navbar";
 import { alpha, Box, useTheme } from "@mui/material";
 import SidebarItems from "..";

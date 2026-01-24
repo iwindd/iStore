@@ -7,7 +7,7 @@ model Store {
   orders         Order[]
   stock_receipts StockReceipt[]
   employees      Employee[]
-  roles          Role[]
+  store_roles    StoreRole[]
   events         Event[]
   broadcasts     Broadcast[]
   applications   LineApplication[]

@@ -19,6 +19,7 @@ const getStoreSwitcher = async () => {
       select: {
         name: true,
         id: true,
+        slug: true,
       },
     });
 

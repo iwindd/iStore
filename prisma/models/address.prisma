@@ -42,7 +42,7 @@ model StoreAddress {
 model Country {
   id     Int    @id @default(autoincrement())
   code   String @unique
-  name   String 
+  name   String
   nameEn String
 
   geographies Geography[]

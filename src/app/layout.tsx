@@ -29,11 +29,11 @@ export default async function RootLayout({
           <StoreProvider>
             <LocalizationProvider>
               <ThemeRegistry>
-                <SessionProvider session={session}>
-                  <QueryProvider>
+                <QueryProvider>
+                  <SessionProvider session={session}>
                     <InterfaceProvider>{children}</InterfaceProvider>
-                  </QueryProvider>
-                </SessionProvider>
+                  </SessionProvider>
+                </QueryProvider>
               </ThemeRegistry>
             </LocalizationProvider>
           </StoreProvider>

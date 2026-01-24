@@ -2,7 +2,7 @@
 
 import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { User } from "@/libs/user";
+import { UserServer } from "@/libs/user.server";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -12,7 +12,10 @@ import { Method, PreOrderStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import dayjs from "dayjs";
 
-export async function getSoldSummary(user: User, range: DashboardDateRange) {
+export async function getSoldSummary(
+  user: UserServer,
+  range: DashboardDateRange,
+) {
   const orderProductCount = await db.orderProduct.aggregate({
     where: {
       order: {
@@ -34,8 +37,8 @@ export async function getSoldSummary(user: User, range: DashboardDateRange) {
 }
 
 export async function getPreOrderSummary(
-  user: User,
-  range: DashboardDateRange
+  user: UserServer,
+  range: DashboardDateRange,
 ) {
   type PreorderGroupResult = {
     status: PreOrderStatus;
@@ -79,8 +82,8 @@ export async function getPreOrderSummary(
 }
 
 export async function getConsignmentSummary(
-  user: User,
-  range: DashboardDateRange
+  user: UserServer,
+  range: DashboardDateRange,
 ) {
   return db.consignment.count({
     where: {
@@ -94,7 +97,7 @@ export async function getConsignmentSummary(
   });
 }
 
-export async function getProductSummary(user: User) {
+export async function getProductSummary(user: UserServer) {
   const lowStockCount = await db.productStock.count({
     where: {
       product: {
@@ -114,8 +117,8 @@ export async function getProductSummary(user: User) {
 }
 
 export async function getPaymentMethodTrafficSummary(
-  user: User,
-  range: DashboardDateRange
+  user: UserServer,
+  range: DashboardDateRange,
 ) {
   type PaymentMethodGroupResult = {
     method: Method;
@@ -218,7 +221,7 @@ export async function getDashboardRangeDate(range: DashboardRange) {
   }
 }
 
-export async function getYearlySalesData(user: User, year: number) {
+export async function getYearlySalesData(user: UserServer, year: number) {
   const startOfYear = dayjs().year(year).startOf("year").toDate();
   const endOfYear = dayjs().year(year).endOf("year").toDate();
 
@@ -292,8 +295,8 @@ export async function getYearlySalesData(user: User, year: number) {
 }
 
 export async function getTopSellingProductsData(
-  user: User,
-  range: DashboardDateRange
+  user: UserServer,
+  range: DashboardDateRange,
 ) {
   type TopSellingGroupResult = {
     product_id: number;
@@ -348,7 +351,7 @@ export async function getTopSellingProductsData(
   });
 }
 
-export async function getRecentOrdersData(user: User) {
+export async function getRecentOrdersData(user: UserServer) {
   const order = await db.order.findMany({
     where: {
       creator_id: user.limitPermission(HistoryPermissionEnum.READ),
