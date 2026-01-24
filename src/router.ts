@@ -182,11 +182,6 @@ const ROUTES = ROUTER({
         label: "auth.signin.label",
         icon: Login,
       },
-      signup: {
-        path: "/auth/signup",
-        label: "auth.signup.label",
-        icon: Login,
-      },
     },
   },
   preorders: {

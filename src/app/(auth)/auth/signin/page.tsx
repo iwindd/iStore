@@ -13,14 +13,12 @@ import {
   Container,
   Divider,
   InputAdornment,
-  Link,
   Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { signIn, useSession } from "next-auth/react";
-import RouterLink from "next/link";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -40,7 +38,7 @@ const SignIn = () => {
   const router = useRouter();
 
   const onSubmit: SubmitHandler<SignInValues> = async (
-    payload: SignInValues
+    payload: SignInValues,
   ) => {
     if (session) return router.push("/");
     setBackdrop(true);
@@ -63,7 +61,7 @@ const SignIn = () => {
           type: "string",
           message: "ไม่พบผู้ใช้งาน",
         },
-        { shouldFocus: true }
+        { shouldFocus: true },
       );
     } finally {
       setBackdrop(false);
@@ -168,9 +166,6 @@ const SignIn = () => {
             >
               เข้าสู่ระบบ
             </Button>
-            <Link component={RouterLink} href={"/auth/signup"}>
-              ฉันไม่มีบัญชี?
-            </Link>
           </Stack>
         </Stack>
       </Paper>
