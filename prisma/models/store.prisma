@@ -11,12 +11,7 @@ model Store {
   broadcasts     Broadcast[]
   applications   LineApplication[]
   consignments   Consignment[]
-  //         Add ress
-  address        String?
-  district       String?
-  area           String?
-  province       String?
-  postalcode     String?
+  addresses      StoreAddress[]
   lineBotConfig  LineBotConfig?
   api_key        String?           @unique
 

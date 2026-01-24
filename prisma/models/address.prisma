@@ -1,0 +1,119 @@
+model Address {
+  id               Int            @id @default(autoincrement())
+  address_line     String
+  created_at       DateTime       @default(now())
+  sub_district_id  Int
+  zipcode_snapshot String?
+  users            UserAddress[]
+  stores           StoreAddress[]
+
+  sub_district SubDistrict @relation(fields: [sub_district_id], references: [id])
+
+  @@map("addresses")
+}
+
+model UserAddress {
+  id         Int     @id @default(autoincrement())
+  label      String?
+  is_main    Boolean @default(false)
+  user_id    Int
+  address_id Int
+
+  user    User    @relation(fields: [user_id], references: [id])
+  address Address @relation(fields: [address_id], references: [id])
+
+  @@unique([user_id, is_main])
+  @@map("user_addresses")
+}
+
+model StoreAddress {
+  id         Int     @id @default(autoincrement())
+  store_id   String
+  address_id Int
+  is_main    Boolean @default(true)
+
+  store   Store   @relation(fields: [store_id], references: [id])
+  address Address @relation(fields: [address_id], references: [id])
+
+  @@unique([store_id, is_main])
+  @@map("store_addresses")
+}
+
+model Country {
+  id     Int    @id @default(autoincrement())
+  code   String @unique
+  name   String 
+  nameEn String
+
+  geographies Geography[]
+
+  @@map("countries")
+}
+
+model Geography {
+  id         Int    @id @default(autoincrement())
+  code       String
+  name       String
+  nameEn     String
+  country_id Int
+
+  provinces Province[]
+  country   Country    @relation(fields: [country_id], references: [id])
+
+  @@unique([code, country_id])
+  @@map("geography")
+}
+
+model Province {
+  id           Int    @id @default(autoincrement())
+  code         String
+  name         String
+  nameEn       String
+  geography_id Int
+
+  geography Geography  @relation(fields: [geography_id], references: [id])
+  districts District[]
+
+  @@unique([code, geography_id])
+  @@map("provinces")
+}
+
+model District {
+  id          Int    @id @default(autoincrement())
+  name        String
+  nameEn      String
+  code        String
+  province_id Int
+
+  sub_districts SubDistrict[]
+  province      Province      @relation(fields: [province_id], references: [id])
+
+  @@unique([code, province_id])
+  @@map("districts")
+}
+
+model SubDistrict {
+  id          Int    @id @default(autoincrement())
+  code        String
+  name        String
+  nameEn      String
+  district_id Int
+
+  zipcodes  Zipcode[]
+  addresses Address[]
+  district  District  @relation(fields: [district_id], references: [id])
+
+  @@unique([code, district_id])
+  @@map("sub_districts")
+}
+
+model Zipcode {
+  id              Int    @id @default(autoincrement())
+  code            String
+  sub_district_id Int
+
+  sub_district SubDistrict @relation(fields: [sub_district_id], references: [id])
+
+  @@unique([code, sub_district_id])
+  @@map("zipcodes")
+}
