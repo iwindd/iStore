@@ -72,6 +72,7 @@ export const buildRouteUtility = (ROUTES: Record<string, Route>) => {
         const storeFromPath = globalThis.window.location.pathname
           .split("/")
           .find(Boolean);
+
         if (storeFromPath) {
           nextParams = { ...nextParams, store: storeFromPath };
         }
