@@ -10,11 +10,21 @@ const AppHeader = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-const AppHeaderTitle = ({ children }: { children: React.ReactNode }) => {
+const AppHeaderTitle = ({
+  children,
+  subtitle,
+}: {
+  children: React.ReactNode;
+  subtitle?: React.ReactNode;
+}) => {
   return (
-    <Stack spacing={1} sx={{ flex: "1 1 auto" }}>
+    <Stack spacing={0} sx={{ flex: "1 1 auto" }}>
       <Typography variant="h4">{children}</Typography>
-      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}></Stack>
+      {subtitle && (
+        <Typography variant="body1" color="text.secondary">
+          {subtitle}
+        </Typography>
+      )}
     </Stack>
   );
 };

@@ -1,7 +1,8 @@
 import getStoreSwitcher from "@/actions/user/getStoreSwitcher";
 import { auth } from "@/auth";
+import App, { Wrapper } from "@/layouts/App";
+import AppHeader from "@/layouts/App/Header";
 import {
-  Box,
   Card,
   CardActionArea,
   CardContent,
@@ -19,27 +20,13 @@ export default async function RootPage() {
   const stores = await getStoreSwitcher();
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        bgcolor: "background.default",
-        px: { xs: 2, md: 4 },
-        py: { xs: 4, md: 8 },
-      }}
-    >
-      <Stack spacing={3} sx={{ width: "100%", maxWidth: 720 }}>
-        <Stack spacing={1}>
-          <Typography variant="h4" fontWeight={700}>
-            เลือกโปรเจกต์
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            เลือกร้านค้าที่ต้องการเข้าใช้งาน
-          </Typography>
-        </Stack>
-
+    <Wrapper>
+      <AppHeader>
+        <AppHeader.Title subtitle="เลือกร้านค้าที่ต้องการเข้าใช้งาน">
+          เลือกโปรเจกต์
+        </AppHeader.Title>
+      </AppHeader>
+      <App.Main>
         <Stack spacing={2}>
           {stores.map((store) => (
             <Card key={store.id} variant="outlined">
@@ -68,7 +55,7 @@ export default async function RootPage() {
             </Card>
           )}
         </Stack>
-      </Stack>
-    </Box>
+      </App.Main>
+    </Wrapper>
   );
 }
