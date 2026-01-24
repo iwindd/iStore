@@ -2,11 +2,11 @@
 import { getPath } from "@/router";
 import dayjs, { Dayjs } from "dayjs";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export const RangeChange = async (
   start: string | undefined,
-  end: string | undefined
+  end: string | undefined,
 ) => {
   const cookie = await cookies();
 
@@ -31,7 +31,10 @@ export const RangeChange = async (
     cookie.delete("dashboard-end");
   }
 
-  revalidatePath(getPath("overview"));
+  const headersList = await headers();
+  const storeId = headersList.get("x-store-id");
+  const path = storeId ? getPath("overview", { store: storeId }) : "/";
+  revalidatePath(path);
 };
 
 export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
@@ -48,7 +51,7 @@ export const getRange = async (): Promise<[Dayjs | null, Dayjs | null]> => {
 export const getFilterRange = async (
   key: string = "created_at",
   startStr?: string,
-  endStr?: string
+  endStr?: string,
 ) => {
   let start: Dayjs | null = null;
   let end: Dayjs | null = null;

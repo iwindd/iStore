@@ -1,5 +1,5 @@
 "use client";
-import { StockLayoutValue } from "@/app/(products)/stocks/[id]/layout";
+import { StockLayoutValue } from "@/app/[store]/(products)/stocks/[id]/layout";
 import ProductSelector from "@/components/Selector/ProductSelector";
 import STOCK_CONFIG from "@/config/Stock";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
@@ -52,10 +52,12 @@ const StockForm = ({
     resolver: zodResolver(StockSchema),
     defaultValues: {
       note: stock?.note || "",
-      products: stock?.stock_recept_products.map((product) => ({
-        product_id: product.product_id,
-        delta: product.quantity,
-      })) || [
+      products: stock?.stock_recept_products.map(
+        (product: StockLayoutValue["stock_recept_products"][number]) => ({
+          product_id: product.product_id,
+          delta: product.quantity,
+        }),
+      ) || [
         {
           product_id: 0,
           delta: 0,

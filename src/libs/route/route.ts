@@ -19,13 +19,13 @@ export type Route = BaseRoute & {
 };
 
 export const ROUTER = (
-  ROUTES: Record<string, CFG_ROUTE>
+  ROUTES: Record<string, CFG_ROUTE>,
 ): Record<string, Route> => {
   const APP_ROUTES: Record<string, Route> = {};
 
   function traverse(
     routes: Record<string, CFG_ROUTE>,
-    parentKey: string | null = null
+    parentKey: string | null = null,
   ) {
     for (const key in routes) {
       const fullKey = parentKey ? `${parentKey}.${key}` : key;
@@ -54,7 +54,7 @@ export const buildRouteUtility = (ROUTES: Record<string, Route>) => {
   const getRoute = (routeName: string) => {
     const findRouteByKey = ROUTES[routeName];
     const findRouteByName = Object.values(ROUTES).find(
-      (r) => r.name === routeName
+      (r) => r.name === routeName,
     );
     const route = findRouteByKey ?? findRouteByName;
     if (!route) throw new Error(`Route not found: ${routeName}`);
@@ -65,7 +65,20 @@ export const buildRouteUtility = (ROUTES: Record<string, Route>) => {
   const getPath = (routeName: string, params?: Record<string, any>) => {
     const route = getRoute(routeName);
     const toPath = compile(route.path);
-    return toPath(params || {});
+    let nextParams: Record<string, any> = params ? { ...params } : {};
+
+    if (route.path.includes(":store") && !nextParams.store) {
+      if (globalThis.window) {
+        const storeFromPath = globalThis.window.location.pathname
+          .split("/")
+          .find(Boolean);
+        if (storeFromPath) {
+          nextParams = { ...nextParams, store: storeFromPath };
+        }
+      }
+    }
+
+    return toPath(nextParams);
   };
 
   const getParamsFromPath = (routeName: string, pathname: string) => {

@@ -1,7 +1,7 @@
 "use client";
 
 import getHistoryCreators from "@/actions/order/getHistoryCreators";
-import { HistoryFilter } from "@/app/(store)/histories/types";
+import { HistoryFilter } from "@/app/[store]/(store)/histories/types";
 import {
   ClearAllTwoTone,
   FilterAltTwoTone,

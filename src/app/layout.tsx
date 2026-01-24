@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { InterfaceProvider } from "@/providers/InterfaceProvider";
-import MainLayout from "@/providers/LayoutProvider";
 import LocalizationProvider from "@/providers/LocalizationProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvder";
@@ -32,9 +31,7 @@ export default async function RootLayout({
               <ThemeRegistry>
                 <SessionProvider session={session}>
                   <QueryProvider>
-                    <InterfaceProvider>
-                      <MainLayout>{children}</MainLayout>
-                    </InterfaceProvider>
+                    <InterfaceProvider>{children}</InterfaceProvider>
                   </QueryProvider>
                 </SessionProvider>
               </ThemeRegistry>

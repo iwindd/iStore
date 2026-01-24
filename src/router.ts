@@ -19,19 +19,19 @@ import { buildRouteUtility, ROUTER } from "./libs/route/route";
 
 const ROUTES = ROUTER({
   overview: {
-    path: "/",
+    path: "/:store",
     label: "overview.label",
     icon: Store,
     disabledBreadcrumb: true,
     children: {
       dashboard: {
-        path: "/dashboard",
+        path: "/:store/dashboard",
         label: "dashboard.label",
         icon: Store,
         disabledBreadcrumb: true,
         children: {
           report: {
-            path: "/dashboard/report",
+            path: "/:store/dashboard/report",
             label: "dashboard.report.label",
           },
         },
@@ -39,29 +39,29 @@ const ROUTES = ROUTER({
     },
   },
   cashier: {
-    path: "/cashier",
+    path: "/:store/cashier",
     label: "cashier.label",
     icon: ShoppingCart,
   },
   products: {
-    path: "/products",
+    path: "/:store/products",
     label: "products.label",
     icon: Work,
     children: {
       product: {
-        path: "/products/:id",
+        path: "/:store/products/:id",
         label: "products.product.label",
         children: {
           information: {
-            path: "/products/:id/information",
+            path: "/:store/products/:id/information",
             label: "products.product.information.label",
           },
           stock: {
-            path: "/products/:id/stock",
+            path: "/:store/products/:id/stock",
             label: "products.product.stock.label",
           },
           history: {
-            path: "/products/:id/history",
+            path: "/:store/products/:id/history",
             label: "products.product.history.label",
           },
         },
@@ -69,104 +69,104 @@ const ROUTES = ROUTER({
     },
   },
   categories: {
-    path: "/categories",
+    path: "/:store/categories",
     label: "categories.label",
     icon: Category,
   },
   stocks: {
-    path: "/stocks",
+    path: "/:store/stocks",
     label: "stocks.label",
     icon: AllInbox,
     children: {
       create: {
-        path: "/stocks/create",
+        path: "/:store/stocks/create",
         label: "stocks.create.label",
       },
       stock: {
-        path: "/stocks/:id",
+        path: "/:store/stocks/:id",
         label: "stocks.stock.label",
       },
     },
   },
   histories: {
-    path: "/histories",
+    path: "/:store/histories",
     label: "histories.label",
     icon: History,
     children: {
       history: {
-        path: "/histories/:id",
+        path: "/:store/histories/:id",
         label: "histories.history.label",
       },
     },
   },
   account: {
-    path: "/account",
+    path: "/:store/account",
     label: "account.label",
     icon: Person,
   },
   roles: {
-    path: "/roles",
+    path: "/:store/roles",
     label: "roles.label",
     icon: Badge,
   },
   employees: {
-    path: "/employees",
+    path: "/:store/employees",
     label: "employees.label",
     icon: Group,
   },
   store: {
-    path: "/store",
+    path: "/:store/store",
     label: "store.label",
     icon: Settings,
   },
   broadcasts: {
-    path: "/broadcasts",
+    path: "/:store/broadcasts",
     label: "broadcasts.label",
     icon: Campaign,
     children: {
       broadcast: {
-        path: "/broadcasts/:id",
+        path: "/:store/broadcasts/:id",
         label: "broadcasts.broadcast.label",
       },
       create: {
-        path: "/broadcasts/new",
+        path: "/:store/broadcasts/new",
         label: "broadcasts.create.label",
       },
     },
   },
   promotions: {
-    path: "/promotions",
+    path: "/:store/promotions",
     label: "promotions.label",
     icon: LocalOffer,
     children: {
       create: {
-        path: "/promotions/create",
+        path: "/:store/promotions/create",
         label: "promotions.create.label",
         disabledBreadcrumb: true,
         children: {
           buyXgetY: {
-            path: "/promotions/create/buyXgetY",
+            path: "/:store/promotions/create/buyXgetY",
             label: "promotions.create.buyXgetY.label",
           },
         },
       },
       buyXgetY: {
-        path: "/promotions/buyXgetY/:id",
+        path: "/:store/promotions/buyXgetY/:id",
         label: "promotions.buyXgetY.label",
       },
     },
   },
   applications: {
-    path: "/applications",
+    path: "/:store/applications",
     label: "applications.label",
     icon: SettingsApplications,
     children: {
       line: {
-        path: "/applications/line/:id",
+        path: "/:store/applications/line/:id",
         label: "applications.line.label",
         children: {
           create: {
-            path: "/applications/line/create",
+            path: "/:store/applications/line/create",
             label: "applications.create.label",
             disabledBreadcrumb: true,
           },
@@ -192,17 +192,17 @@ const ROUTES = ROUTER({
     },
   },
   preorders: {
-    path: "/preorders",
+    path: "/:store/preorders",
     label: "preorders.label",
     icon: RotateRight,
   },
   consignments: {
-    path: "/consignments",
+    path: "/:store/consignments",
     label: "consignments.label",
     icon: AllInbox,
     children: {
       consignment: {
-        path: "/consignments/:id",
+        path: "/:store/consignments/:id",
         label: "consignments.consignment.label",
       },
     },

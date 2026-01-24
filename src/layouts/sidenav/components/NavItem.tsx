@@ -13,7 +13,9 @@ import RouterLink from "next/link";
 
 function NavItem(route: Readonly<Route>): React.JSX.Element {
   const activeRouteTrail = useActiveRouteTrail();
-  const isActive = activeRouteTrail.some((item) => item.name === route.name);
+  const isActive = activeRouteTrail.some(
+    (item: Route) => item.name === route.name,
+  );
   const t = useTranslations("ROUTES");
 
   return (

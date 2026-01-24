@@ -3,7 +3,7 @@
 import {
   StockLayoutSelect,
   StockLayoutValue,
-} from "@/app/(products)/stocks/[id]/layout";
+} from "@/app/[store]/(products)/stocks/[id]/layout";
 import { StockPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { getUser } from "@/libs/session";
@@ -14,7 +14,7 @@ import { updateProductStock } from "./updateProductStock";
 
 const updateStock = async (
   payload: StockValues,
-  stockId: number
+  stockId: number,
 ): Promise<StockLayoutValue> => {
   try {
     const user = await getUser();

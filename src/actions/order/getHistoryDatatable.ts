@@ -1,6 +1,6 @@
 "use server";
 
-import { HistoryFilter } from "@/app/(store)/histories/types";
+import { HistoryFilter } from "@/app/[store]/(store)/histories/types";
 import { TableFetch } from "@/components/Datatable";
 import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
