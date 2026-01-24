@@ -4,7 +4,6 @@ import { SidebarItem } from ".";
 const StoreSidebarItems = [
   getRoute("store.dashboard"),
   getRoute("store.cashier"),
-
   {
     key: "work",
     title: "การขาย",
@@ -17,7 +16,6 @@ const StoreSidebarItems = [
     routes: [getRoute("store.products"), getRoute("store.stocks")],
     defaultExpand: true,
   },
-
   {
     key: "etc",
     title: "อื่นๆ",
@@ -36,12 +34,12 @@ const StoreSidebarItems = [
       getRoute("store.applications"),
       getRoute("store.roles"),
       getRoute("store.employees"),
-      getRoute("store.store"),
     ],
   },
   {
     key: "account",
     title: "บัญชีของฉัน",
+    defaultExpand: true,
     routes: [getRoute("store.account")],
   },
 ] as const satisfies SidebarItem[];

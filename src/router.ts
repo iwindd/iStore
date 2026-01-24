@@ -9,7 +9,6 @@ import {
   Login,
   Person,
   RotateRight,
-  Settings,
   SettingsApplications,
   ShoppingCart,
   Store,
@@ -105,11 +104,6 @@ const ROUTES = ROUTER({
         path: "/:store/employees",
         label: "store.employees.label",
         icon: Group,
-      },
-      store: {
-        path: "/:store/store",
-        label: "store.store.label",
-        icon: Settings,
       },
       broadcasts: {
         path: "/:store/broadcasts",

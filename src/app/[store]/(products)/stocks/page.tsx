@@ -1,5 +1,6 @@
 "use client";
 import App, { Wrapper } from "@/layouts/App";
+import { getPath } from "@/router";
 import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useTranslations } from "next-intl";
@@ -13,7 +14,7 @@ const StockPage = () => {
       <App.Header>
         <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
-          <Link href="/stocks/create" passHref>
+          <Link href={getPath("store.stocks.create")}>
             <Button
               startIcon={<Add />}
               variant="contained"
