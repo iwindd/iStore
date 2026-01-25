@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/libs/db";
+import { Prisma } from "@prisma/client";
 
 export interface ZipcodeOption {
   id: number;
@@ -12,34 +13,43 @@ export interface ZipcodeOption {
 
 const getZipcodes = async (search?: string): Promise<ZipcodeOption[]> => {
   try {
+    const where: Prisma.ZipcodeWhereInput = {};
+
+    if (search) {
+      where.OR = [
+        { code: { contains: search } },
+        { sub_district: { name: { contains: search } } },
+        { sub_district: { district: { name: { contains: search } } } },
+        {
+          sub_district: {
+            district: { province: { name: { contains: search } } },
+          },
+        },
+      ];
+    }
+
     const zipcodes = await db.zipcode.findMany({
-      where: search
-        ? {
-            OR: [
-              { code: { contains: search } },
-              { sub_district: { name: { contains: search } } },
-              { sub_district: { district: { name: { contains: search } } } },
-              {
-                sub_district: {
-                  district: { province: { name: { contains: search } } },
-                },
-              },
-            ],
-          }
-        : undefined,
-      include: {
+      where: where,
+      select: {
+        id: true,
+        code: true,
         sub_district: {
-          include: {
+          select: {
+            name: true,
             district: {
-              include: {
-                province: true,
+              select: {
+                name: true,
+                province: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
         },
       },
       take: 20,
-      orderBy: { code: "asc" },
     });
 
     return zipcodes.map((z) => ({
