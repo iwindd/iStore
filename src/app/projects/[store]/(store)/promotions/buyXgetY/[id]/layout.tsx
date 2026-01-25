@@ -1,7 +1,9 @@
 "use server";
 
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { notFound } from "next/navigation";
 import { BuyXGetYProvider } from "./ProductContext";
 
@@ -10,11 +12,11 @@ const BuyXGetYLayout = async ({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; store: string }>;
 }) => {
-  const { id } = await params;
-  const user = await getUser();
-  if (!user) return notFound();
+  const { id, store } = await params;
+  const ctx = await getPermissionContext(store);
+  assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
   const productSelect = {
     quantity: true,
     product: {
@@ -39,7 +41,7 @@ const BuyXGetYLayout = async ({
     where: {
       id: Number(id),
       event: {
-        store_id: user.store,
+        store_id: ctx.storeId!,
       },
     },
     select: {

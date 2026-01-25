@@ -1,7 +1,7 @@
 "use client";
-import fetchPromotionDatatable, {
+import getPromotionDatatable, {
   PromotionDatatableInstance,
-} from "@/actions/promotion/fetchPromotionDatatable";
+} from "@/actions/promotion/getPromotionDatatable";
 import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
 import PromotionStatusChip from "@/components/Chips/PromotionStatusChip";
 import GridLinkAction from "@/components/GridLinkAction";
@@ -20,6 +20,7 @@ import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useCallback, useState } from "react";
 import CreatePromotionModal from "./components/CreatePromotionModal";
@@ -38,6 +39,7 @@ const PromotionPage = () => {
   const t = useTranslations("PROMOTIONS");
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
+  const params = useParams<{ store: string }>();
   const disableConfirmation = useConfirm({
     title: t("datatable.disable_confirmation.title"),
     text: t("datatable.disable_confirmation.text"),
@@ -47,7 +49,7 @@ const PromotionPage = () => {
     },
     onConfirm: async (id: number) => {
       try {
-        await DisablePromotionOffer(id);
+        await DisablePromotionOffer(params.store, id);
         disableConfirmation.handleClose();
         await queryClient.refetchQueries({
           queryKey: ["promotions"],
@@ -77,7 +79,7 @@ const PromotionPage = () => {
 
   const datatable = useDatatable<PromotionDatatableInstance>({
     name: "promotions",
-    fetch: fetchPromotionDatatable,
+    fetch: getPromotionDatatable,
     columns: [
       {
         field: "event.name",
@@ -130,8 +132,7 @@ const PromotionPage = () => {
       {
         field: "event.creator.user.name",
         renderCell: ({ row }) =>
-          row.event.creator?.user.name ||
-          t("datatable.placeholders.not_specified"),
+          `${row.event.creator?.user.first_name} ${row.event.creator?.user.last_name}`,
         headerName: t("datatable.headers.creator"),
         flex: 1,
       },

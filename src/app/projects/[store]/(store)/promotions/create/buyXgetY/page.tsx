@@ -7,7 +7,7 @@ import { getPath } from "@/router";
 import { AddPromotionOfferValues } from "@/schema/Promotion/Offer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
@@ -17,10 +17,11 @@ const PromotionOfferCreatePage = () => {
   const [isCreated, setIsCreated] = useState(false);
   const router = useRouter();
   const queryClient = useQueryClient();
+  const params = useParams<{ store: string }>();
 
   const createPromotionOffer = useMutation({
     mutationFn: async (data: AddPromotionOfferValues) =>
-      await CreatePromotionOffer(data),
+      await CreatePromotionOffer(params.store, data),
     onMutate: () => {
       setBackdrop(true);
     },
@@ -33,7 +34,7 @@ const PromotionOfferCreatePage = () => {
       });
       router.push(
         getPath("projects.store.promotions.buyXgetY", {
-          id: data.data?.id.toString(),
+          id: data?.id.toString(),
         }),
       );
     },

@@ -6,6 +6,7 @@ import { useInterface } from "@/providers/InterfaceProvider";
 import { UpdatePromotionOfferValues } from "@/schema/Promotion/Offer";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useBuyXGetY } from "./ProductContext";
 
@@ -14,10 +15,14 @@ const BuyXGetYPage = () => {
   const promotionOffer = useBuyXGetY();
   const { setBackdrop } = useInterface();
   const queryClient = useQueryClient();
+  const params = useParams<{ store: string }>();
 
   const updatePromotionOffer = useMutation({
     mutationFn: async (data: UpdatePromotionOfferValues) =>
-      await UpdatePromotionOffer(promotionOffer.id, data),
+      await UpdatePromotionOffer(params.store, {
+        id: promotionOffer.id,
+        ...data,
+      }),
     onMutate: () => {
       setBackdrop(true);
     },

@@ -1,35 +1,28 @@
 "use server";
-import { ActionError, ActionResponse } from "@/libs/action";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-const DisablePromotionOffer = async (
-  id: number
-): Promise<ActionResponse<null>> => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+const DisablePromotionOffer = async (storeSlug: string, id: number) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
 
-    await db.promotionOffer.update({
-      where: {
-        id: id,
-        event: {
-          store_id: user.store,
+  await db.promotionOffer.update({
+    where: {
+      id: id,
+      event: {
+        store_id: ctx.storeId!,
+      },
+    },
+    data: {
+      event: {
+        update: {
+          disabled_at: new Date(),
         },
       },
-      data: {
-        event: {
-          update: {
-            disabled_at: new Date(),
-          },
-        },
-      },
-    });
-
-    return { success: true, data: null };
-  } catch (error) {
-    return ActionError(error) as ActionResponse<null>;
-  }
+    },
+  });
 };
 
 export default DisablePromotionOffer;

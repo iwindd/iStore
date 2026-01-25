@@ -1,7 +1,9 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   UpdatePromotionOfferSchema,
   UpdatePromotionOfferValues,
@@ -9,19 +11,19 @@ import {
 import dayjs from "dayjs";
 
 const UpdatePromotionOffer = async (
-  id: number,
-  payload: UpdatePromotionOfferValues,
+  storeSlug: string,
+  payload: UpdatePromotionOfferValues & { id: number },
 ): Promise<ActionResponse<unknown>> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
     const validated = UpdatePromotionOfferSchema.parse(payload);
 
     const oldPromotionOffer = await db.promotionOffer.findUnique({
       where: {
-        id: id,
+        id: payload.id,
         event: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
       },
       select: {
@@ -49,9 +51,9 @@ const UpdatePromotionOffer = async (
 
     const promotionOffer = await db.promotionOffer.update({
       where: {
-        id: id,
+        id: payload.id,
         event: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
       },
       data: {
