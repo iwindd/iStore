@@ -1,4 +1,5 @@
 import db from "@/libs/db";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { notFound } from "next/navigation";
 import { LineApplicationProvider } from "./LineApplicationContext";
 
@@ -7,18 +8,20 @@ const ApplicationDetailLayout = async ({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; store: string }>;
 }) => {
-  const { id } = await params;
+  const { id, store } = await params;
   const appId = Number.parseInt(id);
 
   if (Number.isNaN(appId)) {
     return notFound();
   }
 
+  const ctx = await getPermissionContext(store);
+
   // Currently only supporting LineApplication
-  const lineApplication = await db.lineApplication.findUnique({
-    where: { id: appId },
+  const lineApplication = await db.lineApplication.findFirst({
+    where: { id: appId, store_id: ctx.storeId! },
   });
 
   if (!lineApplication) {

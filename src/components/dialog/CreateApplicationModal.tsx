@@ -20,9 +20,11 @@ import { useState } from "react";
 const CreateApplicationModal = ({
   isOpen,
   handleClose,
+  storeSlug,
 }: {
   isOpen: boolean;
   handleClose: () => void;
+  storeSlug: string;
 }) => {
   const t = useTranslations("APPLICATIONS.create_modal");
   const [applicationType, setApplicationType] = useState<string>("line");
@@ -32,7 +34,11 @@ const CreateApplicationModal = ({
     event.preventDefault();
 
     if (applicationType === "line") {
-      router.push(getPath("projects.store.applications.line.create"));
+      router.push(
+        getPath("projects.store.applications.line.create", {
+          store: storeSlug,
+        }),
+      );
     } else {
       console.log("Unknown application type");
     }

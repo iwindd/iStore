@@ -29,7 +29,7 @@ export const sendBroadcast = async (storeSlug: string, id: number) => {
       },
     });
 
-    sendBroadcastToApplications(ctx.storeSlug!, {
+    sendBroadcastToApplications(ctx.storeId!, {
       message: broadcast.message,
       image_url: (broadcast?.image_url && broadcast.image_url) || undefined,
     });

@@ -9,6 +9,7 @@ import { AddTwoTone } from "@mui/icons-material";
 import { Button, Grid } from "@mui/material";
 import { LineApplication } from "@prisma/client";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 type ApplicationClientPageProps = {
   applications: LineApplication[];
@@ -18,6 +19,7 @@ const ApplicationClientPage = ({
   applications,
 }: ApplicationClientPageProps) => {
   const t = useTranslations("APPLICATIONS");
+  const params = useParams<{ store: string }>();
   const applicationDialog = useDialog();
 
   return (
@@ -52,6 +54,7 @@ const ApplicationClientPage = ({
       <CreateApplicationModal
         isOpen={applicationDialog.open}
         handleClose={applicationDialog.handleClose}
+        storeSlug={params.store}
       />
     </Wrapper>
   );

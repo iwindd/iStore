@@ -4,16 +4,22 @@ import FormLineApplication from "@/components/Forms/Application/FormLineApplicat
 import App, { Wrapper } from "@/layouts/App";
 import { LineApplicationSchemaType } from "@/schema/Application";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useApplication } from "./LineApplicationContext";
 
 const ApplicationDetailPage = () => {
   const t = useTranslations("APPLICATIONS");
   const { application } = useApplication();
+  const params = useParams<{ store: string }>();
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
     try {
-      const result = await updateLineApplication(application.id, data);
+      const result = await updateLineApplication(
+        params.store,
+        application.id,
+        data,
+      );
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
         return true;

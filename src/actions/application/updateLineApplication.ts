@@ -1,6 +1,9 @@
 "use server";
 
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   LineApplicationSchema,
   LineApplicationSchemaType,
@@ -8,9 +11,12 @@ import {
 import { revalidatePath } from "next/cache";
 
 export const updateLineApplication = async (
+  storeSlug: string,
   id: number,
-  data: LineApplicationSchemaType
+  data: LineApplicationSchemaType,
 ) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.APPLICATION_MANAGEMENT);
   const validation = LineApplicationSchema.safeParse(data);
 
   if (!validation.success) {
@@ -29,8 +35,8 @@ export const updateLineApplication = async (
       },
     });
 
-    revalidatePath("/applications");
-    revalidatePath(`/applications/line/${id}`);
+    revalidatePath(`/projects/${storeSlug}/applications`);
+    revalidatePath(`/projects/${storeSlug}/applications/line/${id}`);
     return { success: true, message: "อัพเดทแอพพลิเคชั่นสำเร็จ" };
   } catch (error: any) {
     console.error("Error updating line application:", error);

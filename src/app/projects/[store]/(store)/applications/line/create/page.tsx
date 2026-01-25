@@ -6,19 +6,22 @@ import App, { Wrapper } from "@/layouts/App";
 import { getPath } from "@/router";
 import { LineApplicationSchemaType } from "@/schema/Application";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
 const LineApplicationCreatePage = () => {
   const t = useTranslations("APPLICATIONS");
   const router = useRouter();
+  const params = useParams<{ store: string }>();
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
     try {
-      const result = await createLineApplication(data);
+      const result = await createLineApplication(params.store, data);
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
-        router.push(getPath("projects.store.applications"));
+        router.push(
+          getPath("projects.store.applications", { store: params.store }),
+        );
         return true;
       } else {
         enqueueSnackbar(result.message, { variant: "error" });

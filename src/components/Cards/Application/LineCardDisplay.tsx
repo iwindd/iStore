@@ -13,6 +13,7 @@ import {
 import { LineApplication } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 type LineCardDisplayProps = {
   application: LineApplication;
@@ -20,12 +21,14 @@ type LineCardDisplayProps = {
 
 const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
   const t = useTranslations("APPLICATIONS");
+  const params = useParams<{ store: string }>();
 
   return (
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
         component={Link}
         href={getPath("projects.store.applications.line", {
+          store: params.store,
           id: application.id.toString(),
         })}
         sx={{

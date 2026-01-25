@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   LineApplicationSchema,
   LineApplicationSchemaType,
@@ -10,10 +10,10 @@ import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
 
 export const createLineApplication = async (
-  data: LineApplicationSchemaType
+  storeSlug: string,
+  data: LineApplicationSchemaType,
 ) => {
-  const user = await getUser();
-  if (!user) throw new Error("User not found");
+  const ctx = await getPermissionContext(storeSlug);
   const validation = LineApplicationSchema.safeParse(data);
 
   if (!validation.success) {
@@ -30,11 +30,11 @@ export const createLineApplication = async (
         key: apiKey,
         useAsChatbot: data.useAsChatbot,
         useAsBroadcast: data.useAsBroadcast,
-        store_id: user.store,
+        store_id: ctx.storeId!,
       },
     });
 
-    revalidatePath("/applications");
+    revalidatePath(`/projects/${storeSlug}/applications`);
     return { success: true, message: "สร้างแอพพลิเคชั่นสำเร็จ" };
   } catch (error: any) {
     console.error("Error creating line application:", error);
