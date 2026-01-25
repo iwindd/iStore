@@ -1,6 +1,8 @@
 "use server";
 
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   LineApplicationSchema,
@@ -14,6 +16,7 @@ export const createLineApplication = async (
   data: LineApplicationSchemaType,
 ) => {
   const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, PermissionConfig.store.application.createLineApplication);
   const validation = LineApplicationSchema.safeParse(data);
 
   if (!validation.success) {

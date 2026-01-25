@@ -1,6 +1,8 @@
 "use server";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
@@ -48,16 +50,16 @@ const fetchObtainPromotionOffer = async (
   products: {
     id: number;
     quantity: number;
-  }[]
+  }[],
 ): Promise<ObtainPromotionOffer[]> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext();
+    assertStoreCan(ctx, PermissionConfig.store.cashier.getObtainPromotionOffer);
 
     const result = await db.promotionOffer.findMany({
       where: {
         event: {
-          store_id: user.store,
+          store_id: ctx.storeId,
           start_at: { lte: new Date() },
           end_at: { gte: new Date() },
           disabled_at: null,

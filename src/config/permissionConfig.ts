@@ -31,6 +31,8 @@ export const PermissionConfig = {
       cashout: StorePermissionEnum.CASHIER_CASHOUT,
       /** Get related promotion offer */
       getRelatedPromotionOffer: StorePermissionEnum.CASHIER_CASHOUT,
+      /** Get obtain promotion offer */
+      getObtainPromotionOffer: StorePermissionEnum.CASHIER_CASHOUT,
       /** Get product for cashier */
       getProductCashier: StorePermissionEnum.CASHIER_CASHOUT,
     },
