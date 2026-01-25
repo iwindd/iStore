@@ -123,6 +123,7 @@ export const consignmentCart = createAsyncThunk(
   "cart/consignmentCart",
   async (data: ConsignmentInputValues, thunkAPI) => {
     const { cart } = thunkAPI.getState() as { cart: CartState };
+    if (!cart.storeSlug) return;
     const payload = ConsignmentSchema.safeParse({
       products: cart.products,
       ...data,
@@ -144,7 +145,7 @@ export const consignmentCart = createAsyncThunk(
       throw new Error(payload.error?.message);
     }
 
-    const resp = await Consignment(payload.data);
+    const resp = await Consignment(cart.storeSlug, payload.data);
     if (!resp.success) {
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",

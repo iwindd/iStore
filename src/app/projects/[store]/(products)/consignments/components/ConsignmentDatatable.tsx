@@ -43,7 +43,8 @@ const ConsignmentDatatable = () => {
         sortable: true,
         headerName: t("headers.creator"),
         flex: 2,
-        renderCell: ({ row }) => ff.text(row.creator?.user.name),
+        renderCell: ({ row }) =>
+          `${row.creator?.user.first_name} ${row.creator?.user.last_name}`,
       },
       {
         field: "_count",

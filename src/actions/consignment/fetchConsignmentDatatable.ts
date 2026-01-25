@@ -1,8 +1,9 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { ActionError } from "@/libs/action";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type ConsignmentDatatableInstance = Prisma.ConsignmentGetPayload<{
@@ -15,7 +16,8 @@ export type ConsignmentDatatableInstance = Prisma.ConsignmentGetPayload<{
       select: {
         user: {
           select: {
-            name: true;
+            first_name: true;
+            last_name: true;
           };
         };
       };
@@ -29,40 +31,36 @@ export type ConsignmentDatatableInstance = Prisma.ConsignmentGetPayload<{
 }>;
 
 const fetchConsignmentDatatable = async (table: TableFetch) => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+  const ctx = await getPermissionContext(table.storeIdentifier);
+  assertStoreCan(ctx, StorePermissionEnum.CONSIGNMENT_MANAGEMENT);
 
-    return await db.consignment.datatableFetch({
-      table,
-      where: {
-        store_id: user.store,
-      },
-      select: {
-        id: true,
-        status: true,
-        note: true,
-        created_at: true,
-        creator: {
-          select: {
-            user: {
-              select: {
-                name: true,
-              },
+  return await db.consignment.getDatatable({
+    query: table,
+    where: {
+      store_id: ctx.storeId!,
+    },
+    select: {
+      id: true,
+      status: true,
+      note: true,
+      created_at: true,
+      creator: {
+        select: {
+          user: {
+            select: {
+              first_name: true,
+              last_name: true,
             },
           },
         },
-        _count: {
-          select: {
-            products: true,
-          },
+      },
+      _count: {
+        select: {
+          products: true,
         },
       },
-    });
-  } catch (error) {
-    console.error(error);
-    return ActionError(error);
-  }
+    },
+  });
 };
 
 export default fetchConsignmentDatatable;

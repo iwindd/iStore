@@ -1,6 +1,8 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type ConsignmentDetail = Prisma.ConsignmentGetPayload<{
@@ -14,29 +16,25 @@ export type ConsignmentDetail = Prisma.ConsignmentGetPayload<{
 }>;
 
 const getConsignment = async (
-  id: number
+  storeSlug: string,
+  id: number,
 ): Promise<ConsignmentDetail | null> => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.CONSIGNMENT_MANAGEMENT);
 
-    return await db.consignment.findUnique({
-      where: {
-        id,
-        store_id: user.store,
-      },
-      include: {
-        products: {
-          include: {
-            product: true,
-          },
+  return await db.consignment.findUnique({
+    where: {
+      id,
+      store_id: ctx.storeId!,
+    },
+    include: {
+      products: {
+        include: {
+          product: true,
         },
       },
-    });
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
+    },
+  });
 };
 
 export default getConsignment;

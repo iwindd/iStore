@@ -7,6 +7,7 @@ import ConsignmentForm from "@/components/Forms/Consignment";
 import App, { Wrapper } from "@/layouts/App";
 import { ConsignmentValues } from "@/schema/Consignment";
 import { CashoutInputValues } from "@/schema/Payment";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
@@ -14,49 +15,45 @@ import React, { useEffect, useState } from "react";
 
 const ConsignmentDetailPage = () => {
   const t = useTranslations("CONSIGNMENTS.detail");
-  const params = useParams();
+  const params = useParams<{ id: string; store: string }>();
   const router = useRouter();
-  const id = Number.parseInt(params.id as string);
+  const id = Number.parseInt(params.id);
   const [consignment, setConsignment] = useState<ConsignmentDetail | null>(
-    null
+    null,
   );
-  const [loading, setLoading] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
 
   const fetchData = React.useCallback(async () => {
-    setLoading(true);
-    const data = await getConsignment(id);
+    const data = await getConsignment(params.store, id);
     if (!data) {
       enqueueSnackbar(t("not_found"), { variant: "error" });
       router.push("/consignments");
       return;
     }
     setConsignment(data);
-    setLoading(false);
   }, [id, router, t, enqueueSnackbar]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const handleSubmit = async (payload: {
-    order: CashoutInputValues;
-    consignment: ConsignmentValues;
-  }) => {
-    setLoading(true);
-    const res = await confirmConsignment(id, payload);
-    if (res.success) {
+  const confirmConsignmentMutation = useMutation({
+    mutationFn: (data: {
+      order: CashoutInputValues;
+      consignment: ConsignmentValues;
+    }) => confirmConsignment(params.store, { ...data, id }),
+    onSuccess: () => {
       enqueueSnackbar(t("success"), {
         variant: "success",
       });
       fetchData();
-    } else {
+    },
+    onError: () => {
       enqueueSnackbar(t("error"), {
         variant: "error",
       });
-    }
-    setLoading(false);
-  };
+    },
+  });
 
   return (
     <Wrapper>
@@ -67,8 +64,8 @@ const ConsignmentDetailPage = () => {
         {consignment && (
           <ConsignmentForm
             consignment={consignment}
-            onSubmit={handleSubmit}
-            isLoading={loading}
+            onSubmit={confirmConsignmentMutation.mutate}
+            isLoading={confirmConsignmentMutation.isPending}
           />
         )}
       </App.Main>

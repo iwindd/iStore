@@ -57,6 +57,7 @@ const PaymentDialog = ({ open, onClose }: PaymentDialogProps) => {
     if (resp.meta.requestStatus == "fulfilled") {
       form.reset();
       onClose();
+
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["consignments"] });
     }
