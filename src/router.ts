@@ -20,20 +20,21 @@ const ROUTES = ROUTER({
   projects: {
     path: "/projects",
     label: "store.label",
+    disabledBreadcrumb: true,
     children: {
       store: {
         path: "/projects/:store",
         label: "store.label",
+        disabledBreadcrumb: true,
         children: {
           dashboard: {
             path: "/projects/:store/dashboard",
             label: "store.dashboard.label",
             icon: Store,
-            disabledBreadcrumb: true,
             children: {
               report: {
                 path: "/projects/:store/dashboard/report",
-                label: "dashboard.report.label",
+                label: "store.dashboard.report.label",
               },
             },
           },
