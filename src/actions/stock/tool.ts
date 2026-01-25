@@ -1,8 +1,8 @@
 "use server";
-import { StockPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
-import { User } from "@/libs/user.server";
+import { assertStoreCan, PermissionContext } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { StockValues } from "@/schema/Stock";
 import {
   StockReceiptImportFromMinStockValueValues,
@@ -13,11 +13,11 @@ import {
 } from "@/schema/StockReceiptImport";
 
 class StockReceiptImportTool {
-  static async importFromMinStockAlert(user: User) {
+  static async importFromMinStockAlert(ctx: PermissionContext) {
     const productStocks = await db.productStock.findMany({
       where: {
         product: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
         useAlert: true,
         quantity: {
@@ -48,13 +48,13 @@ class StockReceiptImportTool {
   }
 
   static async importFromMinStockValue(
-    user: User,
+    ctx: PermissionContext,
     validated: StockReceiptImportFromMinStockValueValues,
   ) {
     const productStocks = await db.productStock.findMany({
       where: {
         product: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
         quantity: {
           lte: validated.value,
@@ -84,11 +84,11 @@ class StockReceiptImportTool {
   }
 
   static async importFromStockId(
-    user: User,
+    ctx: PermissionContext,
     validated: StockReceiptImportFromStockIdValues,
   ) {
     const stockReceipt = await db.stockReceipt.findFirstOrThrow({
-      where: { id: validated.id, store_id: user.store },
+      where: { id: validated.id, store_id: ctx.storeId! },
       select: {
         stock_recept_products: {
           select: {
@@ -107,25 +107,24 @@ class StockReceiptImportTool {
 }
 
 const ImportToolAction = async (
+  storeSlug: string,
   payload: StockReceiptImportValues,
 ): Promise<StockValues["products"]> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.CREATE))
-      throw new Error("Forbidden");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
 
     const validated = StockReceiptImportSchema.parse(payload);
     switch (validated.type) {
       case StockReceiptImportType.FromMinStockAlert:
-        return await StockReceiptImportTool.importFromMinStockAlert(user);
+        return await StockReceiptImportTool.importFromMinStockAlert(ctx);
       case StockReceiptImportType.FromMinStockValue:
         return await StockReceiptImportTool.importFromMinStockValue(
-          user,
+          ctx,
           validated,
         );
       case StockReceiptImportType.FromStockId:
-        return await StockReceiptImportTool.importFromStockId(user, validated);
+        return await StockReceiptImportTool.importFromStockId(ctx, validated);
       default:
         throw new Error("invalid_type");
     }

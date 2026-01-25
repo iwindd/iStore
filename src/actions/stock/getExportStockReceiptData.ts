@@ -1,17 +1,18 @@
 "use server";
-import { StockPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-const getExportStockData = async (id: number) => {
+const getExportStockData = async (storeSlug: string, id: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+
     const stock = await db.stockReceipt.findFirstOrThrow({
       where: {
         id: id,
-        store_id: user.store,
-        creator_id: user.limitPermission(StockPermissionEnum.READ),
+        store_id: ctx.storeId,
       },
       select: {
         stock_recept_products: {

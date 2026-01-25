@@ -1,5 +1,5 @@
 "use client";
-import CancelStock from "@/actions/stock/cancel";
+import cancelStockReceipt from "@/actions/stock/cancelStockReceipt";
 import getExportStockData from "@/actions/stock/getExportStockReceiptData";
 import getStockReceiptDatatable, {
   StockReceiptDatatableInstance,
@@ -22,8 +22,9 @@ import {
 import { Box, Tab, Tabs } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { StockReceiptStatus } from "@prisma/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
 
@@ -34,6 +35,7 @@ const HistoryDatatable = () => {
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const { store } = useParams<{ store: string }>();
 
   const [filterType, setFilterType] = useState<
     "all" | "completed" | "draft" | "cancelled"
@@ -55,38 +57,35 @@ const HistoryDatatable = () => {
     { label: t("export_labels.keywords"), key: "keywords" },
   ]);
 
+  const cancelStockReceiptMutation = useMutation({
+    mutationFn: (id: number) => cancelStockReceipt(id, store),
+    onSuccess: () => {
+      enqueueSnackbar(t("confirmation.cancel_success"), {
+        variant: "success",
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["stocks_histories"],
+      });
+    },
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar(t("confirmation.error"), {
+        variant: "error",
+      });
+    },
+  });
+
   const cancelConfirmation = useConfirm({
     title: t("confirmation.cancel_title"),
     text: t("confirmation.cancel_text"),
-    onConfirm: async (id: number) => {
-      try {
-        const resp = await CancelStock(id);
-
-        if (!resp.success) throw new Error(resp.message);
-        enqueueSnackbar(
-          t("confirmation.cancel_success", { id: ff.number(id) }),
-          {
-            variant: "success",
-          },
-        );
-        await queryClient.refetchQueries({
-          queryKey: ["stocks_histories"],
-          type: "active",
-        });
-      } catch (error) {
-        console.error(error);
-        enqueueSnackbar(t("confirmation.error"), {
-          variant: "error",
-        });
-      }
-    },
+    onConfirm: cancelStockReceiptMutation.mutateAsync,
   });
 
   const onExport = React.useCallback(
     async (stockId: number) => {
       try {
         setBackdrop(true);
-        const stockData = await getExportStockData(stockId);
+        const stockData = await getExportStockData(store, stockId);
         if (!stockData) throw new Error("error");
 
         setItems(
@@ -144,7 +143,10 @@ const HistoryDatatable = () => {
         headerName: t("headers.creator"),
         flex: 2,
         renderCell: ({ row }) =>
-          ff.text(row.creator?.user.name || t("placeholders.not_specified")),
+          ff.text(
+            row.creator?.user.first_name + " " + row.creator?.user.last_name ||
+              t("placeholders.not_specified"),
+          ),
       },
       {
         field: "_count",

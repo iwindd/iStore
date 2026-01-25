@@ -1,19 +1,21 @@
 "use client";
-import createStock from "@/actions/stock/createStock";
+import createStockReceipt from "@/actions/stock/createStockReceipt";
 import StockForm from "@/components/Forms/Stock";
 import { getPath } from "@/router";
 import { StockValues } from "@/schema/Stock";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
 const CreateStockPage = () => {
   const t = useTranslations("STOCKS.create");
   const router = useRouter();
+  const params = useParams<{ store: string }>();
 
   const createStockMutation = useMutation({
-    mutationFn: async (data: StockValues) => createStock(data),
+    mutationFn: async (data: StockValues) =>
+      createStockReceipt(params.store, data),
     onSuccess: (data) => {
       enqueueSnackbar({
         message: t("success"),

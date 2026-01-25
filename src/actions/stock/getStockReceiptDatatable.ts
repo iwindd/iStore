@@ -1,9 +1,10 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { StockPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type StockReceiptDatatableInstance = Prisma.StockReceiptGetPayload<{
@@ -17,7 +18,8 @@ export type StockReceiptDatatableInstance = Prisma.StockReceiptGetPayload<{
         id: true;
         user: {
           select: {
-            name: true;
+            first_name: true;
+            last_name: true;
           };
         };
       };
@@ -40,12 +42,11 @@ const getStockReceiptDatatable = async (
   filterType?: "all" | "completed" | "draft" | "cancelled",
 ) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(query.storeIdentifier);
+    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
 
     let where: any = {
-      store_id: user.store,
-      creator_id: user.limitPermission(StockPermissionEnum.READ),
+      store_id: ctx.storeId,
     };
 
     if (filterType === "completed") {
@@ -69,7 +70,8 @@ const getStockReceiptDatatable = async (
             id: true,
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },
@@ -88,7 +90,10 @@ const getStockReceiptDatatable = async (
       searchable: {
         creator: {
           user: {
-            name: {
+            first_name: {
+              mode: "insensitive",
+            },
+            last_name: {
               mode: "insensitive",
             },
           },

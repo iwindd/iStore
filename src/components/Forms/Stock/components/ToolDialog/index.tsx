@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import React from "react";
 import { Controller, useForm, UseFormReturn } from "react-hook-form";
@@ -38,12 +39,11 @@ const ToolDialog = ({
 }: ToolDialogProps): React.JSX.Element => {
   const t = useTranslations("STOCKS.tool_dialog");
   const { isBackdrop, setBackdrop } = useInterface();
+  const params = useParams<{ store: string }>();
 
   const importToolMutation = useMutation({
-    mutationFn: async (data: StockReceiptImportValues) => {
-      const response = await ImportToolAction(data);
-      return response;
-    },
+    mutationFn: async (data: StockReceiptImportValues) =>
+      await ImportToolAction(params.store, data),
     onSuccess: (data) => {
       form.setValue("products", data);
       enqueueSnackbar(t("success"), { variant: "success" });
@@ -108,7 +108,7 @@ const ToolDialog = ({
             variant="contained"
             startIcon={<PanToolAlt />}
             onClick={formTool.handleSubmit((data) =>
-              importToolMutation.mutate(data)
+              importToolMutation.mutate(data),
             )}
           >
             {t("confirm")}

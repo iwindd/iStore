@@ -3,24 +3,24 @@
 import {
   StockLayoutSelect,
   StockLayoutValue,
-} from "@/app/[store]/(products)/stocks/[id]/layout";
-import { StockPermissionEnum } from "@/enums/permission";
+} from "@/app/projects/[store]/(products)/stocks/[id]/layout";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { StockValues } from "@/schema/Stock";
 import { StockReceiptStatus } from "@prisma/client";
 import { setStockProduct } from "./setStockProduct";
 import { updateProductStock } from "./updateProductStock";
 
 const updateStock = async (
+  storeSlug: string,
   payload: StockValues,
   stockId: number,
 ): Promise<StockLayoutValue> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(StockPermissionEnum.UPDATE))
-      throw new Error("Forbidden");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
 
     const stock = await db.stockReceipt.update({
       where: {
@@ -30,8 +30,8 @@ const updateStock = async (
       data: {
         note: payload.note,
         status: StockReceiptStatus.CREATING,
-        store_id: user.store,
-        creator_id: user.employeeId,
+        store_id: ctx.storeId!,
+        creator_id: ctx.employeeId!,
       },
     });
 
