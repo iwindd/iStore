@@ -1,18 +1,20 @@
 "use server";
 
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-const getPreOrderDetail = async (id: number) => {
+const getPreOrderDetail = async (storeSlug: string, id: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.PREORDER_MANAGEMENT);
 
     const preorder = await db.orderPreOrder.findFirst({
       where: {
         id: id,
         order: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
       },
       select: {
@@ -46,7 +48,8 @@ const getPreOrderDetail = async (id: number) => {
               select: {
                 user: {
                   select: {
-                    name: true,
+                    first_name: true,
+                    last_name: true,
                   },
                 },
               },
@@ -57,7 +60,8 @@ const getPreOrderDetail = async (id: number) => {
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },
@@ -67,7 +71,8 @@ const getPreOrderDetail = async (id: number) => {
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },

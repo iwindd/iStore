@@ -19,9 +19,10 @@ import {
   Typography,
 } from "@mui/material";
 import { PreOrderStatus } from "@prisma/client";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
 
 interface PreOrderDetailDialogProps {
   id: number;
@@ -38,59 +39,54 @@ const PreOrderDetailDialog = ({
 }: PreOrderDetailDialogProps) => {
   const t = useTranslations("PREORDERS.dialog");
   const { enqueueSnackbar } = useSnackbar();
-  const [preorder, setPreorder] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const { store } = useParams<{ store: string }>();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (open && id) {
-      fetchPreOrder();
-    }
-  }, [id, open]);
+  const { data: preorder } = useQuery({
+    queryKey: ["getPreOrderDetail", store, id],
+    queryFn: () => getPreOrderDetail(store, id),
+    enabled: open && !!id,
+  });
 
-  const fetchPreOrder = async () => {
-    try {
-      const data = await getPreOrderDetail(id);
-      setPreorder(data);
-    } catch (error) {
-      console.error(error);
-      enqueueSnackbar(t("messages.load_error"), { variant: "error" });
-    }
-  };
-
-  const handleMarkAsReturned = async () => {
-    try {
-      setLoading(true);
-      await updatePreOrderStatus(id, PreOrderStatus.RETURNED);
-      enqueueSnackbar(t("messages.update_success"), { variant: "success" });
+  const updatePreOrderStatusMutation = useMutation({
+    mutationFn: (status: PreOrderStatus) =>
+      updatePreOrderStatus(store, id, status),
+    onSuccess: (status) => {
+      switch (status) {
+        case PreOrderStatus.RETURNED:
+          enqueueSnackbar(t("messages.returned_success"), {
+            variant: "success",
+          });
+          break;
+        case PreOrderStatus.CANCELLED:
+          enqueueSnackbar(t("messages.cancelled_success"), {
+            variant: "success",
+          });
+          break;
+        default:
+          break;
+      }
       onSuccess();
-    } catch (error: any) {
+      queryClient.invalidateQueries({
+        queryKey: ["getPreOrderDetail", store, id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["preorders"],
+      });
+    },
+    onError: (error: any) => {
       console.error(error);
-      enqueueSnackbar(error.message || t("messages.update_error"), {
+      enqueueSnackbar(t("messages.error"), {
         variant: "error",
       });
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   const confirmCancel = useConfirm({
     title: t("messages.cancel_confirm_title"),
     text: t("messages.cancel_confirm_text"),
-    onConfirm: async () => {
-      try {
-        setLoading(true);
-        await updatePreOrderStatus(id, PreOrderStatus.CANCELLED);
-        enqueueSnackbar(t("messages.cancel_success"), { variant: "success" });
-        onSuccess();
-      } catch (error: any) {
-        console.error(error);
-        enqueueSnackbar(error.message || t("messages.cancel_error"), {
-          variant: "error",
-        });
-      } finally {
-        setLoading(false);
-      }
-    },
+    onConfirm: async () =>
+      updatePreOrderStatusMutation.mutate(PreOrderStatus.CANCELLED),
   });
 
   if (!preorder) {
@@ -101,10 +97,11 @@ const PreOrderDetailDialog = ({
   const isReturned = preorder.status === PreOrderStatus.RETURNED;
   const isCancelled = preorder.status === PreOrderStatus.CANCELLED;
 
-  const isOutOfStock = preorder.product.stock?.quantity < preorder.count;
+  const isOutOfStock =
+    (preorder?.product.stock?.quantity || 0) < preorder.count;
 
   const getReturnButtonLabel = () => {
-    if (loading) return t("buttons.saving");
+    if (updatePreOrderStatusMutation.isPending) return t("buttons.saving");
     if (isOutOfStock) return t("buttons.insufficient_stock");
     return t("buttons.mark_returned");
   };
@@ -198,7 +195,9 @@ const PreOrderDetailDialog = ({
               {t("labels.creator")}
             </Typography>
             <Typography variant="body1" fontWeight={600}>
-              {preorder.order.creator?.user?.name || t("labels.not_specified")}
+              {preorder.order.creator?.user
+                ? `${preorder.order.creator.user.first_name} ${preorder.order.creator.user.last_name}`
+                : t("labels.not_specified")}
             </Typography>
           </Grid>
 
@@ -223,7 +222,9 @@ const PreOrderDetailDialog = ({
                   {t("labels.returner")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {preorder.returned_by?.user?.name ||
+                  {preorder.returned_by?.user?.first_name +
+                    " " +
+                    preorder.returned_by?.user?.last_name ||
                     t("labels.not_specified")}
                 </Typography>
               </Grid>
@@ -251,7 +252,9 @@ const PreOrderDetailDialog = ({
                   {t("labels.canceller")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
-                  {preorder.cancelled_by?.user?.name ||
+                  {preorder.cancelled_by?.user?.first_name +
+                    " " +
+                    preorder.cancelled_by?.user?.last_name ||
                     t("labels.not_specified")}
                 </Typography>
               </Grid>
@@ -289,16 +292,18 @@ const PreOrderDetailDialog = ({
               onClick={confirmCancel.handleOpen}
               variant="outlined"
               color="error"
-              disabled={loading}
+              disabled={updatePreOrderStatusMutation.isPending}
               startIcon={<CloseTwoTone />}
             >
               {t("buttons.cancel")}
             </Button>
             <Button
-              onClick={handleMarkAsReturned}
+              onClick={() =>
+                updatePreOrderStatusMutation.mutate(PreOrderStatus.RETURNED)
+              }
               variant="contained"
               color={isOutOfStock ? "error" : "success"}
-              disabled={loading || isOutOfStock}
+              disabled={updatePreOrderStatusMutation.isPending || isOutOfStock}
               startIcon={<CheckCircleTwoTone />}
             >
               {getReturnButtonLabel()}

@@ -61,9 +61,10 @@ const Datatable = ({
   const { data, isLoading } = useQuery({
     queryKey: [
       name,
-      paginationModel,
+      paginationModel.page,
+      paginationModel.pageSize,
       sortModel,
-      filterModel.quickFilterValues,
+      filterModel.quickFilterValues?.join(","),
       bridge,
     ],
     queryFn: async () => {

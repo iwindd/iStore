@@ -1,17 +1,23 @@
 "use server";
 
 import { TableFetch } from "@/components/Datatable";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const getPreOrdersDatatable = async (table: TableFetch) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(table.storeIdentifier);
+    assertStoreCan(ctx, StorePermissionEnum.PREORDER_MANAGEMENT);
 
-    const { data, total } = await db.orderPreOrder.datatableFetch({
-      table: table,
-      filter: ["note"],
+    const { data, total } = await db.orderPreOrder.getDatatable({
+      query: table,
+      searchable: {
+        note: {
+          mode: "insensitive",
+        },
+      },
       select: {
         id: true,
         count: true,
@@ -35,7 +41,8 @@ const getPreOrdersDatatable = async (table: TableFetch) => {
               select: {
                 user: {
                   select: {
-                    name: true,
+                    first_name: true,
+                    last_name: true,
                   },
                 },
               },
@@ -45,7 +52,7 @@ const getPreOrdersDatatable = async (table: TableFetch) => {
       },
       where: {
         order: {
-          store_id: user.store,
+          store_id: ctx.storeId!,
         },
       },
     });
