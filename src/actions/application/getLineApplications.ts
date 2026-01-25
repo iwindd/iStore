@@ -1,13 +1,13 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 export const getLineApplications = async (storeSlug: string) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.APPLICATION_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.application.getLineApplications);
   const applications = await db.lineApplication.findMany({
     where: {
       store_id: ctx.storeId!,

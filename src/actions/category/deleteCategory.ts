@@ -1,12 +1,12 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const deleteCategory = async (storeSlug: string, id: number) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.category.delete);
 
   await db.category.delete({
     where: {

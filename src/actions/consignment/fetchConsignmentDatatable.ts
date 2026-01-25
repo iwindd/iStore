@@ -1,6 +1,6 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -32,7 +32,7 @@ export type ConsignmentDatatableInstance = Prisma.ConsignmentGetPayload<{
 
 const fetchConsignmentDatatable = async (table: TableFetch) => {
   const ctx = await getPermissionContext(table.storeIdentifier);
-  assertStoreCan(ctx, StorePermissionEnum.CONSIGNMENT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.consignment.fetchDatatable);
 
   return await db.consignment.getDatatable({
     query: table,

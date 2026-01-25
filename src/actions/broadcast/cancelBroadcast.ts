@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -9,7 +9,7 @@ import { BroadcastStatus } from "@prisma/client";
 export const cancelBroadcast = async (storeSlug: string, id: number) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.cancel);
 
     // Verify broadcast exists and belongs to the store
     const existingBroadcast = await db.broadcast.findFirst({

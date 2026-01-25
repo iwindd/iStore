@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -13,7 +13,7 @@ const updateStockAlert = async (
   payload: ProductStockAlertValues & { id: number },
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.product.updateStockAlert);
   const validated = ProductStockAlertSchema.parse(payload);
 
   const stockAlert = await db.productStock.upsert({

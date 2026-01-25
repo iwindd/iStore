@@ -1,7 +1,7 @@
 "use server";
 
 import { TableFetch } from "@/components/Datatable";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import {
   assertStore,
@@ -22,7 +22,7 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
           store_id: ctx.storeId!,
           creator_id: ifNotHasStorePermission(
             ctx,
-            StorePermissionEnum.HISTORY_READ_ALL,
+            PermissionConfig.store.history.getAllOrderProducts,
           ),
         },
       },
@@ -65,7 +65,7 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
           store_id: ctx.storeId!,
           creator_id: ifNotHasStorePermission(
             ctx,
-            StorePermissionEnum.HISTORY_READ_ALL,
+            PermissionConfig.store.history.getAllOrderProducts,
           ),
         },
       },

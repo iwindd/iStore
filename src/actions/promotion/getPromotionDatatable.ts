@@ -1,6 +1,6 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -12,7 +12,7 @@ export type PromotionDatatableInstance = Awaited<
 const getPromotionDatatable = async (table: TableFetch) => {
   try {
     const ctx = await getPermissionContext(table.storeIdentifier);
-    assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.promotion.getDatatable);
 
     const result = await db.promotionOffer.getDatatable({
       query: table,

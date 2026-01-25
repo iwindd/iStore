@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -16,7 +16,7 @@ const UpdatePromotionOffer = async (
 ): Promise<ActionResponse<unknown>> => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.promotion.updateOffer);
     const validated = UpdatePromotionOfferSchema.parse(payload);
 
     const oldPromotionOffer = await db.promotionOffer.findUnique({

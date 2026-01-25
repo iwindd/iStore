@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -16,7 +16,7 @@ const BuyXGetYLayout = async ({
 }) => {
   const { id, store } = await params;
   const ctx = await getPermissionContext(store);
-  assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.promotion.getDetail);
   const productSelect = {
     quantity: true,
     product: {

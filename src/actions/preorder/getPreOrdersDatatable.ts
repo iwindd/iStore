@@ -1,7 +1,7 @@
 "use server";
 
 import { TableFetch } from "@/components/Datatable";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -9,7 +9,7 @@ import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 const getPreOrdersDatatable = async (table: TableFetch) => {
   try {
     const ctx = await getPermissionContext(table.storeIdentifier);
-    assertStoreCan(ctx, StorePermissionEnum.PREORDER_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.preorder.getDatatable);
 
     const { data, total } = await db.orderPreOrder.getDatatable({
       query: table,

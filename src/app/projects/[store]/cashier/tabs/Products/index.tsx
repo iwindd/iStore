@@ -5,6 +5,7 @@ import { Grid, Stack, Typography } from "@mui/material";
 import { GridSortModel } from "@mui/x-data-grid";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import ProductCard from "./ProductCard";
 import ProductGridSkeleton from "./ProductGridSkeleton";
 
@@ -12,6 +13,7 @@ const ProductsTab = () => {
   const t = useTranslations("CASHIER.tabs.products");
   const searchQuery = useAppSelector((state) => state.cart.scanner);
   const filter = searchQuery.split(" ");
+  const params = useParams<{ store: string }>();
 
   const {
     data: response,
@@ -22,6 +24,7 @@ const ProductsTab = () => {
     queryFn: async () =>
       await getProductDatatable(
         {
+          storeIdentifier: params.store,
           pagination: {
             page: 0,
             pageSize: 12,

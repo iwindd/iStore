@@ -1,7 +1,7 @@
 "use server";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 
-import { StorePermissionEnum } from "@/enums/permission";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
@@ -15,7 +15,7 @@ const adjustProductStock = async (
   payload: ProductAdjustStockValues & { id: number },
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.product.adjustStock);
   const validated = ProductAdjustStockSchema.parse(payload);
   const product = await db.product.findUniqueOrThrow({
     where: {

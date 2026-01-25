@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -9,7 +9,7 @@ import sendBroadcastToApplications from "../application/sendBroadcastToApplicati
 export const sendBroadcast = async (storeSlug: string, id: number) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.send);
 
     const broadcast = await db.broadcast.update({
       where: {

@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { mastra } from "@/mastra";
@@ -15,7 +15,7 @@ export const generateImageAction = async (
 ) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.generateContent);
 
     const validation = AiImagePromptSchema.safeParse(data);
 

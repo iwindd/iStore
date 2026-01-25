@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { removeWhiteSpace } from "@/libs/formatter";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -8,7 +8,7 @@ import { ProductSchema, ProductValues } from "@/schema/Product";
 
 const createProduct = async (storeSlug: string, payload: ProductValues) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.product.create);
   const validated = ProductSchema.parse(payload);
 
   return await db.product.create({

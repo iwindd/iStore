@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -11,7 +11,7 @@ import { updateProductStock } from "./updateProductStock";
 
 const createStockReceipt = async (storeSlug: string, payload: StockValues) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.stock.createReceipt);
 
   const stock = await db.stockReceipt.create({
     data: {

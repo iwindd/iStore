@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -13,7 +13,7 @@ const updatePreOrderStatus = async (
   status: PreOrderStatus,
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PREORDER_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.preorder.updateStatus);
 
   await db.$transaction(async (tx) => {
     // Verify the preorder belongs to the user's store and get product info

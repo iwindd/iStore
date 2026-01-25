@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -7,7 +7,7 @@ import { StockReceiptStatus } from "@prisma/client";
 
 const cancelStockReceipt = async (id: number, storeSlug: string) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.stock.cancelReceipt);
   const data = await db.stockReceipt.update({
     where: {
       id: id,

@@ -4,7 +4,7 @@ import {
   StockLayoutSelect,
   StockLayoutValue,
 } from "@/app/projects/[store]/(products)/stocks/[id]/layout";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -20,7 +20,7 @@ const updateStock = async (
 ): Promise<StockLayoutValue> => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.stock.update);
 
     const stock = await db.stockReceipt.update({
       where: {

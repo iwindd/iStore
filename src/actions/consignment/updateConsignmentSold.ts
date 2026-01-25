@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -16,7 +16,7 @@ const confirmConsignment = async (
   },
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.CONSIGNMENT_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.consignment.updateSold);
   const validatedOrder = CashoutInputSchema.parse(payload.order);
   const validatedConsignment = ConsignmentSchema.parse(payload.consignment);
   const consignment = await db.consignment.findUniqueOrThrow({

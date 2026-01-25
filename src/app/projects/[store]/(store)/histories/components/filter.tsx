@@ -1,7 +1,6 @@
 "use client";
 
 import getHistoryCreators from "@/actions/order/getHistoryCreators";
-import { HistoryFilter } from "@/app/[store]/(store)/histories/types";
 import {
   ClearAllTwoTone,
   FilterAltTwoTone,
@@ -29,6 +28,7 @@ import { Dayjs } from "dayjs";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import React from "react";
+import { HistoryFilter } from "../types";
 
 interface Creator {
   id: number;

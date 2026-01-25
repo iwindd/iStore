@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan, PermissionContext } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -112,7 +112,7 @@ const ImportToolAction = async (
 ): Promise<StockValues["products"]> => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.stock.tools);
 
     const validated = StockReceiptImportSchema.parse(payload);
     switch (validated.type) {

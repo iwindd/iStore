@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -58,7 +58,7 @@ const CreatePromotionOffer = async (
   payload: AddPromotionOfferValues,
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.PROMOTION_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.promotion.createOffer);
   const validated = AddPromotionOfferSchema.parse(payload);
 
   const promotionOffer = await db.event.create({

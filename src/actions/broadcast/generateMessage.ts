@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import BotApp from "@/libs/botapp";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -12,7 +12,7 @@ export const generateAdMessage = async (
 ) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.generateContent);
     const event = await db.event.findFirstOrThrow({
       where: {
         id: promotionId,

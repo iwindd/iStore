@@ -1,6 +1,6 @@
 "use server";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { CashoutType } from "@/enums/cashout";
-import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import {
   assertStore,
@@ -19,7 +19,7 @@ const getHistoryDetail = async (storeId: string, id: number) => {
       type: CashoutType.CASHOUT,
       creator_id: ifNotHasStorePermission(
         ctx,
-        StorePermissionEnum.HISTORY_READ_ALL,
+        PermissionConfig.store.history.readAllUser,
       ),
     };
 

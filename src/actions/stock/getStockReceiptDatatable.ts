@@ -1,6 +1,6 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -43,7 +43,7 @@ const getStockReceiptDatatable = async (
 ) => {
   try {
     const ctx = await getPermissionContext(query.storeIdentifier);
-    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.stock.getReceiptDatatable);
 
     let where: any = {
       store_id: ctx.storeId,

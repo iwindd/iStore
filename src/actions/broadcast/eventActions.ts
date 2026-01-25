@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
@@ -22,7 +22,7 @@ export const searchEvents = async (
 ): Promise<EventSelectorItem[]> => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.manageEvents);
 
     const events = await db.event.findMany({
       where: {
@@ -71,7 +71,7 @@ export const findEvent = async (
 ): Promise<EventSelectorItem | null> => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.manageEvents);
 
     const event = await db.event.findFirst({
       where: {
@@ -103,7 +103,7 @@ export const getEventPromotionDetails = async (
 ) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
-    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.broadcast.manageEvents);
 
     const offer = await db.promotionOffer.findFirst({
       where: {

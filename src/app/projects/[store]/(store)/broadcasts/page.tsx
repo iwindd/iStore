@@ -190,7 +190,7 @@ const BroadcastPage = () => {
         headerName: t("datatable.headers.creator"),
         flex: 1,
         renderCell: ({ row }) =>
-          row.creator?.user.name || t("datatable.placeholders.not_specified"),
+          `${row.creator?.user.first_name} ${row.creator?.user.last_name} `,
       },
       {
         field: "actions",

@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -61,7 +61,7 @@ const createCategorySelector = async (
 ): Promise<CategorySelectorInstance | null> => {
   try {
     const ctx = await getPermissionContext(storeId);
-    assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
+    assertStoreCan(ctx, PermissionConfig.store.category.select);
 
     const category = await db.category.create({
       data: {

@@ -1,15 +1,14 @@
 "use server";
-import { EmployeePermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
-import db from "@/libs/db";
-import { getUser } from "@/libs/session";
-import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
-import bcrypt from "bcrypt";
+import { ActionResponse } from "@/libs/action";
+import { EmployeeValues } from "@/schema/Employee";
+import { forbidden } from "next/navigation";
 
 export const create = async (
-  payload: EmployeeValues
+  payload: EmployeeValues,
 ): Promise<ActionResponse<EmployeeValues>> => {
-  try {
+  forbidden();
+  // TODO: Implement create employee action
+  /*   try {
     const user = await getUser();
     if (!user) throw new Error("Unauthorized");
     if (!user.hasPermission(EmployeePermissionEnum.CREATE))
@@ -41,5 +40,5 @@ export const create = async (
     return { success: true, data: validated };
   } catch (error) {
     return ActionError(error) as ActionResponse<EmployeeValues>;
-  }
+  } */
 };

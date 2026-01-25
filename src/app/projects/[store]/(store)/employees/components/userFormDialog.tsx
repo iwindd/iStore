@@ -49,7 +49,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
   });
 
   const submitRole: SubmitHandler<EmployeeValues> = async (
-    payload: EmployeeValues
+    payload: EmployeeValues,
   ) => {
     setBackdrop(true);
     try {
@@ -80,7 +80,7 @@ const UserFormDialog = ({ isOpen, onClose, user }: UserFormDialogProps) => {
 
   React.useEffect(() => {
     if (user) {
-      setValue("name", user.name);
+      setValue("name", `${user.first_name} ${user.last_name}`);
       setValue("email", user.email);
       const roleId: number = (user as any).employees?.[0]?.role?.id || null;
       setValue("role", roleId || 0);

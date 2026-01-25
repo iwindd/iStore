@@ -1,5 +1,5 @@
 "use server";
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -118,7 +118,7 @@ interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
 
 const Cashout = async (storeSlug: string, payload: CashoutValues) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.CASHIER_CASHOUT);
+  assertStoreCan(ctx, PermissionConfig.store.cashier.cashout);
 
   const validated = CashoutSchema.parse(payload);
   const { products, preOrderProducts, totalPrice, totalCost, totalProfit } =

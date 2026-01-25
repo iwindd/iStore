@@ -1,6 +1,6 @@
 "use server";
 
-import { StorePermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
@@ -16,7 +16,7 @@ export const updateLineApplication = async (
   data: LineApplicationSchemaType,
 ) => {
   const ctx = await getPermissionContext(storeSlug);
-  assertStoreCan(ctx, StorePermissionEnum.APPLICATION_MANAGEMENT);
+  assertStoreCan(ctx, PermissionConfig.store.application.updateLineApplication);
   const validation = LineApplicationSchema.safeParse(data);
 
   if (!validation.success) {

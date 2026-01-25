@@ -1,5 +1,5 @@
 "use client";
-import { StockLayoutValue } from "@/app/[store]/(products)/stocks/[id]/layout";
+import { StockLayoutValue } from "@/app/projects/[store]/(products)/stocks/[id]/layout";
 import ProductSelector from "@/components/Selector/ProductSelector";
 import STOCK_CONFIG from "@/config/Stock";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
