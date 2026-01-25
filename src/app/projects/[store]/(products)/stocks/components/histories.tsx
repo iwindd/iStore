@@ -7,12 +7,12 @@ import getStockReceiptDatatable, {
 import StockReceiptStatusChip from "@/components/Chips/StockReceiptStatusChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { StockPermissionEnum } from "@/enums/permission";
-import { useAuth } from "@/hooks/use-auth";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useExport } from "@/hooks/use-export";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
+import { usePermission } from "@/providers/PermissionProvider";
 import { getPath } from "@/router";
 import {
   CancelTwoTone,
@@ -32,7 +32,6 @@ const HistoryDatatable = () => {
   const t = useTranslations("STOCKS.datatable");
   const ts = useTranslations("STOCKS.status");
   const { setBackdrop } = useInterface();
-  const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
   const { store } = useParams<{ store: string }>();
@@ -41,12 +40,9 @@ const HistoryDatatable = () => {
     "all" | "completed" | "draft" | "cancelled"
   >("all");
 
-  const permissions = (stock: StockReceiptDatatableInstance) => ({
-    canCancelStock:
-      user?.hasPermission(StockPermissionEnum.DELETE) ||
-      stock.creator?.id === user?.userStoreId,
-    canCreateStock: user?.hasPermission(StockPermissionEnum.CREATE),
-  });
+  const hasPermissionCanCancelStock = usePermission().hasStorePermission(
+    PermissionConfig.store.stock.cancelReceipt,
+  );
 
   const { setItems, Export, ExportHandler } = useExport([
     { label: t("export_labels.serial"), key: "serial" },
@@ -207,7 +203,7 @@ const HistoryDatatable = () => {
             icon={<CancelTwoTone />}
             onClick={menu.cancel(row)}
             disabled={
-              !permissions(row).canCancelStock ||
+              !hasPermissionCanCancelStock ||
               row.status !== StockReceiptStatus.DRAFT
             }
             label={t("actions.cancel")}

@@ -1,7 +1,6 @@
 "use client";
 import createProduct from "@/actions/product/createProduct";
 import recoveryProduct from "@/actions/product/recoveryProduct";
-import { ProductPermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { getPath } from "@/router";
 import { ProductSchema, ProductValues } from "@/schema/Product";
@@ -149,12 +148,6 @@ const ProductFormDialog = ({
           color="success"
           type="submit"
           loading={isPending}
-          sx={{
-            display:
-              product?.id && !user?.hasPermission(ProductPermissionEnum.UPDATE)
-                ? "none"
-                : "",
-          }}
         >
           {product?.deleted_at ? t("recovery") : t("save")}
         </Button>

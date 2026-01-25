@@ -16,16 +16,6 @@ export enum SuperPermissionEnum {
   STORE = "STORE.*",
 }
 
-export enum DashboardPermissionEnum {
-  ALL = SuperPermissionEnum.DASHBOARD,
-  READ = "DASHBOARD.READ",
-}
-
-export enum CashierPermissionEnum {
-  ALL = SuperPermissionEnum.CASHIER,
-  CREATE = "CASHIER.CREATE",
-}
-
 export enum ProductPermissionEnum {
   ALL = SuperPermissionEnum.PRODUCT,
   READ = "PRODUCT.READ",
@@ -34,34 +24,12 @@ export enum ProductPermissionEnum {
   DELETE = "PRODUCT.DELETE",
 }
 
-export enum CategoryPermissionEnum {
-  ALL = SuperPermissionEnum.CATEGORY,
-  READ = "CATEGORY.READ",
-  CREATE = "CATEGORY.CREATE",
-  UPDATE = "CATEGORY.UPDATE",
-  DELETE = "CATEGORY.DELETE",
-}
-
 export enum StockPermissionEnum {
   ALL = SuperPermissionEnum.STOCK,
   READ = "STOCK.READ",
   CREATE = "STOCK.CREATE",
   UPDATE = "STOCK.UPDATE",
   DELETE = "STOCK.DELETE",
-}
-
-export enum OverStockPermissionEnum {
-  ALL = SuperPermissionEnum.OVERSTOCK,
-  READ = "OVERSTOCK.READ",
-  UPDATE = "OVERSTOCK.UPDATE",
-}
-
-export enum ConsignmentPermissionEnum {
-  ALL = SuperPermissionEnum.CONSIGNMENT,
-  READ = "CONSIGNMENT.READ",
-  CREATE = "CONSIGNMENT.CREATE",
-  UPDATE = "CONSIGNMENT.UPDATE",
-  DELETE = "CONSIGNMENT.DELETE",
 }
 
 export enum PurchasePermissionEnum {
@@ -79,47 +47,6 @@ export enum AccountPermissionEnum {
   ALL = SuperPermissionEnum.ACCOUNT,
   UPDATE = "ACCOUNT.UPDATE",
 }
-
-export enum RolePermissionEnum {
-  ALL = SuperPermissionEnum.ROLE,
-  READ = "ROLE.READ",
-  CREATE = "ROLE.CREATE",
-  UPDATE = "ROLE.UPDATE",
-  DELETE = "ROLE.DELETE",
-}
-
-export enum EmployeePermissionEnum {
-  ALL = SuperPermissionEnum.EMPLOYEE,
-  READ = "EMPLOYEE.READ",
-  CREATE = "EMPLOYEE.CREATE",
-  UPDATE = "EMPLOYEE.UPDATE",
-  DELETE = "EMPLOYEE.DELETE",
-}
-
-export enum PromotionPermissionEnum {
-  ALL = SuperPermissionEnum.PROMOTION,
-  READ = "PROMOTION.READ",
-  CREATE = "PROMOTION.CREATE",
-  UPDATE = "PROMOTION.UPDATE",
-  DELETE = "PROMOTION.DELETE",
-}
-
-export type PermissionEnum =
-  | SuperPermissionEnum
-  | CashierPermissionEnum
-  | DashboardPermissionEnum
-  | ProductPermissionEnum
-  | CategoryPermissionEnum
-  | StockPermissionEnum
-  | OverStockPermissionEnum
-  | ConsignmentPermissionEnum
-  | PurchasePermissionEnum
-  | HistoryPermissionEnum
-  | AccountPermissionEnum
-  | RolePermissionEnum
-  | EmployeePermissionEnum
-  | PromotionPermissionEnum
-  | StorePermissionEnum;
 
 export enum GlobalPermissionEnum {
   STORE_CREATE = "Store.Create",

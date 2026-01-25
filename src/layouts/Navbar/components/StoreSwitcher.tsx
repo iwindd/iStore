@@ -1,7 +1,6 @@
 "use client";
 
 import getStoreSwitcher from "@/actions/user/getStoreSwitcher";
-import { useAuth } from "@/hooks/use-auth";
 import { Colorization } from "@/libs/colorization";
 import {
   Add as AddIcon,
@@ -24,12 +23,13 @@ import {
   useTheme,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 
 const StoreSwitcher = () => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { user } = useAuth();
+  const params = useParams<{ store: string }>();
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -50,7 +50,8 @@ const StoreSwitcher = () => {
     retry: false,
     staleTime: 60 * 60 * 1000,
   });
-  const selectedStore = stores?.find((store) => store.id === user?.store);
+
+  const selectedStore = stores?.find((store) => store.slug === params.store);
 
   return (
     <>

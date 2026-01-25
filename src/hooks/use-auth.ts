@@ -7,20 +7,22 @@ interface AuthHook {
   session: Session | null;
   user: UserClient | null;
 
-  setName: (name: string) => void;
+  setName: (firstname: string, lastname: string) => void;
 }
 
 export function useAuth(): AuthHook {
   const { data: session, update } = useSession();
   const user = session ? new UserClient(session) : null;
 
-  const setName = (name: string) => {
+  const setName = (firstname: string, lastname: string) => {
     if (!session || !user) return;
     update({
       ...session,
       user: {
         ...session.user,
-        name: name,
+        first_name: firstname,
+        last_name: lastname,
+        name: `${firstname} ${lastname}`,
       },
     });
   };

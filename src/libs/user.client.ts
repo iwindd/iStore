@@ -1,4 +1,3 @@
-import { PermissionEnum } from "@/enums/permission";
 import { Session } from "next-auth";
 
 type UserClientPayload = Session & {
@@ -19,42 +18,19 @@ export class UserClient {
     return +this.payload?.user.id || 0;
   }
 
-  get store() {
-    return this.payload?.store?.id;
-  }
-
-  get userStoreId() {
-    return this.payload?.store?.employee_id;
-  }
-
-  get employeeId() {
-    return this.userStoreId;
-  }
-
   get displayName() {
     return this.payload?.user.name || "";
   }
 
+  get firstName() {
+    return this.payload?.user.first_name || "";
+  }
+
+  get lastName() {
+    return this.payload?.user.last_name || "";
+  }
+
   get email() {
     return this.payload?.user.email || "";
-  }
-
-  public limitPermission<T = number>(
-    permission: PermissionEnum,
-    returnValue?: T,
-  ) {
-    if (!this.hasPermission(permission)) {
-      return returnValue ?? this.employeeId;
-    }
-
-    return undefined;
-  }
-
-  public hasPermission(permission: PermissionEnum): boolean {
-    return false;
-  }
-
-  public hasSomePermissions(...permissions: PermissionEnum[]): boolean {
-    return false;
   }
 }

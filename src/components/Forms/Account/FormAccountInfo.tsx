@@ -1,9 +1,7 @@
 "use client";
-import UpdateProfile from "@/actions/user/update";
-import { AccountPermissionEnum } from "@/enums/permission";
+import updateUserProfile from "@/actions/user/updateUserProfile";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useInterface } from "@/providers/InterfaceProvider";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EmailTwoTone, PeopleTwoTone, SaveTwoTone } from "@mui/icons-material";
@@ -17,6 +15,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -24,40 +23,41 @@ import { SubmitHandler, useForm } from "react-hook-form";
 const FormAccountInfo = () => {
   const t = useTranslations("ACCOUNT.info");
   const { user, setName } = useAuth();
-  const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    reset,
   } = useForm<ProfileValues>({
     resolver: zodResolver(ProfileSchema),
     defaultValues: {
-      name: user?.displayName,
+      first_name: user?.firstName,
+      last_name: user?.lastName,
+    },
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: updateUserProfile,
+    onSuccess: (data) => {
+      setName(data.first_name, data.last_name);
+      enqueueSnackbar(t("messages.save_success"), {
+        variant: "success",
+      });
+      reset(data);
+    },
+    onError: (error) => {
+      console.error("Error updating profile:", error);
+      enqueueSnackbar(t("messages.error"), {
+        variant: "error",
+      });
     },
   });
 
   const confirmation = useConfirm({
     title: t("confirm_dialog.title"),
     text: t("confirm_dialog.text"),
-    onConfirm: async (payload: ProfileValues) => {
-      setBackdrop(true);
-      try {
-        const resp = await UpdateProfile(payload);
-        if (!resp.success) throw new Error(resp.message);
-        setName(resp.data.name);
-        enqueueSnackbar(t("messages.save_success"), {
-          variant: "success",
-        });
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        enqueueSnackbar(t("messages.error"), {
-          variant: "error",
-        });
-      } finally {
-        setBackdrop(false);
-      }
-    },
+    onConfirm: updateUserMutation.mutateAsync,
   });
 
   const onSubmit: SubmitHandler<ProfileValues> = async (payload) => {
@@ -69,7 +69,6 @@ const FormAccountInfo = () => {
     <>
       <Card component={"form"} onSubmit={handleSubmit(onSubmit)}>
         <CardHeader title={t("card_title")} />
-        <Divider />
         <CardContent>
           <Stack
             spacing={2}
@@ -81,12 +80,26 @@ const FormAccountInfo = () => {
             }}
           >
             <TextField
-              label={t("name_label")}
+              label={t("first_name_label")}
               autoFocus
-              disabled={!user?.hasPermission(AccountPermissionEnum.UPDATE)}
-              {...register("name")}
-              error={errors["name"] !== undefined}
-              helperText={errors["name"]?.message}
+              {...register("first_name")}
+              error={errors["first_name"] !== undefined}
+              helperText={errors["first_name"]?.message}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PeopleTwoTone />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
+            <TextField
+              label={t("last_name_label")}
+              {...register("last_name")}
+              error={errors["last_name"] !== undefined}
+              helperText={errors["last_name"]?.message}
               slotProps={{
                 input: {
                   startAdornment: (
@@ -112,7 +125,7 @@ const FormAccountInfo = () => {
                 },
               }}
             />
-            {user?.hasPermission(AccountPermissionEnum.UPDATE) && (
+            {isDirty && (
               <div>
                 <Button
                   type="submit"

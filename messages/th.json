@@ -1193,7 +1193,8 @@
     "title": "บัญชี",
     "info": {
       "card_title": "ข้อมูลผู้ใช้",
-      "name_label": "ชื่อ",
+      "first_name_label": "ชื่อ",
+      "last_name_label": "นามสกุล",
       "email_label": "อีเมล",
       "save_button": "บันทึก",
       "confirm_dialog": {
