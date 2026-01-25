@@ -2,6 +2,7 @@
 
 import getStoreSwitcher from "@/actions/user/getStoreSwitcher";
 import { Colorization } from "@/libs/colorization";
+import { getPath } from "@/router";
 import {
   Add as AddIcon,
   KeyboardArrowDown as KeyboardArrowDownIcon,
@@ -23,6 +24,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
@@ -172,7 +174,8 @@ const StoreSwitcher = () => {
           stores?.map((store, index) => (
             <MenuItem
               key={store.id}
-              onClick={() => handleSelect(store.id)}
+              component={Link}
+              href={getPath("projects.store", { store: store.slug })}
               selected={store.id === selectedStore?.id}
               sx={{
                 py: 1,
