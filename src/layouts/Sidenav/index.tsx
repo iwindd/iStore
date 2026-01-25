@@ -1,8 +1,8 @@
 "use client";
 import { SidebarItem } from "@/config/Navbar";
-import { useAuth } from "@/hooks/use-auth";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
+import { usePermission } from "@/providers/PermissionProvider";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
 import React, { useState } from "react";
@@ -26,8 +26,8 @@ function getDefaultExpand(items: SidebarItem[], activeRouteTrail: Route[]) {
 }
 
 const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
-  const { user } = useAuth();
   const activeRouteTrail = useActiveRouteTrail();
+  const { hasStorePermission } = usePermission();
 
   const [expand, setExpand] = useState<Record<string, boolean>>(
     getDefaultExpand(items, activeRouteTrail),
@@ -35,18 +35,19 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
 
   const renderNormalItem = (sidebarItem: SidebarItem) => {
     if ("routes" in sidebarItem) return;
-    const { needSomePermissions, ...restPath } = sidebarItem;
+    const permission = sidebarItem.permission;
 
     if (
-      needSomePermissions &&
-      !user?.hasSomePermissions(...needSomePermissions)
-    )
-      return;
+      permission?.someStore &&
+      !hasStorePermission(permission.someStore, true)
+    ) {
+      return null;
+    }
 
     return (
       <SidebarItemComponent
-        key={`navbar-item-${restPath.name}`}
-        {...restPath}
+        key={`navbar-item-${sidebarItem.name}`}
+        {...sidebarItem}
       />
     );
   };
@@ -57,8 +58,9 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
         if ("routes" in sidebarItem) {
           const items = sidebarItem.routes
             .map((item) => renderNormalItem(item))
-            .filter((item) => item !== undefined);
+            .filter((item) => item != null);
 
+          console.log(items);
           if (items.length === 0) return null;
 
           return (

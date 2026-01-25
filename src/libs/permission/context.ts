@@ -35,11 +35,20 @@ export function storeCan(
 
 export function assertStoreCan(
   ctx: PermissionContext,
-  permission: StorePermissionEnum,
+  permission: StorePermissionEnum | StorePermissionEnum[],
+  options?: {
+    some?: boolean;
+  },
 ) {
   assertStore(ctx);
 
-  if (!storeCan(ctx, permission)) {
+  const permissions = Array.isArray(permission) ? permission : [permission];
+
+  if (!permissions.some((p) => storeCan(ctx, p) && options?.some)) {
+    forbidden();
+  }
+
+  if (!permissions.every((p) => storeCan(ctx, p) && !options?.some)) {
     forbidden();
   }
 }

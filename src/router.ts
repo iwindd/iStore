@@ -14,6 +14,7 @@ import {
   Store,
   Work,
 } from "@mui/icons-material";
+import { StorePermissionEnum } from "./enums/permission";
 import { buildRouteUtility, ROUTER } from "./libs/route/route";
 
 const ROUTES = ROUTER({
@@ -42,11 +43,17 @@ const ROUTES = ROUTER({
             path: "/projects/:store/cashier",
             label: "store.cashier.label",
             icon: ShoppingCart,
+            permission: {
+              someStore: [StorePermissionEnum.CASHIER_CASHOUT],
+            },
           },
           products: {
             path: "/projects/:store/products",
             label: "store.products.label",
             icon: Work,
+            permission: {
+              someStore: [StorePermissionEnum.PRODUCT_MANAGEMENT],
+            },
             children: {
               product: {
                 path: "/projects/:store/products/:id",
@@ -72,11 +79,17 @@ const ROUTES = ROUTER({
             path: "/projects/:store/categories",
             label: "store.categories.label",
             icon: Category,
+            permission: {
+              someStore: [StorePermissionEnum.PRODUCT_MANAGEMENT],
+            },
           },
           stocks: {
             path: "/projects/:store/stocks",
             label: "store.stocks.label",
             icon: AllInbox,
+            permission: {
+              someStore: [StorePermissionEnum.PRODUCT_MANAGEMENT],
+            },
             children: {
               create: {
                 path: "/projects/:store/stocks/create",
@@ -103,16 +116,25 @@ const ROUTES = ROUTER({
             path: "/projects/:store/roles",
             label: "store.roles.label",
             icon: Badge,
+            permission: {
+              someStore: [StorePermissionEnum.EMPLOYEE_MANAGEMENT],
+            },
           },
           employees: {
             path: "/projects/:store/employees",
             label: "store.employees.label",
             icon: Group,
+            permission: {
+              someStore: [StorePermissionEnum.EMPLOYEE_MANAGEMENT],
+            },
           },
           broadcasts: {
             path: "/projects/:store/broadcasts",
             label: "store.broadcasts.label",
             icon: Campaign,
+            permission: {
+              someStore: [StorePermissionEnum.BROADCAST_MANAGEMENT],
+            },
             children: {
               broadcast: {
                 path: "/projects/:store/broadcasts/:id",
@@ -128,6 +150,9 @@ const ROUTES = ROUTER({
             path: "/projects/:store/promotions",
             label: "store.promotions.label",
             icon: LocalOffer,
+            permission: {
+              someStore: [StorePermissionEnum.PROMOTION_MANAGEMENT],
+            },
             children: {
               create: {
                 path: "/projects/:store/promotions/create",
@@ -150,6 +175,9 @@ const ROUTES = ROUTER({
             path: "/projects/:store/applications",
             label: "store.applications.label",
             icon: SettingsApplications,
+            permission: {
+              someStore: [StorePermissionEnum.APPLICATION_MANAGEMENT],
+            },
             children: {
               line: {
                 path: "/projects/:store/applications/line/:id",
@@ -168,11 +196,17 @@ const ROUTES = ROUTER({
             path: "/projects/:store/preorders",
             label: "store.preorders.label",
             icon: RotateRight,
+            permission: {
+              someStore: [StorePermissionEnum.PREORDER_MANAGEMENT],
+            },
           },
           consignments: {
             path: "/projects/:store/consignments",
             label: "store.consignments.label",
             icon: AllInbox,
+            permission: {
+              someStore: [StorePermissionEnum.CONSIGNMENT_MANAGEMENT],
+            },
             children: {
               consignment: {
                 path: "/projects/:store/consignments/:id",

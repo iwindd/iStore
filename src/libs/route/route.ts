@@ -1,3 +1,4 @@
+import { StorePermissionEnum } from "@/enums/permission";
 import { compile, match } from "path-to-regexp";
 
 type BaseRoute = {
@@ -7,6 +8,9 @@ type BaseRoute = {
   parent?: string;
   disabled?: boolean;
   disabledBreadcrumb?: boolean;
+  permission?: {
+    someStore: StorePermissionEnum[];
+  };
 };
 
 export type CFG_ROUTE = BaseRoute & {

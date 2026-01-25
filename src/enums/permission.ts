@@ -104,14 +104,6 @@ export enum PromotionPermissionEnum {
   DELETE = "PROMOTION.DELETE",
 }
 
-export enum StorePermissionEnum {
-  ALL = SuperPermissionEnum.STORE,
-  READ = "STORE.READ",
-  CREATE = "STORE.CREATE",
-  UPDATE = "STORE.UPDATE",
-  DELETE = "STORE.DELETE",
-}
-
 export type PermissionEnum =
   | SuperPermissionEnum
   | CashierPermissionEnum
