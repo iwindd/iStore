@@ -1,47 +1,49 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { CategorySchema, CategoryValues } from "@/schema/Category";
 
-const upsertCategory = async (payload: CategoryValues, id: number = 0) => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    const validated = CategorySchema.parse(payload);
-    const category = await db.$transaction(async (tx) => {
-      const category = await tx.category.upsert({
-        where: {
-          id: id,
-        },
-        create: {
-          label: validated.label,
-          store_id: user.store,
-          creator_id: user.employeeId,
-        },
-        update: {
-          label: validated.label,
-        },
-      });
+const upsertCategory = async (
+  storeSlug: string,
+  payload: CategoryValues & { id?: number },
+) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
 
-      if (payload.active) {
-        await db.product.updateMany({
-          where: {
-            category_id: null,
-          },
-          data: {
-            category_id: category.id,
-          },
-        });
-      }
+  const validated = CategorySchema.parse(payload);
 
-      return category;
+  const category = await db.$transaction(async (tx) => {
+    const category = await tx.category.upsert({
+      where: {
+        id: Number(payload.id || 0),
+      },
+      create: {
+        label: validated.label,
+        store_id: ctx.storeId!,
+        creator_id: ctx.employeeId!,
+      },
+      update: {
+        label: validated.label,
+      },
     });
 
-    return { success: true, data: category };
-  } catch (error) {
-    console.error("upsertCategory error: ", error);
-    return { success: false };
-  }
+    if (payload.active) {
+      await tx.product.updateMany({
+        where: {
+          category_id: null,
+        },
+        data: {
+          category_id: category.id,
+        },
+      });
+    }
+
+    return category;
+  });
+
+  return category;
 };
 
 export default upsertCategory;

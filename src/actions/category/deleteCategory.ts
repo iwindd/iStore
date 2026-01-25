@@ -1,27 +1,19 @@
 "use server";
-import { CategoryPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-const deleteCategory = async (id: number) => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    const data = await db.category.delete({
-      where: {
-        id: id,
-        store_id: user.store,
-        creator_id: user.hasPermission(CategoryPermissionEnum.DELETE)
-          ? undefined
-          : user.employeeId,
-      },
-    });
+const deleteCategory = async (storeSlug: string, id: number) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.PRODUCT_MANAGEMENT);
 
-    return { success: true, data: data };
-  } catch (error) {
-    console.error(error);
-    return { success: false };
-  }
+  await db.category.delete({
+    where: {
+      id: id,
+      store_id: ctx.storeId,
+    },
+  });
 };
 
 export default deleteCategory;

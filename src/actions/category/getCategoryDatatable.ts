@@ -1,53 +1,60 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
-import { CategoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { filter, order } from "@/libs/formatter";
-import { getUser } from "@/libs/session";
+import { assertStore } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const getCategoryDatatable = async (table: TableFetch) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(CategoryPermissionEnum.READ))
-      throw new Error("Forbidden");
-    const categories = await db.$transaction([
-      db.category.findMany({
-        skip: table.pagination.page * table.pagination.pageSize,
-        take: table.pagination.pageSize,
-        orderBy: order(table.sort),
-        where: {
-          ...filter(table.filter, ["label"]),
-          store_id: user.store,
+    const ctx = await getPermissionContext(table.storeIdentifier);
+    assertStore(ctx);
+
+    const datatable = await db.category.getDatatable({
+      query: table,
+      searchable: {
+        label: {
+          mode: "insensitive",
         },
-        include: {
-          _count: {
-            select: {
-              product: true,
+        creator: {
+          user: {
+            first_name: {
+              mode: "insensitive",
+            },
+            last_name: {
+              mode: "insensitive",
             },
           },
-          creator: {
-            select: {
-              user: {
-                select: {
-                  name: true,
-                },
+        },
+      },
+      select: {
+        id: true,
+        label: true,
+        created_at: true,
+        creator: {
+          select: {
+            user: {
+              select: {
+                first_name: true,
+                last_name: true,
               },
             },
           },
         },
-      }),
-      db.category.count({
-        where: {
-          store_id: user.store,
+        _count: {
+          select: {
+            product: true,
+          },
         },
-      }),
-    ]);
+      },
+      where: {
+        store_id: ctx.storeId!,
+      },
+    });
 
     return {
       success: true,
-      data: categories[0],
-      total: categories[1],
+      data: datatable.data,
+      total: datatable.total,
     };
   } catch (error) {
     console.error(error);

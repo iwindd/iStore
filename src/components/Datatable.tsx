@@ -60,8 +60,7 @@ const Datatable = ({
   const params = useParams<{ store: string }>();
   const { data, isLoading } = useQuery({
     queryKey: [
-      name, // will be removed soon (use datatable:name instead)
-      `datatable:${name}`,
+      name,
       paginationModel,
       sortModel,
       filterModel.quickFilterValues,

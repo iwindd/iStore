@@ -2,16 +2,17 @@
 import deleteCategory from "@/actions/category/deleteCategory";
 import getCategoryDatatable from "@/actions/category/getCategoryDatatable";
 import Datatable from "@/components/Datatable";
-import { CategoryPermissionEnum } from "@/enums/permission";
-import { useAuth } from "@/hooks/use-auth";
+import { StorePermissionEnum } from "@/enums/permission";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useDialog } from "@/hooks/use-dialog";
-import { date, number, text } from "@/libs/formatter";
+import { date, number } from "@/libs/formatter";
+import { usePermission } from "@/providers/PermissionProvider";
 import { DeleteTwoTone, EditTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { Category as OriginalCategory } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { CategoryFormDialog } from "./CategoryFormDialog";
@@ -28,18 +29,13 @@ const CategoryDatatable = () => {
   const [category, setCategory] = React.useState<Category | null>(null);
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const permissions = (Category: Category) => ({
-    canRemoveCategory:
-      user?.hasPermission(CategoryPermissionEnum.DELETE) ||
-      Category.creator_id === user?.userStoreId,
-    canUpdateCategory:
-      user?.hasPermission(CategoryPermissionEnum.UPDATE) ||
-      Category.creator_id === user?.userStoreId,
-  });
+  const params = useParams<{ store: string }>();
+  const hasPermission = usePermission().hasStorePermission(
+    StorePermissionEnum.PRODUCT_MANAGEMENT,
+  );
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => await deleteCategory(id),
+    mutationFn: async (id: number) => await deleteCategory(params.store, id),
     onSuccess: async () => {
       enqueueSnackbar(t("delete_success"), {
         variant: "success",
@@ -67,30 +63,6 @@ const CategoryDatatable = () => {
     onConfirm: async (id: number) => deleteMutation.mutate(id),
   });
 
-  const editAction = React.useCallback(
-    (category: Category) => () => {
-      setCategory(category);
-      editDialog.handleOpen();
-    },
-    [setCategory, editDialog]
-  );
-
-  const deleteAction = React.useCallback(
-    (category: Category) => () => {
-      confirmation.with(category.id);
-      confirmation.handleOpen();
-    },
-    [confirmation]
-  );
-
-  const menu = React.useMemo(
-    () => ({
-      edit: editAction,
-      delete: deleteAction,
-    }),
-    [editAction, deleteAction]
-  );
-
   const columns = (): GridColDef[] => {
     return [
       {
@@ -107,7 +79,9 @@ const CategoryDatatable = () => {
         headerName: t("headers.creator"),
         flex: 3,
         renderCell: (data: any) =>
-          text(data.value?.user?.name || t("placeholders.not_specified")),
+          data.value?.user
+            ? data.value?.user?.first_name + " " + data.value?.user?.last_name
+            : t("placeholders.not_specified"),
       },
       {
         field: "label",
@@ -135,16 +109,23 @@ const CategoryDatatable = () => {
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoTone />}
-            onClick={menu.edit(row)}
+            onClick={() => {
+              setCategory(row);
+              editDialog.handleOpen();
+            }}
             label={t("actions.edit")}
-            disabled={!permissions(row).canUpdateCategory}
+            disabled={!hasPermission}
             showInMenu
           />,
           <GridActionsCellItem
             key="delete"
             icon={<DeleteTwoTone />}
-            onClick={menu.delete(row)}
+            onClick={() => {
+              confirmation.with(row.id);
+              confirmation.handleOpen();
+            }}
             label={t("actions.delete")}
+            disabled={!hasPermission}
             showInMenu
           />,
         ],
@@ -161,12 +142,17 @@ const CategoryDatatable = () => {
         height={700}
       />
 
-      <CategoryFormDialog
-        open={editDialog.open}
-        onClose={editDialog.handleClose}
-        category={category}
-      />
-      <Confirmation {...confirmation.props} />
+      {hasPermission && (
+        <>
+          <CategoryFormDialog
+            open={editDialog.open}
+            onClose={editDialog.handleClose}
+            category={category}
+          />
+
+          <Confirmation {...confirmation.props} />
+        </>
+      )}
     </>
   );
 };

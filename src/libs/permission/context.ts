@@ -36,7 +36,19 @@ export function assertStoreCan(
   ctx: PermissionContext,
   permission: StorePermissionEnum,
 ) {
+  assertStore(ctx);
+
   if (!storeCan(ctx, permission)) {
     throw new Error("Forbidden");
+  }
+}
+
+/**
+ * Validates that the user has access to the store.
+ * @param ctx The permission context.
+ */
+export function assertStore(ctx: PermissionContext) {
+  if (!ctx.employeeId || !ctx.storeId) {
+    throw new Error("Unauthorized");
   }
 }

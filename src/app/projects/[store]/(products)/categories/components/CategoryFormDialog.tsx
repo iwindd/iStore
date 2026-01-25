@@ -20,6 +20,7 @@ import {
 import { Category } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -38,6 +39,7 @@ export function CategoryFormDialog({
   const t = useTranslations("CATEGORIES.form");
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const params = useParams<{ store: string }>();
   const {
     register,
     handleSubmit,
@@ -59,13 +61,12 @@ export function CategoryFormDialog({
 
   const { isPending, ...upsertMutattion } = useMutation({
     mutationFn: async (data: CategoryValues) =>
-      await upsertCategory(data, category?.id),
+      await upsertCategory(params.store, { ...data, id: category?.id }),
     onSuccess: async () => {
       enqueueSnackbar(t("save_success"), { variant: "success" });
       handleClose();
       queryClient.invalidateQueries({
         queryKey: ["categories"],
-        type: "active",
       });
     },
     onError: async (error) => {

@@ -1,4 +1,6 @@
 "use client";
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
+import { StorePermissionEnum } from "@/enums/permission";
 import { useDialog } from "@/hooks/use-dialog";
 import App, { Wrapper } from "@/layouts/App";
 import { AddTwoTone } from "@mui/icons-material";
@@ -16,17 +18,24 @@ const CategoryPage = () => {
       <App.Header>
         <App.Header.Title>{t("title")}</App.Header.Title>
         <App.Header.Actions>
-          <Button
-            startIcon={<AddTwoTone />}
-            variant="contained"
-            onClick={dialog.handleOpen}
-            size="small"
-            color="secondary"
+          <HasStorePermission
+            permission={StorePermissionEnum.PRODUCT_MANAGEMENT}
           >
-            {t("add_button")}
-          </Button>
+            <Button
+              startIcon={<AddTwoTone />}
+              variant="contained"
+              onClick={dialog.handleOpen}
+              size="small"
+              color="secondary"
+            >
+              {t("add_button")}
+            </Button>
 
-          <CategoryFormDialog open={dialog.open} onClose={dialog.handleClose} />
+            <CategoryFormDialog
+              open={dialog.open}
+              onClose={dialog.handleClose}
+            />
+          </HasStorePermission>
         </App.Header.Actions>
       </App.Header>
       <App.Main>
