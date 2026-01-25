@@ -1,11 +1,7 @@
 "use client";
 import { getStats, StatResult } from "@/actions/dashboard/getStats";
-import {
-  ConsignmentPermissionEnum,
-  OverStockPermissionEnum,
-  PermissionEnum,
-  ProductPermissionEnum,
-} from "@/enums/permission";
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { number } from "@/libs/formatter";
@@ -15,7 +11,7 @@ import { BackHand, Receipt, RotateRight, Warning } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { TotalStat, TotalStatProps } from "./Stat";
 
 interface StatConfig {
@@ -25,7 +21,7 @@ interface StatConfig {
   icon: React.ReactNode;
   render: (stats: StatResult) => string;
   color?: TotalStatProps["color"];
-  permission?: PermissionEnum;
+  permission?: string;
 }
 
 const Stats = () => {
@@ -33,10 +29,11 @@ const Stats = () => {
   const { user } = useAuth();
   if (!user) return notFound();
   const range = useAppSelector((state) => state.dashboard.range);
+  const params = useParams<{ store: string }>();
 
   const { isLoading, data } = useQuery({
     queryKey: ["stats", range],
-    queryFn: () => getStats(range),
+    queryFn: () => getStats(params.store, range),
   });
 
   const config: StatConfig[] = [
@@ -47,6 +44,7 @@ const Stats = () => {
       icon: <Receipt />,
       render: (stats) => t("items_unit", { count: number(stats.order.sold) }),
       color: "success",
+      permission: PermissionConfig.store.dashboard.viewOrderSoldStat,
     },
     {
       name: "consignments",
@@ -55,7 +53,7 @@ const Stats = () => {
       icon: <BackHand />,
       render: (stats) => t("items_unit", { count: number(stats.consignment) }),
       color: "primary",
-      permission: ConsignmentPermissionEnum.READ,
+      permission: PermissionConfig.store.dashboard.viewConsignmentStat,
     },
     {
       name: "preorders",
@@ -65,7 +63,7 @@ const Stats = () => {
       render: (stats) =>
         t("items_unit", { count: number(stats.preorder.pending) }),
       color: "info",
-      permission: OverStockPermissionEnum.READ,
+      permission: PermissionConfig.store.dashboard.viewPreorderStat,
     },
     {
       name: "low_stock",
@@ -75,31 +73,25 @@ const Stats = () => {
       render: (stats) =>
         t("items_unit", { count: number(stats.product.lowStockCount) }),
       color: "warning",
-      permission: ProductPermissionEnum.READ,
+      permission: PermissionConfig.store.dashboard.viewLowstockStat,
     },
   ];
 
   return (
     <Grid container>
       {config.map((stat) => (
-        <Grid
-          key={stat.name}
-          size={{ xs: 12, sm: 6, lg: 3 }}
-          display={
-            stat.permission && !user.hasPermission(stat.permission)
-              ? "none"
-              : undefined
-          }
-        >
-          <TotalStat
-            href={stat.route && getPath(stat.route.name)}
-            label={stat.label}
-            color={stat.color || "primary"}
-            icon={stat.icon}
-            loading={isLoading}
-            value={(data && stat.render(data)) || ""}
-          />
-        </Grid>
+        <HasStorePermission key={stat.name} permission={stat.permission || []}>
+          <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+            <TotalStat
+              href={stat.route && getPath(stat.route.name)}
+              label={stat.label}
+              color={stat.color || "primary"}
+              icon={stat.icon}
+              loading={isLoading}
+              value={(data && stat.render(data)) || ""}
+            />
+          </Grid>
+        </HasStorePermission>
       ))}
     </Grid>
   );

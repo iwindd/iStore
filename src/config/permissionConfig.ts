@@ -25,6 +25,18 @@ export const PermissionConfig = {
    * Store-level permissions (tied to a specific store)
    */
   store: {
+    /** Dashboard operations */
+    dashboard: {
+      /** Get preorder summary */
+      viewOrderSoldStat: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View consignment summary */
+      viewConsignmentStat: StorePermissionEnum.CONSIGNMENT_MANAGEMENT,
+      /** View preorder summary */
+      viewPreorderStat: StorePermissionEnum.PREORDER_MANAGEMENT,
+      /** View lowstock summary */
+      viewLowstockStat: StorePermissionEnum.PRODUCT_MANAGEMENT,
+    },
+
     /** Cashier operations */
     cashier: {
       /** Perform cashout operation */

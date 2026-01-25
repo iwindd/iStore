@@ -2,6 +2,7 @@
 
 import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
+import { PermissionContext } from "@/libs/permission/context";
 import { UserServer } from "@/libs/user.server";
 import {
   DashboardRange,
@@ -13,13 +14,13 @@ import { Decimal } from "@prisma/client/runtime/library";
 import dayjs from "dayjs";
 
 export async function getSoldSummary(
-  user: UserServer,
+  ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
   const orderProductCount = await db.orderProduct.aggregate({
     where: {
       order: {
-        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+        store_id: ctx.storeId,
         created_at: {
           gte: range.start,
           lte: range.end,
@@ -37,7 +38,7 @@ export async function getSoldSummary(
 }
 
 export async function getPreOrderSummary(
-  user: UserServer,
+  ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
   type PreorderGroupResult = {
@@ -49,7 +50,7 @@ export async function getPreOrderSummary(
     by: ["status"],
     where: {
       order: {
-        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+        store_id: ctx.storeId,
         created_at: {
           gte: range.start,
           lte: range.end,
@@ -82,13 +83,12 @@ export async function getPreOrderSummary(
 }
 
 export async function getConsignmentSummary(
-  user: UserServer,
+  ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
   return db.consignment.count({
     where: {
-      store_id: user.store,
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      store_id: ctx.storeId,
       created_at: {
         gte: range.start,
         lte: range.end,
@@ -97,11 +97,11 @@ export async function getConsignmentSummary(
   });
 }
 
-export async function getProductSummary(user: UserServer) {
+export async function getProductSummary(ctx: PermissionContext) {
   const lowStockCount = await db.productStock.count({
     where: {
       product: {
-        store_id: user.store,
+        store_id: ctx.storeId,
         deleted_at: null,
       },
       useAlert: true,

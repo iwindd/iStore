@@ -1,5 +1,6 @@
 "use server";
-import { getUser } from "@/libs/session";
+import { assertStore } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { DashboardRange } from "@/reducers/dashboardReducer";
 import {
   getConsignmentSummary,
@@ -16,7 +17,10 @@ export interface StatResult {
   consignment: number;
 }
 
-export const getStats = async (range: DashboardRange): Promise<StatResult> => {
+export const getStats = async (
+  storeSlug: string,
+  range: DashboardRange,
+): Promise<StatResult> => {
   const summary = {
     order: { sold: 0 },
     preorder: { returned: 0, pending: 0 },
@@ -27,20 +31,20 @@ export const getStats = async (range: DashboardRange): Promise<StatResult> => {
   const filterRange = await getDashboardRangeDate(range);
 
   try {
-    const user = await getUser();
-    if (!user) throw new Error("not_found_user");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStore(ctx);
 
-    const soldSummary = await getSoldSummary(user, filterRange);
+    const soldSummary = await getSoldSummary(ctx, filterRange);
     summary.order.sold = soldSummary.sold;
 
-    const preorderSummary = await getPreOrderSummary(user, filterRange);
+    const preorderSummary = await getPreOrderSummary(ctx, filterRange);
     summary.preorder = preorderSummary;
     summary.order.sold += preorderSummary.returned;
 
-    const consignmentCount = await getConsignmentSummary(user, filterRange);
+    const consignmentCount = await getConsignmentSummary(ctx, filterRange);
     summary.consignment = consignmentCount;
 
-    const productSummary = await getProductSummary(user);
+    const productSummary = await getProductSummary(ctx);
     summary.product = productSummary;
 
     return summary;
