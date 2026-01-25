@@ -126,7 +126,13 @@
         }
       },
       "employees": {
-        "label": "พนักงาน"
+        "label": "พนักงาน",
+        "create": {
+          "label": "สร้างพนักงาน"
+        },
+        "employee": {
+          "label": "รายละเอียดพนักงาน"
+        }
       },
 
       "broadcasts": {
@@ -1150,6 +1156,37 @@
         "label": "ประวัติการทำรายการ",
         "description": "เข้าถึงประวัติการทำรายการทั้งหมด"
       }
+    }
+  },
+  "EMPLOYEES": {
+    "title": "พนักงาน",
+    "add_button": "เพิ่มพนักงาน",
+    "create_title": "สร้างพนักงานใหม่",
+    "edit_title": "แก้ไขพนักงาน",
+    "form": {
+      "general_info_card": "ข้อมูลทั่วไป",
+      "first_name_label": "ชื่อจริง",
+      "first_name_placeholder": "กรอกชื่อจริง",
+      "last_name_label": "นามสกุล",
+      "last_name_placeholder": "กรอกนามสกุล",
+      "email_label": "อีเมล",
+      "email_placeholder": "example@email.com",
+      "password_label": "รหัสผ่าน",
+      "password_placeholder": "ไม่ระบุ (สุ่ม 8 ตัวอักษร)",
+      "password_helper": "หากไม่กรอก ระบบจะสุ่มรหัสผ่าน 8 ตัวอักษรให้อัตโนมัติ",
+      "role_card": "ข้อมูลตำแหน่ง",
+      "role_label": "ตำแหน่ง",
+      "address_card": "ที่อยู่",
+      "zipcode_label": "รหัสไปรษณีย์",
+      "save_button": "บันทึก",
+      "cancel_button": "ยกเลิก"
+    },
+    "messages": {
+      "created": "สร้างพนักงานสำเร็จแล้ว!",
+      "updated": "อัปเดตพนักงานสำเร็จแล้ว!",
+      "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง",
+      "not_found": "ไม่พบพนักงานที่ต้องการ",
+      "loading": "กำลังโหลด..."
     }
   },
   "ACCOUNT": {

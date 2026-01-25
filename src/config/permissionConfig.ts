@@ -177,6 +177,8 @@ export const PermissionConfig = {
       delete: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
       /** Get employee details */
       get: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      /** Get employee datatable */
+      datatable: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
     },
 
     /** Role management operations */
