@@ -11,12 +11,12 @@ const persistConfig = {
 
 const persistedCartReducer = persistReducer<CartState>(
   persistConfig,
-  cartReducer
+  cartReducer,
 );
 
 const persistedDashboardReducer = persistReducer<DashboardState>(
   persistConfig,
-  dashboardReducer
+  dashboardReducer,
 );
 
 export const store = () => {

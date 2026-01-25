@@ -3,14 +3,24 @@ import StoreSidebarItems from "@/config/Navbar/store";
 import { useAuth } from "@/hooks/use-auth";
 import StoreNavbar from "@/layouts/Navbar/StoreNavbar";
 import DesktopSidebar from "@/layouts/Sidenav/components/DesktopSidebar";
+import { setStoreSlug } from "@/reducers/cartReducer";
 import { Box, GlobalStyles, Stack } from "@mui/material";
+import { useEffect } from "react";
+import { useStore } from "react-redux";
 
 export default function MainLayout({
   children,
+  storeSlug,
 }: Readonly<{
   children: React.ReactNode;
+  storeSlug: string;
 }>) {
   const { user } = useAuth();
+  const store = useStore();
+
+  useEffect(() => {
+    store.dispatch(setStoreSlug(storeSlug));
+  }, [storeSlug]);
 
   if (!user) {
     return children;

@@ -38,6 +38,7 @@ export interface CartState {
   total: number;
   totalPreOrder: number;
   checkoutMode: CheckoutMode;
+  storeSlug?: string;
   scanner: string;
 }
 
@@ -80,6 +81,8 @@ export const cashoutCart = createAsyncThunk(
   "cart/cashoutCart",
   async (data: CashoutInputValues, thunkAPI) => {
     const { cart } = thunkAPI.getState() as { cart: CartState };
+    if (!cart.storeSlug) return;
+
     const payload = CashoutSchema.safeParse({
       products: cart.products,
       preOrderProducts: cart.preOrderProducts,
@@ -102,7 +105,7 @@ export const cashoutCart = createAsyncThunk(
       throw new Error(payload.error?.message);
     }
 
-    const resp = await Cashout(payload.data);
+    const resp = await Cashout(cart.storeSlug, payload.data);
     if (!resp.success) {
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
@@ -155,13 +158,14 @@ export const consignmentCart = createAsyncThunk(
   },
 );
 
-const initialState: CartState = {
+export const initialCartState: CartState = {
   products: [],
   preOrderProducts: [],
   total: 0,
   totalPreOrder: 0,
   checkoutMode: CheckoutMode.CASHOUT,
   scanner: "",
+  storeSlug: undefined,
 };
 
 const getTotalPrice = (products: CartProduct[]) => {
@@ -256,9 +260,20 @@ const onAddProductToCart = (
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState: initialState,
+  initialState: initialCartState,
   reducers: {
     clearProductCart: (state) => {
+      state.products = [];
+      state.preOrderProducts = [];
+      state.total = 0;
+      state.totalPreOrder = 0;
+    },
+    setStoreSlug: (state, action: PayloadAction<string>) => {
+      if (state.storeSlug == action.payload) {
+        return;
+      }
+
+      state.storeSlug = action.payload;
       state.products = [];
       state.preOrderProducts = [];
       state.total = 0;
@@ -360,5 +375,6 @@ export const {
   preOrderProduct,
   setCheckoutMode,
   setScanner,
+  setStoreSlug,
 } = cartSlice.actions;
 export default cartSlice.reducer;

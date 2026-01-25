@@ -1,12 +1,12 @@
 "use server";
-import { CashierPermissionEnum } from "@/enums/permission";
-import { ActionError, ActionResponse } from "@/libs/action";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
 import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import {CashoutHelper} from './cashout-helpers';
+import { CashoutHelper } from "./cashout-helpers";
 
 export type ValidateProduct = {
   id: number;
@@ -21,7 +21,7 @@ export type ValidateProduct = {
 export const validateProducts = async (
   store_id: string,
   cartProducts: CashoutValues["products"],
-  preOrderProducts?: CashoutValues["preOrderProducts"]
+  preOrderProducts?: CashoutValues["preOrderProducts"],
 ) => {
   const allRelateProductIds = [
     ...cartProducts.map((p) => p.id),
@@ -59,7 +59,7 @@ export const validateProducts = async (
 
   const validateProduct = (
     cartProduct: CashoutValues["products"][number],
-    isPreOrder?: boolean
+    isPreOrder?: boolean,
   ) => {
     const product = findProduct(cartProduct.id);
 
@@ -116,110 +116,105 @@ interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
   updated_at: string;
 }
 
-const Cashout = async (payload: CashoutValues) => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-    if (!user.hasPermission(CashierPermissionEnum.CREATE))
-      throw new Error("Forbidden");
-    const validated = CashoutSchema.parse(payload);
-    const { products, preOrderProducts, totalPrice, totalCost, totalProfit } =
-      await validateProducts(
-        user.store,
-        validated.products,
-        validated.preOrderProducts
-      );
+const Cashout = async (storeSlug: string, payload: CashoutValues) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, StorePermissionEnum.CASHIER_CASHOUT);
 
-    const order = await db.$transaction(async (tx) => {
-      const order = await tx.order.create({
+  const validated = CashoutSchema.parse(payload);
+  const { products, preOrderProducts, totalPrice, totalCost, totalProfit } =
+    await validateProducts(
+      ctx.storeId!,
+      validated.products,
+      validated.preOrderProducts,
+    );
+
+  const order = await db.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data: {
+        total: new Decimal(totalPrice),
+        cost: new Decimal(totalCost),
+        profit: new Decimal(totalProfit),
+        method: validated.method,
+        note: validated.note,
+        store_id: ctx.storeId!,
+        creator_id: ctx.employeeId!,
+      },
+    });
+
+    // Create Order Products
+    await tx.orderProduct.createMany({
+      data: products.map((product) => ({
+        order_id: order.id,
+        product_id: product.id,
+        count: product.quantity,
+        total: new Decimal(product.total),
+        cost: new Decimal(product.cost),
+        profit: new Decimal(product.profit),
+        note: product.note,
+      })),
+    });
+
+    // Remove Product Stock
+    for (const product of products) {
+      const stock = await tx.productStock.upsert({
+        where: { product_id: product.id },
+        create: { product_id: product.id, quantity: 0 },
+        update: {},
+      });
+
+      if (stock.quantity < product.quantity) {
+        throw new Error(`Product ${product.id} is out of stock`);
+      }
+
+      const before = stock.quantity;
+      const after = before - product.quantity;
+
+      await tx.productStockMovement.create({
         data: {
-          total: new Decimal(totalPrice),
-          cost: new Decimal(totalCost),
-          profit: new Decimal(totalProfit),
-          method: validated.method,
-          note: validated.note,
-          store_id: user.store,
-          creator_id: user.employeeId,
+          order_id: order.id,
+          product_id: product.id,
+          type: ProductStockMovementType.SALE,
+          quantity: -product.quantity,
+          quantity_before: before,
+          quantity_after: after,
         },
       });
 
-      // Create Order Products
-      await tx.orderProduct.createMany({
-        data: products.map((product) => ({
-          order_id: order.id,
-          product_id: product.id,
-          count: product.quantity,
-          total: new Decimal(product.total),
-          cost: new Decimal(product.cost),
-          profit: new Decimal(product.profit),
-          note: product.note,
-        })),
+      await tx.productStock.update({
+        where: { id: stock.id },
+        data: {
+          quantity: { decrement: product.quantity },
+        },
       });
+    }
 
-      // Remove Product Stock
-      for (const product of products) {
-        const stock = await tx.productStock.upsert({
-          where: { product_id: product.id },
-          create: { product_id: product.id, quantity: 0 },
-          update: {},
-        });
-
-        if (stock.quantity < product.quantity) {
-          throw new Error(`Product ${product.id} is out of stock`);
-        }
-
-        const before = stock.quantity;
-        const after = before - product.quantity;
-
-        await tx.productStockMovement.create({
-          data: {
-            order_id: order.id,
-            product_id: product.id,
-            type: ProductStockMovementType.SALE,
-            quantity: -product.quantity,
-            quantity_before: before,
-            quantity_after: after,
-          },
-        });
-
-        await tx.productStock.update({
-          where: { id: stock.id },
-          data: {
-            quantity: { decrement: product.quantity },
-          },
-        });
-      }
-
-      // Create Pre Order Products
-      await tx.orderPreOrder.createMany({
-        data: preOrderProducts.map((product) => ({
-          order_id: order.id,
-          product_id: product.id,
-          count: product.quantity,
-          total: new Decimal(product.total),
-          cost: new Decimal(product.cost),
-          profit: new Decimal(product.profit),
-          note: product.note,
-        })),
-      });
-
-      return order;
+    // Create Pre Order Products
+    await tx.orderPreOrder.createMany({
+      data: preOrderProducts.map((product) => ({
+        order_id: order.id,
+        product_id: product.id,
+        count: product.quantity,
+        total: new Decimal(product.total),
+        cost: new Decimal(product.cost),
+        profit: new Decimal(product.profit),
+        note: product.note,
+      })),
     });
 
-    return {
-      success: true,
-      data: {
-        ...order,
-        profit: order.profit.toNumber(),
-        cost: order.cost.toNumber(),
-        total: order.total.toNumber(),
-        created_at: order.created_at.toISOString(),
-        updated_at: order.updated_at.toISOString(),
-      },
-    };
-  } catch (error) {
-    return ActionError(error) as ActionResponse<CashoutResponse>;
-  }
+    return order;
+  });
+
+  return {
+    success: true,
+    data: {
+      ...order,
+      profit: order.profit.toNumber(),
+      cost: order.cost.toNumber(),
+      total: order.total.toNumber(),
+      created_at: order.created_at.toISOString(),
+      updated_at: order.updated_at.toISOString(),
+    },
+  };
 };
 
 export default Cashout;

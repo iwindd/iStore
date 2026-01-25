@@ -3,7 +3,6 @@ import { InterfaceProvider } from "@/providers/InterfaceProvider";
 import LocalizationProvider from "@/providers/LocalizationProvider";
 import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvder";
-import StoreProvider from "@/providers/StoreProvider";
 import "@/styles/global.css";
 import ThemeRegistry from "@/styles/ThemeRegistry";
 import { NextIntlClientProvider } from "next-intl";
@@ -26,17 +25,15 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <NextIntlClientProvider>
-          <StoreProvider>
-            <LocalizationProvider>
-              <ThemeRegistry>
-                <QueryProvider>
-                  <SessionProvider session={session}>
-                    <InterfaceProvider>{children}</InterfaceProvider>
-                  </SessionProvider>
-                </QueryProvider>
-              </ThemeRegistry>
-            </LocalizationProvider>
-          </StoreProvider>
+          <LocalizationProvider>
+            <ThemeRegistry>
+              <QueryProvider>
+                <SessionProvider session={session}>
+                  <InterfaceProvider>{children}</InterfaceProvider>
+                </SessionProvider>
+              </QueryProvider>
+            </ThemeRegistry>
+          </LocalizationProvider>
         </NextIntlClientProvider>
       </body>
     </html>
