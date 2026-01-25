@@ -63,7 +63,6 @@ export const addProductToCartBySerial = createAsyncThunk(
   async (serial: string) => {
     const resp = await findProductBySerial(serial);
 
-    console.log(resp);
     if (!resp.success || !resp.data) {
       enqueueSnackbar("ไม่พบสินค้านี้ในระบบ", {
         variant: "error",

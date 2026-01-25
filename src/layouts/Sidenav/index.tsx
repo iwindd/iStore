@@ -60,7 +60,6 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
             .map((item) => renderNormalItem(item))
             .filter((item) => item != null);
 
-          console.log(items);
           if (items.length === 0) return null;
 
           return (

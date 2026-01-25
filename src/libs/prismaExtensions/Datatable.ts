@@ -42,8 +42,6 @@ export const datatableFetchExtension = Prisma.defineExtension((client) => {
             (this as any).count({ where: args.where }),
           ]);
 
-          console.log(table, columnFilter);
-
           return {
             data,
             total,
