@@ -12,7 +12,6 @@ const HasStorePermission = ({
   permission,
   some = false,
 }: HasStorePermissionProps) => {
-  console.log(permission);
   if (Array.isArray(permission) && permission.length <= 0) {
     return children;
   }
