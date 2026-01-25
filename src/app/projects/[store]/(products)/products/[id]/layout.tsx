@@ -25,6 +25,7 @@ const selectProduct = {
   category: {
     select: {
       id: true,
+      label: true,
     },
   },
   stock: {

@@ -60,7 +60,7 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
   const debouncedInput = useDebouncedValue(inputValue, 400);
 
   const { data: defaultItem, isLoading: defaultItemLoading } = useQuery({
-    queryKey: [`${props.id}-default-item`, props.defaultValue],
+    queryKey: [`${props.id}-fetch-item`, props.defaultValue],
     queryFn: () => props.fetchItem(props.defaultValue!),
     enabled: !!props.defaultValue || props.defaultValue == 0,
   });

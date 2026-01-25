@@ -15,7 +15,7 @@ import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
 
-import { SearchCategory } from "@/actions/category/search";
+import { CategorySelectorInstance } from "@/actions/category/selectorCategory";
 import updateProduct from "@/actions/product/update";
 import { StorePermissionEnum } from "@/enums/permission";
 import { usePermission } from "@/providers/PermissionProvider";
@@ -45,7 +45,7 @@ const ProductUpdateForm = () => {
     },
   });
 
-  const onSelectCategory = (category: SearchCategory | null) => {
+  const onSelectCategory = (category: CategorySelectorInstance | null) => {
     setValue("category_id", category?.id || 0, { shouldDirty: true });
   };
 
