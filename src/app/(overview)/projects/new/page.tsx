@@ -99,7 +99,7 @@ export default function CreateStorePage() {
         enqueueSnackbar(t("action.success"), { variant: "success" });
         queryClient.invalidateQueries({ queryKey: ["stores"] });
         router.push(
-          getPath("projects.store.dashboard", { store: result.storeId }),
+          getPath("projects.store.dashboard", { store: result.storeSlug }),
         );
       } else {
         enqueueSnackbar(result.error || t("action.error"), {

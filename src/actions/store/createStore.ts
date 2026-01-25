@@ -82,6 +82,7 @@ const createStore = async (payload: CreateStoreValues) => {
     return {
       success: true,
       storeId: result.id,
+      storeSlug: result.slug,
     };
   } catch (error) {
     console.error("createStore error:", error);

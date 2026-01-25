@@ -3,6 +3,7 @@ import {
   Badge,
   Campaign,
   Category,
+  Dashboard,
   Group,
   History,
   LocalOffer,
@@ -21,6 +22,7 @@ const ROUTES = ROUTER({
   projects: {
     path: "/projects",
     label: "store.label",
+    icon: Store,
     disabledBreadcrumb: true,
     children: {
       store: {
@@ -227,11 +229,11 @@ const ROUTES = ROUTER({
   overview: {
     path: "/",
     label: "overview.label",
-    icon: Store,
+    icon: Dashboard,
     disabledBreadcrumb: true,
     children: {
       new: {
-        path: "/new",
+        path: "/projects/new",
         label: "overview.new.label",
       },
       //account
