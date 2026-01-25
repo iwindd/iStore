@@ -1,17 +1,26 @@
 "use server";
 
 import { TableFetch } from "@/components/Datatable";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import {
+  assertStore,
+  ifNotHasStorePermission,
+} from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const getOrderProducts = async (table: TableFetch, orderId: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext();
+    assertStore(ctx);
 
-    const { data, total } = await db.orderProduct.datatableFetch({
-      table: table,
-      filter: ["note"],
+    const { data, total } = await db.orderProduct.getDatatable({
+      query: table,
+      searchable: {
+        note: {
+          mode: "insensitive",
+        },
+      },
       select: {
         id: true,
         count: true,
@@ -32,9 +41,13 @@ const getOrderProducts = async (table: TableFetch, orderId: number) => {
         },
       },
       where: {
-        order_id: orderId,
         order: {
-          store_id: user.store,
+          id: orderId,
+          store_id: ctx.storeId!,
+          creator_id: ifNotHasStorePermission(
+            ctx,
+            StorePermissionEnum.HISTORY_READ_ALL,
+          ),
         },
       },
     });

@@ -1,19 +1,26 @@
 "use server";
 import { CashoutType } from "@/enums/cashout";
-import { HistoryPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import {
+  assertStore,
+  ifNotHasStorePermission,
+} from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
-const getHistoryDetail = async (id: number) => {
+const getHistoryDetail = async (storeId: string, id: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeId);
+    assertStore(ctx);
     const where: Prisma.OrderWhereInput = {
       id: id,
-      store_id: user.store,
+      store_id: ctx.storeId!,
       type: CashoutType.CASHOUT,
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      creator_id: ifNotHasStorePermission(
+        ctx,
+        StorePermissionEnum.HISTORY_READ_ALL,
+      ),
     };
 
     const history = await db.order.findFirstOrThrow({
@@ -30,7 +37,8 @@ const getHistoryDetail = async (id: number) => {
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },

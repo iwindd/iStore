@@ -52,3 +52,18 @@ export function assertStore(ctx: PermissionContext) {
     throw new Error("Unauthorized");
   }
 }
+
+export function ifNotHasStorePermission<T = number, U = undefined>(
+  ctx: PermissionContext,
+  permission: StorePermissionEnum,
+  has?: T,
+  notHas?: U,
+) {
+  assertStore(ctx);
+
+  if (ctx.storePermissions.has(permission)) {
+    return has ?? ctx.employeeId!;
+  }
+
+  return notHas;
+}

@@ -1,10 +1,10 @@
-"use client";
 import App, { Wrapper } from "@/layouts/App";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import HistoryDatatable from "./components/datatable";
 
-const HistoryPage = () => {
-  const t = useTranslations("HISTORIES");
+const HistoryPage = async () => {
+  const t = await getTranslations("HISTORIES");
+
   return (
     <Wrapper>
       <App.Header>

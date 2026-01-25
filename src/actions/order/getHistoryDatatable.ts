@@ -1,10 +1,14 @@
 "use server";
 
-import { HistoryFilter } from "@/app/[store]/(store)/histories/types";
+import { HistoryFilter } from "@/app/projects/[store]/(store)/histories/types";
 import { TableFetch } from "@/components/Datatable";
-import { HistoryPermissionEnum } from "@/enums/permission";
+import { StorePermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import {
+  assertStore,
+  ifNotHasStorePermission,
+} from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 const getHistoryDatatable = async (
@@ -12,13 +16,16 @@ const getHistoryDatatable = async (
   filter?: HistoryFilter,
 ) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(table.storeIdentifier);
+    assertStore(ctx);
 
     // Build where clause with filters
     const where: Prisma.OrderWhereInput = {
-      store_id: user.store,
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      store_id: ctx.storeId!,
+      creator_id: ifNotHasStorePermission(
+        ctx,
+        StorePermissionEnum.HISTORY_READ_ALL,
+      ),
     };
 
     // Date range filter
@@ -83,7 +90,8 @@ const getHistoryDatatable = async (
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },
@@ -116,7 +124,8 @@ const getHistoryDatatable = async (
         },
         creator: {
           user: {
-            name: { mode: "insensitive" },
+            first_name: { mode: "insensitive" },
+            last_name: { mode: "insensitive" },
           },
         },
       },

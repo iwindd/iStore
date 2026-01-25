@@ -39,7 +39,7 @@ const HistoryDatatable = () => {
         flex: 1,
         editable: false,
         renderCell: (data: any) =>
-          ff.text(data?.value?.user?.name || t("placeholders.not_specified")),
+          `${data?.value?.user?.first_name} ${data?.value?.user?.last_name}`,
       },
       {
         field: "method",

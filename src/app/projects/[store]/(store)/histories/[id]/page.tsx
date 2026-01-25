@@ -11,14 +11,20 @@ import { PriceCard } from "./components/card/PriceCard";
 import { ProfitCard } from "./components/card/ProfitCard";
 import HistoryTabs from "./components/HistoryTabs";
 
-const History = async ({ params }: { params: Promise<{ id: string }> }) => {
-  const { id } = await params;
-  const history = await getHistoryDetail(+id);
+const History = async ({
+  params,
+}: {
+  params: Promise<{ store: string; id: string }>;
+}) => {
+  const { id, store } = await params;
+  const history = await getHistoryDetail(store, +id);
   const t = await getTranslations("HISTORIES.detail");
 
   if (!history) return notFound();
 
-  const cashoutBy = history?.creator?.user.name || t("unknown_name");
+  const cashoutBy = history?.creator?.user
+    ? `${history?.creator?.user.first_name} ${history?.creator?.user.last_name}`
+    : t("unknown_name");
 
   return (
     <Grid container spacing={1}>

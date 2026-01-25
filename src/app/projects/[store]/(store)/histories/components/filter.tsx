@@ -27,6 +27,7 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { useQuery } from "@tanstack/react-query";
 import { Dayjs } from "dayjs";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import React from "react";
 
 interface Creator {
@@ -51,10 +52,11 @@ const HistoryFilterComponent = ({ onFilterChange }: HistoryFilterProps) => {
   const [maxTotal, setMaxTotal] = React.useState<string>("");
   const [hasNote, setHasNote] = React.useState<boolean | null>(null);
   const [isExpanded, setIsExpanded] = React.useState(true);
+  const params = useParams<{ store: string }>();
 
   const { data: creators = [] } = useQuery({
     queryKey: ["history-creators"],
-    queryFn: getHistoryCreators,
+    queryFn: () => getHistoryCreators(params.store),
   });
 
   const handleApplyFilter = () => {
@@ -67,7 +69,7 @@ const HistoryFilterComponent = ({ onFilterChange }: HistoryFilterProps) => {
       filter.endDate = endDate.endOf("day").toISOString();
     }
     if (method) {
-      filter.method = method as "CASH" | "BANK";
+      filter.method = method;
     }
     if (creatorId) {
       filter.creatorId = creatorId;
