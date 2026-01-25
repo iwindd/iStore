@@ -1,5 +1,5 @@
 "use client";
-import getProductDatatable from "@/actions/product/getProductDatatable";
+import getProductCashier from "@/actions/cashier/getProductCashier";
 import { useAppSelector } from "@/hooks";
 import { Grid, Stack, Typography } from "@mui/material";
 import { GridSortModel } from "@mui/x-data-grid";
@@ -22,21 +22,18 @@ const ProductsTab = () => {
   } = useQuery({
     queryKey: ["cashier-products", filter],
     queryFn: async () =>
-      await getProductDatatable(
-        {
-          storeIdentifier: params.store,
-          pagination: {
-            page: 0,
-            pageSize: 12,
-          },
-          sort: [] as GridSortModel,
-          filter: {
-            quickFilterValues: filter,
-            items: [],
-          },
+      await getProductCashier({
+        storeIdentifier: params.store,
+        pagination: {
+          page: 0,
+          pageSize: 12,
         },
-        "all",
-      ),
+        sort: [] as GridSortModel,
+        filter: {
+          quickFilterValues: filter,
+          items: [],
+        },
+      }),
   });
 
   console.log(response);

@@ -1,6 +1,8 @@
 "use server";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type RelatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
@@ -37,56 +39,51 @@ export type RelatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
 }>;
 
 const fetchRelatedPromotionOffer = async (
-  productIds: number[]
+  productIds: number[],
 ): Promise<RelatedPromotionOffer[]> => {
-  try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+  const ctx = await getPermissionContext();
+  assertStoreCan(ctx, PermissionConfig.store.cashier.getRelatedPromotionOffer);
 
-    const result = await db.promotionOffer.findRelatedPromotionOffer({
-      productIds,
-      where: {
-        event: {
-          store_id: user.store,
-        },
+  const result = await db.promotionOffer.findRelatedPromotionOffer({
+    productIds,
+    where: {
+      event: {
+        store_id: ctx.storeId,
       },
-      select: {
-        id: true,
-        getItems: {
-          select: {
-            quantity: true,
-            product: {
-              select: {
-                label: true,
-              },
+    },
+    select: {
+      id: true,
+      getItems: {
+        select: {
+          quantity: true,
+          product: {
+            select: {
+              label: true,
             },
           },
         },
-        buyItems: {
-          select: {
-            quantity: true,
-            product: {
-              select: {
-                label: true,
-              },
+      },
+      buyItems: {
+        select: {
+          quantity: true,
+          product: {
+            select: {
+              label: true,
             },
           },
         },
-        event: {
-          select: {
-            id: true,
-            start_at: true,
-            end_at: true,
-          },
+      },
+      event: {
+        select: {
+          id: true,
+          start_at: true,
+          end_at: true,
         },
       },
-    });
+    },
+  });
 
-    return result;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
+  return result;
 };
 
 export default fetchRelatedPromotionOffer;
