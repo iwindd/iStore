@@ -16,14 +16,16 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 const BestSelling = () => {
   const t = useTranslations("DASHBOARD.best_selling");
   const range = useAppSelector((state) => state.dashboard.range);
+  const params = useParams<{ store: string }>();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["top-selling-products", range],
-    queryFn: () => getTopSellingProducts(range),
+    queryKey: ["top-selling-products", params.store, range],
+    queryFn: () => getTopSellingProducts(params.store, range),
   });
 
   return (

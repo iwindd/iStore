@@ -1,3 +1,5 @@
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { Grid } from "@mui/material";
 import BestSelling from "./components/BestSelling";
 import DashboardController from "./components/DashboardController";
@@ -15,41 +17,57 @@ const Dashboard = () => {
       <Grid size={12}>
         <Stats />
       </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          xl: 8,
-        }}
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewYearlySalesChart}
       >
-        <YearlySalesChart />
-      </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          lg: 5,
-          xl: 4,
-        }}
+        <Grid
+          size={{
+            xs: 12,
+            xl: 8,
+          }}
+        >
+          <YearlySalesChart />
+        </Grid>
+      </HasStorePermission>
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewPaymentMethodTraffic}
       >
-        <PaymentMethodTrafficChart />
-      </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          lg: 7,
-          xl: 8,
-        }}
+        <Grid
+          size={{
+            xs: 12,
+            lg: 5,
+            xl: 4,
+          }}
+        >
+          <PaymentMethodTrafficChart />
+        </Grid>
+      </HasStorePermission>
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewRecentOrders}
       >
-        <RecentOrders />
-      </Grid>
-      <Grid
-        size={{
-          xs: 12,
-          lg: 5,
-          xl: 4,
-        }}
+        <Grid
+          size={{
+            xs: 12,
+            lg: 7,
+            xl: 8,
+          }}
+        >
+          <RecentOrders />
+        </Grid>
+      </HasStorePermission>
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewBestSellingProducts}
       >
-        <BestSelling />
-      </Grid>
+        <Grid
+          size={{
+            xs: 12,
+            lg: 5,
+            xl: 4,
+          }}
+        >
+          <BestSelling />
+        </Grid>
+      </HasStorePermission>
     </Grid>
   );
 };

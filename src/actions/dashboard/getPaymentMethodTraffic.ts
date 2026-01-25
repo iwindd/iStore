@@ -1,5 +1,7 @@
 "use server";
-import { getUser } from "@/libs/session";
+import { PermissionConfig } from "@/config/permissionConfig";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { DashboardRange } from "@/reducers/dashboardReducer";
 import { Method } from "@prisma/client";
 import {
@@ -7,7 +9,10 @@ import {
   getPaymentMethodTrafficSummary,
 } from "./dashboard.helper";
 
-export const getPaymentMethodTraffic = async (range: DashboardRange) => {
+export const getPaymentMethodTraffic = async (
+  storeId: string,
+  range: DashboardRange,
+) => {
   const summary: {
     method: Method;
     percent: number;
@@ -15,11 +20,14 @@ export const getPaymentMethodTraffic = async (range: DashboardRange) => {
   }[] = [];
 
   try {
-    const user = await getUser();
-    if (!user) throw new Error("not_found_user");
+    const ctx = await getPermissionContext(storeId);
+    assertStoreCan(
+      ctx,
+      PermissionConfig.store.dashboard.viewPaymentMethodTraffic,
+    );
 
     const filterRange = await getDashboardRangeDate(range);
-    const summary = await getPaymentMethodTrafficSummary(user, filterRange);
+    const summary = await getPaymentMethodTrafficSummary(ctx, filterRange);
 
     return summary;
   } catch (e) {

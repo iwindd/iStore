@@ -1,17 +1,21 @@
 "use server";
 
-import { getUser } from "@/libs/session";
+import { PermissionConfig } from "@/config/permissionConfig";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { DashboardRange } from "@/reducers/dashboardReducer";
-import { notFound } from "next/navigation";
 import {
   getDashboardRangeDate,
   getTopSellingProductsData,
 } from "./dashboard.helper";
 
-export async function getTopSellingProducts(range: DashboardRange) {
-  const user = await getUser();
-  if (!user) return notFound();
+export async function getTopSellingProducts(
+  storeSlug: string,
+  range: DashboardRange,
+) {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, PermissionConfig.store.dashboard.viewBestSellingProducts);
 
   const rangeDate = await getDashboardRangeDate(range);
-  return await getTopSellingProductsData(user, rangeDate);
+  return await getTopSellingProductsData(ctx, rangeDate);
 }

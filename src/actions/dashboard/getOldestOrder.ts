@@ -1,16 +1,16 @@
 "use server";
 
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
-import { notFound } from "next/navigation";
+import { assertStore } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-export async function getOldestOrder() {
-  const user = await getUser();
-  if (!user) return notFound();
+export async function getOldestOrder(storeId: string) {
+  const ctx = await getPermissionContext(storeId);
+  assertStore(ctx);
 
   const oldestOrder = await db.order.findFirst({
     where: {
-      store_id: user.store,
+      store_id: ctx.storeId,
     },
     orderBy: {
       created_at: "asc",

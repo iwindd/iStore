@@ -14,16 +14,18 @@ import { money } from "@/libs/formatter";
 import { Box, Skeleton } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 
 export function PaymentMethodTrafficChart() {
   const t = useTranslations("DASHBOARD.payment_methods");
   const labels = [t("cash"), t("transfer")];
   const chartOptions = useChartOptions(labels);
   const range = useAppSelector((state) => state.dashboard.range);
+  const params = useParams<{ store: string }>();
 
   const { isLoading, ...query } = useQuery({
     queryKey: ["payment-method-traffic", range],
-    queryFn: () => getPaymentMethodTraffic(range),
+    queryFn: () => getPaymentMethodTraffic(params.store, range),
   });
 
   const result = query.data || [

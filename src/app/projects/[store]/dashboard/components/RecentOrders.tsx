@@ -18,12 +18,14 @@ import TableRow from "@mui/material/TableRow";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export function RecentOrders() {
   const t = useTranslations("DASHBOARD.recent_orders");
+  const params = useParams<{ store: string }>();
   const { data: latestOrders, isLoading } = useQuery({
-    queryKey: ["latest-orders"],
-    queryFn: getRecentOrders,
+    queryKey: ["latest-orders", params.store],
+    queryFn: () => getRecentOrders(params.store),
   });
 
   return (

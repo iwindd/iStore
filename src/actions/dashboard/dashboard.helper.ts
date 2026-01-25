@@ -1,9 +1,7 @@
 "use server";
 
-import { HistoryPermissionEnum } from "@/enums/permission";
 import db from "@/libs/db";
 import { PermissionContext } from "@/libs/permission/context";
-import { UserServer } from "@/libs/user.server";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -117,7 +115,7 @@ export async function getProductSummary(ctx: PermissionContext) {
 }
 
 export async function getPaymentMethodTrafficSummary(
-  user: UserServer,
+  ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
   type PaymentMethodGroupResult = {
@@ -133,7 +131,7 @@ export async function getPaymentMethodTrafficSummary(
   const data = (await db.order.groupBy({
     by: ["method"],
     where: {
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      store_id: ctx.storeId,
       created_at: {
         gte: range.start,
         lte: range.end,
@@ -221,14 +219,14 @@ export async function getDashboardRangeDate(range: DashboardRange) {
   }
 }
 
-export async function getYearlySalesData(user: UserServer, year: number) {
+export async function getYearlySalesData(ctx: PermissionContext, year: number) {
   const startOfYear = dayjs().year(year).startOf("year").toDate();
   const endOfYear = dayjs().year(year).endOf("year").toDate();
 
   // Get orders for the specified year
   const orders = await db.order.findMany({
     where: {
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      store_id: ctx.storeId,
       created_at: {
         gte: startOfYear,
         lte: endOfYear,
@@ -268,7 +266,7 @@ export async function getYearlySalesData(user: UserServer, year: number) {
 
   const previousYearOrders = await db.order.aggregate({
     where: {
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      store_id: ctx.storeId,
       created_at: {
         gte: previousYearStart,
         lte: previousYearEnd,
@@ -295,7 +293,7 @@ export async function getYearlySalesData(user: UserServer, year: number) {
 }
 
 export async function getTopSellingProductsData(
-  user: UserServer,
+  ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
   type TopSellingGroupResult = {
@@ -309,7 +307,7 @@ export async function getTopSellingProductsData(
     by: ["product_id"],
     where: {
       order: {
-        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+        store_id: ctx.storeId,
         created_at: {
           gte: range.start,
           lte: range.end,
@@ -351,10 +349,10 @@ export async function getTopSellingProductsData(
   });
 }
 
-export async function getRecentOrdersData(user: UserServer) {
+export async function getRecentOrdersData(ctx: PermissionContext) {
   const order = await db.order.findMany({
     where: {
-      creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+      creator_id: ctx.userId,
     },
     orderBy: {
       created_at: "desc",

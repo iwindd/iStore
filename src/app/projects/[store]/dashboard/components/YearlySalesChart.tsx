@@ -17,6 +17,7 @@ import { getYearlySales } from "@/actions/dashboard/getYearlySales";
 import { Chart } from "@/components/core/chart";
 import { money } from "@/libs/formatter";
 import { Box, MenuItem, Select, Skeleton } from "@mui/material";
+import { useParams } from "next/navigation";
 
 export interface YearlySalesChartProps {
   sx?: SxProps;
@@ -43,11 +44,12 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
   const currentYear = dayjs().year();
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [availableYears, setAvailableYears] = useState<number[]>([currentYear]);
+  const params = useParams<{ store: string }>();
 
   // Fetch oldest order to determine available years
   const { data: oldestOrderDate, isLoading: isLoadingOldestOrder } = useQuery({
     queryKey: ["oldest-order"],
-    queryFn: getOldestOrder,
+    queryFn: () => getOldestOrder(params.store),
   });
 
   // Update available years when oldest order is loaded
@@ -65,7 +67,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
   // Fetch yearly sales data
   const { data, isLoading } = useQuery({
     queryKey: ["yearly-sales", selectedYear],
-    queryFn: () => getYearlySales(selectedYear),
+    queryFn: () => getYearlySales(params.store, selectedYear),
   });
 
   const chartOptions = useChartOptions(MONTHS_TH);

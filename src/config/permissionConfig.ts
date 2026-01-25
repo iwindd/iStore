@@ -35,6 +35,14 @@ export const PermissionConfig = {
       viewPreorderStat: StorePermissionEnum.PREORDER_MANAGEMENT,
       /** View lowstock summary */
       viewLowstockStat: StorePermissionEnum.PRODUCT_MANAGEMENT,
+      /** View payment method traffic */
+      viewPaymentMethodTraffic: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View payment method traffic */
+      viewYearlySalesChart: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View recent orders */
+      viewRecentOrders: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View best selling products */
+      viewBestSellingProducts: StorePermissionEnum.HISTORY_READ_ALL,
     },
 
     /** Cashier operations */
