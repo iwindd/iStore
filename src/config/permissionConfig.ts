@@ -159,6 +159,8 @@ export const PermissionConfig = {
 
     /** Category management operations */
     category: {
+      /** Get category datatable */
+      getDatatable: StorePermissionEnum.PRODUCT_MANAGEMENT,
       /** Create/update category */
       upsert: StorePermissionEnum.PRODUCT_MANAGEMENT,
       /** Delete category */

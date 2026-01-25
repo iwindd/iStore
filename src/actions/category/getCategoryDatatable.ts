@@ -1,13 +1,14 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { assertStore } from "@/libs/permission/context";
+import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const getCategoryDatatable = async (table: TableFetch) => {
   try {
     const ctx = await getPermissionContext(table.storeIdentifier);
-    assertStore(ctx);
+    assertStoreCan(ctx, PermissionConfig.store.category.getDatatable);
 
     const datatable = await db.category.getDatatable({
       query: table,
