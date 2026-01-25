@@ -179,6 +179,20 @@ export const PermissionConfig = {
       get: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
     },
 
+    /** Role management operations */
+    role: {
+      /** Create role */
+      create: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      /** Get role datatable */
+      datatable: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      /** Update role */
+      update: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      /** Delete role */
+      delete: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      /** Get role details */
+      get: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+    },
+
     /** Category management operations */
     category: {
       /** Get category datatable */

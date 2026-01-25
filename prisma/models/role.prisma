@@ -25,13 +25,14 @@ model GlobalPermission {
 }
 
 model StoreRole {
-  id         Int      @id @default(autoincrement())
-  name       String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  store_id   String
+  id           Int      @id @default(autoincrement())
+  name         String
+  description  String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  store_id     String
   is_removable Boolean  @default(false)
-  creator_id Int?
+  creator_id   Int?
 
   store       Store             @relation(fields: [store_id], references: [id])
   creator     Employee?         @relation("StoreRoleCreations", fields: [creator_id], references: [id])

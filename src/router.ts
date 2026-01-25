@@ -121,6 +121,16 @@ const ROUTES = ROUTER({
             permission: {
               someStore: [StorePermissionEnum.EMPLOYEE_MANAGEMENT],
             },
+            children: {
+              create: {
+                path: "/projects/:store/roles/new",
+                label: "store.roles.create.label",
+              },
+              role: {
+                path: "/projects/:store/roles/:roleId",
+                label: "store.roles.role.label",
+              },
+            },
           },
           employees: {
             path: "/projects/:store/employees",

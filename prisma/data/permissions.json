@@ -1,12 +1,12 @@
 {
   "GlobalPermission": [{ "name": "Store.Create" }],
   "StorePermission": [
-    { "name": "Dashboard.View" },
     { "name": "Cashier.Cashout" },
     { "name": "Product.Management" },
     { "name": "Consignment.Management" },
     { "name": "Preorder.Management" },
     { "name": "Application.Management" },
+    { "name": "Broadcast.Management" },
     { "name": "Promotion.Management" },
     { "name": "Employee.Management" },
     { "name": "History.ReadAll" }

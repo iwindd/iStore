@@ -43,8 +43,10 @@ export function assertStoreCan(
   assertStore(ctx);
 
   const permissions = Array.isArray(permission) ? permission : [permission];
+  options = options ?? {};
+  options.some = options.some ?? false;
 
-  if (!permissions.some((p) => storeCan(ctx, p) && options?.some)) {
+  if (permissions.some((p) => storeCan(ctx, p) && options.some)) {
     forbidden();
   }
 

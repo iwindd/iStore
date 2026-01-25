@@ -117,7 +117,13 @@
         "label": "บัญชีของฉัน"
       },
       "roles": {
-        "label": "ตำแหน่ง"
+        "label": "ตำแหน่ง",
+        "create": {
+          "label": "สร้างตำแหน่ง"
+        },
+        "role": {
+          "label": "รายละเอียดตำแหน่ง"
+        }
       },
       "employees": {
         "label": "พนักงาน"
@@ -1066,6 +1072,84 @@
       "update_error": "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ",
       "loading": "กำลังโหลด...",
       "not_found": "ไม่พบแอพพลิเคชั่น"
+    }
+  },
+  "ROLES": {
+    "title": "ตำแหน่ง",
+    "add_button": "เพิ่มตำแหน่ง",
+    "create_title": "สร้างตำแหน่งใหม่",
+    "edit_title": "แก้ไขตำแหน่ง",
+    "datatable": {
+      "headers": {
+        "created_at": "วันที่เพิ่ม",
+        "creator": "ผู้เพิ่ม",
+        "label": "ชื่อตำแหน่ง",
+        "description": "คำอธิบาย",
+        "actions": "เครื่องมือ"
+      },
+      "actions": {
+        "edit": "แก้ไข"
+      },
+      "placeholders": {
+        "not_specified": "ไม่ระบุ"
+      }
+    },
+    "form": {
+      "role_info_card": "ข้อมูลตำแหน่ง",
+      "name_label": "ชื่อตำแหน่ง",
+      "name_placeholder": "เช่น พนักงานขาย, ผู้จัดการ",
+      "description_label": "คำอธิบาย",
+      "description_placeholder": "คำอธิบายเพิ่มเติมเกี่ยวกับตำแหน่งนี้ (ไม่บังคับ)",
+      "permissions_card": "สิทธิ์การเข้าถึง",
+      "permissions_helper": "เลือกสิทธิ์ที่ตำแหน่งนี้สามารถเข้าถึงได้",
+      "save_button": "บันทึก",
+      "cancel_button": "ยกเลิก",
+      "super_admin_note": "ตำแหน่งนี้เป็นผู้ดูแลระบบ ไม่สามารถแก้ไขสิทธิ์ได้"
+    },
+    "messages": {
+      "created": "สร้างตำแหน่งสำเร็จแล้ว!",
+      "updated": "อัปเดตตำแหน่งสำเร็จแล้ว!",
+      "error": "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้ง",
+      "not_found": "ไม่พบตำแหน่งที่ต้องการ",
+      "loading": "กำลังโหลด..."
+    },
+    "permissions": {
+      "Cashier-Cashout": {
+        "label": "ขายสินค้า (แคชเชียร์)",
+        "description": "ทำรายการขายสินค้า พรีออเดอร์ และฝากขาย"
+      },
+      "Product-Management": {
+        "label": "จัดการสินค้า",
+        "description": "จัดการสินค้า ประเภทสินค้า และสต็อกสินค้า"
+      },
+      "Consignment-Management": {
+        "label": "จัดการฝากขาย",
+        "description": "จัดการรายการฝากขาย"
+      },
+      "Preorder-Management": {
+        "label": "จัดการพรีออเดอร์",
+        "description": "จัดการรายการพรีออเดอร์"
+      },
+      "Application-Management": {
+        "label": "จัดการแอพพลิเคชั่น",
+        "description": "จัดการแอพพลิเคชั่น"
+      },
+      "Promotion-Management": {
+        "label": "จัดการโปรโมชั่น",
+        "description": "จัดการโปรโมชั่น"
+      },
+      "Employee-Management": {
+        "label": "จัดการพนักงาน",
+        "description": "จัดการพนักงานและตำแหน่ง"
+      },
+      "Broadcast-Management": {
+        "label": "จัดการประชาสัมพันธ์",
+        "description": "จัดการประชาสัมพันธ์"
+      },
+      "History-ReadAll": {
+        "label": "ประวัติการทำรายการ",
+        "description": "เข้าถึงประวัติการทำรายการทั้งหมด"
+      }
     }
   },
   "ACCOUNT": {

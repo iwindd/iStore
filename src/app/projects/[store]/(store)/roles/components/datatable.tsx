@@ -1,27 +1,24 @@
 "use client";
-import * as RoleActions from "@/actions/roles";
+import { getRoleDatatable } from "@/actions/roles/getStoreRoleDatatable";
 import Datatable from "@/components/Datatable";
-import { useDialog } from "@/hooks/use-dialog";
 import * as ff from "@/libs/formatter";
-import { useInterface } from "@/providers/InterfaceProvider";
 import { EditTwoTone } from "@mui/icons-material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
-import { Role } from "@prisma/client";
-import React, { useState } from "react";
-import RoleFormDialog from "./roleFormDialog";
+import { StoreRole } from "@prisma/client";
+import { useParams, useRouter } from "next/navigation";
+import React from "react";
 
 const RoleDatatable = () => {
-  const editDialog = useDialog();
-  const { isBackdrop } = useInterface();
-  const [role, setRole] = useState<Role | null>(null);
+  const router = useRouter();
+  const params = useParams();
+  const storeSlug = params.store as string;
 
   const menu = {
     edit: React.useCallback(
-      (role: Role) => () => {
-        setRole(role);
-        editDialog.handleOpen();
+      (role: StoreRole) => () => {
+        router.push(`/projects/${storeSlug}/roles/${role.id}`);
       },
-      [editDialog]
+      [router, storeSlug],
     ),
   };
 
@@ -42,10 +39,12 @@ const RoleDatatable = () => {
         flex: 1,
         editable: false,
         renderCell: (data: any) =>
-          ff.text(data?.value?.user?.name || "ไม่ระบุ"),
+          data?.value?.user
+            ? `${data?.value?.user?.first_name} ${data?.value?.user?.last_name}`
+            : "-",
       },
       {
-        field: "label",
+        field: "name",
         sortable: true,
         headerName: "ชื่อตำแหน่ง",
         flex: 1,
@@ -56,7 +55,7 @@ const RoleDatatable = () => {
         type: "actions",
         headerName: "เครื่องมือ",
         flex: 1,
-        getActions: ({ row }: { row: Role }) => [
+        getActions: ({ row }: { row: StoreRole }) => [
           <GridActionsCellItem
             key="edit"
             icon={<EditTwoTone />}
@@ -70,20 +69,12 @@ const RoleDatatable = () => {
   };
 
   return (
-    <>
-      <Datatable
-        name={"roles"}
-        columns={columns()}
-        fetch={RoleActions.datatable}
-        height={700}
-      />
-
-      <RoleFormDialog
-        isOpen={editDialog.open && !isBackdrop}
-        onClose={editDialog.handleClose}
-        role={role as any}
-      />
-    </>
+    <Datatable
+      name={"roles"}
+      columns={columns()}
+      fetch={getRoleDatatable}
+      height={700}
+    />
   );
 };
 

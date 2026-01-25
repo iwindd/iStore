@@ -86,7 +86,6 @@ export const buildRouteUtility = (ROUTES: Record<string, Route>) => {
         }
       }
     }
-
     return toPath(nextParams);
   };
 

@@ -126,7 +126,6 @@ export enum GlobalPermissionEnum {
 }
 
 export enum StorePermissionEnum {
-  DASHBOARD_VIEW = "Dashboard.View",
   CASHIER_CASHOUT = "Cashier.Cashout",
   PRODUCT_MANAGEMENT = "Product.Management",
   CONSIGNMENT_MANAGEMENT = "Consignment.Management",
