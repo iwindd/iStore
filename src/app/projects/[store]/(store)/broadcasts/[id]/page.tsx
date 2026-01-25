@@ -5,11 +5,13 @@ import App, { Wrapper } from "@/layouts/App";
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useBroadcast } from "./BroadcastContext";
 
 const BroadcastEditPage = () => {
   const t = useTranslations("BROADCASTS");
+  const params = useParams<{ store: string }>();
   const broadcast = useBroadcast();
   const queryClient = useQueryClient();
 
@@ -17,7 +19,7 @@ const BroadcastEditPage = () => {
     mutationFn: async (data: CreateBroadcastValues) => {
       // CreateBroadcastValues is compatible with update payload structure for now
       // typically we might want a specific UpdateSchema but existing pattern suggests similarity
-      return await updateBroadcast(broadcast.id, data);
+      return await updateBroadcast(params.store, broadcast.id, data);
     },
     onSuccess: async () => {
       enqueueSnackbar(t("form.update_success"), { variant: "success" });

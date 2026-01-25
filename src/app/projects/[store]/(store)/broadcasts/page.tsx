@@ -25,11 +25,13 @@ import { GridActionsCellItem } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useCallback } from "react";
 
 const BroadcastPage = () => {
   const t = useTranslations("BROADCASTS");
+  const params = useParams<{ store: string }>();
   const queryClient = useQueryClient();
 
   const cancelConfirmation = useConfirm({
@@ -41,7 +43,7 @@ const BroadcastPage = () => {
     },
     onConfirm: async (id: number) => {
       try {
-        await cancelBroadcast(id);
+        await cancelBroadcast(params.store, id);
         cancelConfirmation.handleClose();
         await queryClient.refetchQueries({
           queryKey: ["broadcasts"],
@@ -68,7 +70,7 @@ const BroadcastPage = () => {
     },
     onConfirm: async (id: number) => {
       try {
-        await deleteBroadcast(id);
+        await deleteBroadcast(params.store, id);
         deleteConfirmation.handleClose();
         await queryClient.refetchQueries({
           queryKey: ["broadcasts"],
@@ -95,7 +97,7 @@ const BroadcastPage = () => {
     },
     onConfirm: async (id: number) => {
       try {
-        await sendBroadcast(id);
+        await sendBroadcast(params.store, id);
         sendConfirmation.handleClose();
         await queryClient.refetchQueries({
           queryKey: ["broadcasts"],

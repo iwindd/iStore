@@ -1,7 +1,9 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 export interface EventSelectorItem {
   id: number;
@@ -15,15 +17,16 @@ export interface EventSelectorItem {
  * Search events by note for selector dropdown
  */
 export const searchEvents = async (
+  storeSlug: string,
   query: string,
 ): Promise<EventSelectorItem[]> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     const events = await db.event.findMany({
       where: {
-        store_id: user.store,
+        store_id: ctx.storeId!,
         disabled_at: null,
         end_at: { gte: new Date() },
         OR: [
@@ -63,16 +66,17 @@ export const searchEvents = async (
  * Find a single event by ID
  */
 export const findEvent = async (
+  storeSlug: string,
   id: number,
 ): Promise<EventSelectorItem | null> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     const event = await db.event.findFirst({
       where: {
         id,
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
       select: {
         id: true,
@@ -93,16 +97,19 @@ export const findEvent = async (
 /**
  * Find promotion details by event ID
  */
-export const getEventPromotionDetails = async (eventId: number) => {
+export const getEventPromotionDetails = async (
+  storeSlug: string,
+  eventId: number,
+) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     const offer = await db.promotionOffer.findFirst({
       where: {
         event_id: eventId,
         event: {
-          store_id: user.store,
+          store_id: ctx.storeId,
         },
       },
       include: {

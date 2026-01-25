@@ -1,18 +1,20 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-export const deleteBroadcast = async (id: number) => {
+export const deleteBroadcast = async (storeSlug: string, id: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     // Verify broadcast exists and belongs to the store
     const existingBroadcast = await db.broadcast.findFirst({
       where: {
         id,
-        store_id: user.store,
+        store_id: ctx.storeId!,
       },
     });
 

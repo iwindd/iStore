@@ -8,12 +8,13 @@ import { getPath } from "@/router";
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
 const BroadcastNewPage = () => {
   const t = useTranslations("BROADCASTS.form");
+  const params = useParams<{ store: string }>();
   const { setBackdrop } = useInterface();
   const [isCreated, setIsCreated] = useState(false);
   const router = useRouter();
@@ -21,7 +22,7 @@ const BroadcastNewPage = () => {
 
   const createMutation = useMutation({
     mutationFn: async (data: CreateBroadcastValues) =>
-      await createBroadcast(data),
+      await createBroadcast(params.store, data),
     onMutate: () => {
       setBackdrop(true);
     },

@@ -1,3 +1,4 @@
+import { EventSelectorItem } from "@/actions/broadcast/eventActions";
 import { generateAdMessage } from "@/actions/broadcast/generateMessage";
 import {
   CreateBroadcastSchema,
@@ -19,6 +20,8 @@ import Grid from "@mui/material/Grid";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ImageCard from "./Partials/ImageCard";
 import PromotionSelectionCard from "./Partials/PromotionSelectionCard";
@@ -44,6 +47,10 @@ const FormBroadcast = ({
   onSubmit,
 }: FormBroadcastProps) => {
   const t = useTranslations("BROADCASTS.form");
+  const params = useParams<{ store: string }>();
+  const [selectedEvent, setSelectedEvent] = useState<EventSelectorItem | null>(
+    null,
+  );
   const form = useForm<CreateBroadcastValues>({
     resolver: zodResolver(CreateBroadcastSchema),
     defaultValues: {
@@ -71,7 +78,7 @@ const FormBroadcast = ({
 
   const aiGeneratePromotionOfferInfo = useMutation({
     mutationFn: async (eventId: number) => {
-      return await generateAdMessage(eventId);
+      return await generateAdMessage(params.store, eventId);
     },
     onSuccess: (message) => {
       setValue("message", message);
@@ -93,7 +100,11 @@ const FormBroadcast = ({
             onSubmit={handleSubmit(handleFormSubmit)}
             id="broadcast-form"
           >
-            <PromotionSelectionCard form={form} disabled={disabled} />
+            <PromotionSelectionCard
+              form={form}
+              disabled={disabled}
+              onEventChange={setSelectedEvent}
+            />
 
             <Card>
               <CardHeader title={t("sections.promotion.title")} />
@@ -140,7 +151,11 @@ const FormBroadcast = ({
       </Grid>
       <Grid size={4}>
         <Stack spacing={3}>
-          <SettingCard form={form} disabled={disabled} />
+          <SettingCard
+            form={form}
+            disabled={disabled}
+            selectedEvent={selectedEvent}
+          />
           <Card>
             <CardContent
               component={Stack}

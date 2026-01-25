@@ -1,22 +1,30 @@
 "use server";
 
+import { StorePermissionEnum } from "@/enums/permission";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { mastra } from "@/mastra";
 import {
   AiImagePromptSchema,
   AiImagePromptValues,
 } from "@/schema/Broadcast/AiImage";
 
-export const generateImageAction = async (data: AiImagePromptValues) => {
-  const validation = AiImagePromptSchema.safeParse(data);
-
-  if (!validation.success) {
-    return {
-      success: false,
-      message: validation.error.message,
-    };
-  }
-
+export const generateImageAction = async (
+  storeSlug: string,
+  data: AiImagePromptValues,
+) => {
   try {
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
+
+    const validation = AiImagePromptSchema.safeParse(data);
+
+    if (!validation.success) {
+      return {
+        success: false,
+        message: validation.error.message,
+      };
+    }
     const workflow = mastra.getWorkflow("generateBrochureWorkflow");
     const run = await workflow.createRunAsync();
 

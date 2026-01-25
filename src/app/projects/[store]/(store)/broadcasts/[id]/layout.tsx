@@ -1,5 +1,5 @@
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { notFound } from "next/navigation";
 import { BroadcastProvider } from "./BroadcastContext";
 
@@ -8,20 +8,19 @@ export default async function BroadcastLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; store: string }>;
 }) {
-  const { id } = await params;
+  const { id, store: storeSlug } = await params;
   const broadcastId = Number.parseInt(id);
 
   if (Number.isNaN(broadcastId)) return notFound();
 
-  const user = await getUser();
-  if (!user) return notFound();
+  const ctx = await getPermissionContext(storeSlug);
 
   const broadcast = await db.broadcast.findFirst({
     where: {
       id: broadcastId,
-      store_id: user.store,
+      store_id: ctx.storeId,
     },
     select: {
       id: true,

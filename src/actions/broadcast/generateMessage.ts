@@ -1,17 +1,22 @@
 "use server";
 
+import { StorePermissionEnum } from "@/enums/permission";
 import BotApp from "@/libs/botapp";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
-export const generateAdMessage = async (promotionId: number) => {
+export const generateAdMessage = async (
+  storeSlug: string,
+  promotionId: number,
+) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
     const event = await db.event.findFirstOrThrow({
       where: {
         id: promotionId,
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
       select: {
         offers: {
@@ -67,7 +72,7 @@ buyItems [
 
     const response = await BotApp.post(
       "/assistant/generate/ad-message",
-      payload
+      payload,
     );
 
     return response.data.message;

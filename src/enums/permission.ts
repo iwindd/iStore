@@ -141,5 +141,6 @@ export enum StorePermissionEnum {
   APPLICATION_MANAGEMENT = "Application.Management",
   PROMOTION_MANAGEMENT = "Promotion.Management",
   EMPLOYEE_MANAGEMENT = "Employee.Management",
+  BROADCAST_MANAGEMENT = "Broadcast.Management",
   HISTORY_READ_ALL = "History.ReadAll",
 }

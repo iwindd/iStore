@@ -1,9 +1,11 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { DatatableFetchResult } from "@/libs/prismaExtensions/Datatable";
-import { getUser } from "@/libs/session";
 import { Prisma } from "@prisma/client";
 
 export type BroadcastDatatableInstance = Prisma.BroadcastGetPayload<{
@@ -38,16 +40,15 @@ export type BroadcastDatatableInstance = Prisma.BroadcastGetPayload<{
 }>;
 
 const fetchBroadcastDatatable = async (
-  table: TableFetch
+  table: TableFetch,
 ): Promise<DatatableFetchResult<BroadcastDatatableInstance>> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
-
+    const ctx = await getPermissionContext(table.storeIdentifier);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
     const result = await db.broadcast.datatableFetch({
       table,
       where: {
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
       orderBy: [{ scheduled_at: "desc" }, { created_at: "desc" }],
       select: {

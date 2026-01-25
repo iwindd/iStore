@@ -1,6 +1,7 @@
 "use client";
 import * as EventActions from "@/actions/broadcast/eventActions";
 import dayjs from "dayjs";
+import { useParams } from "next/navigation";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
 type EventSelectorProps = Omit<
@@ -9,6 +10,7 @@ type EventSelectorProps = Omit<
 >;
 
 const EventSelector = (props_: EventSelectorProps) => {
+  const params = useParams<{ store: string }>();
   const props = {
     ...props_,
     label: props_.label || "กรุณาเลือกโปรโมชั่น",
@@ -20,11 +22,11 @@ const EventSelector = (props_: EventSelectorProps) => {
       id="event-selector"
       noOptionsText="ไม่พบโปรโมชั่น"
       fetchItem={async (id) => {
-        const resp = await EventActions.findEvent(id);
+        const resp = await EventActions.findEvent(params.store, id);
         return resp || null;
       }}
       searchItems={async (query) => {
-        const resp = await EventActions.searchEvents(query);
+        const resp = await EventActions.searchEvents(params.store, query);
         return resp || [];
       }}
       getItemLabel={(option) =>

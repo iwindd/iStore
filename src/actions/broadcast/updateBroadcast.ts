@@ -1,7 +1,9 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   UpdateBroadcastSchema,
   UpdateBroadcastValues,
@@ -9,12 +11,13 @@ import {
 import dayjs from "dayjs";
 
 export const updateBroadcast = async (
+  storeSlug: string,
   id: number,
-  values: UpdateBroadcastValues
+  values: UpdateBroadcastValues,
 ) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     // Validate input
     const validated = UpdateBroadcastSchema.safeParse(values);
@@ -26,7 +29,7 @@ export const updateBroadcast = async (
     const existingBroadcast = await db.broadcast.findFirst({
       where: {
         id,
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
     });
 
@@ -43,7 +46,7 @@ export const updateBroadcast = async (
     const event = await db.event.findFirst({
       where: {
         id: values.event_id,
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
     });
 

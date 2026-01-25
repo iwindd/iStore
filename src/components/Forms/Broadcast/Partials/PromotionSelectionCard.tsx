@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import PromotionBuyXGetYDetail from "./PromotionBuyXGetYDetail";
@@ -21,13 +22,16 @@ import PromotionBuyXGetYDetail from "./PromotionBuyXGetYDetail";
 interface PromotionSelectionCardProps {
   form: UseFormReturn<CreateBroadcastValues>;
   disabled?: boolean;
+  onEventChange?: (event: EventSelectorItem | null) => void;
 }
 
 const PromotionSelectionCard = ({
   form,
   disabled,
+  onEventChange,
 }: PromotionSelectionCardProps) => {
   const t = useTranslations("BROADCASTS.form");
+  const params = useParams<{ store: string }>();
   const {
     setValue,
     watch,
@@ -46,7 +50,7 @@ const PromotionSelectionCard = ({
 
   const { data: promotionDetails, isLoading: isLoadingDetails } = useQuery({
     queryKey: ["promotion-details", eventId],
-    queryFn: () => getEventPromotionDetails(eventId),
+    queryFn: () => getEventPromotionDetails(params.store, eventId),
     enabled: !!eventId && eventId > 0,
   });
 
@@ -58,6 +62,7 @@ const PromotionSelectionCard = ({
       setValue("event_id", 0);
       setSelectedEvent(null);
     }
+    onEventChange?.(event);
   };
 
   return (

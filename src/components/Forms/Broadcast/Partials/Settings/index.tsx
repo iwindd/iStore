@@ -15,12 +15,12 @@ import {
 import { DateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { Controller, UseFormReturn } from "react-hook-form";
 
 export type SettingCardProps = {
   form: UseFormReturn<CreateBroadcastValues>;
   disabled?: boolean;
+  selectedEvent?: EventSelectorItem | null;
 };
 
 const SettingCard = ({
@@ -31,9 +31,9 @@ const SettingCard = ({
     control,
   },
   disabled,
+  selectedEvent,
 }: SettingCardProps) => {
   const t = useTranslations("BROADCASTS.form.sections.settings");
-  const [selectedEvent] = useState<EventSelectorItem | null>(null);
   const selectedEventId = watch("event_id");
   const scheduledAt = watch("scheduled_at");
   const type = watch("type");

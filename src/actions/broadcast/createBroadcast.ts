@@ -1,7 +1,9 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import {
   CreateBroadcastSchema,
   CreateBroadcastValues,
@@ -10,10 +12,13 @@ import { BroadcastStatus } from "@prisma/client";
 import dayjs from "dayjs";
 import sendBroadcastToApplications from "../application/sendBroadcastToApplications";
 
-export const createBroadcast = async (values: CreateBroadcastValues) => {
+export const createBroadcast = async (
+  storeSlug: string,
+  values: CreateBroadcastValues,
+) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     // Validate input
     const validated = CreateBroadcastSchema.safeParse(values);
@@ -25,7 +30,7 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
     const event = await db.event.findFirst({
       where: {
         id: values.event_id,
-        store_id: user.store,
+        store_id: ctx.storeId!,
       },
     });
 
@@ -67,19 +72,19 @@ export const createBroadcast = async (values: CreateBroadcastValues) => {
     const broadcast = await db.broadcast.create({
       data: {
         event_id: values.event_id,
-        store_id: user.store,
+        store_id: ctx.storeId!,
         title: values.title,
         message: values.message,
         image_url: values.image_url || null,
         scheduled_at: scheduledAt.toDate(),
         status: status,
-        creator_id: user.employeeId,
+        creator_id: ctx.employeeId!,
         sent_at: status === BroadcastStatus.SENT ? dayjs().toDate() : null,
       },
     });
 
     if (status === BroadcastStatus.SENT) {
-      sendBroadcastToApplications(user.store, {
+      sendBroadcastToApplications(ctx.storeSlug!, {
         message: broadcast.message,
         image_url: (broadcast?.image_url && broadcast.image_url) || undefined,
       });

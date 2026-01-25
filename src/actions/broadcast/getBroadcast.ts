@@ -1,7 +1,9 @@
 "use server";
+import { StorePermissionEnum } from "@/enums/permission";
 import { ActionError } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 type BroadcastWithRelations = Prisma.BroadcastGetPayload<{
@@ -27,15 +29,15 @@ type BroadcastWithRelations = Prisma.BroadcastGetPayload<{
   };
 }>;
 
-export const getBroadcast = async (id: number) => {
+export const getBroadcast = async (storeSlug: string, id: number) => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, StorePermissionEnum.BROADCAST_MANAGEMENT);
 
     const broadcast = await db.broadcast.findFirst({
       where: {
         id,
-        store_id: user.store,
+        store_id: ctx.storeId,
       },
       include: {
         event: {

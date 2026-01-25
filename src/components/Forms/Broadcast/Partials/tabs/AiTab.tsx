@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +22,7 @@ import { ImageCardProps } from "../ImageCard";
 
 const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
   const t = useTranslations("BROADCASTS.form");
+  const params = useParams<{ store: string }>();
   const [isGenerating, setIsGenerating] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const currentImageUrl = form.watch("image_url");
@@ -36,7 +38,7 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
   const onGenerate = async (data: AiImagePromptValues) => {
     setIsGenerating(true);
     try {
-      const result = await generateImageAction(data);
+      const result = await generateImageAction(params.store, data);
       if (result.success && result.imageUrl) {
         form.setValue("image_url", result.imageUrl);
         enqueueSnackbar(t("sections.image.ai.success"), { variant: "success" });
