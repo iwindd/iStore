@@ -1,4 +1,5 @@
 import { GlobalPermissionEnum, StorePermissionEnum } from "@/enums/permission";
+import { forbidden, unauthorized } from "next/navigation";
 
 export type PermissionContext = {
   userId: number;
@@ -21,7 +22,7 @@ export function assertGlobalCan(
   permission: GlobalPermissionEnum,
 ) {
   if (!globalCan(ctx, permission)) {
-    throw new Error("Forbidden");
+    forbidden();
   }
 }
 
@@ -39,7 +40,7 @@ export function assertStoreCan(
   assertStore(ctx);
 
   if (!storeCan(ctx, permission)) {
-    throw new Error("Forbidden");
+    forbidden();
   }
 }
 
@@ -49,7 +50,7 @@ export function assertStoreCan(
  */
 export function assertStore(ctx: PermissionContext) {
   if (!ctx.employeeId || !ctx.storeId) {
-    throw new Error("Unauthorized");
+    unauthorized();
   }
 }
 
