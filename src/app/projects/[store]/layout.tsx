@@ -3,7 +3,6 @@ import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { getUser } from "@/libs/session";
 import MainLayout from "@/providers/LayoutProvider";
 import PermissionProvider from "@/providers/PermissionProvider";
-import StoreProvider from "@/providers/StoreProvider";
 import { notFound } from "next/navigation";
 
 export default async function StoreLayout({
@@ -38,9 +37,7 @@ export default async function StoreLayout({
       globalPermissions={Array.from(ctx.globalPermissions)}
       storePermissions={Array.from(ctx.storePermissions)}
     >
-      <StoreProvider>
-        <MainLayout storeSlug={store}>{children}</MainLayout>
-      </StoreProvider>
+      <MainLayout storeSlug={store}>{children}</MainLayout>
     </PermissionProvider>
   );
 }
