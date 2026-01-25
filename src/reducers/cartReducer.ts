@@ -44,8 +44,10 @@ export interface CartState {
 
 export const addProductToCartById = createAsyncThunk(
   "cart/addProductToCartById",
-  async (productId: number) => {
-    const resp = await findProductById(productId);
+  async (productId: number, thunkAPI) => {
+    const { cart } = thunkAPI.getState() as { cart: CartState };
+    if (!cart.storeSlug) throw new Error("store_not_found");
+    const resp = await findProductById(cart.storeSlug, productId);
 
     if (!resp.success || !resp.data) {
       enqueueSnackbar(`มีบางอย่างผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง!`, {
@@ -60,8 +62,10 @@ export const addProductToCartById = createAsyncThunk(
 
 export const addProductToCartBySerial = createAsyncThunk(
   "cart/addProductToCartBySerial",
-  async (serial: string) => {
-    const resp = await findProductBySerial(serial);
+  async (serial: string, thunkAPI) => {
+    const { cart } = thunkAPI.getState() as { cart: CartState };
+    if (!cart.storeSlug) throw new Error("store_not_found");
+    const resp = await findProductBySerial(cart.storeSlug, serial);
 
     if (!resp.success || !resp.data) {
       enqueueSnackbar("ไม่พบสินค้านี้ในระบบ", {

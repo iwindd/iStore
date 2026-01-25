@@ -43,6 +43,8 @@ export const PermissionConfig = {
       viewRecentOrders: StorePermissionEnum.HISTORY_READ_ALL,
       /** View best selling products */
       viewBestSellingProducts: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View order report */
+      viewOrderReport: StorePermissionEnum.HISTORY_READ_ALL,
     },
 
     /** Cashier operations */

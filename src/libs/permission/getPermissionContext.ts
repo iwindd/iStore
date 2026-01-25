@@ -1,15 +1,16 @@
+import { auth } from "@/auth";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { unauthorized } from "next/navigation";
 import { cache } from "react";
 import { PermissionContext } from "./context";
 
 export const getPermissionContext = cache(
   async (storeSlug?: string): Promise<PermissionContext> => {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const session = await auth();
+    if (!session?.user) unauthorized();
 
     const result: PermissionContext = {
-      userId: user.id,
+      userId: Number(session.user.id),
       storeSlug,
       globalPermissions: new Set(),
       storePermissions: new Set(),
@@ -17,7 +18,7 @@ export const getPermissionContext = cache(
 
     const globalPermissions = await db.user.findUnique({
       where: {
-        id: user.id,
+        id: result.userId,
       },
       select: {
         global_role: {
@@ -42,7 +43,7 @@ export const getPermissionContext = cache(
       const employeeStoreData = await db.employee.findFirst({
         where: {
           user: {
-            id: user.id,
+            id: result.userId,
           },
           store: {
             slug: storeSlug,

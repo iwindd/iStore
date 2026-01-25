@@ -1,7 +1,9 @@
 "use server";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ActionError, ActionResponse } from "@/libs/action";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type FindProductByIdResult = Prisma.ProductGetPayload<{
@@ -27,21 +29,16 @@ export type FindProductByIdResult = Prisma.ProductGetPayload<{
 }>;
 
 const findProductById = async (
+  storeSlug: string,
   id: number,
-  includeDelete?: boolean
 ): Promise<ActionResponse<FindProductByIdResult | null>> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, PermissionConfig.store.cashier.cashout);
     const product = await db.product.findFirst({
       where: {
         id: id,
-        store_id: user.store,
-        ...(includeDelete
-          ? {}
-          : {
-              deleted_at: null,
-            }),
+        store_id: ctx.storeId!,
       },
       select: {
         id: true,

@@ -1,4 +1,6 @@
 "use client";
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -111,15 +113,19 @@ const DashboardController = () => {
         </Stack>
 
         <Stack direction={"row"} spacing={1} alignItems="center">
-          <Tooltip title={t("print")}>
-            <IconButton
-              color="secondary"
-              component={Link}
-              href={getPath("projects.store.dashboard.report")}
-            >
-              <PrintTwoTone />
-            </IconButton>
-          </Tooltip>
+          <HasStorePermission
+            permission={PermissionConfig.store.dashboard.viewOrderReport}
+          >
+            <Tooltip title={t("print")}>
+              <IconButton
+                color="secondary"
+                component={Link}
+                href={getPath("projects.store.dashboard.report")}
+              >
+                <PrintTwoTone />
+              </IconButton>
+            </Tooltip>
+          </HasStorePermission>
           <Tooltip title={t("refresh")}>
             <IconButton color="secondary" onClick={handleRefresh}>
               <RefreshTwoTone />

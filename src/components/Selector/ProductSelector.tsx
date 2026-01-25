@@ -1,15 +1,25 @@
 "use client";
-import findProductById from "@/actions/product/findById";
-import SearchProducts, { SearchProduct } from "@/actions/product/search";
+
+import {
+  fetchProductSelector,
+  ProductSelectorInstance,
+  searchProductSelector,
+} from "@/actions/product/selectorProduct";
 import { Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useCallback } from "react";
+import { useParams } from "next/navigation";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
 
-type ProductSelectorProps = Omit<BaseSelectorProps<SearchProduct>, "canCreate">;
+type ProductSelectorProps = Omit<
+  BaseSelectorProps<ProductSelectorInstance>,
+  "canCreate"
+>;
 
 const ProductSelector = (props_: ProductSelectorProps) => {
   const t = useTranslations("COMPONENTS.product_selector");
+  const params = useParams();
+  const storeSlug = params.store as string;
+
   const props = {
     ...props_,
     label: props_.label || t("label"),
@@ -17,30 +27,15 @@ const ProductSelector = (props_: ProductSelectorProps) => {
     noOptionsText: props_.noOptionsText || t("empty"),
   };
 
-  const fetchItem = useCallback(async (id: number) => {
-    const resp = await findProductById(id);
-    if (resp.success && resp.data) {
-      // Map to SearchProduct type
-      return {
-        id: resp.data.id,
-        serial: resp.data.serial,
-        label: resp.data.label,
-        stock: resp.data.stock || { quantity: 0 },
-      };
-    }
-    return null;
-  }, []);
-
-  const searchItems = useCallback(async (query: string) => {
-    const resp = await SearchProducts(query);
-    return resp.data || [];
-  }, []);
-
   return (
-    <BaseSelector<SearchProduct>
+    <BaseSelector<ProductSelectorInstance>
       id="product-selector"
-      fetchItem={fetchItem}
-      searchItems={searchItems}
+      fetchItem={async (id) => {
+        return await fetchProductSelector(storeSlug, id);
+      }}
+      searchItems={async (query) => {
+        return await searchProductSelector(storeSlug, query);
+      }}
       getItemLabel={(option) =>
         typeof option === "string" ? option : option.label
       }

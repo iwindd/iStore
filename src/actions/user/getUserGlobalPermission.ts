@@ -1,16 +1,17 @@
 "use server";
 
+import { auth } from "@/auth";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { unauthorized } from "next/navigation";
 
 const getUserGlobalPermission = async () => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const user = await auth();
+    if (!user?.user) unauthorized();
 
     const permissions = await db.user.findFirstOrThrow({
       where: {
-        id: user.id,
+        id: Number(user.user.id),
       },
       select: {
         global_role: {

@@ -1,18 +1,19 @@
 "use server";
 
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { getServerSession } from "@/libs/session";
+import { unauthorized } from "next/navigation";
 
 const getStoreSwitcher = async () => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const user = await getServerSession();
+    if (!user?.user) unauthorized();
 
     const stores = await db.store.findMany({
       where: {
         employees: {
           some: {
-            user_id: user.id,
+            user_id: Number(user.user.id),
           },
         },
       },

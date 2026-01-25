@@ -1,7 +1,8 @@
 "use server";
-import { HistoryPermissionEnum } from "@/enums/permission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { getUser } from "@/libs/session";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { DashboardRange } from "@/reducers/dashboardReducer";
 import { Method } from "@prisma/client";
 import { getDashboardRangeDate } from "./dashboard.helper";
@@ -23,18 +24,18 @@ export interface ProductSummary {
 }
 
 export const getOrdersSummary = async (
-  range: DashboardRange
+  storeSlug: string,
+  range: DashboardRange,
 ): Promise<OrdersSummaryResponse> => {
   try {
-    const user = await getUser();
-    if (!user) throw new Error("Unauthorized");
+    const ctx = await getPermissionContext(storeSlug);
+    assertStoreCan(ctx, PermissionConfig.store.dashboard.viewOrderReport);
 
     const filterRange = await getDashboardRangeDate(range);
 
     const orders = (await db.order.findMany({
       where: {
-        store_id: user.store,
-        creator_id: user.limitPermission(HistoryPermissionEnum.READ),
+        store_id: ctx.storeId,
         created_at: {
           gte: filterRange.start,
           lte: filterRange.end,

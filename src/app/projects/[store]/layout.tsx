@@ -1,6 +1,6 @@
 import db from "@/libs/db";
+import { assertStore } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { getUser } from "@/libs/session";
 import MainLayout from "@/providers/LayoutProvider";
 import PermissionProvider from "@/providers/PermissionProvider";
 import { notFound } from "next/navigation";
@@ -13,12 +13,12 @@ export default async function StoreLayout({
   params: Promise<{ store: string }>;
 }>) {
   const { store } = await params;
-  const user = await getUser();
-  if (!user) return notFound();
+  const ctx = await getPermissionContext(store);
+  assertStore(ctx);
 
   const storeData = await db.employee.findFirst({
     where: {
-      user_id: user.id,
+      user_id: ctx.userId,
       store: {
         slug: store,
       },
@@ -29,8 +29,6 @@ export default async function StoreLayout({
   });
 
   if (!storeData) return notFound();
-
-  const ctx = await getPermissionContext(store);
 
   return (
     <PermissionProvider
