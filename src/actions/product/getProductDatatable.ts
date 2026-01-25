@@ -1,6 +1,9 @@
 "use server";
 import { TableFetch } from "@/components/Datatable";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
 export type ProductDatatableInstance = Awaited<
@@ -11,6 +14,9 @@ const getProductDatatable = async (
   table: TableFetch,
   filterType?: "all" | "preorder" | "outOfStock" | "stock" | "deleted",
 ) => {
+  const ctx = await getPermissionContext(table.storeIdentifier);
+  assertStoreCan(ctx, PermissionConfig.store.product.getDatatable);
+
   try {
     let where: Prisma.ProductWhereInput = {
       store: {

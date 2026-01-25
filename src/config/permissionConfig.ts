@@ -37,6 +37,10 @@ export const PermissionConfig = {
 
     /** Product management operations */
     product: {
+      /** Get product datatable */
+      getDatatable: StorePermissionEnum.PRODUCT_MANAGEMENT,
+      /** Get product details */
+      getDetail: StorePermissionEnum.PRODUCT_MANAGEMENT,
       /** Create a new product */
       create: StorePermissionEnum.PRODUCT_MANAGEMENT,
       /** Update existing product */

@@ -1,5 +1,8 @@
+import { PermissionConfig } from "@/config/permissionConfig";
 import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Stack } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -8,7 +11,7 @@ import { ProductProvider } from "./ProductContext";
 
 interface ProductLayoutProps {
   children: React.ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; store: string }>;
 }
 
 export type ProductLayoutValue = Prisma.ProductGetPayload<{
@@ -38,7 +41,10 @@ const selectProduct = {
 } satisfies Prisma.ProductSelect;
 
 const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
-  const { id } = await params;
+  const { id, store } = await params;
+  const ctx = await getPermissionContext(store);
+  assertStoreCan(ctx, PermissionConfig.store.product.getDetail);
+
   const product = await db.product.findFirst({
     where: {
       id: +id,
