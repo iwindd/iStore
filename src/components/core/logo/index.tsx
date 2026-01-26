@@ -5,6 +5,7 @@ const Logo = ({
   width = 42,
   height = 42,
   slotProps,
+  color = "default",
 }: {
   width?: number;
   height?: number;
@@ -12,8 +13,20 @@ const Logo = ({
     stack?: StackProps;
     image?: ImageProps;
   };
+  color?: "default" | "neutral";
 }) => {
   const theme = useTheme();
+
+  const colors = {
+    default: {
+      main: theme.palette.primary.main,
+      light: theme.palette.primary.light,
+    },
+    neutral: {
+      main: theme.palette.neutral[200],
+      light: theme.palette.neutral[100],
+    },
+  };
 
   return (
     <Stack
@@ -21,9 +34,6 @@ const Logo = ({
       spacing={1}
       justifyContent={"center"}
       alignItems={"center"}
-      sx={{
-        width: "100%",
-      }}
       {...slotProps?.stack}
     >
       <svg
@@ -36,9 +46,9 @@ const Logo = ({
       >
         <defs>
           <linearGradient id="logoGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={theme.palette.primary.main} />
-            <stop offset="50%%" stopColor={theme.palette.primary.light} />
-            <stop offset="100%" stopColor={theme.palette.primary.main} />
+            <stop offset="0%" stopColor={colors[color].main} />
+            <stop offset="50%%" stopColor={colors[color].light} />
+            <stop offset="100%" stopColor={colors[color].main} />
           </linearGradient>
         </defs>
 
