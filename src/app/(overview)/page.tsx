@@ -1,10 +1,11 @@
 import App, { Wrapper } from "@/layouts/App";
+import WelcomeCard from "./components/WelcomeCard";
 
-const AppOverviewPage = () => {
+const AppOverviewPage = async () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>Welcome to iStore</App.Header.Title>
+        <WelcomeCard />
       </App.Header>
     </Wrapper>
   );
