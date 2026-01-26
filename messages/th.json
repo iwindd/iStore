@@ -66,7 +66,19 @@
     "auth": {
       "label": "ยืนยันตัวตน",
       "signin": {
-        "label": "เข้าสู่ระบบ"
+        "label": "เข้าสู่ระบบ",
+        "welcomeBack": "ยินดีต้อนรับกลับ",
+        "niceToSeeYou": "ยินดีที่ได้พบคุณอีกครั้ง",
+        "loginAccount": "เข้าสู่ระบบ",
+        "loginDesc": "กรุณากรอกข้อมูลของคุณเพื่อเข้าสู่ระบบ",
+        "emailLabel": "อีเมล",
+        "passwordLabel": "รหัสผ่าน",
+        "emailPlaceholder": "ระบุอีเมลของคุณ",
+        "passwordPlaceholder": "ระบุรหัสผ่าน",
+        "keepMeSignedIn": "จดจำฉันไว้",
+        "alreadyMember": "มีบัญชีอยู่แล้ว?",
+        "subscribe": "เข้าสู่ระบบ",
+        "subscribeDesc": "เข้าสู่ระบบเพื่อจัดการร้านค้าของคุณ"
       }
     },
     "store": {
