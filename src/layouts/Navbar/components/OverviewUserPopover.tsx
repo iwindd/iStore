@@ -9,13 +9,11 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { useAuth } from "@/hooks/use-auth";
-import { clearProductCart } from "@/reducers/cartReducer";
 import { getPath } from "@/router";
 import { LogoutTwoTone, Settings } from "@mui/icons-material";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useSnackbar } from "notistack";
-import { useDispatch } from "react-redux";
 
 export interface OverviewUserPopover {
   anchorEl: Element | null;
@@ -33,13 +31,11 @@ const OverviewUserPopover = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [, setStocks] = React.useState<any>([]);
-  const dispatch = useDispatch();
 
   const onSignout = React.useCallback(async (): Promise<void> => {
     onClose();
     try {
       await signOut({ callbackUrl: "/", redirect: true });
-      dispatch(clearProductCart());
       setStocks([]);
       router.refresh();
       enqueueSnackbar("ออกจากระบบสำเร็จ", { variant: "success" });
@@ -49,7 +45,7 @@ const OverviewUserPopover = ({
         variant: "error",
       });
     }
-  }, [router, enqueueSnackbar, onClose, dispatch, setStocks]);
+  }, [router, enqueueSnackbar, onClose, setStocks]);
 
   return (
     <Popover

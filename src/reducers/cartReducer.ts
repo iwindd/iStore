@@ -5,6 +5,7 @@ import findProductById, {
   FindProductByIdResult,
 } from "@/actions/product/findById";
 import findProductBySerial from "@/actions/product/findBySerial";
+import { RootState } from "@/libs/store";
 import {
   CashoutInputValues,
   CashoutSchema,
@@ -38,16 +39,15 @@ export interface CartState {
   total: number;
   totalPreOrder: number;
   checkoutMode: CheckoutMode;
-  storeSlug?: string;
   scanner: string;
 }
 
 export const addProductToCartById = createAsyncThunk(
   "cart/addProductToCartById",
   async (productId: number, thunkAPI) => {
-    const { cart } = thunkAPI.getState() as { cart: CartState };
-    if (!cart.storeSlug) throw new Error("store_not_found");
-    const resp = await findProductById(cart.storeSlug, productId);
+    const { project } = thunkAPI.getState() as RootState;
+    if (!project.currentProject?.slug) throw new Error("store_not_found");
+    const resp = await findProductById(project.currentProject.slug, productId);
 
     if (!resp.success || !resp.data) {
       enqueueSnackbar(`มีบางอย่างผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง!`, {
@@ -63,9 +63,9 @@ export const addProductToCartById = createAsyncThunk(
 export const addProductToCartBySerial = createAsyncThunk(
   "cart/addProductToCartBySerial",
   async (serial: string, thunkAPI) => {
-    const { cart } = thunkAPI.getState() as { cart: CartState };
-    if (!cart.storeSlug) throw new Error("store_not_found");
-    const resp = await findProductBySerial(cart.storeSlug, serial);
+    const { project } = thunkAPI.getState() as RootState;
+    if (!project.currentProject?.slug) throw new Error("store_not_found");
+    const resp = await findProductBySerial(project.currentProject.slug, serial);
 
     if (!resp.success || !resp.data) {
       enqueueSnackbar("ไม่พบสินค้านี้ในระบบ", {
@@ -83,8 +83,8 @@ export const addProductToCartBySerial = createAsyncThunk(
 export const cashoutCart = createAsyncThunk(
   "cart/cashoutCart",
   async (data: CashoutInputValues, thunkAPI) => {
-    const { cart } = thunkAPI.getState() as { cart: CartState };
-    if (!cart.storeSlug) return;
+    const { project, cart } = thunkAPI.getState() as RootState;
+    if (!project.currentProject?.slug) return;
 
     const payload = CashoutSchema.safeParse({
       products: cart.products,
@@ -108,7 +108,7 @@ export const cashoutCart = createAsyncThunk(
       throw new Error(payload.error?.message);
     }
 
-    const resp = await Cashout(cart.storeSlug, payload.data);
+    const resp = await Cashout(project.currentProject.slug, payload.data);
     if (!resp.success) {
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
@@ -125,8 +125,8 @@ export const cashoutCart = createAsyncThunk(
 export const consignmentCart = createAsyncThunk(
   "cart/consignmentCart",
   async (data: ConsignmentInputValues, thunkAPI) => {
-    const { cart } = thunkAPI.getState() as { cart: CartState };
-    if (!cart.storeSlug) return;
+    const { project, cart } = thunkAPI.getState() as RootState;
+    if (!project.currentProject?.slug) return;
     const payload = ConsignmentSchema.safeParse({
       products: cart.products,
       ...data,
@@ -148,7 +148,7 @@ export const consignmentCart = createAsyncThunk(
       throw new Error(payload.error?.message);
     }
 
-    const resp = await Consignment(cart.storeSlug, payload.data);
+    const resp = await Consignment(project.currentProject.slug, payload.data);
     if (!resp.success) {
       enqueueSnackbar("เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง", {
         variant: "error",
@@ -169,7 +169,6 @@ export const initialCartState: CartState = {
   totalPreOrder: 0,
   checkoutMode: CheckoutMode.CASHOUT,
   scanner: "",
-  storeSlug: undefined,
 };
 
 const getTotalPrice = (products: CartProduct[]) => {
@@ -272,17 +271,6 @@ const cartSlice = createSlice({
       state.total = 0;
       state.totalPreOrder = 0;
     },
-    setStoreSlug: (state, action: PayloadAction<string>) => {
-      if (state.storeSlug == action.payload) {
-        return;
-      }
-
-      state.storeSlug = action.payload;
-      state.products = [];
-      state.preOrderProducts = [];
-      state.total = 0;
-      state.totalPreOrder = 0;
-    },
     removeProductFromCart: (state, action: PayloadAction<number>) => {
       state.products = state.products.filter((p) => p.id != action.payload);
       state.total = getTotalPrice(state.products);
@@ -379,6 +367,5 @@ export const {
   preOrderProduct,
   setCheckoutMode,
   setScanner,
-  setStoreSlug,
 } = cartSlice.actions;
 export default cartSlice.reducer;

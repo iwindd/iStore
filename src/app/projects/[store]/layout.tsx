@@ -1,8 +1,10 @@
+import getUserStorePermission from "@/actions/user/getUserStorePermission";
 import db from "@/libs/db";
 import { assertStore } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import MainLayout from "@/providers/LayoutProvider";
 import PermissionProvider from "@/providers/PermissionProvider";
+import StoreProvider from "@/providers/StoreProvider";
 import { notFound } from "next/navigation";
 
 export default async function StoreLayout({
@@ -25,17 +27,42 @@ export default async function StoreLayout({
     },
     select: {
       id: true,
+      store: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
     },
   });
 
-  if (!storeData) return notFound();
+  if (!storeData?.store) return notFound();
+
+  const permissions = await getUserStorePermission(storeData.id, store);
 
   return (
     <PermissionProvider
       globalPermissions={Array.from(ctx.globalPermissions)}
       storePermissions={Array.from(ctx.storePermissions)}
     >
-      <MainLayout storeSlug={store}>{children}</MainLayout>
+      <StoreProvider
+        preloadedState={{
+          project: {
+            currentProject: {
+              id: storeData.store.id,
+              name: storeData.store.name,
+              slug: storeData.store.slug,
+            },
+            permissions: permissions.map((p) => ({
+              id: p.id,
+              name: p.name,
+            })),
+          },
+        }}
+      >
+        <MainLayout>{children}</MainLayout>
+      </StoreProvider>
     </PermissionProvider>
   );
 }
