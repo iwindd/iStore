@@ -1,9 +1,10 @@
-import { LinearProgress, Stack } from "@mui/material";
+import GradientCircularProgress from "@/components/Loading/GradientCircularProgress";
+import { Stack } from "@mui/material";
 
 const LoadingPage = () => {
   return (
-    <Stack mt={"50%"} px={"30%"}>
-      <LinearProgress />
+    <Stack pt={10} alignItems={"center"}>
+      <GradientCircularProgress />
     </Stack>
   );
 };
