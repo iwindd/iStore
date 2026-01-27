@@ -1,6 +1,7 @@
 "use client";
 
 import RoleSelector from "@/components/Selector/RoleSelector";
+import UserSelector from "@/components/Selector/UserSelector";
 import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -11,9 +12,10 @@ import {
   CardContent,
   CardHeader,
   Stack,
-  TextField,
+  Typography,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -35,17 +37,13 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   const router = useRouter();
 
   const {
-    register,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<EmployeeValues>({
     resolver: zodResolver(EmployeeSchema),
     defaultValues: initialValues || {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
+      userId: 0,
       roleId: 0,
     },
   });
@@ -53,47 +51,38 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={3}>
-        {/* Card 1: General Info */}
+        {/* Card 1: User Selection */}
         <Card>
-          <CardHeader title={t("form.general_info_card")} />
+          <CardHeader
+            title={t("form.user_card")}
+            subheader={t("form.user_subtitle")}
+          />
           <CardContent>
             <Stack spacing={2}>
-              <TextField
-                fullWidth
-                label={t("form.first_name_label")}
-                placeholder={t("form.first_name_placeholder")}
-                error={!!errors.firstName}
-                helperText={errors.firstName?.message}
-                {...register("firstName")}
+              <Controller
+                name="userId"
+                control={control}
+                render={({ field }) => (
+                  <UserSelector
+                    label={t("form.user_label")}
+                    placeholder={t("form.user_placeholder")}
+                    defaultValue={field.value || undefined}
+                    onSubmit={(value) => field.onChange(value?.id)}
+                    error={!!errors.userId}
+                    helperText={errors.userId?.message}
+                  />
+                )}
               />
-              <TextField
-                fullWidth
-                label={t("form.last_name_label")}
-                placeholder={t("form.last_name_placeholder")}
-                error={!!errors.lastName}
-                helperText={errors.lastName?.message}
-                {...register("lastName")}
-              />
-              <TextField
-                fullWidth
-                type="email"
-                label={t("form.email_label")}
-                placeholder={t("form.email_placeholder")}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-                {...register("email")}
-              />
-              <TextField
-                fullWidth
-                type="password"
-                label={t("form.password_label")}
-                placeholder={t("form.password_placeholder")}
-                error={!!errors.password}
-                helperText={
-                  errors.password?.message || t("form.password_helper")
-                }
-                {...register("password")}
-              />
+              <Typography variant="body2" color="text.secondary">
+                {t("form.create_new_user_hint")}{" "}
+                <Link
+                  href="/users/new"
+                  target="_blank"
+                  style={{ textDecoration: "underline", color: "inherit" }}
+                >
+                  {t("form.create_new_user_link")}
+                </Link>
+              </Typography>
             </Stack>
           </CardContent>
         </Card>
