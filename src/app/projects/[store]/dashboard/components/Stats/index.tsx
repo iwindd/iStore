@@ -4,9 +4,10 @@ import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import { PermissionConfig } from "@/config/permissionConfig";
 import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
+import { useRoute } from "@/hooks/use-route";
 import { number } from "@/libs/formatter";
 import { Route } from "@/libs/route/route";
-import { getPath, getRoute } from "@/router";
+import { getRoute } from "@/router";
 import { BackHand, Receipt, RotateRight, Warning } from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -30,6 +31,7 @@ const Stats = () => {
   if (!user) return notFound();
   const range = useAppSelector((state) => state.dashboard.range);
   const params = useParams<{ store: string }>();
+  const route = useRoute();
 
   const { isLoading, data } = useQuery({
     queryKey: ["stats", range],
@@ -83,7 +85,10 @@ const Stats = () => {
         <HasStorePermission key={stat.name} permission={stat.permission || []}>
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
             <TotalStat
-              href={stat.route && getPath(stat.route.name)}
+              href={
+                stat.route &&
+                route.path(stat.route.name, { store: params.store })
+              }
               label={stat.label}
               color={stat.color || "primary"}
               icon={stat.icon}
