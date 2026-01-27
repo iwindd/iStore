@@ -19,6 +19,10 @@ export const PermissionConfig = {
   global: {
     /** Create a new store */
     createStore: GlobalPermissionEnum.STORE_CREATE,
+
+    user: {
+      getUsers: null,
+    },
   },
 
   /**

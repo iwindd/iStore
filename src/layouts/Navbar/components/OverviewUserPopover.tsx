@@ -66,7 +66,7 @@ const OverviewUserPopover = ({
         disablePadding
         sx={{ p: "8px", "& .MuiMenuItem-root": { borderRadius: 1 } }}
       >
-        <MenuItem component={Link} href={getPath("overview.account")}>
+        <MenuItem component={Link} href={getPath("account")}>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

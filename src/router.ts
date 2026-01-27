@@ -25,6 +25,10 @@ const ROUTES = ROUTER({
     icon: Store,
     disabledBreadcrumb: true,
     children: {
+      new: {
+        path: "/projects/new",
+        label: "overview.new.label",
+      },
       store: {
         path: "/projects/:store",
         label: "store.label",
@@ -251,18 +255,25 @@ const ROUTES = ROUTER({
     label: "overview.label",
     icon: Dashboard,
     disabledBreadcrumb: true,
+    children: {},
+  },
+
+  users: {
+    path: "/users",
+    label: "overview.users.label",
+    icon: Group,
     children: {
       new: {
-        path: "/projects/new",
-        label: "overview.new.label",
-      },
-      //account
-      account: {
-        path: "/account",
-        label: "store.account.label",
-        icon: Person,
+        path: "/users/new",
+        label: "overview.users.new.label",
       },
     },
+  },
+  //account
+  account: {
+    path: "/account",
+    label: "store.account.label",
+    icon: Person,
   },
   auth: {
     path: "/auth",

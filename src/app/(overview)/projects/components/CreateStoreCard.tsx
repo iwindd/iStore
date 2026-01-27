@@ -15,7 +15,7 @@ export default function CreateStoreCard() {
 
   return (
     <Card variant="outlined">
-      <CardActionArea href={getPath("overview.new")}>
+      <CardActionArea href={getPath("projects.new")}>
         <CardContent>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Stack
