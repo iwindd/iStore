@@ -1,11 +1,17 @@
 "use server";
 
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
+import { assertStoreCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 export const searchNonEmployeeUsers = async (
-  storeId: string,
+  storeSlug: string,
   query: string,
 ) => {
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, PermissionConfig.store.employee.getNonEmployeeUsers);
+
   const users = await db.user.findMany({
     where: {
       AND: [
@@ -19,7 +25,7 @@ export const searchNonEmployeeUsers = async (
         {
           employees: {
             none: {
-              store_id: storeId,
+              store_id: ctx.storeId,
             },
           },
         },

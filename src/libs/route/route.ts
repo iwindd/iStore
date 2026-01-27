@@ -1,4 +1,4 @@
-import { StorePermissionEnum } from "@/enums/permission";
+import { GlobalPermissionEnum, StorePermissionEnum } from "@/enums/permission";
 import { compile, match } from "path-to-regexp";
 
 type BaseRoute = {
@@ -9,7 +9,8 @@ type BaseRoute = {
   disabled?: boolean;
   disabledBreadcrumb?: boolean;
   permission?: {
-    someStore: StorePermissionEnum[];
+    someStore?: StorePermissionEnum[];
+    someGlobal?: GlobalPermissionEnum[];
   };
 };
 

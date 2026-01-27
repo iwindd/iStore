@@ -1,12 +1,15 @@
 "use server";
 
 import { TableFetch } from "@/components/Datatable";
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
+import { assertGlobalCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 
 const getUserDatatable = async (payload: TableFetch) => {
-  /*   const ctx = await getPermissionContext();
-  assertGlobalCan(ctx, PermissionConfig.user.getUsers);
-   */
+  const ctx = await getPermissionContext();
+  assertGlobalCan(ctx, PermissionConfig.global.user.getUsers);
+
   const datatable = db.user.getDatatable({
     query: payload,
     searchable: {

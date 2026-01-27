@@ -1,11 +1,17 @@
 "use server";
 
+import { PermissionConfig } from "@/config/permissionConfig";
 import { ConflictError } from "@/errors/ConflictError";
 import db from "@/libs/db";
+import { assertGlobalCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { CreateUserSchema, CreateUserValues } from "@/schema/User";
 import bcrypt from "bcrypt";
 
 const createUser = async (payload: CreateUserValues) => {
+  const ctx = await getPermissionContext();
+  assertGlobalCan(ctx, PermissionConfig.global.user.getUsers);
+
   const validated = CreateUserSchema.parse(payload);
 
   // Default password to "password" if not provided

@@ -21,7 +21,9 @@ export const PermissionConfig = {
     createStore: GlobalPermissionEnum.STORE_CREATE,
 
     user: {
-      getUsers: null,
+      getUsers: GlobalPermissionEnum.USER_MANAGEMENT,
+      updateUser: GlobalPermissionEnum.USER_MANAGEMENT,
+      updatePassword: GlobalPermissionEnum.USER_MANAGEMENT,
     },
   },
 
@@ -185,6 +187,7 @@ export const PermissionConfig = {
       get: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
       /** Get employee datatable */
       datatable: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      getNonEmployeeUsers: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
     },
 
     /** Role management operations */
@@ -199,6 +202,7 @@ export const PermissionConfig = {
       delete: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
       /** Get role details */
       get: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
+      getSelector: StorePermissionEnum.EMPLOYEE_MANAGEMENT,
     },
 
     /** Category management operations */

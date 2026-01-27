@@ -27,7 +27,7 @@ function getDefaultExpand(items: SidebarItem[], activeRouteTrail: Route[]) {
 
 const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
   const activeRouteTrail = useActiveRouteTrail();
-  const { hasStorePermission } = usePermission();
+  const { hasStorePermission, hasGlobalPermission } = usePermission();
 
   const [expand, setExpand] = useState<Record<string, boolean>>(
     getDefaultExpand(items, activeRouteTrail),
@@ -40,6 +40,13 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
     if (
       permission?.someStore &&
       !hasStorePermission(permission.someStore, true)
+    ) {
+      return null;
+    }
+
+    if (
+      permission?.someGlobal &&
+      !hasGlobalPermission(permission.someGlobal, true)
     ) {
       return null;
     }

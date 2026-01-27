@@ -12,6 +12,10 @@ const HasGlobalPermission = ({
   permission,
   some = false,
 }: HasGlobalPermissionProps) => {
+  if (Array.isArray(permission) && permission.length <= 0) {
+    return children;
+  }
+
   const { hasGlobalPermission } = usePermission();
 
   return hasGlobalPermission(permission, some) ? children : null;

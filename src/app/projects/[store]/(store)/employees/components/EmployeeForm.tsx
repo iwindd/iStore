@@ -1,7 +1,9 @@
 "use client";
 
+import HasGlobalPermission from "@/components/Flagments/HasGlobalPermission";
 import RoleSelector from "@/components/Selector/RoleSelector";
 import UserSelector from "@/components/Selector/UserSelector";
+import { GlobalPermissionEnum } from "@/enums/permission";
 import { EmployeeSchema, EmployeeValues } from "@/schema/Employee";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -73,16 +75,20 @@ const EmployeeForm: React.FC<EmployeeFormProps> = ({
                   />
                 )}
               />
-              <Typography variant="body2" color="text.secondary">
-                {t("form.create_new_user_hint")}{" "}
-                <Link
-                  href="/users/new"
-                  target="_blank"
-                  style={{ textDecoration: "underline", color: "inherit" }}
-                >
-                  {t("form.create_new_user_link")}
-                </Link>
-              </Typography>
+              <HasGlobalPermission
+                permission={GlobalPermissionEnum.USER_MANAGEMENT}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  {t("form.create_new_user_hint")}{" "}
+                  <Link
+                    href="/users/new"
+                    target="_blank"
+                    style={{ textDecoration: "underline", color: "inherit" }}
+                  >
+                    {t("form.create_new_user_link")}
+                  </Link>
+                </Typography>
+              </HasGlobalPermission>
             </Stack>
           </CardContent>
         </Card>

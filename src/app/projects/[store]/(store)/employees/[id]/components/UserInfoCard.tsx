@@ -1,7 +1,10 @@
 "use client";
 
 import { adminUpdateUserProfile } from "@/actions/user/adminUpdateUserProfile";
+import HasGlobalPermission from "@/components/Flagments/HasGlobalPermission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import { useDialog } from "@/hooks/use-dialog";
+import { usePermission } from "@/providers/PermissionProvider";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockReset, SaveTwoTone } from "@mui/icons-material";
@@ -28,6 +31,9 @@ interface UserInfoCardProps {
 const UserInfoCard = ({ user }: UserInfoCardProps) => {
   const t = useTranslations("EMPLOYEES");
   const { open, handleOpen, handleClose } = useDialog();
+  const hasPermission = usePermission().hasGlobalPermission(
+    PermissionConfig.global.user.updateUser,
+  );
 
   const {
     register,
@@ -59,20 +65,26 @@ const UserInfoCard = ({ user }: UserInfoCardProps) => {
     },
   });
 
+  const disabled = !hasPermission || updateUserMutation.isPending;
+
   return (
     <>
       <Card>
         <CardHeader
           title={t("form.general_info_card")}
           action={
-            <Button
-              startIcon={<LockReset />}
-              variant="text"
-              size="small"
-              onClick={handleOpen}
+            <HasGlobalPermission
+              permission={PermissionConfig.global.user.updatePassword}
             >
-              {t("form.change_password_button")}
-            </Button>
+              <Button
+                startIcon={<LockReset />}
+                variant="text"
+                size="small"
+                onClick={handleOpen}
+              >
+                {t("form.change_password_button")}
+              </Button>
+            </HasGlobalPermission>
           }
         />
         <CardContent>
@@ -91,7 +103,7 @@ const UserInfoCard = ({ user }: UserInfoCardProps) => {
                   {...register("first_name")}
                   error={!!errors.first_name}
                   helperText={errors.first_name?.message}
-                  disabled={updateUserMutation.isPending}
+                  disabled={disabled}
                 />
               </Grid>
               <Grid size={12}>
@@ -101,7 +113,7 @@ const UserInfoCard = ({ user }: UserInfoCardProps) => {
                   {...register("last_name")}
                   error={!!errors.last_name}
                   helperText={errors.last_name?.message}
-                  disabled={updateUserMutation.isPending}
+                  disabled={disabled}
                 />
               </Grid>
               <Grid size={12}>
@@ -130,7 +142,15 @@ const UserInfoCard = ({ user }: UserInfoCardProps) => {
         </CardContent>
       </Card>
 
-      <EditPassswordDialog open={open} onClose={handleClose} userId={user.id} />
+      <HasGlobalPermission
+        permission={PermissionConfig.global.user.updatePassword}
+      >
+        <EditPassswordDialog
+          open={open}
+          onClose={handleClose}
+          userId={user.id}
+        />
+      </HasGlobalPermission>
     </>
   );
 };

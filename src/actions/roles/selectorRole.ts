@@ -19,10 +19,11 @@ export type RoleSelectorInstance = Prisma.StoreRoleGetPayload<{
 }>;
 
 const fetchRoleSelector = async (
-  storeId: string,
+  storeSlug: string,
   id: number,
 ): Promise<RoleSelectorInstance | null> => {
-  const ctx = await getPermissionContext(storeId);
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, PermissionConfig.store.role.getSelector);
 
   const role = await db.storeRole.findUnique({
     where: {
@@ -36,10 +37,11 @@ const fetchRoleSelector = async (
 };
 
 const searchRoleSelector = async (
-  storeId: string,
+  storeSlug: string,
   query: string,
 ): Promise<RoleSelectorInstance[]> => {
-  const ctx = await getPermissionContext(storeId);
+  const ctx = await getPermissionContext(storeSlug);
+  assertStoreCan(ctx, PermissionConfig.store.role.getSelector);
 
   const roles = await db.storeRole.findMany({
     where: {
@@ -56,28 +58,4 @@ const searchRoleSelector = async (
   return roles;
 };
 
-const createRoleSelector = async (
-  storeId: string,
-  name: string,
-): Promise<RoleSelectorInstance | null> => {
-  try {
-    const ctx = await getPermissionContext(storeId);
-    assertStoreCan(ctx, PermissionConfig.store.role.create);
-
-    const role = await db.storeRole.create({
-      data: {
-        name: name,
-        store_id: ctx.storeId!,
-        creator_id: ctx.employeeId!,
-      },
-      select: DEFAULT_SELECT,
-    });
-
-    return role;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
-export { createRoleSelector, fetchRoleSelector, searchRoleSelector };
+export { fetchRoleSelector, searchRoleSelector };

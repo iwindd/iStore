@@ -15,7 +15,7 @@ import {
   Store,
   Work,
 } from "@mui/icons-material";
-import { StorePermissionEnum } from "./enums/permission";
+import { GlobalPermissionEnum, StorePermissionEnum } from "./enums/permission";
 import { buildRouteUtility, ROUTER } from "./libs/route/route";
 
 const ROUTES = ROUTER({
@@ -262,6 +262,9 @@ const ROUTES = ROUTER({
     path: "/users",
     label: "overview.users.label",
     icon: Group,
+    permission: {
+      someGlobal: [GlobalPermissionEnum.USER_MANAGEMENT],
+    },
     children: {
       new: {
         path: "/users/new",

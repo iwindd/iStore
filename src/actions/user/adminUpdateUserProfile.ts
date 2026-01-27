@@ -1,15 +1,17 @@
 "use server";
 
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
+import { assertGlobalCan } from "@/libs/permission/context";
+import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { ProfileSchema, ProfileValues } from "@/schema/Profile";
 
 export const adminUpdateUserProfile = async (
   userId: number,
   payload: ProfileValues,
 ) => {
-  //const ctx = await getPermissionContext(storeSlug);
-  // Ensure the current user has permission to manage employees
-  //assertStoreCan(ctx, PermissionConfig.store.employee.update);
+  const ctx = await getPermissionContext();
+  assertGlobalCan(ctx, PermissionConfig.global.user.updateUser);
   const validated = ProfileSchema.parse(payload);
 
   await db.user.update({
