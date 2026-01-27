@@ -26,10 +26,7 @@ export function assertGlobalCan(
   }
 }
 
-export function storeCan(
-  ctx: PermissionContext,
-  permission: StorePermissionEnum,
-) {
+function storeCan(ctx: PermissionContext, permission: StorePermissionEnum) {
   return ctx.storePermissions.has(permission);
 }
 
@@ -41,6 +38,10 @@ export function assertStoreCan(
   },
 ) {
   assertStore(ctx);
+
+  if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) {
+    return;
+  }
 
   const permissions = Array.isArray(permission) ? permission : [permission];
   options = options ?? {};

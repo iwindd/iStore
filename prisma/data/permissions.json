@@ -1,6 +1,10 @@
 {
   "GlobalPermission": [
     { "name": "Store.Create" },
+    {
+      "name": "Store.Management",
+      "_comment": "เข้าถึงทุกร้านค้าและ bypass all store permissions"
+    },
     { "name": "User.Management", "_comment": "แก้ไขข้อมูลบุคลากร" }
   ],
   "StorePermission": [

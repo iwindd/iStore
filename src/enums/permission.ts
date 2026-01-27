@@ -50,6 +50,7 @@ export enum AccountPermissionEnum {
 
 export enum GlobalPermissionEnum {
   STORE_CREATE = "Store.Create",
+  STORE_MANAGEMENT = "Store.Management",
   USER_MANAGEMENT = "User.Management",
 }
 

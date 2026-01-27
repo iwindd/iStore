@@ -1,5 +1,6 @@
 "use client";
 
+import { GlobalPermissionEnum } from "@/enums/permission";
 import { createContext, useContext, useMemo } from "react";
 
 const PermissionContext = createContext<{
@@ -42,6 +43,10 @@ const PermissionProvider = ({
     permission: string | string[],
     some: boolean = false,
   ) => {
+    if (hasGlobalPermission(GlobalPermissionEnum.STORE_MANAGEMENT)) {
+      return true;
+    }
+
     const hasPermission =
       typeof permission === "string"
         ? storePermissions.includes(permission)
