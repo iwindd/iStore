@@ -3,8 +3,8 @@ import getHistoryDatatable from "@/actions/order/getHistoryDatatable";
 import PaymentMethodChip from "@/components/Chips/PaymentMethodChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
+import { useRoute } from "@/hooks/use-route";
 import * as ff from "@/libs/formatter";
-import { getPath } from "@/router";
 import { InventoryTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
 import { Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
@@ -17,6 +17,7 @@ import HistoryFilterComponent from "./filter";
 const HistoryDatatable = () => {
   const t = useTranslations("HISTORIES.datatable");
   const [filter, setFilter] = React.useState<HistoryFilter>({});
+  const route = useRoute();
 
   const handleFilterChange = (newFilter: HistoryFilter) => {
     setFilter(newFilter);
@@ -130,7 +131,9 @@ const HistoryDatatable = () => {
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
-            to={`${getPath("projects.store.histories.history", { id: row.id.toString() })}`}
+            to={route.path("projects.store.histories.history", {
+              id: row.id.toString(),
+            })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
             showInMenu

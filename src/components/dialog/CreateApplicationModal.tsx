@@ -1,5 +1,5 @@
 "use client";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { ArrowForwardIosTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -14,7 +14,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const CreateApplicationModal = ({
@@ -28,17 +27,13 @@ const CreateApplicationModal = ({
 }) => {
   const t = useTranslations("APPLICATIONS.create_modal");
   const [applicationType, setApplicationType] = useState<string>("line");
-  const router = useRouter();
+  const route = useRoute();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (applicationType === "line") {
-      router.push(
-        getPath("projects.store.applications.line.create", {
-          store: storeSlug,
-        }),
-      );
+      route.push("projects.store.applications.line.create");
     } else {
       console.log("Unknown application type");
     }

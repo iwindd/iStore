@@ -4,9 +4,9 @@ import fetchConsignmentDatatable, {
 } from "@/actions/consignment/fetchConsignmentDatatable";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
+import { useRoute } from "@/hooks/use-route";
 import { Colorization } from "@/libs/colorization";
 import * as ff from "@/libs/formatter";
-import { getPath } from "@/router";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
 import { ConsignmentStatus } from "@prisma/client";
@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 const ConsignmentDatatable = () => {
   const t = useTranslations("CONSIGNMENTS.datatable");
   const ts = useTranslations("CONSIGNMENTS.status");
+  const route = useRoute();
 
   const translateStatus = (status: ConsignmentStatus) => {
     switch (status) {
@@ -73,7 +74,7 @@ const ConsignmentDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={getPath("projects.store.consignments.consignment", {
+            to={route.path("projects.store.consignments.consignment", {
               id: row.id.toString(),
             })}
             icon={<ViewAgendaTwoTone />}

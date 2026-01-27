@@ -1,7 +1,7 @@
 "use client";
+import { useRoute } from "@/hooks/use-route";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
-import { getPath } from "@/router";
 import {
   ListItem,
   ListItemButton,
@@ -16,6 +16,7 @@ function SidebarItem(route: Readonly<Route>): React.JSX.Element {
   const isActive = activeRouteTrail.some(
     (item: Route) => item.name === route.name,
   );
+  const { path } = useRoute();
   const t = useTranslations("ROUTES");
 
   return (
@@ -28,7 +29,7 @@ function SidebarItem(route: Readonly<Route>): React.JSX.Element {
         {...(route.path
           ? {
               component: RouterLink,
-              href: getPath(route.name),
+              href: path(route.name),
             }
           : { role: "button" })}
         data-active={isActive ? "true" : "false"}

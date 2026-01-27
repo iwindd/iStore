@@ -5,12 +5,11 @@ import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Popover from "@mui/material/Popover";
 import Typography from "@mui/material/Typography";
-import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { useAuth } from "@/hooks/use-auth";
+import { useRoute } from "@/hooks/use-route";
 import { clearProductCart } from "@/reducers/cartReducer";
-import { getPath } from "@/router";
 import { LogoutTwoTone, Settings } from "@mui/icons-material";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
@@ -28,9 +27,9 @@ const StoreUserPopover = ({
   onClose,
   open,
 }: Readonly<StoreUserPopoverProps>) => {
-  const router = useRouter();
   const { user } = useAuth();
   const { enqueueSnackbar } = useSnackbar();
+  const route = useRoute();
 
   const [, setStocks] = React.useState<any>([]);
   const dispatch = useDispatch();
@@ -41,7 +40,7 @@ const StoreUserPopover = ({
       await signOut({ callbackUrl: "/", redirect: true });
       dispatch(clearProductCart());
       setStocks([]);
-      router.refresh();
+      route.refresh();
       enqueueSnackbar("ออกจากระบบสำเร็จ", { variant: "success" });
     } catch (err) {
       console.error(err);
@@ -49,7 +48,7 @@ const StoreUserPopover = ({
         variant: "error",
       });
     }
-  }, [router, enqueueSnackbar, onClose, dispatch, setStocks]);
+  }, [route, enqueueSnackbar, onClose, dispatch, setStocks]);
 
   return (
     <Popover
@@ -70,7 +69,7 @@ const StoreUserPopover = ({
         disablePadding
         sx={{ p: "8px", "& .MuiMenuItem-root": { borderRadius: 1 } }}
       >
-        <MenuItem component={Link} href={getPath("projects.store.account")}>
+        <MenuItem component={Link} href={route.path("projects.store.account")}>
           <ListItemIcon>
             <Settings />
           </ListItemIcon>

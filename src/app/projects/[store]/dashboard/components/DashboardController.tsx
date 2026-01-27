@@ -1,12 +1,12 @@
 "use client";
 import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import { PermissionConfig } from "@/config/permissionConfig";
+import { useRoute } from "@/hooks/use-route";
 import {
   DashboardRange,
   EnumDashboardRange,
   setRange,
 } from "@/reducers/dashboardReducer";
-import { getPath } from "@/router";
 import {
   AnalyticsTwoTone,
   PrintTwoTone,
@@ -44,6 +44,7 @@ const DashboardController = () => {
   const [start, setStart] = React.useState<Dayjs | null>(dayjs(range.start));
   const [end, setEnd] = React.useState<Dayjs | null>(dayjs(range.end));
   const [isOpenCustomDialog, setIsOpenCustomDialog] = React.useState(false);
+  const route = useRoute();
 
   const handleRangeChange = (type: EnumDashboardRange | "custom") => {
     if (type === "custom") {
@@ -120,7 +121,7 @@ const DashboardController = () => {
               <IconButton
                 color="secondary"
                 component={Link}
-                href={getPath("projects.store.dashboard.report")}
+                href={route.path("projects.store.dashboard.report")}
               >
                 <PrintTwoTone />
               </IconButton>

@@ -1,5 +1,5 @@
 "use client";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { ArrowForwardIosTwoTone } from "@mui/icons-material";
 import {
   Button,
@@ -14,7 +14,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const CreatePromotionModal = ({
@@ -26,13 +25,13 @@ const CreatePromotionModal = ({
 }) => {
   const t = useTranslations("PROMOTIONS.create_modal");
   const [promotionType, setPromotionType] = useState<string>("offer");
-  const router = useRouter();
+  const route = useRoute();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (promotionType === "offer") {
-      return router.push(getPath("projects.store.promotions.create.buyXgetY"));
+      return route.push("projects.store.promotions.create.buyXgetY");
     }
     console.log("Unknown promotion type");
   };

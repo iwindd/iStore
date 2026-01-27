@@ -1,8 +1,7 @@
 "use client";
 import createProduct from "@/actions/product/createProduct";
 import recoveryProduct from "@/actions/product/recoveryProduct";
-import { useAuth } from "@/hooks/use-auth";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { ProductSchema, ProductValues } from "@/schema/Product";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -18,7 +17,7 @@ import {
 } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -41,8 +40,7 @@ const ProductFormDialog = ({
 
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
-  const router = useRouter();
-  const { user } = useAuth();
+  const route = useRoute();
   const params = useParams<{ store: string }>();
 
   const { mutate, isPending } = useMutation({
@@ -61,11 +59,9 @@ const ProductFormDialog = ({
     onSuccess: async ({ data }) => {
       reset();
       enqueueSnackbar(t("save_success"), { variant: "success" });
-      router.push(
-        getPath("projects.store.products.product", {
-          id: data.id.toString(),
-        }),
-      );
+      route.push("projects.store.products.product", {
+        id: data.id.toString(),
+      });
       await queryClient.invalidateQueries({
         queryKey: ["products"],
         type: "active",

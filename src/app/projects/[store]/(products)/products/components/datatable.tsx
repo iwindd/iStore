@@ -12,9 +12,9 @@ import GridLinkAction from "@/components/GridLinkAction";
 import { StorePermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useRoute } from "@/hooks/use-route";
 import * as ff from "@/libs/formatter";
 import { usePermission } from "@/providers/PermissionProvider";
-import { getPath } from "@/router";
 import {
   DeleteTwoTone,
   QrCodeTwoTone,
@@ -46,6 +46,7 @@ const ProductDatatable = () => {
   const { user } = useAuth();
   const permission = usePermission();
   const params = useParams<{ store: string }>();
+  const route = useRoute();
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteProduct(params.store, id),
@@ -245,7 +246,7 @@ const ProductDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={getPath("projects.store.products.product", {
+            to={route.path("projects.store.products.product", {
               id: row.id.toString(),
             })}
             icon={<ViewAgendaTwoTone />}

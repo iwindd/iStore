@@ -1,4 +1,4 @@
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { ChatBubbleTwoTone, RssFeedTwoTone } from "@mui/icons-material";
 import {
   Avatar,
@@ -13,7 +13,6 @@ import {
 import { LineApplication } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useParams } from "next/navigation";
 
 type LineCardDisplayProps = {
   application: LineApplication;
@@ -21,14 +20,13 @@ type LineCardDisplayProps = {
 
 const LineCardDisplay = ({ application }: LineCardDisplayProps) => {
   const t = useTranslations("APPLICATIONS");
-  const params = useParams<{ store: string }>();
+  const route = useRoute();
 
   return (
     <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardActionArea
         component={Link}
-        href={getPath("projects.store.applications.line", {
-          store: params.store,
+        href={route.path("projects.store.applications.line", {
           id: application.id.toString(),
         })}
         sx={{

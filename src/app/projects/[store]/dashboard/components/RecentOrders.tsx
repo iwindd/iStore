@@ -1,7 +1,7 @@
 "use client";
 import { getRecentOrders } from "@/actions/dashboard/getRecentOrders";
+import { useRoute } from "@/hooks/use-route";
 import * as formatter from "@/libs/formatter";
-import { getPath } from "@/router";
 import { ArrowRightTwoTone } from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -23,6 +23,7 @@ import { useParams } from "next/navigation";
 export function RecentOrders() {
   const t = useTranslations("DASHBOARD.recent_orders");
   const params = useParams<{ store: string }>();
+  const route = useRoute();
   const { data: latestOrders, isLoading } = useQuery({
     queryKey: ["latest-orders", params.store],
     queryFn: () => getRecentOrders(params.store),
@@ -83,7 +84,7 @@ export function RecentOrders() {
                           size="small"
                           variant="text"
                           component={Link}
-                          href={getPath("projects.store.histories.history", {
+                          href={route.path("projects.store.histories.history", {
                             id: order.id.toString(),
                           })}
                         >
@@ -104,7 +105,7 @@ export function RecentOrders() {
           size="small"
           variant="text"
           component={Link}
-          href={getPath("projects.store.histories")}
+          href={route.path("projects.store.histories")}
         >
           {t("view_all")}
         </Button>

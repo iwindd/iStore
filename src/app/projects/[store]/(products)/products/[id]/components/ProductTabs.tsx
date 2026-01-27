@@ -1,5 +1,5 @@
 "use client";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -14,7 +14,7 @@ interface ProductTabsProps {
 const ProductTabs = ({ productId }: ProductTabsProps) => {
   const t = useTranslations("PRODUCT_DETAIL.tabs");
   const pathname = usePathname();
-
+  const route = useRoute();
   // Determine active tab based on current path
   let currentTab = 0;
   if (pathname.includes("/history")) {
@@ -29,19 +29,21 @@ const ProductTabs = ({ productId }: ProductTabsProps) => {
         <Tab
           label={t("information")}
           component={Link}
-          href={getPath("projects.store.products.product", { id: productId })}
+          href={route.path("projects.store.products.product", {
+            id: productId,
+          })}
         />
         <Tab
           label={t("stock")}
           component={Link}
-          href={getPath("projects.store.products.product.stock", {
+          href={route.path("projects.store.products.product.stock", {
             id: productId,
           })}
         />
         <Tab
           label={t("history")}
           component={Link}
-          href={getPath("projects.store.products.product.history", {
+          href={route.path("projects.store.products.product.history", {
             id: productId,
           })}
         />

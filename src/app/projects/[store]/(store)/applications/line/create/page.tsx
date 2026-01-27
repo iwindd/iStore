@@ -2,16 +2,16 @@
 
 import { createLineApplication } from "@/actions/application/createLineApplication";
 import FormLineApplication from "@/components/Forms/Application/FormLineApplication";
+import { useRoute } from "@/hooks/use-route";
 import App, { Wrapper } from "@/layouts/App";
-import { getPath } from "@/router";
 import { LineApplicationSchemaType } from "@/schema/Application";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 
 const LineApplicationCreatePage = () => {
   const t = useTranslations("APPLICATIONS");
-  const router = useRouter();
+  const route = useRoute();
   const params = useParams<{ store: string }>();
 
   const handleSubmit = async (data: LineApplicationSchemaType) => {
@@ -19,9 +19,7 @@ const LineApplicationCreatePage = () => {
       const result = await createLineApplication(params.store, data);
       if (result.success) {
         enqueueSnackbar(result.message, { variant: "success" });
-        router.push(
-          getPath("projects.store.applications", { store: params.store }),
-        );
+        route.push("projects.store.applications");
         return true;
       } else {
         enqueueSnackbar(result.message, { variant: "error" });

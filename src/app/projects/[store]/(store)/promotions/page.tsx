@@ -6,10 +6,10 @@ import DisablePromotionOffer from "@/actions/promotionOffer/disabled";
 import PromotionStatusChip from "@/components/Chips/PromotionStatusChip";
 import GridLinkAction from "@/components/GridLinkAction";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
+import { useRoute } from "@/hooks/use-route";
 import useDatatable from "@/hooks/useDatatable";
 import App, { Wrapper } from "@/layouts/App";
 import { date } from "@/libs/formatter";
-import { getPath } from "@/router";
 import {
   AddTwoTone,
   StopTwoTone,
@@ -40,6 +40,7 @@ const PromotionPage = () => {
   const [isOpen, setIsOpen] = useState(false);
   const queryClient = useQueryClient();
   const params = useParams<{ store: string }>();
+  const route = useRoute();
   const disableConfirmation = useConfirm({
     title: t("datatable.disable_confirmation.title"),
     text: t("datatable.disable_confirmation.text"),
@@ -144,7 +145,9 @@ const PromotionPage = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={`${getPath("projects.store.promotions.buyXgetY", { id: row.id.toString() })}`}
+            to={route.path("projects.store.promotions.buyXgetY", {
+              id: row.id.toString(),
+            })}
             icon={<ViewAgendaTwoTone />}
             label={t("datatable.actions.view")}
             showInMenu

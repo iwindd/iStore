@@ -1,11 +1,10 @@
 "use client";
 import { ProductDatatableInstance } from "@/actions/product/getProductDatatable";
 import { useDialog } from "@/hooks/use-dialog";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ProductFormDialog from "./ProductFormDialog";
 import SearchDialog from "./SearchDialog";
@@ -15,7 +14,7 @@ const AddProductDialogTrigger = () => {
   const [product, setProduct] = useState<ProductDatatableInstance | null>(null);
   const [isSearch, setIsSearch] = useState<boolean>(true);
   const dialogInfo = useDialog();
-  const router = useRouter();
+  const route = useRoute();
 
   const onOpen = () => {
     setIsSearch(true);
@@ -30,13 +29,9 @@ const AddProductDialogTrigger = () => {
 
   const onSubmit = (foundProduct?: ProductDatatableInstance) => {
     if (foundProduct?.id && !foundProduct?.deleted_at) {
-      router.push(
-        getPath("projects.store.products.product", {
-          id: foundProduct.id.toString(),
-        }),
-      );
-
-      return;
+      return route.push("projects.store.products.product", {
+        id: foundProduct.id.toString(),
+      });
     }
 
     setProduct(foundProduct ?? null);

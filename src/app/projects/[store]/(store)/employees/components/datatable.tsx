@@ -2,11 +2,13 @@
 import getStoreEmployeeDatatable from "@/actions/employee/getStoreEmployeeDatatable";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
-import { getPath } from "@/router";
+import { useRoute } from "@/hooks/use-route";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
 
 const EmployeeDatatable = () => {
+  const route = useRoute();
+
   const columns = (): GridColDef[] => {
     return [
       {
@@ -52,7 +54,7 @@ const EmployeeDatatable = () => {
         getActions: ({ row }: any) => [
           <GridLinkAction
             key="view"
-            to={getPath("projects.store.employees.employee", {
+            to={route.path("projects.store.employees.employee", {
               employeeId: row.employees[0]?.id.toString(),
             })}
             icon={<ViewAgendaTwoTone />}

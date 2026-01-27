@@ -10,10 +10,10 @@ import GridLinkAction from "@/components/GridLinkAction";
 import { PermissionConfig } from "@/config/permissionConfig";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useExport } from "@/hooks/use-export";
+import { useRoute } from "@/hooks/use-route";
 import * as ff from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { usePermission } from "@/providers/PermissionProvider";
-import { getPath } from "@/router";
 import {
   CancelTwoTone,
   DownloadTwoTone,
@@ -34,6 +34,7 @@ const HistoryDatatable = () => {
   const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const queryClient = useQueryClient();
+  const route = useRoute();
   const { store } = useParams<{ store: string }>();
 
   const [filterType, setFilterType] = useState<
@@ -191,7 +192,7 @@ const HistoryDatatable = () => {
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
-            to={getPath("projects.store.stocks.stock", {
+            to={route.path("projects.store.stocks.stock", {
               id: row.id.toString(),
             })}
             icon={<ViewAgendaTwoTone />}

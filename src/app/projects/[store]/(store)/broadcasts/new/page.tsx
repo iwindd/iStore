@@ -2,13 +2,13 @@
 import { createBroadcast } from "@/actions/broadcast/createBroadcast";
 
 import FormBroadcast from "@/components/Forms/Broadcast/FormBroadcast";
+import { useRoute } from "@/hooks/use-route";
 import App, { Wrapper } from "@/layouts/App";
 import { useInterface } from "@/providers/InterfaceProvider";
-import { getPath } from "@/router";
 import { CreateBroadcastValues } from "@/schema/Broadcast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { enqueueSnackbar } from "notistack";
 import { useState } from "react";
 
@@ -17,7 +17,7 @@ const BroadcastNewPage = () => {
   const params = useParams<{ store: string }>();
   const { setBackdrop } = useInterface();
   const [isCreated, setIsCreated] = useState(false);
-  const router = useRouter();
+  const route = useRoute();
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
@@ -33,11 +33,9 @@ const BroadcastNewPage = () => {
         queryKey: ["broadcasts"],
         type: "active",
       });
-      router.push(
-        getPath("projects.store.broadcasts.broadcast", {
-          id: data.id.toString(),
-        }),
-      );
+      route.push("projects.store.broadcasts.broadcast", {
+        id: data.id.toString(),
+      });
     },
     onError: (error) => {
       console.log("error creating broadcast", error);
