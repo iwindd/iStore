@@ -1,5 +1,8 @@
 {
-  "GlobalPermission": [{ "name": "Store.Create" }],
+  "GlobalPermission": [
+    { "name": "Store.Create" },
+    { "name": "User.Management", "_comment": "แก้ไขข้อมูลบุคลากร" }
+  ],
   "StorePermission": [
     { "name": "Cashier.Cashout" },
     { "name": "Product.Management" },
@@ -8,7 +11,10 @@
     { "name": "Application.Management" },
     { "name": "Broadcast.Management" },
     { "name": "Promotion.Management" },
-    { "name": "Employee.Management" },
+    {
+      "name": "Employee.Management",
+      "_comment": "จัดการพนักงาน(ไม่สามารถแก้ไขข้อมูลส่วนตัวบุคลากรได้)"
+    },
     { "name": "History.ReadAll" }
   ]
 }
