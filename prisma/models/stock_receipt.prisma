@@ -13,6 +13,9 @@ model StockReceipt {
   stock_recept_products StockReceiptProduct[]
   productStockMovements ProductStockMovement[]
 
+  @@index([store_id])
+  @@index([store_id, status])
+  @@index([store_id, action_at])
   @@map("stock_recepts")
 }
 
@@ -33,5 +36,7 @@ model StockReceiptProduct {
   stock_receipt StockReceipt @relation(fields: [stock_id], references: [id])
   product       Product      @relation(fields: [product_id], references: [id])
 
+  @@index([stock_id])
+  @@index([product_id])
   @@map("stock_receipt_products")
 }

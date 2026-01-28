@@ -19,6 +19,10 @@ model Order {
   preOrders             OrderPreOrder[]
   productStockMovements ProductStockMovement[]
 
+  @@index([store_id])
+  @@index([store_id, created_at])
+  @@index([store_id, type])
+  @@index([creator_id])
   @@map("orders")
 }
 
@@ -36,6 +40,8 @@ model OrderProduct {
   order           Order            @relation(fields: [order_id], references: [id])
   promotionOffers PromotionOffer[]
 
+  @@index([order_id])
+  @@index([product_id])
   @@map("order_products")
 }
 
@@ -59,6 +65,9 @@ model OrderPreOrder {
   returned_by  Employee? @relation("ReturnedPreOrders", fields: [returned_by_id], references: [id])
   cancelled_by Employee? @relation("CancelledPreOrders", fields: [cancelled_by_id], references: [id])
 
+  @@index([order_id])
+  @@index([product_id])
+  @@index([status])
   @@map("order_preorders")
 }
 

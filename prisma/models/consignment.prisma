@@ -19,6 +19,12 @@ model Consignment {
   productStockMovements ProductStockMovement[]
   orders                Order[]
 
+  @@index([store_id])
+  @@index([store_id, status])
+  @@index([store_id, created_at])
+  @@index([creator_id])
+  @@index([completed_by_id])
+  @@index([cancelled_by_id])
   @@map("consignments")
 }
 
@@ -39,6 +45,8 @@ model ConsigmentProduct {
 
   consignment Consignment @relation(fields: [consignment_id], references: [id])
   product     Product     @relation(fields: [product_id], references: [id])
-
+  
+  @@index([consignment_id])
+  @@index([product_id])
   @@map("consignment_products")
 }

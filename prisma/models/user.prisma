@@ -11,6 +11,7 @@ model User {
   global_role_id Int?
   global_role    GlobalRole?   @relation(fields: [global_role_id], references: [id])
 
+  @@index([global_role_id])
   @@map("users")
 }
 
@@ -42,6 +43,10 @@ model Employee {
   completed_consignments Consignment[]   @relation("CompletedConsignments")
   cancelled_consignments Consignment[]   @relation("CancelledConsignments")
 
+  @@index([store_id])
+  @@index([user_id])
+  @@index([role_id])
+  @@index([creator_id])
   @@unique([user_id, store_id])
   @@map("employees")
 }

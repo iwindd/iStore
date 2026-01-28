@@ -10,6 +10,7 @@ model GlobalRole {
   users       User[]
   permissions GlobalPermission[] @relation("GlobalRolePermission")
 
+  @@index([creator_id])
   @@unique([label])
   @@map("global_roles")
 }
@@ -39,6 +40,8 @@ model StoreRole {
   employees   Employee[]        @relation("EmployeeRole")
   permissions StorePermission[] @relation("StoreRolePermission")
 
+  @@index([store_id])
+  @@index([creator_id])
   @@unique([store_id, name])
   @@map("store_roles")
 }

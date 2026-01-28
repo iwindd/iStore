@@ -15,6 +15,10 @@ model Event {
   store      Store            @relation(fields: [store_id], references: [id])
   creator    Employee?        @relation(fields: [creator_id], references: [id])
 
+  @@index([store_id])
+  @@index([creator_id])
+  @@index([store_id, disabled_at])
+  @@index([store_id, start_at, end_at])
   @@map("events")
 }
 
@@ -29,6 +33,7 @@ model PromotionOffer {
   event         Event                   @relation(fields: [event_id], references: [id], onDelete: Cascade)
   orderProducts OrderProduct[]
 
+  @@index([event_id])
   @@map("promotion_offers")
 }
 
@@ -41,6 +46,8 @@ model PromotionOfferBuyItem {
   product Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
   offer   PromotionOffer @relation("BuyItems", fields: [offer_id], references: [id])
 
+  @@index([offer_id])
+  @@index([product_id])
   @@map("promotion_offer_buy_items")
 }
 
@@ -53,5 +60,7 @@ model PromotionOfferGetItem {
   product Product        @relation(fields: [product_id], references: [id], onDelete: Cascade)
   offer   PromotionOffer @relation("GetItems", fields: [offer_id], references: [id])
 
+  @@index([offer_id])
+  @@index([product_id])
   @@map("promotion_offer_get_items")
 }

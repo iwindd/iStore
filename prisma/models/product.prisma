@@ -10,6 +10,7 @@ model Category {
   creator    Employee? @relation(fields: [creator_id], references: [id])
   product    Product[]
 
+  @@index([store_id])
   @@unique([label, store_id])
   @@map("categories")
 }
@@ -42,6 +43,11 @@ model Product {
   productStockMovements  ProductStockMovement[]
   consignmentProducts    ConsigmentProduct[]
 
+  @@index([store_id])
+  @@index([store_id, deleted_at])
+  @@index([category_id])
+  @@index([store_id, category_id])
+  @@index([creator_id])
   @@unique([serial, store_id])
   @@map("products")
 }
@@ -77,6 +83,7 @@ model ProductStockMovement {
   consignment   Consignment?  @relation(fields: [consignment_id], references: [id])
 
   @@index([product_id])
+  @@index([product_id, createdAt])
   @@map("product_stock_movements")
 }
 
