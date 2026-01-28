@@ -1,7 +1,6 @@
 import {
   AllInbox,
   Badge,
-  Campaign,
   Category,
   Dashboard,
   Group,
@@ -10,7 +9,6 @@ import {
   Login,
   Person,
   RotateRight,
-  SettingsApplications,
   ShoppingCart,
   Store,
   Work,
@@ -154,24 +152,6 @@ const ROUTES = ROUTER({
               },
             },
           },
-          broadcasts: {
-            path: "/projects/:store/broadcasts",
-            label: "store.broadcasts.label",
-            icon: Campaign,
-            permission: {
-              someStore: [StorePermissionEnum.BROADCAST_MANAGEMENT],
-            },
-            children: {
-              broadcast: {
-                path: "/projects/:store/broadcasts/:id",
-                label: "store.broadcasts.broadcast.label",
-              },
-              create: {
-                path: "/projects/:store/broadcasts/new",
-                label: "store.broadcasts.create.label",
-              },
-            },
-          },
           promotions: {
             path: "/projects/:store/promotions",
             label: "store.promotions.label",
@@ -194,27 +174,6 @@ const ROUTES = ROUTER({
               buyXgetY: {
                 path: "/projects/:store/promotions/buyXgetY/:id",
                 label: "store.promotions.buyXgetY.label",
-              },
-            },
-          },
-          applications: {
-            path: "/projects/:store/applications",
-            label: "store.applications.label",
-            icon: SettingsApplications,
-            permission: {
-              someStore: [StorePermissionEnum.APPLICATION_MANAGEMENT],
-            },
-            children: {
-              line: {
-                path: "/projects/:store/applications/line/:id",
-                label: "store.applications.line.label",
-                children: {
-                  create: {
-                    path: "/projects/:store/applications/line/create",
-                    label: "store.applications.create.label",
-                    disabledBreadcrumb: true,
-                  },
-                },
               },
             },
           },
@@ -246,6 +205,49 @@ const ROUTES = ROUTER({
             label: "store.account.label",
             icon: Person,
           },
+
+          // Deprecated
+          /*           
+          broadcasts: {
+            path: "/projects/:store/broadcasts",
+            label: "store.broadcasts.label",
+            icon: Campaign,
+            permission: {
+              someStore: [StorePermissionEnum.BROADCAST_MANAGEMENT],
+            },
+            children: {
+              broadcast: {
+                path: "/projects/:store/broadcasts/:id",
+                label: "store.broadcasts.broadcast.label",
+              },
+              create: {
+                path: "/projects/:store/broadcasts/new",
+                label: "store.broadcasts.create.label",
+              },
+            },
+          }, 
+          applications: {
+            path: "/projects/:store/applications",
+            label: "store.applications.label",
+            icon: SettingsApplications,
+            permission: {
+              someStore: [StorePermissionEnum.APPLICATION_MANAGEMENT],
+            },
+            children: {
+              line: {
+                path: "/projects/:store/applications/line/:id",
+                label: "store.applications.line.label",
+                children: {
+                  create: {
+                    path: "/projects/:store/applications/line/create",
+                    label: "store.applications.create.label",
+                    disabledBreadcrumb: true,
+                  },
+                },
+              },
+            },
+          }, 
+          */
         },
       },
     },

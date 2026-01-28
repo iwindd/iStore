@@ -1,10 +1,5 @@
 import { getMessagingApiByKey } from "@/libs/line";
-import { mastra } from "@/mastra";
-import { AssistantAgentContext } from "@/mastra/agents/assistant-agent";
 import * as line from "@line/bot-sdk";
-import { AgentExecutionOptions } from "@mastra/core/agent";
-import { MessageListInput } from "@mastra/core/agent/message-list";
-import { RuntimeContext } from "@mastra/core/runtime-context";
 import { LineApplication } from "@prisma/client";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -29,6 +24,11 @@ const onMessageEvent = async (
   if (event.source.type != "user")
     return console.error("event.source.type is not user");
 
+  return NextResponse.json({
+    message: "Deprecated",
+  });
+  /* @Deprecated   
+  
   const agent = mastra.getAgent("assistantAgent");
   const runtimeContext = new RuntimeContext<AssistantAgentContext>();
   runtimeContext.set("storeId", application.store_id);
@@ -69,7 +69,7 @@ const onMessageEvent = async (
         text: result.text,
       },
     ],
-  });
+  }); */
 };
 
 export async function POST(

@@ -146,33 +146,33 @@ export const PermissionConfig = {
     /** Broadcast management operations */
     broadcast: {
       /** Create broadcast */
-      create: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      create: StorePermissionEnum._DEPRECATED,
       /** Update broadcast */
-      update: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      update: StorePermissionEnum._DEPRECATED,
       /** Delete broadcast */
-      delete: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      delete: StorePermissionEnum._DEPRECATED,
       /** Cancel broadcast */
-      cancel: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      cancel: StorePermissionEnum._DEPRECATED,
       /** Send broadcast */
-      send: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      send: StorePermissionEnum._DEPRECATED,
       /** Get broadcast details */
-      get: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      get: StorePermissionEnum._DEPRECATED,
       /** Fetch broadcast datatable */
-      fetchDatatable: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      fetchDatatable: StorePermissionEnum._DEPRECATED,
       /** Search/manage events for broadcasts */
-      manageEvents: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      manageEvents: StorePermissionEnum._DEPRECATED,
       /** Generate broadcast content with AI */
-      generateContent: StorePermissionEnum.BROADCAST_MANAGEMENT,
+      generateContent: StorePermissionEnum._DEPRECATED,
     },
 
     /** Application management operations (LINE, etc.) */
     application: {
       /** Get LINE applications */
-      getLineApplications: StorePermissionEnum.APPLICATION_MANAGEMENT,
+      getLineApplications: StorePermissionEnum._DEPRECATED,
       /** Create LINE application */
-      createLineApplication: StorePermissionEnum.APPLICATION_MANAGEMENT,
+      createLineApplication: StorePermissionEnum._DEPRECATED,
       /** Update LINE application */
-      updateLineApplication: StorePermissionEnum.APPLICATION_MANAGEMENT,
+      updateLineApplication: StorePermissionEnum._DEPRECATED,
     },
 
     /** Employee management operations */

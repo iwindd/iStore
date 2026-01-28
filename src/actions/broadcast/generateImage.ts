@@ -1,19 +1,16 @@
 "use server";
 
-import { PermissionConfig } from "@/config/permissionConfig";
-import { assertStoreCan } from "@/libs/permission/context";
-import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { mastra } from "@/mastra";
-import {
-  AiImagePromptSchema,
-  AiImagePromptValues,
-} from "@/schema/Broadcast/AiImage";
+import { AiImagePromptValues } from "@/schema/Broadcast/AiImage";
+import { NextResponse } from "next/server";
 
 export const generateImageAction = async (
   storeSlug: string,
   data: AiImagePromptValues,
 ) => {
-  try {
+  return NextResponse.json({
+    message: "Deprecated",
+  });
+  /*   try {
     const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.broadcast.generateContent);
 
@@ -47,5 +44,5 @@ export const generateImageAction = async (
       success: false,
       message: error.message || "Failed to generate image",
     };
-  }
+  } */
 };

@@ -1,6 +1,3 @@
-import { r2 } from "@/libs/r2";
-import googleAi from "@/mastra/libs/google-ai";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { createTool } from "@mastra/core";
 import z from "zod";
 
@@ -17,9 +14,11 @@ export const imageGeneratorTool = createTool({
       .describe("Public URL of the uploaded image in cloud storage"),
   }),
   execute: async ({ context }) => {
-    const { prompt } = context;
-
     try {
+      throw new Error("Deprecated");
+      /*       
+    const { prompt } = context;
+      
       const response = await googleAi.models.generateImages({
         model: "imagen-4.0-generate-001",
         prompt: prompt,
@@ -61,7 +60,7 @@ export const imageGeneratorTool = createTool({
           Key: filename,
           Body: buffer,
           ContentType: "image/png",
-        })
+        }),
       );
 
       const publicUrl = `${process.env.R2_PUBLIC_URL}/${filename}`;
@@ -70,7 +69,7 @@ export const imageGeneratorTool = createTool({
 
       return {
         imageUrl: publicUrl,
-      };
+      }; */
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";

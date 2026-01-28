@@ -14,4 +14,5 @@ export enum StorePermissionEnum {
   EMPLOYEE_MANAGEMENT = "Employee.Management",
   BROADCAST_MANAGEMENT = "Broadcast.Management",
   HISTORY_READ_ALL = "History.ReadAll",
+  _DEPRECATED = "Deprecated", // Do not use
 }

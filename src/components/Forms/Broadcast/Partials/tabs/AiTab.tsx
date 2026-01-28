@@ -1,27 +1,10 @@
-import { generateImageAction } from "@/actions/broadcast/generateImage";
-import {
-  AiImagePromptSchema,
-  AiImagePromptValues,
-} from "@/schema/Broadcast/AiImage";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircleTwoTone, RefreshTwoTone } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
-import { useSnackbar } from "notistack";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+/* Deprecated */
+
 import { ImageCardProps } from "../ImageCard";
 
 const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
-  const t = useTranslations("BROADCASTS.form");
+  return null;
+  /*   const t = useTranslations("BROADCASTS.form");
   const params = useParams<{ store: string }>();
   const [isGenerating, setIsGenerating] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -128,7 +111,7 @@ const AiTab = ({ form, disabled: propsDisabled }: ImageCardProps) => {
         </Stack>
       )}
     </Stack>
-  );
+  ); */
 };
 
 export default AiTab;

@@ -1,14 +1,10 @@
-import sendBroadcastToApplications from "@/actions/application/sendBroadcastToApplications";
-import { validateCronRequest } from "@/libs/cron";
-import db from "@/libs/db";
-import { BroadcastStatus } from "@prisma/client";
-import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 
-export const revalidate = 0;
-
 export async function GET(req: Request) {
-  try {
+  return NextResponse.json({
+    message: "Deprecated",
+  });
+  /*   try {
     if (!validateCronRequest(req)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -78,5 +74,5 @@ export async function GET(req: Request) {
       { error: "Internal Server Error" },
       { status: 500 },
     );
-  }
+  } */
 }

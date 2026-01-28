@@ -1,14 +1,10 @@
-import { r2 } from "@/libs/r2";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_API_KEY,
-});
-
 export async function POST(request: Request) {
-  try {
+  return NextResponse.json({
+    message: "Deprecated",
+  });
+  /*   try {
     const model = "imagen-4.0-generate-001";
     const prompt = "A banana in the middle taped to a white background";
 
@@ -73,5 +69,5 @@ export async function POST(request: Request) {
       { error: error.message || "Something went wrong" },
       { status: 500 }
     );
-  }
+  } */
 }
