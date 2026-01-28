@@ -74,6 +74,10 @@ export function ifNotHasStorePermission<T = number, U = undefined>(
 ) {
   assertStore(ctx);
 
+  if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) {
+    return notHas;
+  }
+
   if (ctx.storePermissions.has(permission)) {
     return has ?? ctx.employeeId!;
   }
