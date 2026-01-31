@@ -394,6 +394,23 @@
         "view": "ดูรายละเอียด"
       }
     },
+    "tabs": {
+      "items": "รายการสินค้า",
+      "orders": "รายการออเดอร์"
+    },
+    "ordersDatatable": {
+      "headers": {
+        "date": "วันทำรายการ",
+        "itemsCount": "จำนวนรายการ",
+        "total": "ยอดรวม",
+        "status": "สถานะ",
+        "creator": "ผู้ทำรายการ",
+        "actions": "เครื่องมือ"
+      },
+      "actions": {
+        "view": "ดูรายละเอียด"
+      }
+    },
     "dialog": {
       "title": "รายละเอียดพรีออเดอร์ #{id}",
       "sections": {
