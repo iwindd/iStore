@@ -1,22 +1,14 @@
-import * as ff from "@/libs/formatter";
-import { Box, BoxProps, Chip } from "@mui/material";
+import { Box, BoxProps, Chip, Tooltip } from "@mui/material";
 
 interface ProductKeywordChipsProps extends BoxProps {
-  keywords?: string | null;
+  keywords?: string[];
 }
 
 const ProductKeywordChips = ({
   keywords,
   ...props
 }: ProductKeywordChipsProps) => {
-  if (!keywords) return <>{ff.text(keywords || undefined)}</>;
-
-  const keywordList = keywords
-    .split(",")
-    .map((k) => k.trim())
-    .filter((k) => k.length > 0);
-
-  if (keywordList.length === 0) return <>{ff.text(keywords)}</>;
+  if (!keywords || keywords.length === 0) return <>-</>;
 
   return (
     <Box
@@ -30,7 +22,7 @@ const ProductKeywordChips = ({
       }}
       {...props}
     >
-      {keywordList.map((keyword, index) => (
+      {keywords.slice(0, 1).map((keyword, index) => (
         <Chip
           key={`${keyword}-${index}`}
           label={keyword}
@@ -38,6 +30,15 @@ const ProductKeywordChips = ({
           variant="filled"
         />
       ))}
+      {keywords.length > 1 && (
+        <Tooltip title={keywords.slice(1).join(", ")}>
+          <Chip
+            label={`+${keywords.length - 1}`}
+            size="small"
+            variant="filled"
+          />
+        </Tooltip>
+      )}
     </Box>
   );
 };

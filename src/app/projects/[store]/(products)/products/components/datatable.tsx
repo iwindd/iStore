@@ -1,5 +1,5 @@
 "use client";
-import { default as deleteProduct } from "@/actions/product/deleteProduct";
+import deleteProduct from "@/actions/product/deleteProduct";
 import getProductDatatable, {
   ProductDatatableInstance,
 } from "@/actions/product/getProductDatatable";
@@ -13,7 +13,6 @@ import { StorePermissionEnum } from "@/enums/permission";
 import { useAuth } from "@/hooks/use-auth";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
 import { useRoute } from "@/hooks/use-route";
-import * as ff from "@/libs/formatter";
 import { usePermission } from "@/providers/PermissionProvider";
 import {
   DeleteTwoTone,
@@ -24,7 +23,7 @@ import {
 import { Box, Stack, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import React, { useState } from "react";
@@ -32,6 +31,7 @@ import BarcodeDialog from "./barcode-dialog";
 
 const ProductDatatable = () => {
   const t = useTranslations("PRODUCTS.datatable");
+  const f = useFormatter();
   const { enqueueSnackbar } = useSnackbar();
 
   const [barcodeProduct, setBarcodeProduct] =
@@ -175,26 +175,27 @@ const ProductDatatable = () => {
         field: "price",
         sortable: true,
         headerName: t("headers.price"),
-        flex: 0.7,
         type: "number",
         renderCell: ({ row }) => (
-          <Typography color="primary.main">{ff.money(row.price)}</Typography>
+          <Typography color="primary.main">
+            {f.number(row.price, "currency")}
+          </Typography>
         ),
       },
       {
         field: "cost",
         sortable: true,
         headerName: t("headers.cost"),
-        flex: 0.7,
         type: "number",
         renderCell: ({ row }) => (
-          <Typography color="text.secondary">{ff.money(row.cost)}</Typography>
+          <Typography color="text.secondary">
+            {f.number(row.cost, "currency")}
+          </Typography>
         ),
       },
       {
         field: "profit",
         headerName: t("headers.profit"),
-        flex: 0.7,
         sortable: false,
         type: "number",
         valueGetter: (params, row) => row.price - row.cost,
@@ -202,14 +203,13 @@ const ProductDatatable = () => {
           <Typography
             color={row.price - row.cost >= 0 ? "success.main" : "error.main"}
           >
-            {ff.money(row.price - row.cost)}
+            {f.number(row.price - row.cost, "currency")}
           </Typography>
         ),
       },
       {
         field: "margin",
         headerName: t("headers.margin"),
-        flex: 0.7,
         sortable: false,
         type: "number",
         valueGetter: (params, row) => {
@@ -218,14 +218,15 @@ const ProductDatatable = () => {
         },
         renderCell: ({ row }) => (
           <Tooltip
-            title={`${((row.price - row.cost) / row.price) * 100} Margin`}
+            title={`${f.number(((row.price - row.cost) / row.price) * 100, "percent")} Margin`}
           >
             <Typography
               variant="body2"
               fontWeight="medium"
               color={row.price - row.cost >= 0 ? "success.dark" : "error.dark"}
             >
-              {ff.number(((row.price - row.cost) / row.price) * 100)}%
+              {f.number(((row.price - row.cost) / row.price) * 100, "percent")}
+              {" %"}
             </Typography>
           </Tooltip>
         ),
@@ -234,15 +235,14 @@ const ProductDatatable = () => {
         field: "stock.quantity",
         sortable: true,
         headerName: t("headers.stock"),
-        flex: 0.8,
         type: "number",
-        renderCell: ({ row }) => ff.number(row.stock?.quantity || 0),
+        renderCell: ({ row }) => f.number(row.stock?.quantity || 0),
       },
       {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 0.7,
+        flex: 1,
         getActions: ({ row }) => [
           <GridLinkAction
             key="view"
@@ -251,14 +251,12 @@ const ProductDatatable = () => {
             })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
-            showInMenu
           />,
           <GridActionsCellItem
             key="barcode"
             icon={<QrCodeTwoTone />}
             onClick={menu.barcode(row)}
             label={t("actions.barcode")}
-            showInMenu
           />,
           row.deleted_at ? (
             <GridActionsCellItem

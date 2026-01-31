@@ -92,6 +92,11 @@ const getProductDatatable = async (
     return {
       success: true,
       ...datatable,
+      data: datatable.data.map((item) => ({
+        ...item,
+        // @ts-ignore
+        keywords: JSON.parse((item.keywords as string) || "[]"),
+      })),
     };
   } catch (error) {
     console.error("getProductDatatable error:", error);
