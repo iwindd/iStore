@@ -14,6 +14,10 @@ export const searchNonEmployeeUsers = async (
 
   const users = await db.user.findMany({
     where: {
+      is_app_owner: false,
+      id: {
+        not: ctx.userId,
+      },
       AND: [
         {
           OR: [

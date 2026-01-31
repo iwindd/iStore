@@ -10,6 +10,7 @@ model User {
   addresses      UserAddress[]
   global_role_id Int?
   global_role    GlobalRole?   @relation(fields: [global_role_id], references: [id])
+  is_app_owner   Boolean       @default(false)
 
   @@index([global_role_id])
   @@map("users")

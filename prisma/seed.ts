@@ -166,6 +166,7 @@ async function seedOwnerUser(roleId: number): Promise<void> {
       password: hashedPassword,
       first_name: OWNER_CONFIG.first_name,
       last_name: OWNER_CONFIG.last_name,
+      is_app_owner: true,
       global_role: { connect: { id: roleId } },
     },
   });

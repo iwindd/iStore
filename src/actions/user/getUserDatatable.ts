@@ -17,6 +17,12 @@ const getUserDatatable = async (payload: TableFetch) => {
       last_name: { mode: "insensitive" },
       email: { mode: "insensitive" },
     },
+    where: {
+      is_app_owner: false,
+      id: {
+        not: ctx.userId,
+      },
+    },
     select: {
       id: true,
       first_name: true,

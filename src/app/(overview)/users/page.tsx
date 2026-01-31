@@ -12,11 +12,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSnackbar } from "notistack";
 
 export default function UsersPage() {
   const t = useTranslations("USERS");
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const columns: GridColDef[] = [
     {
@@ -80,11 +82,11 @@ export default function UsersPage() {
   const impersonateMutation = useMutation({
     mutationFn: (userId: number) => impersonateUser(userId),
     onSuccess: () => {
-      queryClient.clear();
+      router.push(getPath("navigate"));
     },
     onError: (error) => {
       if (error.message == "NEXT_REDIRECT") return;
-      console.error(error.name);
+      console.error(error);
       enqueueSnackbar(t("error"), { variant: "error" });
     },
   });

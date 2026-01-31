@@ -4,8 +4,6 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertGlobalCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { getPath } from "@/router";
-import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 
 const impersonateUser = async (userId: number) => {
@@ -23,14 +21,11 @@ const impersonateUser = async (userId: number) => {
       throw new Error("User not found");
     }
 
-    revalidatePath(getPath("overview"));
-
     await signIn("credentials", {
       email: user.email,
       password: process.env.AUTH_SECRET,
       isImpersonation: "true",
-      redirect: true,
-      redirectTo: "/",
+      redirect: false,
     });
   } catch (error) {
     if (isRedirectError(error)) {

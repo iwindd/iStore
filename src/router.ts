@@ -281,6 +281,12 @@ const ROUTES = ROUTER({
     },
   },
   //account
+  navigate: {
+    path: "/navigate",
+    label: "navigate.label",
+    icon: Login,
+    disabledBreadcrumb: true,
+  },
   account: {
     path: "/account",
     label: "store.account.label",
