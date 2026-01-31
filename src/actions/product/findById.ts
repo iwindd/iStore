@@ -11,8 +11,6 @@ export type FindProductByIdResult = Prisma.ProductGetPayload<{
     id: true;
     serial: true;
     label: true;
-    price: true;
-    cost: true;
     usePreorder: true;
     stock: {
       select: {
@@ -25,7 +23,10 @@ export type FindProductByIdResult = Prisma.ProductGetPayload<{
       };
     };
   };
-}>;
+}> & {
+  price: number;
+  cost: number;
+};
 
 const findProductById = async (
   storeSlug: string,
@@ -34,7 +35,7 @@ const findProductById = async (
   try {
     const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.cashier.cashout);
-    const product = await db.product.findFirst({
+    const product = await db.product.findUniqueOrThrow({
       where: {
         id: id,
         store_id: ctx.storeId!,
@@ -61,7 +62,11 @@ const findProductById = async (
 
     return {
       success: true,
-      data: product,
+      data: {
+        ...product,
+        price: product.price.toNumber(),
+        cost: product.cost.toNumber(),
+      },
     };
   } catch (error) {
     return ActionError(error) as ActionResponse<FindProductByIdResult | null>;

@@ -343,7 +343,7 @@ export async function getTopSellingProductsData(
     return {
       id: item.product_id,
       label: product?.label || "Unknown",
-      price: product?.price || 0,
+      price: product?.price.toNumber() || 0,
       sold: item._sum.count || 0,
     };
   });

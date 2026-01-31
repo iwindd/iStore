@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { Controller, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
@@ -27,7 +27,6 @@ const ProductPreorderForm = () => {
   const t = useTranslations("PRODUCT_DETAIL.information.preorder_form");
   const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
   const params = useParams<{ store: string }>();
   const permission = usePermission();
 
@@ -35,7 +34,6 @@ const ProductPreorderForm = () => {
     handleSubmit,
     formState: { isDirty },
     reset,
-    getValues,
     control,
   } = useForm<ProductPreorderValues>({
     resolver: zodResolver(ProductPreorderSchema),
@@ -62,8 +60,7 @@ const ProductPreorderForm = () => {
         variant: "success",
       });
 
-      reset(getValues(), { keepValues: true });
-      router.refresh();
+      reset(data);
     },
     onError: (error) => {
       console.log(error);

@@ -36,8 +36,6 @@ const ProductsTab = () => {
       }),
   });
 
-  console.log(response);
-
   const products = response?.data || [];
 
   if (!isLoading && !error && products.length === 0) {

@@ -19,7 +19,11 @@ const findProductToCreate = async (storeSlug: string, serial: string) => {
 
     return {
       success: true,
-      data: product,
+      data: product && {
+        ...product,
+        price: product.price.toNumber(),
+        cost: product.cost.toNumber(),
+      },
     };
   } catch (error) {
     console.error("findProductToCreate error:", error);

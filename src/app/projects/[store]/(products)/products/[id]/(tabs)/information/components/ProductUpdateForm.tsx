@@ -16,18 +16,17 @@ import { useSnackbar } from "notistack";
 import { useForm } from "react-hook-form";
 
 import { CategorySelectorInstance } from "@/actions/category/selectorCategory";
-import updateProduct from "@/actions/product/update";
+import updateProductInfo from "@/actions/product/updateProductInfo";
 import { StorePermissionEnum } from "@/enums/permission";
 import { usePermission } from "@/providers/PermissionProvider";
 import { useMutation } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useProduct } from "../../../ProductContext";
 
 const ProductUpdateForm = () => {
   const t = useTranslations("PRODUCT_DETAIL.information.update_form");
-  const { product } = useProduct();
+  const { product, updateProduct } = useProduct();
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
   const params = useParams<{ store: string }>();
   const permission = usePermission();
 
@@ -51,16 +50,14 @@ const ProductUpdateForm = () => {
 
   const updateProductMutation = useMutation({
     mutationFn: (payload: ProductUpdateValues) =>
-      updateProduct(params.store, { ...payload, id: product.id }),
+      updateProductInfo(params.store, { ...payload, id: product.id }),
     onSuccess: (data) => {
       enqueueSnackbar(t("success"), { variant: "success" });
-      router.refresh();
-      reset({
-        label: data.label,
-        price: data.price,
-        cost: data.cost,
-        category_id: data.category_id,
+      updateProduct({
+        ...product,
+        ...data,
       });
+      reset(data);
     },
     onError: () => {
       enqueueSnackbar(t("error"), {

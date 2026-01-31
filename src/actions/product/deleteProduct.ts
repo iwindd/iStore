@@ -7,7 +7,7 @@ import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 const deleteProduct = async (storeSlug: string, id: number) => {
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.product.delete);
-  return await db.product.delete({
+  await db.product.delete({
     where: {
       id: id,
       store_id: ctx.storeId!,

@@ -3,6 +3,7 @@ import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { parseKeywords } from "@/libs/utils";
 import { Stack } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -14,9 +15,16 @@ interface ProductLayoutProps {
   params: Promise<{ id: string; store: string }>;
 }
 
-export type ProductLayoutValue = Prisma.ProductGetPayload<{
-  select: typeof selectProduct;
-}>;
+export type ProductLayoutValue = Omit<
+  Prisma.ProductGetPayload<{
+    select: typeof selectProduct;
+  }>,
+  "price" | "cost" | "keywords"
+> & {
+  price: number;
+  cost: number;
+  keywords: string[];
+};
 
 const selectProduct = {
   id: true,
@@ -56,7 +64,14 @@ const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
   if (!product) notFound();
 
   return (
-    <ProductProvider value={product}>
+    <ProductProvider
+      value={{
+        ...product,
+        cost: product.cost.toNumber(),
+        price: product.price.toNumber(),
+        keywords: parseKeywords(product.keywords),
+      }}
+    >
       <Wrapper>
         <App.Header>
           <App.Header.Title>{product.label}</App.Header.Title>

@@ -26,8 +26,6 @@ export const ProductProvider = ({
       useAlert: false,
       alertCount: 0,
     },
-    // @ts-ignore
-    keywords: JSON.parse((value.keywords as string) || "[]"),
   });
 
   const updateProduct = (

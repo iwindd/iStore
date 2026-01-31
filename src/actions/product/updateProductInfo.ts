@@ -3,9 +3,11 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { getPath } from "@/router";
 import { ProductUpdateSchema, ProductUpdateValues } from "@/schema/Product";
+import { revalidatePath } from "next/cache";
 
-const updateProduct = async (
+const updateProductInfo = async (
   storeSlug: string,
   payload: ProductUpdateValues & { id: number },
 ) => {
@@ -13,7 +15,7 @@ const updateProduct = async (
   assertStoreCan(ctx, PermissionConfig.store.product.update);
   const validated = ProductUpdateSchema.parse(payload);
 
-  return await db.product.update({
+  const updatedProduct = await db.product.update({
     where: {
       id: payload.id,
       store_id: ctx.storeId!,
@@ -24,7 +26,25 @@ const updateProduct = async (
       cost: validated.cost,
       category_id: validated.category_id,
     },
+    select: {
+      label: true,
+      price: true,
+      cost: true,
+      category_id: true,
+    },
   });
+
+  revalidatePath(
+    getPath("projects.store.products.product", {
+      store: storeSlug,
+      id: payload.id.toString(),
+    }),
+  );
+  return {
+    ...updatedProduct,
+    price: updatedProduct.price.toNumber(),
+    cost: updatedProduct.cost.toNumber(),
+  };
 };
 
-export default updateProduct;
+export default updateProductInfo;

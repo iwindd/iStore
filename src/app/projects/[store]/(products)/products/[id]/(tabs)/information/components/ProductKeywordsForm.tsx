@@ -21,7 +21,7 @@ import {
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useSnackbar } from "notistack";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useProduct } from "../../../ProductContext";
@@ -29,10 +29,9 @@ import { useProduct } from "../../../ProductContext";
 const ProductKeywordsForm = () => {
   const t = useTranslations("PRODUCT_DETAIL.information.keywords_form");
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
   const params = useParams<{ store: string }>();
   const permission = usePermission();
-  const { product } = useProduct();
+  const { product, updateProduct } = useProduct();
 
   const {
     handleSubmit,
@@ -61,6 +60,10 @@ const ProductKeywordsForm = () => {
       enqueueSnackbar(t("success"), { variant: "success" });
       reset({
         keywords: data.keywords.map((k) => ({ value: k })),
+      });
+      updateProduct({
+        ...product,
+        keywords: data.keywords,
       });
     },
     onError: () => {

@@ -38,7 +38,7 @@ const getProducts = unstable_cache(
     const result = products.map((p) => ({
       label: p.label,
       rate: p._count.orderProduct / allCount,
-      price: p.price,
+      price: p.price.toNumber(),
       createdAt: p.created_at,
       stockCount: p.stock?.quantity || 0,
     }));

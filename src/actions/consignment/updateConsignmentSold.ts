@@ -70,6 +70,11 @@ const confirmConsignment = async (
       updatedConsignmentProducts.push({
         ...updated,
         quantitySold: updated.quantitySold || item.quantitySold || 0,
+        product: {
+          ...updated.product,
+          price: updated.product.price.toNumber(),
+          cost: updated.product.cost.toNumber(),
+        },
       });
     }
 

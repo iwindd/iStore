@@ -153,7 +153,10 @@ export const getMergedPromotionQuantitiesFromOffers = (
     return {
       ...item,
       possibleQuantity: possibleQuantity,
-      data,
+      data: {
+        ...data,
+        price: data.price.toNumber(),
+      },
     };
   });
 

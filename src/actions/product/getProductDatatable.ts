@@ -4,6 +4,7 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { parseKeywords } from "@/libs/utils";
 import { Prisma } from "@prisma/client";
 
 export type ProductDatatableInstance = Awaited<
@@ -94,8 +95,9 @@ const getProductDatatable = async (
       ...datatable,
       data: datatable.data.map((item) => ({
         ...item,
-        // @ts-ignore
-        keywords: JSON.parse((item.keywords as string) || "[]"),
+        price: item.price.toNumber(),
+        cost: item.cost.toNumber(),
+        keywords: parseKeywords(item.keywords),
       })),
     };
   } catch (error) {

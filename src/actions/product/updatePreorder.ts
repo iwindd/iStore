@@ -18,6 +18,9 @@ const updatePreorder = async (
     data: {
       usePreorder: validated.usePreorder,
     },
+    select: {
+      usePreorder: true,
+    },
   });
 };
 

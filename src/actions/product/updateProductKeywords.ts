@@ -17,7 +17,7 @@ const updateProductKeywords = async (
   const validated = ProductUpdateKeywordsSchema.parse(payload);
   const keywords = validated.keywords.map((k) => k.value);
 
-  await db.product.update({
+  const updatedProduct = await db.product.update({
     where: {
       id: payload.id,
       store_id: ctx.storeId!,
@@ -25,12 +25,12 @@ const updateProductKeywords = async (
     data: {
       keywords: JSON.stringify(keywords),
     },
-    select: {
-      keywords: true,
-    },
   });
 
   return {
+    ...updatedProduct,
+    price: updatedProduct.price.toNumber(),
+    cost: updatedProduct.cost.toNumber(),
     keywords,
   };
 };

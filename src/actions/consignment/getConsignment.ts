@@ -5,15 +5,32 @@ import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
-export type ConsignmentDetail = Prisma.ConsignmentGetPayload<{
-  include: {
-    products: {
+export type ConsignmentDetail = Omit<
+  Prisma.ConsignmentGetPayload<{
+    include: {
+      products: {
+        include: {
+          product: true;
+        };
+      };
+    };
+  }>,
+  "products"
+> & {
+  products: (Omit<
+    Prisma.ConsigmentProductGetPayload<{
       include: {
         product: true;
       };
+    }>,
+    "product"
+  > & {
+    product: Omit<Prisma.ProductGetPayload<true>, "price" | "cost"> & {
+      price: number;
+      cost: number;
     };
-  };
-}>;
+  })[];
+};
 
 const getConsignment = async (
   storeSlug: string,
@@ -22,7 +39,7 @@ const getConsignment = async (
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.consignment.get);
 
-  return await db.consignment.findUnique({
+  const consignment = await db.consignment.findUnique({
     where: {
       id,
       store_id: ctx.storeId!,
@@ -35,6 +52,20 @@ const getConsignment = async (
       },
     },
   });
+
+  if (!consignment) return null;
+
+  return {
+    ...consignment,
+    products: consignment.products.map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        price: item.product.price.toNumber(),
+        cost: item.product.cost.toNumber(),
+      },
+    })),
+  };
 };
 
 export default getConsignment;

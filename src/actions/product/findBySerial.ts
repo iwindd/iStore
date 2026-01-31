@@ -1,18 +1,16 @@
 "use server";
-import { PermissionConfig } from "@/config/permissionConfig";
-import { ActionError, ActionResponse } from "@/libs/action";
+import {PermissionConfig} from "@/config/permissionConfig";
+import {ActionError, ActionResponse} from "@/libs/action";
 import db from "@/libs/db";
-import { assertStoreCan } from "@/libs/permission/context";
-import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { Prisma } from "@prisma/client";
+import {assertStoreCan} from "@/libs/permission/context";
+import {getPermissionContext} from "@/libs/permission/getPermissionContext";
+import {Prisma} from "@prisma/client";
 
 export type FindProductBySerialResult = Prisma.ProductGetPayload<{
   select: {
     id: true;
     serial: true;
     label: true;
-    price: true;
-    cost: true;
     usePreorder: true;
     stock: {
       select: {
@@ -25,7 +23,10 @@ export type FindProductBySerialResult = Prisma.ProductGetPayload<{
       };
     };
   };
-}>;
+}> & {
+  price: number;
+  cost: number;
+};
 
 const findProductBySerial = async (
   storeSlug: string,
@@ -34,10 +35,12 @@ const findProductBySerial = async (
   try {
     const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.cashier.cashout);
-    const product = await db.product.findFirst({
+    const product = await db.product.findUniqueOrThrow({
       where: {
-        serial: serial,
-        store_id: ctx.storeId,
+        serial_store_id: {
+          serial: serial,
+          store_id: ctx.storeId!,
+        },
       },
       select: {
         id: true,
@@ -61,7 +64,11 @@ const findProductBySerial = async (
 
     return {
       success: true,
-      data: product,
+      data: {
+        ...product,
+        price: product.price.toNumber(),
+        cost: product.cost.toNumber(),
+      },
     };
   } catch (error) {
     return ActionError(

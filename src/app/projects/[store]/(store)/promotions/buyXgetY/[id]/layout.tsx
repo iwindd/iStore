@@ -75,11 +75,19 @@ const BuyXGetYLayout = async ({
         end_at: offer.event.end_at,
         disabled_at: offer.event.disabled_at,
         needProducts: offer.buyItems.map((item) => ({
-          product: item.product,
+          product: {
+            ...item.product,
+            price: item.product.price.toNumber(),
+            cost: item.product.cost.toNumber(),
+          },
           quantity: item.quantity,
         })),
         offerProducts: offer.getItems.map((item) => ({
-          product: item.product,
+          product: {
+            ...item.product,
+            price: item.product.price.toNumber(),
+            cost: item.product.cost.toNumber(),
+          },
           quantity: item.quantity,
         })),
       }}

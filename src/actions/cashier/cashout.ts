@@ -68,17 +68,17 @@ export const validateProducts = async (
         throw new Error(`Product ${product.id} is out of stock.`);
     }
 
-    const totalPrice = product.price * cartProduct.quantity;
-    const totalCost = product.cost * cartProduct.quantity;
-    const totalProfit = totalPrice - totalCost;
+    const totalPrice = product.price.mul(cartProduct.quantity);
+    const totalCost = product.cost.mul(cartProduct.quantity);
+    const totalProfit = totalPrice.sub(totalCost);
 
     return {
       id: product.id,
       stock: product.stock?.quantity || 0,
       quantity: cartProduct.quantity,
-      profit: totalProfit,
-      cost: totalCost,
-      total: totalPrice,
+      profit: totalProfit.toNumber(),
+      cost: totalCost.toNumber(),
+      total: totalPrice.toNumber(),
       note: cartProduct.note,
     };
   };

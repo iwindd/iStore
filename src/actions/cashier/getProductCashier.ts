@@ -79,6 +79,11 @@ const getProductCashier = async (table: TableFetch) => {
     return {
       success: true,
       ...datatable,
+      data: datatable.data.map((product) => ({
+        ...product,
+        price: product.price.toNumber(),
+        cost: product.cost.toNumber(),
+      })),
     };
   } catch (error) {
     console.error("getProductCashier error:", error);
