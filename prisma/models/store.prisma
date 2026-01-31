@@ -13,8 +13,6 @@ model Store {
   applications   LineApplication[]
   consignments   Consignment[]
   addresses      StoreAddress[]
-  lineBotConfig  LineBotConfig?
-  api_key        String?           @unique
 
   @@map("stores")
 }
