@@ -1,6 +1,9 @@
 "use client";
 
 import getStoreSwitcher from "@/actions/user/getStoreSwitcher";
+import HasGlobalPermission from "@/components/Flagments/HasGlobalPermission";
+import { PermissionConfig } from "@/config/permissionConfig";
+import { useAppSelector } from "@/hooks";
 import { Colorization } from "@/libs/colorization";
 import { getPath } from "@/router";
 import {
@@ -23,7 +26,8 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useState } from "react";
@@ -33,6 +37,9 @@ const StoreSwitcher = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const params = useParams<{ store: string }>();
   const open = Boolean(anchorEl);
+  const store = useAppSelector((state) => state.project.currentProject);
+  const t = useTranslations("COMPONENTS.store_switcher");
+  const queryClient = useQueryClient();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -42,8 +49,11 @@ const StoreSwitcher = () => {
     setAnchorEl(null);
   };
 
-  const handleSelect = (storeId: string) => handleClose();
   const handleCreateNew = () => handleClose();
+
+  const handleStoreChange = () => {
+    queryClient.clear();
+  };
 
   const { data: stores, isLoading } = useQuery({
     queryKey: ["stores"],
@@ -118,7 +128,7 @@ const StoreSwitcher = () => {
                 {selectedStore?.name}
               </Typography>
               <Chip
-                label={"เปิด"}
+                label={t("status.opened")}
                 size="small"
                 sx={{
                   height: 20,
@@ -175,8 +185,9 @@ const StoreSwitcher = () => {
             <MenuItem
               key={store.id}
               component={Link}
-              href={getPath("projects.store", { store: store.slug })}
+              href={getPath("projects.store.dashboard", { store: store.slug })}
               selected={store.id === selectedStore?.id}
+              onClick={handleStoreChange}
               sx={{
                 py: 1,
                 px: 2,
@@ -209,7 +220,7 @@ const StoreSwitcher = () => {
                 }}
               />
               <Chip
-                label={"เปิด"}
+                label={t("status.opened")}
                 size="small"
                 sx={{
                   height: 20,
@@ -223,31 +234,34 @@ const StoreSwitcher = () => {
             </MenuItem>
           ))}
 
-        <Divider sx={{ my: 1 }} />
+        <HasGlobalPermission permission={PermissionConfig.global.createStore}>
+          <Divider sx={{ my: 1 }} />
 
-        <MenuItem
-          onClick={handleCreateNew}
-          sx={{
-            py: 1,
-            px: 2,
-            gap: 1.5,
-            color: "text.secondary",
-          }}
-          disabled
-        >
-          <ListItemIcon sx={{ minWidth: 28 }}>
-            <AddIcon fontSize="small" />
-          </ListItemIcon>
-          <ListItemText
-            primary="สร้างร้านค้าใหม่"
-            slotProps={{
-              primary: {
-                variant: "body2",
-                fontWeight: 500,
-              },
+          <MenuItem
+            onClick={handleCreateNew}
+            component={Link}
+            href={getPath("projects.new")}
+            sx={{
+              py: 1,
+              px: 2,
+              gap: 1.5,
+              color: "text.secondary",
             }}
-          />
-        </MenuItem>
+          >
+            <ListItemIcon sx={{ minWidth: 28 }}>
+              <AddIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("create_store")}
+              slotProps={{
+                primary: {
+                  variant: "body2",
+                  fontWeight: 500,
+                },
+              }}
+            />
+          </MenuItem>
+        </HasGlobalPermission>
       </Menu>
     </>
   );

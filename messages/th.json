@@ -1388,6 +1388,13 @@
       "scheduled": "รอเริ่ม",
       "expired": "หมดอายุ",
       "disabled": "ปิดใช้งาน"
+    },
+    "store_switcher": {
+      "create_store": "สร้างร้านค้าใหม่",
+      "status": {
+        "opened": "เปิด",
+        "closed": "ปิด"
+      }
     }
   },
   "COMMON": {

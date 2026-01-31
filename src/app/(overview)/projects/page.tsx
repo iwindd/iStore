@@ -41,7 +41,9 @@ export default function OverviewPage() {
                 {data?.map((store) => (
                   <Card key={store.id} variant="outlined">
                     <CardActionArea
-                      href={getPath("projects.store", { store: store.slug })}
+                      href={getPath("projects.store.dashboard", {
+                        store: store.slug,
+                      })}
                     >
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight={600}>
