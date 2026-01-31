@@ -24,6 +24,7 @@ export const PermissionConfig = {
       getUsers: GlobalPermissionEnum.USER_MANAGEMENT,
       updateUser: GlobalPermissionEnum.USER_MANAGEMENT,
       updatePassword: GlobalPermissionEnum.USER_MANAGEMENT,
+      impersonate: GlobalPermissionEnum.USER_MANAGEMENT,
     },
   },
 

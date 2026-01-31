@@ -69,6 +69,9 @@
         "stores": "ร้านค้า",
         "created_at": "วันที่สร้าง",
         "actions": "เครื่องมือ"
+      },
+      "actions": {
+        "impersonate": "เข้าสู่ระบบ"
       }
     },
     "create": {

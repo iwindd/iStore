@@ -1,20 +1,22 @@
 "use client";
 
 import getUserDatatable from "@/actions/user/getUserDatatable";
+import impersonateUser from "@/actions/user/impersonateUser";
 import Datatable from "@/components/Datatable";
 import App, { Wrapper } from "@/layouts/App";
 import { getPath } from "@/router";
-import { AddTwoTone } from "@mui/icons-material";
+import { AddTwoTone, LoginTwoTone } from "@mui/icons-material";
 import { Button, Chip, Stack } from "@mui/material";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSnackbar } from "notistack";
 
 export default function UsersPage() {
   const t = useTranslations("USERS");
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
   const columns: GridColDef[] = [
     {
@@ -57,7 +59,35 @@ export default function UsersPage() {
       renderCell: (params) =>
         format(new Date(params.value), "dd/MM/yyyy HH:mm"),
     },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "เครื่องมือ",
+      flex: 1,
+      getActions: ({ row }) => [
+        <GridActionsCellItem
+          key="impersonate"
+          icon={<LoginTwoTone />}
+          label={t("datatable.actions.impersonate")}
+          onClick={() => impersonateMutation.mutate(row.id)}
+          disabled={impersonateMutation.isPending}
+        />,
+      ],
+    },
   ];
+
+  const { enqueueSnackbar } = useSnackbar();
+  const impersonateMutation = useMutation({
+    mutationFn: (userId: number) => impersonateUser(userId),
+    onSuccess: () => {
+      queryClient.clear();
+    },
+    onError: (error) => {
+      if (error.message == "NEXT_REDIRECT") return;
+      console.error(error.name);
+      enqueueSnackbar(t("error"), { variant: "error" });
+    },
+  });
 
   return (
     <Wrapper>
