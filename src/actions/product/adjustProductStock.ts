@@ -17,6 +17,8 @@ const adjustProductStock = async (
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.product.adjustStock);
   const validated = ProductAdjustStockSchema.parse(payload);
+
+  console.log("comethu", validated, payload);
   const product = await db.product.findUniqueOrThrow({
     where: {
       id: payload.id,
@@ -45,7 +47,7 @@ const adjustProductStock = async (
     });
 
     const updatedStock = await tx.productStock.upsert({
-      where: { id: product.stock?.id },
+      where: { id: product.stock?.id || 0 },
       create: {
         product_id: product.id,
         quantity: validated.stock,
