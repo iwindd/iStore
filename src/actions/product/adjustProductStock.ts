@@ -18,7 +18,6 @@ const adjustProductStock = async (
   assertStoreCan(ctx, PermissionConfig.store.product.adjustStock);
   const validated = ProductAdjustStockSchema.parse(payload);
 
-  console.log("comethu", validated, payload);
   const product = await db.product.findUniqueOrThrow({
     where: {
       id: payload.id,
