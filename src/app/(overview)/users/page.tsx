@@ -1,14 +1,15 @@
 "use client";
 
-import getUserDatatable from '@/actions/user/getUserDatatable';
-import getUsers from "@/actions/user/getUserDatatable";
+import getUserDatatable from "@/actions/user/getUserDatatable";
 import Datatable from "@/components/Datatable";
 import App, { Wrapper } from "@/layouts/App";
+import { getPath } from "@/router";
 import { AddTwoTone } from "@mui/icons-material";
 import { Button, Chip, Stack } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function UsersPage() {
@@ -65,10 +66,11 @@ export default function UsersPage() {
         <App.Header.Actions>
           <Button
             startIcon={<AddTwoTone />}
+            component={Link}
+            href={getPath("users.new")}
             variant="contained"
             color="secondary"
             size="small"
-            onClick={() => router.push("/users/new")}
           >
             {t("create_button")}
           </Button>
