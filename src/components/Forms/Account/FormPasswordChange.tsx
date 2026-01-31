@@ -1,7 +1,6 @@
 "use client";
 import UpdatePassword from "@/actions/user/password";
 import { Confirmation, useConfirm } from "@/hooks/use-confirm";
-import { useInterface } from "@/providers/InterfaceProvider";
 import { PasswordSchema, PasswordValues } from "@/schema/Password";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SaveTwoTone } from "@mui/icons-material";
@@ -14,18 +13,19 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 const FormPasswordChange = () => {
   const t = useTranslations("ACCOUNT.password");
-  const { setBackdrop } = useInterface();
   const { enqueueSnackbar } = useSnackbar();
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
+    reset,
   } = useForm<PasswordValues>({
     resolver: zodResolver(PasswordSchema),
     defaultValues: {
@@ -35,25 +35,26 @@ const FormPasswordChange = () => {
     },
   });
 
+  const updatePasswordMutation = useMutation({
+    mutationFn: (payload: PasswordValues) => UpdatePassword(payload),
+    onSuccess: () => {
+      enqueueSnackbar(t("messages.save_success"), {
+        variant: "success",
+      });
+      reset();
+    },
+    onError: () => {
+      enqueueSnackbar(t("messages.error"), {
+        variant: "error",
+      });
+    },
+  });
+
   const confirmation = useConfirm({
     title: t("confirm_dialog.title"),
     text: t("confirm_dialog.text"),
     onConfirm: async (payload: PasswordValues) => {
-      setBackdrop(true);
-      try {
-        const resp = await UpdatePassword(payload);
-        if (!resp.success) throw new Error(resp.message);
-        enqueueSnackbar(t("messages.save_success"), {
-          variant: "success",
-        });
-      } catch (error) {
-        console.error("Error updating password:", error);
-        enqueueSnackbar(t("messages.error"), {
-          variant: "error",
-        });
-      } finally {
-        setBackdrop(false);
-      }
+      updatePasswordMutation.mutate(payload);
     },
   });
 
@@ -84,6 +85,7 @@ const FormPasswordChange = () => {
               {...register("old_password")}
               error={errors["old_password"] !== undefined}
               helperText={errors["old_password"]?.message}
+              disabled={updatePasswordMutation.isPending}
             />
             <TextField
               type="password"
@@ -92,6 +94,7 @@ const FormPasswordChange = () => {
               {...register("password")}
               error={errors["password"] !== undefined}
               helperText={errors["password"]?.message}
+              disabled={updatePasswordMutation.isPending}
             />
             <TextField
               type="password"
@@ -100,17 +103,21 @@ const FormPasswordChange = () => {
               {...register("password_confirmation")}
               error={errors["password_confirmation"] !== undefined}
               helperText={errors["password_confirmation"]?.message}
+              disabled={updatePasswordMutation.isPending}
             />
-            <div>
-              <Button
-                type="submit"
-                color="success"
-                variant="contained"
-                startIcon={<SaveTwoTone />}
-              >
-                {t("save_button")}
-              </Button>
-            </div>
+            {isDirty && (
+              <div>
+                <Button
+                  type="submit"
+                  color="success"
+                  variant="contained"
+                  startIcon={<SaveTwoTone />}
+                  loading={updatePasswordMutation.isPending}
+                >
+                  {t("save_button")}
+                </Button>
+              </div>
+            )}
           </Stack>
         </CardContent>
         <Divider />
