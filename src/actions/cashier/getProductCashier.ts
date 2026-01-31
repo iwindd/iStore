@@ -57,7 +57,6 @@ const getProductCashier = async (table: TableFetch) => {
         keywords: true,
         price: true,
         cost: true,
-        sold: true,
         usePreorder: true,
         category: {
           select: {

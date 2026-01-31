@@ -71,7 +71,6 @@ const getProductDatatable = async (
         keywords: true,
         price: true,
         cost: true,
-        sold: true,
         usePreorder: true,
         category: {
           select: {

@@ -11,7 +11,7 @@ const createProduct = async (storeSlug: string, payload: ProductValues) => {
   assertStoreCan(ctx, PermissionConfig.store.product.create);
   const validated = ProductSchema.parse(payload);
 
-  const createdProduct = await db.product.create({
+  return await db.product.create({
     data: {
       serial: removeWhiteSpace(validated.serial),
       label: validated.label,
@@ -23,13 +23,10 @@ const createProduct = async (storeSlug: string, payload: ProductValues) => {
         },
       },
     },
+    select: {
+      id: true,
+    },
   });
-
-  return {
-    ...createdProduct,
-    price: createdProduct.price.toNumber(),
-    cost: createdProduct.cost.toNumber(),
-  };
 };
 
 export default createProduct;

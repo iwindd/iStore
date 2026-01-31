@@ -7,7 +7,7 @@ import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 const recoveryProduct = async (storeSlug: string, id: number) => {
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.product.recovery);
-  await db.product.update({
+  return await db.product.update({
     where: {
       id: id,
       store_id: ctx.storeId!,
@@ -17,6 +17,9 @@ const recoveryProduct = async (storeSlug: string, id: number) => {
     },
     data: {
       deleted_at: null,
+    },
+    select: {
+      id: true,
     },
   });
 };
