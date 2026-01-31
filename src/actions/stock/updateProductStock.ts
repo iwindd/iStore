@@ -33,7 +33,7 @@ export const updateProductStock = async (stock_id: number) => {
 
   const chunks = _.chunk(
     stock.stock_recept_products,
-    STOCK_CONFIG.UPDATE_STOCK_CHUNK_SIZE
+    STOCK_CONFIG.UPDATE_STOCK_CHUNK_SIZE,
   );
   const start_time = Date.now();
 
@@ -44,8 +44,8 @@ export const updateProductStock = async (stock_id: number) => {
           addProductStock(
             payload.product_id,
             payload.quantity,
-            ProductStockMovementType.RECEIVE,
-            { stock_receipt_id: stock.id }
+            ProductStockMovementType.STOCK_RECEIPT,
+            { stock_receipt_id: stock.id },
           );
         }
         if (payload.quantity < 0) {
@@ -53,7 +53,7 @@ export const updateProductStock = async (stock_id: number) => {
             payload.product_id,
             Math.abs(payload.quantity),
             ProductStockMovementType.ADJUST,
-            { stock_receipt_id: stock.id }
+            { stock_receipt_id: stock.id },
           );
         }
       }
@@ -62,7 +62,7 @@ export const updateProductStock = async (stock_id: number) => {
 
   const end_time = Date.now();
   console.warn(
-    `${stock.stock_recept_products.length} products updated in ${end_time - start_time} ms`
+    `${stock.stock_recept_products.length} products updated in ${end_time - start_time} ms`,
   );
 
   return await db.stockReceipt.update({

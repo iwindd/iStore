@@ -132,7 +132,7 @@ const confirmConsignment = async (
         data: {
           consignment_id: consignment.id,
           product_id: cp.product.id,
-          type: ProductStockMovementType.CONSIGNMENT,
+          type: ProductStockMovementType.CONSIGNMENT_RETURNED,
           quantity: quantityLeft,
           quantity_before: cp.product.stock?.quantity || 0,
           quantity_after: (cp.product.stock?.quantity || 0) + quantityLeft,

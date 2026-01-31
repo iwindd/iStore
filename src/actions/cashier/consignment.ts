@@ -54,7 +54,7 @@ export const Consignment = async (
         data: {
           consignment_id: consignment.id,
           product_id: product.id,
-          type: ProductStockMovementType.CONSIGNMENT,
+          type: ProductStockMovementType.CONSIGNMENT_SOLD,
           quantity: -product.quantity,
           quantity_before: before,
           quantity_after: after,

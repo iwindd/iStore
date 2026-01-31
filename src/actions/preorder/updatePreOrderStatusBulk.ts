@@ -89,7 +89,7 @@ const updatePreOrderStatusBulk = async (
             quantity: preorder.count,
             quantity_before: productStock.quantity,
             quantity_after: updatedProductStock.quantity,
-            type: ProductStockMovementType.SALE, //TODO:: Change to PreOrderReturned
+            type: ProductStockMovementType.PREORDER_SOLD,
             order_id: preorder.order_id,
           },
         });

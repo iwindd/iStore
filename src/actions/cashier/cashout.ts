@@ -173,7 +173,7 @@ const Cashout = async (storeSlug: string, payload: CashoutValues) => {
         data: {
           order_id: order.id,
           product_id: product.id,
-          type: ProductStockMovementType.SALE,
+          type: ProductStockMovementType.SOLD,
           quantity: -product.quantity,
           quantity_before: before,
           quantity_after: after,

@@ -87,10 +87,13 @@ model ProductStockMovement {
   @@map("product_stock_movements")
 }
 
-enum ProductStockMovementType { // TODO : Revamp
-  SALE
-  RECEIVE
-  CANCEL
-  ADJUST
-  CONSIGNMENT 
+enum ProductStockMovementType { 
+  SOLD                  // เมื่อขายของ
+  STOCK_RECEIPT         // เมื่อรับของเข้า
+  ADJUST                // เมื่อปรับจำนวน Stock โดยตรง
+  CONSIGNMENT           // เมื่อ ส่งของไปขาย
+  CONSIGNMENT_SOLD      // เมื่อ ขายของจาก Consignment
+  CONSIGNMENT_RETURNED  // เมื่อ คืนของจาก Consignment
+  CONSIGNMENT_CANCELLED // เมื่อ ยกเลิกการส่งของไปขาย
+  PREORDER_SOLD         // เมื่อ คืนของจาก PreOrder
 }
