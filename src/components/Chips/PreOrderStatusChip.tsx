@@ -1,3 +1,4 @@
+import { PreOrderOrderStatus } from "@/actions/preorder/getPreOrderOrderDetail";
 import {
   CheckCircleTwoTone,
   CloseTwoTone,
@@ -8,7 +9,7 @@ import { PreOrderStatus } from "@prisma/client";
 import { useTranslations } from "next-intl";
 
 interface PreOrderStatusChipProps extends Omit<ChipProps, "label" | "color"> {
-  status: PreOrderStatus;
+  status: PreOrderOrderStatus;
 }
 
 const PreOrderStatusChip = ({ status, ...props }: PreOrderStatusChipProps) => {
@@ -30,6 +31,18 @@ const PreOrderStatusChip = ({ status, ...props }: PreOrderStatusChipProps) => {
       case PreOrderStatus.CANCELLED:
         return {
           label: t("cancelled"),
+          color: "default" as const,
+          icon: <CloseTwoTone />,
+        };
+      case "COMPLETED":
+        return {
+          label: t("completed"),
+          color: "success" as const,
+          icon: <CheckCircleTwoTone />,
+        };
+      case "UNKNOWN":
+        return {
+          label: t("unknown"),
           color: "default" as const,
           icon: <CloseTwoTone />,
         };

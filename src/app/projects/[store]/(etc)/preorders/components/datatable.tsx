@@ -2,17 +2,16 @@
 import getPreOrdersDatatable from "@/actions/preorder/getPreOrdersDatatable";
 import PreOrderStatusChip from "@/components/Chips/PreOrderStatusChip";
 import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { useRoute } from "@/hooks/use-route";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import PreOrderDetailDialog from "./PreOrderDetailDialog";
 
 const PreOrdersDatatable = () => {
   const t = useTranslations("PREORDERS.datatable");
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const route = useRoute();
 
   const columns = (): GridColDef[] => {
     return [
@@ -72,47 +71,26 @@ const PreOrdersDatatable = () => {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 1,
         getActions: ({ row }: { row: any }) => [
-          <GridActionsCellItem
+          <GridLinkAction
             key="view"
-            onClick={() => setSelectedId(row.id)}
+            to={route.path("projects.store.preorders.preorder", {
+              id: row.order.id.toString(),
+            })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
-            showInMenu
           />,
         ],
       },
     ];
   };
 
-  const handleClose = () => {
-    setSelectedId(null);
-  };
-
-  const handleSuccess = () => {
-    setRefreshKey((prev) => prev + 1);
-    setSelectedId(null);
-  };
-
   return (
-    <>
-      <Datatable
-        key={refreshKey}
-        name={"preorders"}
-        columns={columns()}
-        fetch={getPreOrdersDatatable}
-        height={700}
-      />
-      {selectedId && (
-        <PreOrderDetailDialog
-          id={selectedId}
-          open={!!selectedId}
-          onClose={handleClose}
-          onSuccess={handleSuccess}
-        />
-      )}
-    </>
+    <Datatable
+      name={"preorders"}
+      columns={columns()}
+      fetch={getPreOrdersDatatable}
+    />
   );
 };
 

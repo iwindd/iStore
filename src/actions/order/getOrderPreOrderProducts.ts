@@ -46,7 +46,8 @@ const getOrderPreOrderProducts = async (table: TableFetch, orderId: number) => {
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },
@@ -55,7 +56,8 @@ const getOrderPreOrderProducts = async (table: TableFetch, orderId: number) => {
           select: {
             user: {
               select: {
-                name: true,
+                first_name: true,
+                last_name: true,
               },
             },
           },

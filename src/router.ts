@@ -184,6 +184,12 @@ const ROUTES = ROUTER({
             permission: {
               someStore: [StorePermissionEnum.PREORDER_MANAGEMENT],
             },
+            children: {
+              preorder: {
+                path: "/projects/:store/preorders/:id",
+                label: "store.preorders.preorder.label",
+              },
+            },
           },
           consignments: {
             path: "/projects/:store/consignments",

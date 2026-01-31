@@ -1,18 +1,18 @@
 "use client";
 
 import getPreOrderOrdersDatatable from "@/actions/preorder/getPreOrderOrdersDatatable";
+import PreOrderStatusChip from "@/components/Chips/PreOrderStatusChip";
 import Datatable from "@/components/Datatable";
+import GridLinkAction from "@/components/GridLinkAction";
+import { useRoute } from "@/hooks/use-route";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
-import { Chip } from "@mui/material";
-import { GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { GridColDef } from "@mui/x-data-grid";
 import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
 
 const PreOrderOrdersDatatable = () => {
   const t = useTranslations("PREORDERS.ordersDatatable");
-  const router = useRouter();
-  const params = useParams();
+  const route = useRoute();
 
   const columns = (): GridColDef[] => {
     return [
@@ -53,36 +53,21 @@ const PreOrderOrdersDatatable = () => {
         headerName: t("headers.status"),
         flex: 1,
         renderCell: (data: any) => {
-          const status = data.value;
-          let color:
-            | "default"
-            | "primary"
-            | "secondary"
-            | "error"
-            | "info"
-            | "success"
-            | "warning" = "default";
-
-          if (status === "PENDING") color = "primary";
-          else if (status === "COMPLETED") color = "success";
-
-          return <Chip label={status} color={color} size="small" />;
+          return <PreOrderStatusChip status={data.value} size="small" />;
         },
       },
       {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 1,
         getActions: ({ row }: { row: any }) => [
-          <GridActionsCellItem
+          <GridLinkAction
             key="view"
-            onClick={() =>
-              router.push(`/projects/${params.store}/histories/${row.id}`)
-            }
+            to={route.path("projects.store.preorders.preorder", {
+              id: row.id.toString(),
+            })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
-            showInMenu
           />,
         ],
       },

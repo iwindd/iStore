@@ -220,7 +220,10 @@
         }
       },
       "preorders": {
-        "label": "พรีออเดอร์"
+        "label": "พรีออเดอร์",
+        "preorder": {
+          "label": "รายละเอียดพรีออเดอร์"
+        }
       },
       "consignments": {
         "label": "ฝากขาย",
@@ -449,6 +452,40 @@
         "cancel_confirm_text": "คุณแน่ใจหรือไม่ว่าต้องการยกเลิกพรีออเดอร์นี้?",
         "cancelled_success": "ยกเลิกพรีออเดอร์เรียบร้อยแล้ว!",
         "returned_success": "ส่งคืนเรียบร้อยแล้ว!"
+      }
+    },
+    "detail": {
+      "title": "รายละเอียดออเดอร์พรีออเดอร์ #{id}",
+      "order_info": "ข้อมูลออเดอร์",
+      "preorder_items": "รายการพรีออเดอร์",
+      "labels": {
+        "order_id": "เลขที่ออเดอร์",
+        "created_at": "วันที่สร้าง",
+        "creator": "ผู้สร้าง",
+        "total": "ยอดรวม",
+        "cost": "ต้นทุน",
+        "profit": "กำไร",
+        "status": "สถานะ",
+        "items_count": "จำนวนรายการ",
+        "note": "หมายเหตุ"
+      },
+      "datatable": {
+        "bulkActions": {
+          "cancel": "ยกเลิก ({count})",
+          "return": "ส่งคืน ({count})"
+        },
+        "headers": {
+          "product": "สินค้า",
+          "serial": "รหัสสินค้า",
+          "count": "จำนวน",
+          "total": "ยอดรวม",
+          "status": "สถานะ",
+          "note": "หมายเหตุ",
+          "actions": "เครื่องมือ"
+        },
+        "actions": {
+          "view": "ดูรายละเอียด"
+        }
       }
     }
   },
@@ -1328,7 +1365,9 @@
     "preorder_status": {
       "pending": "รอส่งคืน",
       "returned": "ส่งคืนแล้ว",
-      "cancelled": "ยกเลิกแล้ว"
+      "cancelled": "ยกเลิกแล้ว",
+      "completed": "เสร็จสิ้นแล้ว",
+      "unknown": "ไม่ทราบ"
     },
     "product_stock_status": {
       "in_stock": "มีของ",
