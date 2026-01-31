@@ -30,7 +30,9 @@ const PermissionGrid: React.FC<PermissionGridProps> = ({
 }) => {
   const t = useTranslations("ROLES");
 
-  const allPermissions = Object.values(StorePermissionEnum);
+  const allPermissions = Object.values(StorePermissionEnum).filter((p) => {
+    return p !== StorePermissionEnum._DEPRECATED;
+  });
 
   const handleToggle = (permission: string) => {
     const currentIndex = value.indexOf(permission);
