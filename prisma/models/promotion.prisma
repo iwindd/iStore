@@ -1,7 +1,7 @@
 model Event {
   id          Int       @id @default(autoincrement())
-  name        String?   @default("Untitled")
-  note        String?
+  name        String?   @db.VarChar(100) @default("Untitled") 
+  note        String?   @db.VarChar(255)
   store_id    String
   creator_id  Int?
   start_at    DateTime

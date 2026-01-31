@@ -12,7 +12,7 @@ export type ProductValues = z.infer<typeof ProductSchema>;
 
 export const ProductFindSchema = z
   .object({
-    serial: z.string(),
+    serial: ProductSchema.shape.serial,
   })
   .refine((data) => isValid(data.serial), {
     message: "Invalid EAN",

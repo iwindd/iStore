@@ -1,9 +1,9 @@
 model Address {
   id               Int            @id @default(autoincrement())
-  address_line     String
+  address_line     String         @db.VarChar(255)
   created_at       DateTime       @default(now())
   sub_district_id  Int
-  zipcode_snapshot String?
+  zipcode_snapshot String?        @db.VarChar(10)
   users            UserAddress[]
   stores           StoreAddress[]
 
@@ -14,7 +14,7 @@ model Address {
 
 model UserAddress {
   id         Int     @id @default(autoincrement())
-  label      String?
+  label      String? @db.VarChar(50)
   is_main    Boolean @default(false)
   user_id    Int
   address_id Int
@@ -41,9 +41,9 @@ model StoreAddress {
 
 model Country {
   id     Int    @id @default(autoincrement())
-  code   String @unique
-  name   String
-  nameEn String
+  code   String @db.Char(2) @unique
+  name   String @db.VarChar(100)
+  nameEn String @db.VarChar(100)
 
   geographies Geography[]
 
@@ -52,9 +52,9 @@ model Country {
 
 model Geography {
   id         Int    @id @default(autoincrement())
-  code       String
-  name       String
-  nameEn     String
+  code       String @db.Char(10) 
+  name       String @db.VarChar(150)
+  nameEn     String @db.VarChar(150)
   country_id Int
 
   provinces Province[]
@@ -67,9 +67,9 @@ model Geography {
 
 model Province {
   id           Int    @id @default(autoincrement())
-  code         String
-  name         String
-  nameEn       String
+  code         String @db.Char(10)
+  name         String @db.VarChar(150)
+  nameEn       String @db.VarChar(150)
   geography_id Int
 
   geography Geography  @relation(fields: [geography_id], references: [id])
@@ -82,9 +82,9 @@ model Province {
 
 model District {
   id          Int    @id @default(autoincrement())
-  name        String
-  nameEn      String
-  code        String
+  name        String @db.VarChar(150)
+  nameEn      String @db.VarChar(150)
+  code        String @db.Char(10) 
   province_id Int
 
   sub_districts SubDistrict[]
@@ -97,9 +97,9 @@ model District {
 
 model SubDistrict {
   id          Int    @id @default(autoincrement())
-  code        String
-  name        String
-  nameEn      String
+  code        String @db.Char(10) 
+  name        String @db.VarChar(150)
+  nameEn      String @db.VarChar(150)
   district_id Int
 
   zipcodes  Zipcode[]
@@ -113,7 +113,7 @@ model SubDistrict {
 
 model Zipcode {
   id              Int    @id @default(autoincrement())
-  code            String
+  code            String @db.Char(10) 
   sub_district_id Int
 
   sub_district SubDistrict @relation(fields: [sub_district_id], references: [id])

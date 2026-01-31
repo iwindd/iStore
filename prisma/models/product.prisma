@@ -1,7 +1,7 @@
 model Category {
   id         Int       @id @default(autoincrement())
-  label      String
-  overstock  Boolean   @default(false)
+  label      String    @db.VarChar(100)
+  overstock  Boolean   @default(false) // TODO:: Remove Overstock
   store_id   String
   creator_id Int?
   created_at DateTime  @default(now())
@@ -17,15 +17,15 @@ model Category {
 
 model Product {
   id          Int       @id @default(autoincrement())
-  serial      String
-  label       String
-  price       Int       @default(0)
-  cost        Int       @default(0)
-  sold        Int       @default(0)
+  serial      String    @db.VarChar(15)
+  label       String    @db.VarChar(60)
+  price       Int       @default(0) // TODO:: Decimal
+  cost        Int       @default(0) // TODO:: Decimal
+  sold        Int       @default(0) // TODO:: Remove
   category_id Int?
   store_id    String
   creator_id  Int?
-  keywords    String    @default("")
+  keywords    String    @default("") // TODO:: Json
   usePreorder Boolean   @default(false)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
@@ -87,10 +87,10 @@ model ProductStockMovement {
   @@map("product_stock_movements")
 }
 
-enum ProductStockMovementType {
+enum ProductStockMovementType { // TODO : Revamp
   SALE
   RECEIVE
   CANCEL
   ADJUST
-  CONSIGNMENT
+  CONSIGNMENT 
 }

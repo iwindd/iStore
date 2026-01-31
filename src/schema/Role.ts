@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const RoleSchema = z
   .object({
-    label: z.string().min(3, "ชื่อตำแหน่งต้องมีอย่างน้อย 3 ตัวอักษร"),
+    label: z.string().min(3).max(100),
     description: z.string().optional(),
     permissions: z
       .array(z.string())

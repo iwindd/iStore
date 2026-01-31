@@ -1,6 +1,6 @@
 model StockReceipt {
   id         Int                @id @default(autoincrement())
-  note       String?
+  note       String?            @db.VarChar(255)
   status     StockReceiptStatus @default(DRAFT)
   action_at  DateTime           @default(now())
   created_at DateTime           @default(now())

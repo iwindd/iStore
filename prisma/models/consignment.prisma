@@ -1,7 +1,7 @@
 model Consignment {
   id              Int               @id @default(autoincrement())
   status          ConsignmentStatus @default(PENDING)
-  note            String?
+  note            String?           @db.VarChar(255)
   store_id        String
   creator_id      Int
   created_at      DateTime          @default(now())

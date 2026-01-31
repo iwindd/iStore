@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { UserSchema } from "./User";
 
 export const PasswordSchema = z
   .object({
-    old_password: z.string().min(6),
-    password: z.string().min(6),
-    password_confirmation: z.string().min(6),
+    old_password: UserSchema.shape.password,
+    password: UserSchema.shape.password,
+    password_confirmation: UserSchema.shape.password,
   })
   .refine((data) => data.password == data.password_confirmation, {
     message: "Passwords don't match",
@@ -15,8 +16,8 @@ export type PasswordValues = z.infer<typeof PasswordSchema>;
 
 export const SetPasswordSchema = z
   .object({
-    password: z.string().min(6),
-    password_confirmation: z.string().min(6),
+    password: UserSchema.shape.password,
+    password_confirmation: UserSchema.shape.password,
   })
   .refine((data) => data.password == data.password_confirmation, {
     message: "Passwords don't match",

@@ -2,7 +2,7 @@ import z from "zod";
 
 // Schema สำหรับการสร้าง Store ใหม่
 export const CreateStoreSchema = z.object({
-  // Project Info
+  // Project Info TODO:: Remove ProjectName
   projectName: z
     .string()
     .min(3, "Project name must be at least 3 characters")
@@ -11,7 +11,7 @@ export const CreateStoreSchema = z.object({
   slug: z
     .string()
     .min(3, "Slug must be at least 3 characters")
-    .max(100, "Slug must be at most 100 characters")
+    .max(50, "Slug must be at most 50 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "Slug must be lowercase, no spaces, use hyphens",

@@ -1,7 +1,7 @@
 model Store {
   id             String            @id @default(cuid())
-  slug           String            @unique
-  name           String
+  slug           String            @db.VarChar(50) @unique
+  name           String            @db.VarChar(100)
   categories     Category[]
   products       Product[]
   orders         Order[]
