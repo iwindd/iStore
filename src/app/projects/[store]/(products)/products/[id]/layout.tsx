@@ -25,6 +25,7 @@ const selectProduct = {
   price: true,
   cost: true,
   usePreorder: true,
+  keywords: true,
   category: {
     select: {
       id: true,

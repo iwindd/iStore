@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader, Grid, Stack } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useProduct } from "../../ProductContext";
+import ProductKeywordsForm from "./components/ProductKeywordsForm";
 import ProductPreorderForm from "./components/ProductPreorderForm";
 import ProductUpdateForm from "./components/ProductUpdateForm";
 import SoldCount from "./stats/SoldCount";
@@ -30,6 +31,7 @@ const ProductInformationPage = () => {
         </CardContent>
       </Card>
       <ProductUpdateForm />
+      <ProductKeywordsForm />
       <ProductPreorderForm />
     </Stack>
   );

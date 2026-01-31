@@ -3,8 +3,9 @@ import { createContext, useContext, useMemo, useState } from "react";
 import { ProductLayoutValue } from "./layout";
 
 type ProductContextType = {
-  product: ProductLayoutValue & {
+  product: Omit<ProductLayoutValue, "keywords"> & {
     stock: NonNullable<ProductLayoutValue["stock"]>;
+    keywords: string[];
   };
   updateProduct: (product: any) => void;
 };
@@ -25,17 +26,19 @@ export const ProductProvider = ({
       useAlert: false,
       alertCount: 0,
     },
+    // @ts-ignore
+    keywords: JSON.parse((value.keywords as string) || "[]"),
   });
 
   const updateProduct = (
-    product: Partial<Omit<ProductContextType["product"], "id" | "serial">>
+    product: Partial<Omit<ProductContextType["product"], "id" | "serial">>,
   ) => {
     setProduct((prev) => ({ ...prev, ...product }));
   };
 
   const ctxValue = useMemo(
     () => ({ product, updateProduct }),
-    [product, updateProduct]
+    [product, updateProduct],
   );
 
   return (

@@ -25,7 +25,7 @@ model Product {
   category_id Int?
   store_id    String
   creator_id  Int?
-  keywords    String    @default("") // TODO:: Json
+  keywords    Json      @default("[]")
   usePreorder Boolean   @default(false)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt

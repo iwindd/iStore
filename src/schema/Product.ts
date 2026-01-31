@@ -33,6 +33,20 @@ export const ProductUpdateSchema = z.object({
 
 export type ProductUpdateValues = z.infer<typeof ProductUpdateSchema>;
 
+export const ProductUpdateKeywordsSchema = z.object({
+  keywords: z
+    .array(
+      z.object({
+        value: z.string(),
+      }),
+    )
+    .max(20),
+});
+
+export type ProductUpdateKeywordsValues = z.infer<
+  typeof ProductUpdateKeywordsSchema
+>;
+
 export const ProductAdjustStockSchema = z.object({
   stock: z.number().min(0),
   note: z.string().max(255),

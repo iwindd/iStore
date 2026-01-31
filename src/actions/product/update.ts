@@ -23,7 +23,6 @@ const updateProduct = async (
       price: validated.price,
       cost: validated.cost,
       category_id: validated.category_id,
-      /* keywords: validated.keywords, */ // TODO:: Refactor this one
     },
   });
 };
