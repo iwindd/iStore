@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const UserSchema = z.object({
-  first_name: z.string().email("Invalid email address").max(255),
+  first_name: z.string().min(6).max(100),
   last_name: z.string().min(6).max(255),
-  email: z.string().min(6).max(100),
+  email: z.string().email("Invalid email address").max(255),
   password: z.string().min(6).max(100),
 });
 
