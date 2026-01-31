@@ -25,9 +25,9 @@ export function InterfaceProvider({
 }: Readonly<{ children: ReactNode }>) {
   const [isBackdrop, setIsBackdrop] = React.useState<boolean>(false);
 
-  /* TODO:: BACKDROP WILL REMOVE SOON */
   const memo = React.useMemo(
     () => ({
+      /* NOTE: พยายามอย่าใช้หากไม่จำเป็น */
       setBackdrop: setIsBackdrop,
       isBackdrop: isBackdrop,
     }),

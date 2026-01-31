@@ -1,7 +1,6 @@
 "use client";
 
 import Logo from "@/components/core/logo";
-import { useInterface } from "@/providers/InterfaceProvider";
 import { SignInSchema, SignInValues } from "@/schema/Signin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LockOutline, Login, PersonOutline } from "@mui/icons-material";
@@ -23,7 +22,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 const SignIn = () => {
   const t = useTranslations("ROUTES.auth.signin");
-  const { setBackdrop } = useInterface();
   const theme = useTheme();
 
   const {
