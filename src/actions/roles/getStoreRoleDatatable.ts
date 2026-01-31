@@ -14,6 +14,7 @@ export const getRoleDatatable = async (table: TableFetch) => {
       query: table,
       where: {
         store_id: ctx.storeId!,
+        is_hidden: false,
       },
       searchable: {
         name: {

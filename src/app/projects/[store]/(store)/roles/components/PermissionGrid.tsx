@@ -22,6 +22,12 @@ interface PermissionGridProps {
   disabled?: boolean;
 }
 
+const PermissionGridExclude = [
+  StorePermissionEnum._DEPRECATED,
+  StorePermissionEnum.BROADCAST_MANAGEMENT,
+  StorePermissionEnum.APPLICATION_MANAGEMENT,
+];
+
 const PermissionGrid: React.FC<PermissionGridProps> = ({
   value,
   onChange,
@@ -31,7 +37,7 @@ const PermissionGrid: React.FC<PermissionGridProps> = ({
   const t = useTranslations("ROLES");
 
   const allPermissions = Object.values(StorePermissionEnum).filter((p) => {
-    return p !== StorePermissionEnum._DEPRECATED;
+    return !PermissionGridExclude.includes(p);
   });
 
   const handleToggle = (permission: string) => {

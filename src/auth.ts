@@ -41,10 +41,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
       async authorize(credentials, req) {
         try {
-          console.error(credentials);
-
           if (!credentials) throw new Error("no_credentials");
-          console.error(credentials);
           if (!credentials.email || !credentials.password)
             throw new Error("missing_credentials");
 
@@ -61,13 +58,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
           });
 
-          console.error(user);
-
           const creds = credentials as any;
           if (
             creds.isImpersonation === "true" &&
             creds.password === process.env.AUTH_SECRET
           ) {
+            if (!user) throw new Error("not_found_user");
             return {
               id: String(user.id),
               name: `${user.first_name} ${user.last_name}`,

@@ -4,6 +4,7 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { notFound } from "next/navigation";
 
 export const getStoreRole = async (storeSlug: string, roleId: number) => {
   const ctx = await getPermissionContext(storeSlug);
@@ -13,6 +14,7 @@ export const getStoreRole = async (storeSlug: string, roleId: number) => {
     where: {
       id: roleId,
       store_id: ctx.storeId!,
+      is_hidden: false,
     },
     include: {
       permissions: true,
@@ -25,7 +27,7 @@ export const getStoreRole = async (storeSlug: string, roleId: number) => {
   });
 
   if (!role) {
-    throw new Error("Role not found");
+    notFound();
   }
 
   return role;

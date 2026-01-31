@@ -3,7 +3,7 @@ model GlobalRole {
   label          String   @db.VarChar(100)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  is_removable   Boolean  @default(false)
+  is_hidden      Boolean  @default(false)
   creator_id     Int?
 
   creator     Employee?          @relation("GlobalRoleCreations", fields: [creator_id], references: [id])
@@ -32,7 +32,7 @@ model StoreRole {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   store_id     String
-  is_removable Boolean  @default(false)
+  is_hidden    Boolean  @default(false)
   creator_id   Int?
 
   store       Store             @relation(fields: [store_id], references: [id])

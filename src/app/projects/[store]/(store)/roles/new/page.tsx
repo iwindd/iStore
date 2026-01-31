@@ -1,23 +1,26 @@
 "use client";
 
 import createStoreRole from "@/actions/roles/createStoreRole";
-import App, {Wrapper} from "@/layouts/App";
-import {RoleValues} from "@/schema/Role";
-import {useMutation} from "@tanstack/react-query";
-import {useTranslations} from "next-intl";
-import {useParams} from "next/navigation";
-import {enqueueSnackbar} from "notistack";
+import { useRoute } from "@/hooks/use-route";
+import App, { Wrapper } from "@/layouts/App";
+import { RoleValues } from "@/schema/Role";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { enqueueSnackbar } from "notistack";
 import RoleForm from "../components/RoleForm";
 
 const NewRolePage = () => {
   const t = useTranslations("ROLES");
   const params = useParams();
   const storeSlug = params.store as string;
+  const route = useRoute();
 
   const createRoleMutation = useMutation({
     mutationFn: (values: RoleValues) => createStoreRole(storeSlug, values),
-    onSuccess: () => {
+    onSuccess: (data) => {
       enqueueSnackbar(t("messages.created"), { variant: "success" });
+      route.push("projects.store.roles.role", { roleId: data.id.toString() });
     },
     onError: (error) => {
       console.error(error);

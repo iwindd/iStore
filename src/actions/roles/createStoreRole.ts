@@ -24,6 +24,9 @@ export const createStoreRole = async (
       store_id: ctx.storeId!,
       creator_id: ctx.employeeId!,
     },
+    select: {
+      id: true,
+    },
   });
 
   return role;

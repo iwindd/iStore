@@ -29,6 +29,7 @@ const fetchRoleSelector = async (
     where: {
       id: id,
       store_id: ctx.storeId!,
+      is_hidden: false,
     },
     select: DEFAULT_SELECT,
   });

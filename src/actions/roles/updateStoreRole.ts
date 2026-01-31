@@ -19,6 +19,7 @@ export const updateStoreRole = async (
     where: {
       id: payload.id,
       store_id: ctx.storeId!,
+      is_hidden: false,
     },
     data: {
       name: validated.label,

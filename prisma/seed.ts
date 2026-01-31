@@ -141,8 +141,8 @@ async function seedOwnerRole(): Promise<{ id: number }> {
     update: {},
     create: {
       id: OWNER_CONFIG.id,
-      label: "Owner",
-      is_removable: false,
+      label: "เจ้าของกิจการ",
+      is_hidden: true,
       permissions: {
         connect: permissions.GlobalPermission.map((p) => ({ name: p.name })),
       },
