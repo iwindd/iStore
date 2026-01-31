@@ -201,7 +201,7 @@ const onAddProductToCart = (
     case "not_enought_stock":
       enqueueSnackbar(`จำนวนสินค้า <${product.label}> ในสต๊อกไม่เพียงพอ!`, {
         variant: "error",
-        key: `addProductToCart-${product.id}-overstock`,
+        key: `addProductToCart-${product.id}-notEnoughtStock`,
         preventDuplicate: true,
       });
       break;

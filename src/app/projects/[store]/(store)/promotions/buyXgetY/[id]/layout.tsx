@@ -30,7 +30,6 @@ const BuyXGetYLayout = async ({
         category: {
           select: {
             label: true,
-            overstock: true,
           },
         },
       },

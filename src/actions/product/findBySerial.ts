@@ -22,7 +22,6 @@ export type FindProductBySerialResult = Prisma.ProductGetPayload<{
     category: {
       select: {
         label: true;
-        overstock: true;
       };
     };
   };
@@ -55,7 +54,6 @@ const findProductBySerial = async (
         category: {
           select: {
             label: true,
-            overstock: true,
           },
         },
       },

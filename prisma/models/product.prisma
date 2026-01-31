@@ -1,7 +1,6 @@
 model Category {
   id         Int       @id @default(autoincrement())
   label      String    @db.VarChar(100)
-  overstock  Boolean   @default(false) // TODO:: Remove Overstock
   store_id   String
   creator_id Int?
   created_at DateTime  @default(now())
