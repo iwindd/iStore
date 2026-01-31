@@ -4,6 +4,7 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { notFound } from "next/navigation";
 
 export const getStoreEmployee = async (
   storeSlug: string,
@@ -16,6 +17,11 @@ export const getStoreEmployee = async (
     where: {
       id: employeeId,
       store_id: ctx.storeId!,
+      user: {
+        id: {
+          not: ctx.userId,
+        },
+      },
     },
     include: {
       user: true,
@@ -28,7 +34,7 @@ export const getStoreEmployee = async (
   });
 
   if (!employee) {
-    throw new Error("Employee not found");
+    notFound();
   }
 
   return employee;

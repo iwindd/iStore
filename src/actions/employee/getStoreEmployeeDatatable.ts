@@ -18,6 +18,9 @@ const getStoreEmployeeDatatable = async (table: TableFetch) => {
             store_id: ctx.storeId!,
           },
         },
+        id: {
+          not: ctx.employeeId,
+        },
       },
       searchable: {
         first_name: {
