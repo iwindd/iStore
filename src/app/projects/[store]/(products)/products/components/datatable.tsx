@@ -292,7 +292,7 @@ const ProductDatatable = () => {
 
   return (
     <>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
+      <Box sx={{ mb: 3 }}>
         <Tabs
           value={filterType}
           onChange={(_, value) => setFilterType(value)}
