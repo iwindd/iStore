@@ -1,5 +1,13 @@
 "use client";
-import { ButtonProps, Card, CardContent } from "@mui/material";
+import {
+  alpha,
+  Box,
+  ButtonProps,
+  CardContent,
+  CardContentProps,
+  Theme,
+  useTheme,
+} from "@mui/material";
 import {
   DataGrid,
   DataGridProps,
@@ -36,7 +44,56 @@ export interface DatatableProps<
   height?: string | number;
   fetch: (payload: TableFetch, ...args: any) => any;
   bridge?: any[];
+  variant?: "default" | "card";
 }
+
+const getDatatableVariantSxProps = (
+  theme: Theme,
+  variant: "default" | "card",
+) => {
+  switch (variant) {
+    case "default":
+      return {
+        boxShadow: "var(--custom-shadow-1-light)",
+      };
+    case "card":
+      return {
+        "& .MuiDataGrid-columnHeaders": {
+          backgroundColor: theme.palette.background.level1,
+        },
+
+        "& .MuiDataGrid-columnHeader": {
+          backgroundColor: theme.palette.background.level1,
+          color: theme.palette.text.secondary,
+        },
+        "& .MuiDataGrid-columnSeparator": {
+          color: alpha(theme.palette.secondary.main, 0.1),
+        },
+      };
+    default:
+      return {};
+  }
+};
+
+const TableCardContent = ({ children, ...props }: CardContentProps) => {
+  const theme = useTheme();
+
+  return (
+    <CardContent
+      sx={{
+        p: 0,
+        "& .MuiCardContent-root": {
+          padding: "0 !important",
+        },
+      }}
+      {...props}
+    >
+      {children}
+    </CardContent>
+  );
+};
+
+TableCardContent.displayName = "Datatable.CardContent";
 
 const Datatable = ({
   columns,
@@ -44,6 +101,7 @@ const Datatable = ({
   height,
   fetch,
   bridge,
+  variant = "default",
   ...props
 }: DatatableProps) => {
   const [rows, setRows] = React.useState<any[]>([]);
@@ -56,6 +114,8 @@ const Datatable = ({
   const [filterModel, setFilterModel] = React.useState<GridFilterModel>({
     items: [],
   });
+
+  const theme = useTheme();
 
   const params = useParams<{ store: string }>();
   const { data, isLoading } = useQuery({
@@ -98,52 +158,48 @@ const Datatable = ({
   }, [data, setRows, setTotal]);
 
   return (
-    <Card
+    <Box
       sx={{
         height: height ?? 701,
         width: "100%",
       }}
     >
-      <CardContent
-        sx={{
-          p: 0,
-
-          height: "100%",
-        }}
-      >
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          loading={isLoading || props.loading}
-          rowCount={total}
-          localeText={thTHGrid}
-          pageSizeOptions={[10, 25, 50, 100]}
-          slotProps={{
-            toolbar: {
-              showQuickFilter: true,
-              csvOptions: {
-                utf8WithBom: true,
-              },
-              printOptions: {
-                disableToolbarButton: true,
-              },
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        loading={isLoading || props.loading}
+        rowCount={total}
+        localeText={thTHGrid}
+        pageSizeOptions={[10, 25, 50, 100]}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            csvOptions: {
+              utf8WithBom: true,
             },
-          }}
-          showToolbar
-          paginationMode="server"
-          sortingMode="server"
-          filterMode="client"
-          filterModel={filterModel}
-          filterDebounceMs={400}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          onFilterModelChange={setFilterModel}
-          {...props}
-        />
-      </CardContent>
-    </Card>
+            printOptions: {
+              disableToolbarButton: true,
+            },
+          },
+        }}
+        showToolbar
+        paginationMode="server"
+        sortingMode="server"
+        filterMode="client"
+        filterModel={filterModel}
+        filterDebounceMs={400}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
+        onFilterModelChange={setFilterModel}
+        sx={getDatatableVariantSxProps(theme, variant)}
+        {...props}
+      />
+    </Box>
   );
 };
+
+Datatable.displayName = "Datatable";
+Datatable.CardContent = TableCardContent;
 
 export default Datatable;
