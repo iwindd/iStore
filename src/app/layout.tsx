@@ -5,6 +5,7 @@ import QueryProvider from "@/providers/QueryProvider";
 import SessionProvider from "@/providers/SessionProvder";
 import "@/styles/global.css";
 import ThemeRegistry from "@/styles/ThemeRegistry";
+import { Analytics } from "@vercel/analytics/next";
 import { NextIntlClientProvider } from "next-intl";
 
 export const metadata = {
@@ -35,6 +36,7 @@ export default async function RootLayout({
             </ThemeRegistry>
           </LocalizationProvider>
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
