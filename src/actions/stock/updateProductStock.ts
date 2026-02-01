@@ -1,4 +1,5 @@
 "use server";
+import { StockLayoutSelect } from "@/app/projects/[store]/(products)/stocks/[id]/layout";
 import STOCK_CONFIG from "@/config/Stock";
 import db from "@/libs/db";
 import { ProductStockMovementType, StockReceiptStatus } from "@prisma/client";
@@ -38,26 +39,32 @@ export const updateProductStock = async (stock_id: number) => {
   const start_time = Date.now();
 
   for (const [_, chunk] of chunks.entries()) {
-    await db.$transaction(async (tx) => {
-      for (const payload of chunk) {
-        if (payload.quantity > 0) {
-          addProductStock(
-            payload.product_id,
-            payload.quantity,
-            ProductStockMovementType.STOCK_RECEIPT,
-            { stock_receipt_id: stock.id },
-          );
+    await db.$transaction(
+      async (tx) => {
+        for (const payload of chunk) {
+          if (payload.quantity > 0) {
+            addProductStock(
+              payload.product_id,
+              payload.quantity,
+              ProductStockMovementType.STOCK_RECEIPT,
+              { stock_receipt_id: stock.id },
+            );
+          }
+          if (payload.quantity < 0) {
+            removeProductStock(
+              payload.product_id,
+              Math.abs(payload.quantity),
+              ProductStockMovementType.ADJUST,
+              { stock_receipt_id: stock.id },
+            );
+          }
         }
-        if (payload.quantity < 0) {
-          removeProductStock(
-            payload.product_id,
-            Math.abs(payload.quantity),
-            ProductStockMovementType.ADJUST,
-            { stock_receipt_id: stock.id },
-          );
-        }
-      }
-    });
+      },
+      {
+        maxWait: 60000,
+        timeout: 60000,
+      },
+    );
   }
 
   const end_time = Date.now();
@@ -72,8 +79,6 @@ export const updateProductStock = async (stock_id: number) => {
     data: {
       status: StockReceiptStatus.COMPLETED,
     },
-    include: {
-      stock_recept_products: true,
-    },
+    select: StockLayoutSelect,
   });
 };
