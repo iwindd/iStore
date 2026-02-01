@@ -87,7 +87,7 @@ export default function UsersPage() {
     onError: (error) => {
       if (error.message == "NEXT_REDIRECT") return;
       console.error(error);
-      enqueueSnackbar(t("error"), { variant: "error" });
+      enqueueSnackbar(t("messages.error"), { variant: "error" });
     },
   });
 

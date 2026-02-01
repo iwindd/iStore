@@ -11,15 +11,11 @@ const impersonateUser = async (userId: number) => {
     const ctx = await getPermissionContext();
     assertGlobalCan(ctx, PermissionConfig.global.user.impersonate);
 
-    const user = await db.user.findFirst({
+    const user = await db.user.findUniqueOrThrow({
       where: {
         id: userId,
       },
     });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
 
     await signIn("credentials", {
       email: user.email,
