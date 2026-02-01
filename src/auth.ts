@@ -58,6 +58,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
           });
 
+          console.error(user, credentials); // debug
           const creds = credentials as any;
           if (
             creds.isImpersonation === "true" &&
