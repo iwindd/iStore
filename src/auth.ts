@@ -65,7 +65,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           ) {
             if (!user) {
               console.log("not_found_user", creds);
-              throw new Error("not_found_user");
+              throw new Error(`not_found_user ${creds}`);
             }
             return {
               id: String(user.id),
