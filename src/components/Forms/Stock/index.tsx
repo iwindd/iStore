@@ -163,7 +163,7 @@ const StockForm = ({
           />
           <CardContent>
             <TableContainer>
-              <Table>
+              <Table size="small">
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ width: "50px" }}>
@@ -173,16 +173,7 @@ const StockForm = ({
                       {t("headers.label")}
                     </TableCell>
                     <TableCell>{t("headers.delta")}</TableCell>
-                    <TableCell
-                      sx={{
-                        display:
-                          stock?.status === StockReceiptStatus.DRAFT
-                            ? undefined
-                            : "none",
-                      }}
-                    >
-                      {t("headers.actions")}
-                    </TableCell>
+                    <TableCell>{t("headers.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -204,6 +195,9 @@ const StockForm = ({
                                 product?.id as number,
                               );
                             }}
+                            fieldProps={{
+                              size: "small",
+                            }}
                           />
                         </TableCell>
                         <TableCell>
@@ -213,6 +207,7 @@ const StockForm = ({
                             {...register(`products.${index}.delta`, {
                               valueAsNumber: true,
                             })}
+                            size="small"
                             disabled={isLoading || disabled}
                             error={!!errors.products?.[index]?.delta}
                             helperText={
@@ -220,14 +215,7 @@ const StockForm = ({
                             }
                           />
                         </TableCell>
-                        <TableCell
-                          sx={{
-                            display:
-                              stock?.status === StockReceiptStatus.DRAFT
-                                ? undefined
-                                : "none",
-                          }}
-                        >
+                        <TableCell>
                           <IconButton
                             onClick={() => remove(index)}
                             disabled={

@@ -17,6 +17,18 @@ export const StockLayoutSelect = {
     select: {
       product_id: true,
       quantity: true,
+      product: {
+        select: {
+          id: true,
+          label: true,
+          serial: true,
+          stock: {
+            select: {
+              quantity: true,
+            },
+          },
+        },
+      },
     },
   },
 } satisfies Prisma.StockReceiptSelect;

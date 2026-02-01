@@ -1,6 +1,7 @@
 "use client";
 import ImportToolAction from "@/actions/stock/tool";
 import StockReceiptImportSelect from "@/components/Select/StockReceiptImportSelect";
+import { useProductSelector } from "@/components/Selector/ProductSelector";
 import { useInterface } from "@/providers/InterfaceProvider";
 import { StockValues } from "@/schema/Stock";
 import {
@@ -40,6 +41,7 @@ const ToolDialog = ({
   const t = useTranslations("STOCKS.tool_dialog");
   const { isBackdrop, setBackdrop } = useInterface();
   const params = useParams<{ store: string }>();
+  const productSelector = useProductSelector();
 
   const importToolMutation = useMutation({
     mutationFn: async (data: StockReceiptImportValues) =>
@@ -48,6 +50,14 @@ const ToolDialog = ({
       form.setValue("products", data);
       enqueueSnackbar(t("success"), { variant: "success" });
       onClose();
+      data.forEach((product) => {
+        productSelector.addProductToCache({
+          id: product.product_id,
+          label: product.label,
+          serial: product.serial,
+          stock: product.stock,
+        });
+      });
     },
     onError: (error) => {
       console.error(error);
@@ -84,12 +94,16 @@ const ToolDialog = ({
             <Controller
               name="type"
               control={formTool.control}
+              disabled={importToolMutation.isPending}
               render={({ field }) => <StockReceiptImportSelect {...field} />}
             />
           </Stack>
           {toolType === StockReceiptImportType.FromMinStockAlert ||
             (toolType === StockReceiptImportType.FromMinStockValue && (
-              <MinStockController formTool={formTool} />
+              <MinStockController
+                formTool={formTool}
+                disabled={importToolMutation.isPending}
+              />
             ))}
         </Stack>
       </DialogContent>
@@ -100,13 +114,18 @@ const ToolDialog = ({
           justifyContent={"end"}
           spacing={1}
         >
-          <Button color="secondary" onClick={onClose}>
+          <Button
+            color="secondary"
+            onClick={onClose}
+            disabled={importToolMutation.isPending}
+          >
             {t("close")}
           </Button>
           <Button
             color="success"
             variant="contained"
             startIcon={<PanToolAlt />}
+            loading={importToolMutation.isPending}
             onClick={formTool.handleSubmit((data) =>
               importToolMutation.mutate(data),
             )}

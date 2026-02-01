@@ -1,9 +1,11 @@
 "use client";
+import { useProductSelector } from "@/components/Selector/ProductSelector";
 import {
   createContext,
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -24,6 +26,15 @@ export const StockProvider = ({
   value: StockLayoutValue;
 }) => {
   const [stock, setStock] = useState<StockLayoutValue>(value);
+  const productSelector = useProductSelector();
+
+  useEffect(() => {
+    if (value.stock_recept_products.length > 0) {
+      value.stock_recept_products.forEach((product) => {
+        productSelector.addProductToCache(product.product);
+      });
+    }
+  }, [value, productSelector]);
 
   const ctxValue = useMemo(() => ({ stock, setStock }), [stock, setStock]);
 

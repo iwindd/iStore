@@ -63,6 +63,10 @@ const BaseSelector = <T,>(props: BuildSelectorProps<T>) => {
     queryKey: [`${props.id}-fetch-item`, props.defaultValue],
     queryFn: () => props.fetchItem(props.defaultValue!),
     enabled: !!props.defaultValue || props.defaultValue == 0,
+    staleTime: 5 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchInterval: false,
   });
 
   useEffect(() => {

@@ -1,9 +1,9 @@
 "use server";
 import { PermissionConfig } from "@/config/permissionConfig";
+import STOCK_CONFIG from "@/config/Stock";
 import db from "@/libs/db";
 import { assertStoreCan, PermissionContext } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { StockValues } from "@/schema/Stock";
 import {
   StockReceiptImportFromMinStockValueValues,
   StockReceiptImportFromStockIdValues,
@@ -24,12 +24,15 @@ class StockReceiptImportTool {
           lte: db.productStock.fields.alertCount,
         },
       },
+      take: STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK,
       select: {
         quantity: true,
         alertCount: true,
         product: {
           select: {
             id: true,
+            label: true,
+            serial: true,
           },
         },
       },
@@ -44,6 +47,11 @@ class StockReceiptImportTool {
     return products.map((p) => ({
       product_id: p.id,
       delta: p.alertCount - p.stock,
+      label: p.label,
+      serial: p.serial,
+      stock: {
+        quantity: p.stock,
+      },
     }));
   }
 
@@ -51,35 +59,42 @@ class StockReceiptImportTool {
     ctx: PermissionContext,
     validated: StockReceiptImportFromMinStockValueValues,
   ) {
-    const productStocks = await db.productStock.findMany({
+    const productStocks = await db.product.findMany({
       where: {
-        product: {
-          store_id: ctx.storeId!,
-        },
-        quantity: {
-          lte: validated.value,
-        },
+        OR: [
+          {
+            stock: {
+              quantity: {
+                lte: validated.value,
+              },
+            },
+          },
+          {
+            stock: null,
+          },
+        ],
+        store_id: ctx.storeId!,
       },
+      take: STOCK_CONFIG.MAX_STOCK_PRODUCT_PER_STOCK,
       select: {
-        quantity: true,
-        alertCount: true,
-        product: {
+        id: true,
+        label: true,
+        serial: true,
+        stock: {
           select: {
-            id: true,
+            quantity: true,
+            alertCount: true,
           },
         },
       },
     });
 
-    const products = productStocks.flatMap((ps) => ({
-      ...ps.product,
-      alertCount: ps.alertCount,
-      stock: ps.quantity,
-    }));
-
-    return products.map((p) => ({
-      product_id: p.id,
-      delta: validated.value - p.stock,
+    return productStocks.map((ps) => ({
+      product_id: ps.id,
+      delta: ps.stock ? validated.value - ps.stock.quantity : validated.value,
+      label: ps.label,
+      serial: ps.serial,
+      stock: ps.stock,
     }));
   }
 
@@ -94,6 +109,17 @@ class StockReceiptImportTool {
           select: {
             product_id: true,
             quantity: true,
+            product: {
+              select: {
+                label: true,
+                serial: true,
+                stock: {
+                  select: {
+                    quantity: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -102,6 +128,9 @@ class StockReceiptImportTool {
     return stockReceipt.stock_recept_products.map((p) => ({
       product_id: p.product_id,
       delta: Math.abs(p.quantity),
+      label: p.product.label,
+      serial: p.product.serial,
+      stock: p.product.stock,
     }));
   }
 }
@@ -109,7 +138,7 @@ class StockReceiptImportTool {
 const ImportToolAction = async (
   storeSlug: string,
   payload: StockReceiptImportValues,
-): Promise<StockValues["products"]> => {
+) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.stock.tools);

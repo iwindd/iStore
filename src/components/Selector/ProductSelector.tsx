@@ -6,6 +6,7 @@ import {
   searchProductSelector,
 } from "@/actions/product/selectorProduct";
 import { Typography } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import BaseSelector, { BaseSelectorProps } from "./BaseSelector";
@@ -53,6 +54,23 @@ const ProductSelector = (props_: ProductSelectorProps) => {
       {...props}
     />
   );
+};
+
+export const useProductSelector = () => {
+  const queryClient = useQueryClient();
+
+  const addProductToCache = (product: ProductSelectorInstance) => {
+    queryClient.setQueryData(
+      ["product-selector-fetch-item", product.id],
+      (old: ProductSelectorInstance | undefined) => {
+        return product;
+      },
+    );
+  };
+
+  return {
+    addProductToCache,
+  };
 };
 
 export default ProductSelector;
