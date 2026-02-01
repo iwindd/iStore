@@ -25,6 +25,21 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/assets/icons/favicon.ico" sizes="32x32" />
+        <link
+          rel="icon"
+          href="/assets/icons/icon.svg"
+          type="image/svg+xml"
+          sizes="any"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/assets/icons/apple-icon.png"
+          type="image/png"
+          sizes="180x180"
+        />
+      </head>
       <body>
         <NextIntlClientProvider>
           <LocalizationProvider>

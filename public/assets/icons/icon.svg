@@ -1,0 +1,36 @@
+<svg
+  viewBox="0 0 810 810"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    <!-- BG gradient -->
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6EC1FF" />
+      <stop offset="100%" stop-color="#3A8DFF" />
+    </linearGradient>
+
+    <!-- Logo gradient -->
+    <linearGradient id="logoGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="white" />
+      <stop offset="50%" stop-color="#f1f1f4" />
+      <stop offset="100%" stop-color="white" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background with rounded corners -->
+  <rect
+    x="0"
+    y="0"
+    width="810"
+    height="810"
+    rx="140"
+    ry="140"
+    fill="url(#bgGradient)"
+  />
+
+  <!-- Original logo -->
+  <circle cx="179" cy="158" r="77" fill="url(#logoGradient)" />
+  <rect x="102" y="253" width="155" height="476" rx="60" fill="url(#logoGradient)" />
+  <rect x="327" y="81" width="155" height="648" rx="60" fill="url(#logoGradient)" />
+  <rect x="553" y="81" width="155" height="648" rx="60" fill="url(#logoGradient)" />
+</svg>
