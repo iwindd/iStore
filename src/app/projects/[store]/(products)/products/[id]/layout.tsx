@@ -3,7 +3,6 @@ import App, { Wrapper } from "@/layouts/App";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { parseKeywords } from "@/libs/utils";
 import { Stack } from "@mui/material";
 import { Prisma } from "@prisma/client";
 import { notFound } from "next/navigation";
@@ -69,7 +68,6 @@ const ProductLayout = async ({ children, params }: ProductLayoutProps) => {
         ...product,
         cost: product.cost.toNumber(),
         price: product.price.toNumber(),
-        keywords: parseKeywords(product.keywords),
       }}
     >
       <Wrapper>

@@ -6,6 +6,7 @@ export type SearchMode = "insensitive" | "default";
 
 type SearchLeaf = {
   mode?: Prisma.QueryMode;
+  hasSome?: string[];
 };
 
 type SearchableConfig = Record<string, any>;
@@ -72,7 +73,11 @@ export class DatatableHelpers {
   }
 
   private static isSearchLeaf(value: any): value is SearchLeaf {
-    return typeof value === "object" && value !== null && "mode" in value;
+    return (
+      typeof value === "object" &&
+      value !== null &&
+      ("mode" in value || "hasSome" in value)
+    );
   }
 
   private static buildCondition(
@@ -84,7 +89,9 @@ export class DatatableHelpers {
       if (acc === null) {
         return {
           [key]: {
-            contains: keyword,
+            ...(config.hasSome
+              ? { hasSome: [keyword, ...config.hasSome] }
+              : { contains: keyword }),
             ...(config.mode && { mode: config.mode }),
           },
         };

@@ -6,4 +6,4 @@
 */
 -- AlterTable
 ALTER TABLE "products" DROP COLUMN "keywords",
-ADD COLUMN     "keywords" JSONB NOT NULL DEFAULT '[]';
+ADD COLUMN     "keywords" TEXT[] DEFAULT ARRAY[]::TEXT[];

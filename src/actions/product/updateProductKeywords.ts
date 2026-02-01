@@ -23,7 +23,7 @@ const updateProductKeywords = async (
       store_id: ctx.storeId!,
     },
     data: {
-      keywords: JSON.stringify(keywords),
+      keywords: keywords,
     },
   });
 

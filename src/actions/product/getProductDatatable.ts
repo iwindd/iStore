@@ -4,7 +4,6 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { parseKeywords } from "@/libs/utils";
 import { Prisma } from "@prisma/client";
 
 export type ProductDatatableInstance = Awaited<
@@ -46,7 +45,7 @@ const getProductDatatable = async (
           mode: "insensitive",
         },
         keywords: {
-          mode: "insensitive",
+          hasSome: [],
         },
         category: {
           label: {
@@ -96,7 +95,6 @@ const getProductDatatable = async (
         ...item,
         price: item.price.toNumber(),
         cost: item.cost.toNumber(),
-        keywords: parseKeywords(item.keywords),
       })),
     };
   } catch (error) {

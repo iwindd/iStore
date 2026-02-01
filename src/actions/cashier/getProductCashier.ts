@@ -23,7 +23,16 @@ const getProductCashier = async (table: TableFetch) => {
     };
 
     const datatable = await db.product.getDatatable({
-      query: table,
+      query: {
+        ...table,
+        sort: [
+          {
+            field: "created_at",
+            sort: "desc",
+          },
+          ...table.sort,
+        ],
+      },
       searchable: {
         serial: {
           mode: "insensitive",
@@ -32,7 +41,7 @@ const getProductCashier = async (table: TableFetch) => {
           mode: "insensitive",
         },
         keywords: {
-          mode: "insensitive",
+          hasSome: [],
         },
         category: {
           label: {
