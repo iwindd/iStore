@@ -58,16 +58,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
           });
 
-          console.error(user, credentials); // debug
           const creds = credentials as any;
           if (
             creds.isImpersonation === "true" &&
             creds.password === process.env.AUTH_SECRET
           ) {
-            if (!user) {
-              console.log("not_found_user", creds);
-              throw new Error(`not_found_user ${creds}`);
-            }
+            if (!user) throw new Error(`not_found_user`);
             return {
               id: String(user.id),
               name: `${user.first_name} ${user.last_name}`,
