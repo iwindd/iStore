@@ -6,3 +6,12 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+generator dbml {
+  provider   = "prisma-dbml-generator"
+  output     = "../dbml"
+  outputName = "istore.dbml"
+  projectName = "iStore"
+  projectDatabaseType = "PostgreSQL"
+  projectNote = ""
+}
