@@ -96,7 +96,7 @@ export function AuthYearlySalesChart({
               {isLoading && <Skeleton variant="text" height={35} />}
               {!isLoading && (
                 <Typography variant="h5">
-                  {f.number(data?.totalCount || 0, "currency")}
+                  {f.number(data?.totalCount || 0)}
                 </Typography>
               )}
             </Stack>
