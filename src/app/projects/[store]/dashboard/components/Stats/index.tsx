@@ -28,20 +28,24 @@ const Stats = () => {
 
   if (!user) return notFound();
 
-  const { isLoading, data } = useQuery({
-    queryKey: ["stats", range],
-    queryFn: () => getStats(params.store, range),
-  });
-
   const config = DASHBOARD_STATS_CONFIG;
   // Filter stats based on display mode and visibility settings
   const displayMode = storeSettings?.stats?.displayMode ?? "auto";
   const visibility = storeSettings?.stats?.visibility ?? {};
-
   const filteredConfig =
     displayMode === "custom"
       ? config.filter((stat) => visibility[stat.name] ?? true)
-      : config;
+      : config
+          .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
+          .slice(0, 4);
+
+  console.log(filteredConfig);
+  const filteredConfigNames = filteredConfig.map((s) => s.name);
+
+  const { isLoading, data } = useQuery({
+    queryKey: ["stats", range, filteredConfigNames.join(",")],
+    queryFn: () => getStats(params.store, range, filteredConfigNames),
+  });
 
   const renderStat = (stat: DashboardStatConfig) => {
     if (!data) return "";

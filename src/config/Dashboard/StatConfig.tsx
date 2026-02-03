@@ -15,6 +15,8 @@ import {
   Warning,
 } from "@mui/icons-material";
 
+const DEFAULT_VISIBLE_HIGH_STATS = 4;
+
 export interface DashboardStatConfig {
   name: string;
   href?: Route;
@@ -123,12 +125,26 @@ const DASHBOARD_STATS_CONFIG = [
 
 export type DashboardStatKey = (typeof DASHBOARD_STATS_CONFIG)[number]["name"];
 
-export const DEFAULT_DASHBOARD_STATS_VISIBILITY = DASHBOARD_STATS_CONFIG.reduce(
-  (acc, stat) => {
-    acc[stat.name] = true;
-    return acc;
-  },
-  {} as Record<string, boolean>,
-) as Record<DashboardStatKey, boolean>;
+export const DEFAULT_DASHBOARD_STATS_VISIBILITY = (() => {
+  const sortedStats = [...DASHBOARD_STATS_CONFIG].sort(
+    (a, b) =>
+      (a.priority ?? StatPriority.Low) - (b.priority ?? StatPriority.Low),
+  );
+
+  const visibleHighStats = new Set<DashboardStatKey>(
+    sortedStats
+      .filter((stat) => stat.priority === StatPriority.High)
+      .slice(0, DEFAULT_VISIBLE_HIGH_STATS)
+      .map((stat) => stat.name),
+  );
+
+  return DASHBOARD_STATS_CONFIG.reduce(
+    (acc, stat) => {
+      acc[stat.name] = visibleHighStats.has(stat.name);
+      return acc;
+    },
+    {} as Record<DashboardStatKey, boolean>,
+  );
+})();
 
 export default DASHBOARD_STATS_CONFIG;
