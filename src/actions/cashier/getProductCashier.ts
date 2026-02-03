@@ -27,8 +27,12 @@ const getProductCashier = async (table: TableFetch) => {
         ...table,
         sort: [
           {
-            field: "created_at",
-            sort: "desc",
+            field: "stock.quantity",
+            sort: "asc",
+          },
+          {
+            field: "category.label",
+            sort: "asc",
           },
           ...table.sort,
         ],
