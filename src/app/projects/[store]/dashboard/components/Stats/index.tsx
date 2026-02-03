@@ -1,166 +1,98 @@
 "use client";
-import { getStats, StatResult } from "@/actions/dashboard/getStats";
+import { getStats } from "@/actions/dashboard/getStats";
 import HasStorePermission from "@/components/Flagments/HasStorePermission";
-import { PermissionConfig } from "@/config/permissionConfig";
+import DASHBOARD_STATS_CONFIG, {
+  DashboardStatConfig,
+  DashboardStatKey,
+} from "@/config/Dashboard/StatConfig";
 import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoute } from "@/hooks/use-route";
-import { number } from "@/libs/formatter";
-import { Route } from "@/libs/route/route";
-import { getRoute } from "@/router";
-import {
-  BackHand,
-  Category,
-  Inventory,
-  LocalOffer,
-  Person,
-  Receipt,
-  RotateRight,
-  Storefront,
-  Today,
-  Warning,
-} from "@mui/icons-material";
+import { RootState } from "@/libs/store";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { notFound, useParams } from "next/navigation";
-import { TotalStat, TotalStatProps } from "./Stat";
-
-interface StatConfig {
-  name: string;
-  route?: Route;
-  label: string;
-  icon: React.ReactNode;
-  render: (stats: StatResult) => string;
-  color?: TotalStatProps["color"];
-  permission?: string;
-}
+import { TotalStat } from "./Stat";
 
 const Stats = () => {
   const t = useTranslations("DASHBOARD.stats");
-  const { user } = useAuth();
-  if (!user) return notFound();
-  const range = useAppSelector((state) => state.dashboard.range);
+  const { number } = useFormatter();
   const params = useParams<{ store: string }>();
+  const { user } = useAuth();
+  const range = useAppSelector((state) => state.dashboard.range);
+  const storeSettings = useAppSelector(
+    (state: RootState) => state.settings.stores[params.store],
+  );
   const route = useRoute();
+
+  if (!user) return notFound();
 
   const { isLoading, data } = useQuery({
     queryKey: ["stats", range],
     queryFn: () => getStats(params.store, range),
   });
 
-  const config: StatConfig[] = [
-    {
-      name: "orders",
-      route: getRoute("projects.store.histories"),
-      label: t("sold"),
-      icon: <Receipt />,
-      render: (stats) => t("items_unit", { count: number(stats.order.sold) }),
-      color: "success",
-      permission: PermissionConfig.store.dashboard.viewOrderSoldStat,
-    },
-    {
-      name: "consignments",
-      route: getRoute("projects.store.consignments"),
-      label: t("consignment"),
-      icon: <BackHand />,
-      render: (stats) => t("items_unit", { count: number(stats.consignment) }),
-      color: "primary",
-      permission: PermissionConfig.store.dashboard.viewConsignmentStat,
-    },
-    {
-      name: "preorders",
-      route: getRoute("projects.store.preorders"),
-      label: t("preorder"),
-      icon: <RotateRight />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.preorder.pending) }),
-      color: "info",
-      permission: PermissionConfig.store.dashboard.viewPreorderStat,
-    },
-    {
-      name: "low_stock",
-      route: getRoute("projects.store.products"),
-      label: t("low_stock"),
-      icon: <Warning />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.product.lowStockCount) }),
-      color: "warning",
-      permission: PermissionConfig.store.dashboard.viewLowstockStat,
-    },
-    // New stats
-    {
-      name: "pending_stock",
-      route: getRoute("projects.store.stocks"),
-      label: t("pending_stock"),
-      icon: <Inventory />,
-      render: (stats) => t("items_unit", { count: number(stats.pendingStock) }),
-      color: "secondary",
-      permission: PermissionConfig.store.stock.getReceiptDatatable,
-    },
-    {
-      name: "total_products",
-      route: getRoute("projects.store.products"),
-      label: t("total_products"),
-      icon: <Category />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.totalProducts) }),
-      color: "primary",
-      permission: PermissionConfig.store.product.getDatatable,
-    },
-    {
-      name: "active_promotions",
-      route: getRoute("projects.store.promotions"),
-      label: t("active_promotions"),
-      icon: <LocalOffer />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.activePromotions) }),
-      color: "error",
-      permission: PermissionConfig.store.promotion.getDatatable,
-    },
-    {
-      name: "auth_sales_today",
-      label: t("auth_sales_today"),
-      icon: <Today />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.authSalesToday) }),
-      color: "info",
-    },
-    {
-      name: "auth_sales_total",
-      label: t("auth_sales_total"),
-      icon: <Person />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.authSalesTotal) }),
-      color: "success",
-    },
-    {
-      name: "store_sales_today",
-      route: getRoute("projects.store.histories"),
-      label: t("store_sales_today"),
-      icon: <Storefront />,
-      render: (stats) =>
-        t("items_unit", { count: number(stats.storeSalesToday) }),
-      color: "primary",
-      permission: PermissionConfig.store.dashboard.viewOrderSoldStat,
-    },
-  ];
+  const config = DASHBOARD_STATS_CONFIG;
+  // Filter stats based on display mode and visibility settings
+  const displayMode = storeSettings?.stats?.displayMode ?? "auto";
+  const visibility = storeSettings?.stats?.visibility ?? {};
+
+  const filteredConfig =
+    displayMode === "custom"
+      ? config.filter((stat) => visibility[stat.name] ?? true)
+      : config;
+
+  const renderStat = (stat: DashboardStatConfig) => {
+    if (!data) return "";
+
+    switch (stat.name as DashboardStatKey) {
+      case "orders":
+        return t("items_unit", { count: number(data?.order.sold) });
+      case "consignments":
+        return t("items_unit", { count: number(data?.consignment) });
+      case "preorders":
+        return t("items_unit", { count: number(data?.preorder.pending) });
+      case "low_stock":
+        return t("items_unit", { count: number(data?.product.lowStockCount) });
+      case "pending_stock":
+        return t("items_unit", { count: number(data?.pendingStock) });
+      case "total_products":
+        return t("items_unit", { count: number(data?.totalProducts) });
+      case "active_promotions":
+        return t("items_unit", { count: number(data?.activePromotions) });
+      case "auth_sales_today":
+        return t("items_unit", { count: number(data?.authSalesToday) });
+      case "auth_sales_total":
+        return t("items_unit", { count: number(data?.authSalesTotal) });
+      case "store_sales_today":
+        return t("items_unit", { count: number(data?.storeSalesToday) });
+      default:
+        return "Unknown";
+    }
+  };
+
+  const getHref = (stat: DashboardStatConfig) => {
+    if (!("href" in stat)) return undefined;
+    if (!stat.href?.name) return undefined;
+    return route.path(stat.href.name, { store: params.store });
+  };
 
   return (
     <Grid container>
-      {config.map((stat) => (
-        <HasStorePermission key={stat.name} permission={stat.permission || []}>
+      {filteredConfig.map((stat) => (
+        <HasStorePermission
+          key={stat.name}
+          permission={"permission" in stat ? stat.permission : []}
+        >
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
             <TotalStat
-              href={
-                stat.route &&
-                route.path(stat.route.name, { store: params.store })
-              }
-              label={stat.label}
+              href={getHref(stat)}
+              label={t(stat.label)}
               color={stat.color || "primary"}
               icon={stat.icon}
               loading={isLoading}
-              value={(data && stat.render(data)) || ""}
+              value={renderStat(stat)}
             />
           </Grid>
         </HasStorePermission>

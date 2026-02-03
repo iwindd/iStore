@@ -1,5 +1,5 @@
 "use client";
-import { BarChart, Close, ExpandMore, QueryStats } from "@mui/icons-material";
+import { Close, ExpandMore, QueryStats } from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import React from "react";
+import DrawerStatsSetting from "./Settings/DrawerStatsSetting";
 
 interface WidgetSettingsDrawerProps {
   open: boolean;
@@ -32,8 +33,10 @@ const WidgetSettingsDrawer = ({ open, onClose }: WidgetSettingsDrawerProps) => {
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{
-        sx: { width: 350 },
+      slotProps={{
+        paper: {
+          sx: { width: 380 },
+        },
       }}
     >
       <Box sx={{ p: 2 }}>
@@ -51,33 +54,7 @@ const WidgetSettingsDrawer = ({ open, onClose }: WidgetSettingsDrawerProps) => {
         </Stack>
 
         {/* Stats Accordion */}
-        <Accordion
-          expanded={expanded === "stats"}
-          onChange={handleChange("stats")}
-          disableGutters
-          elevation={0}
-          sx={{
-            "&:before": { display: "none" },
-            borderRadius: 1,
-            mb: 1,
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMore />}
-            aria-controls="stats-content"
-            id="stats-header"
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <BarChart color="primary" />
-              <Typography>{t("categories.stats")}</Typography>
-            </Stack>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body2" color="text.secondary">
-              {t("categories.stats_description")}
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
+        <DrawerStatsSetting expanded={expanded} handleChange={handleChange} />
 
         {/* Analysis Accordion */}
         <Accordion

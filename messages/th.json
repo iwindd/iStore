@@ -391,6 +391,33 @@
         "stats_description": "กำหนดค่า widget สถิติที่แสดงในหน้า dashboard",
         "analysis": "วิเคราะห์",
         "analysis_description": "กำหนดค่า widget วิเคราะห์ข้อมูลที่แสดงในหน้า dashboard"
+      },
+      "display_mode": {
+        "label": "การแสดงผล",
+        "auto": "อัตโนมัติ",
+        "custom": "กำหนดเอง"
+      },
+      "stats_visibility": {
+        "orders": "ยอดขาย",
+        "orders_description": "แสดงจำนวนการขายสินค้า",
+        "consignments": "ฝากขาย",
+        "consignments_description": "แสดงจำนวนสินค้าฝากขาย",
+        "preorders": "พรีออเดอร์",
+        "preorders_description": "แสดงจำนวนพรีออเดอร์ที่รอดำเนินการ",
+        "low_stock": "สินค้าใกล้หมด",
+        "low_stock_description": "แสดงจำนวนสินค้าที่ stock ต่ำ",
+        "pending_stock": "รับสินค้ารอดำเนินการ",
+        "pending_stock_description": "แสดงจำนวนการรับสินค้าที่รอดำเนินการ",
+        "total_products": "สินค้าทั้งหมด",
+        "total_products_description": "แสดงจำนวนสินค้าทั้งหมดในร้าน",
+        "active_promotions": "โปรโมชั่นที่ใช้งาน",
+        "active_promotions_description": "แสดงจำนวนโปรโมชั่นที่กำลังใช้งาน",
+        "auth_sales_today": "ยอดขายวันนี้ (ของฉัน)",
+        "auth_sales_today_description": "แสดงยอดขายของคุณในวันนี้",
+        "auth_sales_total": "ยอดขายรวม (ของฉัน)",
+        "auth_sales_total_description": "แสดงยอดขายทั้งหมดของคุณ",
+        "store_sales_today": "ยอดขายร้านวันนี้",
+        "store_sales_today_description": "แสดงยอดขายของร้านในวันนี้"
       }
     }
   },
