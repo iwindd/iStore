@@ -30,10 +30,12 @@ const Stats = () => {
 
   if (!user) return notFound();
 
-  const canAccessConfig = DASHBOARD_STATS_CONFIG.filter(
-    (stat) =>
-      "permission" in stat && permission.hasStorePermission(stat.permission),
+  const canAccessConfig = DASHBOARD_STATS_CONFIG.filter((stat) =>
+    "permission" in stat
+      ? permission.hasStorePermission(stat.permission)
+      : true,
   );
+
   // Filter stats based on display mode and visibility settings
   const displayMode = storeSettings?.stats?.displayMode ?? "auto";
   const visibility = storeSettings?.stats?.visibility ?? {};

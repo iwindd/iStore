@@ -1,13 +1,13 @@
 import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import { PermissionConfig } from "@/config/permissionConfig";
 import { Grid } from "@mui/material";
-import { AuthYearlySalesChart } from "./components/AuthYealySalesChart";
-import BestSelling from "./components/BestSelling";
+import { AuthYearlySalesChart } from "./components/Analysis/AuthYealySalesChart";
+import BestSelling from "./components/Analysis/BestSelling";
+import { PaymentMethodTrafficChart } from "./components/Analysis/PaymentMethodTrafficChart";
+import { RecentOrders } from "./components/Analysis/RecentOrders";
+import { YearlySalesChart } from "./components/Analysis/YearlySalesChart";
 import DashboardController from "./components/DashboardController";
-import { PaymentMethodTrafficChart } from "./components/PaymentMethodTrafficChart";
-import { RecentOrders } from "./components/RecentOrders";
 import Stats from "./components/Stats";
-import { YearlySalesChart } from "./components/YearlySalesChart";
 
 const Dashboard = () => {
   return (
