@@ -11,6 +11,7 @@ import {
   AnalyticsTwoTone,
   PrintTwoTone,
   RefreshTwoTone,
+  SettingsTwoTone,
 } from "@mui/icons-material";
 import {
   Button,
@@ -35,6 +36,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import WidgetSettingsDrawer from "./WidgetSettingsDrawer";
 
 const DashboardController = () => {
   const t = useTranslations("DASHBOARD.controller");
@@ -44,6 +46,7 @@ const DashboardController = () => {
   const [start, setStart] = React.useState<Dayjs | null>(dayjs(range.start));
   const [end, setEnd] = React.useState<Dayjs | null>(dayjs(range.end));
   const [isOpenCustomDialog, setIsOpenCustomDialog] = React.useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const route = useRoute();
 
   const handleRangeChange = (type: EnumDashboardRange | "custom") => {
@@ -130,6 +133,14 @@ const DashboardController = () => {
           <Tooltip title={t("refresh")}>
             <IconButton color="secondary" onClick={handleRefresh}>
               <RefreshTwoTone />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={t("settings")}>
+            <IconButton
+              color="secondary"
+              onClick={() => setIsSettingsOpen(true)}
+            >
+              <SettingsTwoTone />
             </IconButton>
           </Tooltip>
           <FormControl size="small" sx={{ minWidth: 120 }}>
@@ -223,6 +234,10 @@ const DashboardController = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <WidgetSettingsDrawer
+        open={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </>
   );
 };

@@ -318,6 +318,7 @@
       "title": "ภาพรวม",
       "print": "พิมพ์",
       "refresh": "รีเฟรช",
+      "settings": "ตั้งค่า Widget",
       "range": {
         "label": "ช่วงเวลา",
         "today": "วันนี้",
@@ -382,6 +383,15 @@
       "empty": "ยังไม่มีข้อมูลการขายในระยะเวลานี้",
       "sold_count": "{count} ชิ้น",
       "sold_label": "ขายแล้ว"
+    },
+    "widget_settings": {
+      "title": "ตั้งค่า Widget",
+      "categories": {
+        "stats": "สถิติ",
+        "stats_description": "กำหนดค่า widget สถิติที่แสดงในหน้า dashboard",
+        "analysis": "วิเคราะห์",
+        "analysis_description": "กำหนดค่า widget วิเคราะห์ข้อมูลที่แสดงในหน้า dashboard"
+      }
     }
   },
   "PREORDERS": {
