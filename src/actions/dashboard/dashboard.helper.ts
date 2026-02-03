@@ -1,7 +1,8 @@
 "use server";
 
+import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { PermissionContext } from "@/libs/permission/context";
+import { assertStoreCan, PermissionContext } from "@/libs/permission/context";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -15,6 +16,14 @@ export async function getSoldSummary(
   ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.dashboard.viewOrderSoldStat, {
+      throw: false,
+    })
+  ) {
+    return { sold: 0 };
+  }
+
   const orderProductCount = await db.orderProduct.aggregate({
     where: {
       order: {
@@ -39,6 +48,14 @@ export async function getPreOrderSummary(
   ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.dashboard.viewPreorderStat, {
+      throw: false,
+    })
+  ) {
+    return { returned: 0, pending: 0 };
+  }
+
   type PreorderGroupResult = {
     status: PreOrderStatus;
     _sum: { count: number | null };
@@ -84,6 +101,14 @@ export async function getConsignmentSummary(
   ctx: PermissionContext,
   range: DashboardDateRange,
 ) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.dashboard.viewConsignmentStat, {
+      throw: false,
+    })
+  ) {
+    return 0;
+  }
+
   return db.consignment.count({
     where: {
       store_id: ctx.storeId,
@@ -96,6 +121,14 @@ export async function getConsignmentSummary(
 }
 
 export async function getProductSummary(ctx: PermissionContext) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.dashboard.viewLowstockStat, {
+      throw: false,
+    })
+  ) {
+    return { lowStockCount: 0 };
+  }
+
   const lowStockCount = await db.productStock.count({
     where: {
       product: {

@@ -35,12 +35,13 @@ export function assertStoreCan(
   permission: StorePermissionEnum | StorePermissionEnum[],
   options?: {
     some?: boolean;
+    throw?: boolean;
   },
 ) {
   assertStore(ctx);
 
   if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) {
-    return;
+    return true;
   }
 
   const permissions = Array.isArray(permission) ? permission : [permission];
@@ -48,12 +49,14 @@ export function assertStoreCan(
   options.some = options.some ?? false;
 
   if (permissions.some((p) => storeCan(ctx, p) && options.some)) {
-    forbidden();
+    return options.throw ? false : forbidden();
   }
 
   if (!permissions.every((p) => storeCan(ctx, p) && !options?.some)) {
-    forbidden();
+    return options.throw ? false : forbidden();
   }
+
+  return true;
 }
 
 /**
