@@ -9,6 +9,7 @@ import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import { useRoute } from "@/hooks/use-route";
 import { RootState } from "@/libs/store";
+import { usePermission } from "@/providers/PermissionProvider";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useFormatter, useTranslations } from "next-intl";
@@ -24,22 +25,25 @@ const Stats = () => {
   const storeSettings = useAppSelector(
     (state: RootState) => state.settings.stores[params.store],
   );
+  const permission = usePermission();
   const route = useRoute();
 
   if (!user) return notFound();
 
-  const config = DASHBOARD_STATS_CONFIG;
+  const canAccessConfig = DASHBOARD_STATS_CONFIG.filter(
+    (stat) =>
+      "permission" in stat && permission.hasStorePermission(stat.permission),
+  );
   // Filter stats based on display mode and visibility settings
   const displayMode = storeSettings?.stats?.displayMode ?? "auto";
   const visibility = storeSettings?.stats?.visibility ?? {};
   const filteredConfig =
     displayMode === "custom"
-      ? config.filter((stat) => visibility[stat.name] ?? true)
-      : config
+      ? canAccessConfig.filter((stat) => visibility[stat.name] ?? true)
+      : canAccessConfig
           .toSorted((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
           .slice(0, 4);
 
-  console.log(filteredConfig);
   const filteredConfigNames = filteredConfig.map((s) => s.name);
 
   const { isLoading, data } = useQuery({

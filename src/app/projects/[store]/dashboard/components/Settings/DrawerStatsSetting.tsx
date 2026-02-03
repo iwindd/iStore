@@ -1,4 +1,5 @@
 "use client";
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import dashboardStatConfig from "@/config/Dashboard/StatConfig";
 import { useAppSelector } from "@/hooks";
 import {
@@ -112,28 +113,32 @@ const DrawerStatsSetting = ({
           {displayMode === "custom" && (
             <Stack spacing={1} sx={{ mt: 1 }}>
               {dashboardStatConfig.map((stat) => (
-                <Stack
+                <HasStorePermission
                   key={stat.name}
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  permission={"permission" in stat ? stat.permission : []}
                 >
-                  <Stack>
-                    <Typography variant="body2">
-                      {t(`stats_visibility.${stat.name}`)}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t(`stats_visibility.${stat.name}_description`)}
-                    </Typography>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                  >
+                    <Stack>
+                      <Typography variant="body2">
+                        {t(`stats_visibility.${stat.name}`)}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t(`stats_visibility.${stat.name}_description`)}
+                      </Typography>
+                    </Stack>
+                    <Switch
+                      size="small"
+                      checked={visibility[stat.name] ?? true}
+                      onChange={(e) =>
+                        handleStatVisibilityChange(stat.name, e.target.checked)
+                      }
+                    />
                   </Stack>
-                  <Switch
-                    size="small"
-                    checked={visibility[stat.name] ?? true}
-                    onChange={(e) =>
-                      handleStatVisibilityChange(stat.name, e.target.checked)
-                    }
-                  />
-                </Stack>
+                </HasStorePermission>
               ))}
             </Stack>
           )}
