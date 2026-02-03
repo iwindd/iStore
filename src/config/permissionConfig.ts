@@ -43,7 +43,13 @@ export const PermissionConfig = {
       /** View lowstock summary */
       viewLowstockStat: StorePermissionEnum.PRODUCT_MANAGEMENT,
       /** View payment method traffic */
-      viewPaymentMethodTraffic: StorePermissionEnum.HISTORY_READ_ALL,
+      viewPaymentMethodTraffic: {
+        some: [
+          StorePermissionEnum.HISTORY_READ_ALL,
+          StorePermissionEnum.CASHIER_CASHOUT,
+        ],
+      },
+      viewStorePaymentMethodTraffic: StorePermissionEnum.CASHIER_CASHOUT,
       /** View payment method traffic */
       viewYearlySalesChart: StorePermissionEnum.HISTORY_READ_ALL,
       /** View auth yearly sales chart */

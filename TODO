@@ -41,3 +41,4 @@ StoreDashboard:
   ☐ แสดงเป็น Widgets และสามารถปรับแต่งได้
   ☐ เพิ่ม dashboard widgets สำหรับร้านค้า
   ☐ save การ custom widget แต่ละร้านไว้ใน local storage
+  ☐ ใช้ unstable_cache สำหรับ dashboard

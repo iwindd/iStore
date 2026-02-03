@@ -2,7 +2,12 @@
 
 import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import { assertStoreCan, PermissionContext } from "@/libs/permission/context";
+import {
+  assertStoreCan,
+  getStoreUnstableCacheKey,
+  ifNotHasStorePermission,
+  PermissionContext,
+} from "@/libs/permission/context";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -11,6 +16,7 @@ import {
 import { Method, PreOrderStatus } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import dayjs from "dayjs";
+import { unstable_cache } from "next/cache";
 
 export async function getSoldSummary(
   ctx: PermissionContext,
@@ -161,47 +167,61 @@ export async function getPaymentMethodTrafficSummary(
     };
   };
 
-  const data = (await db.order.groupBy({
-    by: ["method"],
-    where: {
-      store_id: ctx.storeId,
-      created_at: {
-        gte: range.start,
-        lte: range.end,
+  const getCachedPaymentMethodTrafficSummary = unstable_cache(async () => {
+    const data = (await db.order.groupBy({
+      by: ["method"],
+      where: {
+        store_id: ctx.storeId,
+        creator_id: ifNotHasStorePermission(
+          ctx,
+          PermissionConfig.store.dashboard.viewStorePaymentMethodTraffic,
+        ),
+        created_at: {
+          gte: range.start,
+          lte: range.end,
+        },
       },
-    },
-    _count: { id: true },
-    _sum: {
-      total: true,
-    },
-  })) as PaymentMethodGroupResult[];
+      _count: { id: true },
+      _sum: {
+        total: true,
+      },
+    })) as PaymentMethodGroupResult[];
 
-  const totalOrders = data.reduce((acc, row) => acc + row._count.id, 0);
-  const methodCash = {
-    method: Method.CASH,
-    percent: 50,
-    count: 0,
-  };
+    const totalOrders = data.reduce((acc, row) => acc + row._count.id, 0);
+    const methodCash = {
+      method: Method.CASH,
+      percent: 50,
+      count: 0,
+    };
 
-  const methodBank = {
-    method: Method.BANK,
-    percent: 50,
-    count: 0,
-  };
+    const methodBank = {
+      method: Method.BANK,
+      percent: 50,
+      count: 0,
+    };
 
-  for (const row of data) {
-    if (row.method === Method.CASH) {
-      methodCash.percent = (row._count.id / totalOrders) * 100;
-      methodCash.count = row._sum.total.toNumber();
+    for (const row of data) {
+      if (row.method === Method.CASH) {
+        methodCash.percent =
+          totalOrders === 0 ? 0 : (row._count.id / totalOrders) * 100;
+        methodCash.count = row._sum.total.toNumber();
+      }
+      if (row.method === Method.BANK) {
+        methodBank.percent =
+          totalOrders === 0 ? 0 : (row._count.id / totalOrders) * 100;
+        methodBank.count = row._sum.total.toNumber();
+      }
     }
-    if (row.method === Method.BANK) {
-      methodBank.percent = (row._count.id / totalOrders) * 100;
-      methodBank.count = row._sum.total.toNumber();
-    }
-  }
 
-  const result = [methodCash, methodBank];
-  return result;
+    return [methodCash, methodBank];
+  }, [
+    "paymentMethodTraffix",
+    range.start.toString(),
+    range.end.toString(),
+    ...getStoreUnstableCacheKey(ctx),
+  ]);
+
+  return getCachedPaymentMethodTrafficSummary();
 }
 
 export type DashboardDateRange = {

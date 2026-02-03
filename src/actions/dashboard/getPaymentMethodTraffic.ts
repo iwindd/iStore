@@ -21,10 +21,15 @@ export const getPaymentMethodTraffic = async (
 
   try {
     const ctx = await getPermissionContext(storeId);
-    assertStoreCan(
-      ctx,
-      PermissionConfig.store.dashboard.viewPaymentMethodTraffic,
-    );
+
+    const permissions =
+      PermissionConfig.store.dashboard.viewPaymentMethodTraffic.some.map(
+        (p) => p,
+      );
+
+    assertStoreCan(ctx, permissions, {
+      some: true,
+    });
 
     const filterRange = await getDashboardRangeDate(range);
     const summary = await getPaymentMethodTrafficSummary(ctx, filterRange);

@@ -40,6 +40,7 @@ export function assertStoreCan(
 ) {
   assertStore(ctx);
 
+  // GLOBAL BYPASS
   if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) {
     return true;
   }
@@ -48,15 +49,17 @@ export function assertStoreCan(
   options = options ?? {};
   options.some = options.some ?? false;
 
+  // SOME CASE
   if (permissions.some((p) => storeCan(ctx, p) && options.some)) {
-    return options.throw ? false : forbidden();
+    return true;
   }
 
-  if (!permissions.every((p) => storeCan(ctx, p) && !options?.some)) {
-    return options.throw ? false : forbidden();
+  // EVERY CASE
+  if (permissions.every((p) => storeCan(ctx, p) && !options?.some)) {
+    return true;
   }
 
-  return true;
+  return options.throw ? false : forbidden();
 }
 
 /**
@@ -86,4 +89,12 @@ export function ifNotHasStorePermission<T = number, U = undefined>(
   }
 
   return notHas;
+}
+
+export function getStoreUnstableCacheKey(ctx: PermissionContext) {
+  return [
+    ctx.storeId!,
+    ctx.employeeId!.toString(),
+    Array.from(ctx.storePermissions).join(","),
+  ];
 }

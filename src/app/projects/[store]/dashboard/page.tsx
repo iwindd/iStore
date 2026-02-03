@@ -31,20 +31,6 @@ const Dashboard = () => {
           <YearlySalesChart />
         </Grid>
       </HasStorePermission>
-      {/* STORE PAYMENT METHOD TRAFFIC */}
-      <HasStorePermission
-        permission={PermissionConfig.store.dashboard.viewPaymentMethodTraffic}
-      >
-        <Grid
-          size={{
-            xs: 12,
-            lg: 5,
-            xl: 4,
-          }}
-        >
-          <PaymentMethodTrafficChart />
-        </Grid>
-      </HasStorePermission>
       {/* STORE AUTH YEARLY SALES */}
       <HasStorePermission
         permission={PermissionConfig.store.dashboard.viewAuthYearlySalesChart}
@@ -56,6 +42,23 @@ const Dashboard = () => {
           }}
         >
           <AuthYearlySalesChart />
+        </Grid>
+      </HasStorePermission>
+      {/* STORE PAYMENT METHOD TRAFFIC */}
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewPaymentMethodTraffic.some.map(
+          (p) => p,
+        )}
+        some
+      >
+        <Grid
+          size={{
+            xs: 12,
+            lg: 5,
+            xl: 4,
+          }}
+        >
+          <PaymentMethodTrafficChart />
         </Grid>
       </HasStorePermission>
 
