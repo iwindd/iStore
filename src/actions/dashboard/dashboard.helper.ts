@@ -240,8 +240,8 @@ export async function getYearlySalesData(ctx: PermissionContext, year: number) {
   });
 
   // Initialize monthly data (0-11 for Jan-Dec)
-  const monthlyIncome = new Array(12).fill(0);
-  const monthlyExpenses = new Array(12).fill(0);
+  const monthlyIncome: number[] = new Array(12).fill(0);
+  const monthlyExpenses: number[] = new Array(12).fill(0);
 
   // Aggregate data by month
   orders.forEach((order) => {
@@ -289,6 +289,77 @@ export async function getYearlySalesData(ctx: PermissionContext, year: number) {
     totalIncome,
     totalExpenses,
     yearOverYearChange,
+  };
+}
+
+export async function getYearlyAuthSalesData(
+  ctx: PermissionContext,
+  year: number,
+) {
+  const startOfYear = dayjs().year(year).startOf("year").toDate();
+  const endOfYear = dayjs().year(year).endOf("year").toDate();
+
+  // Get orders for the specified year
+  const orders = await db.order.findMany({
+    where: {
+      store_id: ctx.storeId,
+      creator_id: ctx.employeeId,
+      created_at: {
+        gte: startOfYear,
+        lte: endOfYear,
+      },
+    },
+    select: {
+      created_at: true,
+    },
+  });
+
+  // Initialize monthly data (0-11 for Jan-Dec)
+  const monthlyCount: number[] = new Array(12).fill(0);
+
+  // Aggregate data by month
+  orders.forEach((order) => {
+    const month = dayjs(order.created_at).month(); // 0-11
+    monthlyCount[month] += 1;
+  });
+
+  // Calculate totals
+  const totalCount = monthlyCount.reduce((sum, val) => sum + val, 0);
+
+  // Get previous year data for comparison
+  const previousYearStart = dayjs()
+    .year(year - 1)
+    .startOf("year")
+    .toDate();
+  const previousYearEnd = dayjs()
+    .year(year - 1)
+    .endOf("year")
+    .toDate();
+
+  const previousYearOrders = await db.order.aggregate({
+    where: {
+      store_id: ctx.storeId,
+      creator_id: ctx.employeeId,
+      created_at: {
+        gte: previousYearStart,
+        lte: previousYearEnd,
+      },
+    },
+    _count: {
+      id: true,
+    },
+  });
+
+  const previousYearCount = previousYearOrders._count.id || 0;
+  const yearOverYearChange =
+    previousYearCount > 0
+      ? ((totalCount - previousYearCount) / previousYearCount) * 100
+      : 0;
+
+  return {
+    monthlyCount,
+    yearOverYearChange,
+    totalCount,
   };
 }
 

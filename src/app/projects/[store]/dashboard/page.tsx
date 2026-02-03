@@ -1,6 +1,7 @@
 import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import { PermissionConfig } from "@/config/permissionConfig";
 import { Grid } from "@mui/material";
+import { AuthYearlySalesChart } from "./components/AuthYealySalesChart";
 import BestSelling from "./components/BestSelling";
 import DashboardController from "./components/DashboardController";
 import { PaymentMethodTrafficChart } from "./components/PaymentMethodTrafficChart";
@@ -17,6 +18,7 @@ const Dashboard = () => {
       <Grid size={12}>
         <Stats />
       </Grid>
+      {/* STORE YEARLY SALES */}
       <HasStorePermission
         permission={PermissionConfig.store.dashboard.viewYearlySalesChart}
       >
@@ -29,6 +31,7 @@ const Dashboard = () => {
           <YearlySalesChart />
         </Grid>
       </HasStorePermission>
+      {/* STORE PAYMENT METHOD TRAFFIC */}
       <HasStorePermission
         permission={PermissionConfig.store.dashboard.viewPaymentMethodTraffic}
       >
@@ -42,6 +45,21 @@ const Dashboard = () => {
           <PaymentMethodTrafficChart />
         </Grid>
       </HasStorePermission>
+      {/* STORE AUTH YEARLY SALES */}
+      <HasStorePermission
+        permission={PermissionConfig.store.dashboard.viewAuthYearlySalesChart}
+      >
+        <Grid
+          size={{
+            xs: 12,
+            xl: 8,
+          }}
+        >
+          <AuthYearlySalesChart />
+        </Grid>
+      </HasStorePermission>
+
+      {/* STORE RECENT ORDERS */}
       <HasStorePermission
         permission={PermissionConfig.store.dashboard.viewRecentOrders}
       >
@@ -55,6 +73,7 @@ const Dashboard = () => {
           <RecentOrders />
         </Grid>
       </HasStorePermission>
+      {/* STORE BEST SELLING PRODUCTS */}
       <HasStorePermission
         permission={PermissionConfig.store.dashboard.viewBestSellingProducts}
       >

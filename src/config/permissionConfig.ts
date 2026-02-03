@@ -46,6 +46,8 @@ export const PermissionConfig = {
       viewPaymentMethodTraffic: StorePermissionEnum.HISTORY_READ_ALL,
       /** View payment method traffic */
       viewYearlySalesChart: StorePermissionEnum.HISTORY_READ_ALL,
+      /** View auth yearly sales chart */
+      viewAuthYearlySalesChart: StorePermissionEnum.CASHIER_CASHOUT,
       /** View recent orders */
       viewRecentOrders: StorePermissionEnum.HISTORY_READ_ALL,
       /** View best selling products */

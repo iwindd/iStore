@@ -1,7 +1,7 @@
 "use client";
-import { getYearlySales } from "@/actions/dashboard/getYearlySales";
+import { getYearlyAuthSales } from "@/actions/dashboard/getYearlyAuthSales";
 import YearlyChart from "@/components/Charts/YearlyChart";
-import useStoreOrderAge from "@/hooks/useStoreOrderAge";
+import useStoreAuthOrderAge from "@/hooks/useStoreAuthOrderAge";
 import { Box, MenuItem, Select, Skeleton } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -14,31 +14,29 @@ import { useFormatter, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-export interface YearlySalesChartProps {
+export interface AuthYearlySalesChartProps {
   sx?: SxProps;
 }
 
-export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
-  const t = useTranslations("DASHBOARD.yearly_sales");
+export function AuthYearlySalesChart({
+  sx,
+}: Readonly<AuthYearlySalesChartProps>) {
+  const t = useTranslations("DASHBOARD.auth_yearly_sales");
   const f = useFormatter();
-  const orderAge = useStoreOrderAge();
-  const [selectedYear, setSelectedYear] = useState(orderAge.currentYear);
+  const authOrderAge = useStoreAuthOrderAge();
+  const [selectedYear, setSelectedYear] = useState(authOrderAge.currentYear);
   const params = useParams<{ store: string }>();
 
   // Fetch yearly sales data
   const { data, isLoading } = useQuery({
-    queryKey: ["yearly-sales", selectedYear],
-    queryFn: () => getYearlySales(params.store, selectedYear),
+    queryKey: ["auth-yearly-sales", selectedYear],
+    queryFn: () => getYearlyAuthSales(params.store, selectedYear),
   });
 
   const chartSeries = [
     {
-      name: t("income"),
-      data: data?.monthlyIncome || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    },
-    {
-      name: t("expense"),
-      data: data?.monthlyExpenses || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      name: t("orders"),
+      data: data?.monthlyCount || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     },
   ];
 
@@ -61,7 +59,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
           ))
         }
         action={
-          orderAge.isLoading ? (
+          authOrderAge.isLoading ? (
             <Skeleton variant="text" height={55} width={70} />
           ) : (
             <Select
@@ -69,7 +67,7 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
               onChange={(e) => setSelectedYear(Number(e.target.value))}
               size="small"
             >
-              {orderAge.data.years.map((year) => (
+              {authOrderAge.data.years.map((year) => (
                 <MenuItem key={year} value={year}>
                   {year}
                 </MenuItem>
@@ -92,35 +90,13 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
                   }}
                 />
                 <Typography color="text.secondary" variant="body2">
-                  {t("total_income")}
+                  {t("orders")}
                 </Typography>
               </Stack>
               {isLoading && <Skeleton variant="text" height={35} />}
               {!isLoading && (
                 <Typography variant="h5">
-                  {f.number(data?.totalExpenses || 0, "currency")}
-                </Typography>
-              )}
-            </Stack>
-
-            <Stack spacing={1}>
-              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-                <div
-                  style={{
-                    backgroundColor: "var(--mui-palette-warning-main)",
-                    borderRadius: "50%",
-                    height: 8,
-                    width: 8,
-                  }}
-                />
-                <Typography color="text.secondary" variant="body2">
-                  {t("total_expenses")}
-                </Typography>
-              </Stack>
-              {isLoading && <Skeleton variant="text" height={35} />}
-              {!isLoading && (
-                <Typography variant="h5">
-                  {f.number(data?.totalExpenses || 0, "currency")}
+                  {f.number(data?.totalCount || 0, "currency")}
                 </Typography>
               )}
             </Stack>
