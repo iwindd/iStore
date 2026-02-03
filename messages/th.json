@@ -340,6 +340,12 @@
       "consignment": "ฝากขาย",
       "preorder": "พรีออเดอร์",
       "low_stock": "สินค้าใกล้จะหมด",
+      "pending_stock": "รายการสต๊อกรอดำเนินการ",
+      "total_products": "สินค้าทั้งหมด",
+      "active_promotions": "โปรโมชั่นที่กำลังมี",
+      "auth_sales_today": "คุณขายวันนี้",
+      "auth_sales_total": "คุณขายทั้งหมด",
+      "store_sales_today": "ร้านค้าขายวันนี้",
       "items_unit": "{count} รายการ"
     },
     "yearly_sales": {

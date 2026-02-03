@@ -475,3 +475,149 @@ export async function getRecentOrdersData(ctx: PermissionContext) {
     total: item.total.toNumber(),
   }));
 }
+
+/**
+ * Get count of pending stock receipts (DRAFT, CREATING, PROCESSING)
+ * Requires: ProductManagement permission
+ */
+export async function getPendingStockReceiptCount(ctx: PermissionContext) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.stock.getReceiptDatatable, {
+      throw: false,
+    })
+  ) {
+    return 0;
+  }
+
+  return db.stockReceipt.count({
+    where: {
+      store_id: ctx.storeId,
+      status: {
+        in: ["DRAFT", "CREATING", "PROCESSING"],
+      },
+    },
+  });
+}
+
+/**
+ * Get total product count (not deleted)
+ * Requires: ProductManagement permission
+ */
+export async function getTotalProductCount(ctx: PermissionContext) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.product.getDatatable, {
+      throw: false,
+    })
+  ) {
+    return 0;
+  }
+
+  return db.product.count({
+    where: {
+      store_id: ctx.storeId,
+      deleted_at: null,
+    },
+  });
+}
+
+/**
+ * Get count of active promotions (events that are currently active)
+ * Requires: PromotionManagement permission
+ */
+export async function getActiveEventCount(ctx: PermissionContext) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.promotion.getDatatable, {
+      throw: false,
+    })
+  ) {
+    return 0;
+  }
+
+  const now = new Date();
+
+  return db.event.count({
+    where: {
+      store_id: ctx.storeId,
+      disabled_at: null,
+      start_at: {
+        lte: now,
+      },
+      end_at: {
+        gte: now,
+      },
+    },
+  });
+}
+
+/**
+ * Get auth (current user) sales count
+ * No permission required - everyone can see their own sales
+ */
+export async function getAuthSalesCount(
+  ctx: PermissionContext,
+  range?: DashboardDateRange,
+) {
+  const whereClause: {
+    store_id: string | undefined;
+    creator_id: number;
+    created_at?: {
+      gte: Date;
+      lte: Date;
+    };
+  } = {
+    store_id: ctx.storeId,
+    creator_id: ctx.userId,
+  };
+
+  if (range) {
+    whereClause.created_at = {
+      gte: range.start,
+      lte: range.end,
+    };
+  }
+
+  const result = await db.orderProduct.aggregate({
+    where: {
+      order: whereClause,
+    },
+    _sum: {
+      count: true,
+    },
+  });
+
+  return result._sum.count ?? 0;
+}
+
+/**
+ * Get store sales count today
+ * Requires: HistoryReadAll permission
+ */
+export async function getStoreSalesCountToday(ctx: PermissionContext) {
+  if (
+    !assertStoreCan(ctx, PermissionConfig.store.dashboard.viewOrderSoldStat, {
+      throw: false,
+    })
+  ) {
+    return 0;
+  }
+
+  const todayStart = dayjs().startOf("day").toDate();
+  const todayEnd = dayjs().endOf("day").toDate();
+
+  const result = await db.orderProduct.aggregate({
+    where: {
+      order: {
+        store_id: ctx.storeId,
+        created_at: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+    },
+    _sum: {
+      count: true,
+    },
+  });
+
+  return result._sum.count ?? 0;
+}

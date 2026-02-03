@@ -8,7 +8,18 @@ import { useRoute } from "@/hooks/use-route";
 import { number } from "@/libs/formatter";
 import { Route } from "@/libs/route/route";
 import { getRoute } from "@/router";
-import { BackHand, Receipt, RotateRight, Warning } from "@mui/icons-material";
+import {
+  BackHand,
+  Category,
+  Inventory,
+  LocalOffer,
+  Person,
+  Receipt,
+  RotateRight,
+  Storefront,
+  Today,
+  Warning,
+} from "@mui/icons-material";
 import { Grid } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -76,6 +87,62 @@ const Stats = () => {
         t("items_unit", { count: number(stats.product.lowStockCount) }),
       color: "warning",
       permission: PermissionConfig.store.dashboard.viewLowstockStat,
+    },
+    // New stats
+    {
+      name: "pending_stock",
+      route: getRoute("projects.store.stocks"),
+      label: t("pending_stock"),
+      icon: <Inventory />,
+      render: (stats) => t("items_unit", { count: number(stats.pendingStock) }),
+      color: "secondary",
+      permission: PermissionConfig.store.stock.getReceiptDatatable,
+    },
+    {
+      name: "total_products",
+      route: getRoute("projects.store.products"),
+      label: t("total_products"),
+      icon: <Category />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.totalProducts) }),
+      color: "primary",
+      permission: PermissionConfig.store.product.getDatatable,
+    },
+    {
+      name: "active_promotions",
+      route: getRoute("projects.store.promotions"),
+      label: t("active_promotions"),
+      icon: <LocalOffer />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.activePromotions) }),
+      color: "error",
+      permission: PermissionConfig.store.promotion.getDatatable,
+    },
+    {
+      name: "auth_sales_today",
+      label: t("auth_sales_today"),
+      icon: <Today />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.authSalesToday) }),
+      color: "info",
+    },
+    {
+      name: "auth_sales_total",
+      label: t("auth_sales_total"),
+      icon: <Person />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.authSalesTotal) }),
+      color: "success",
+    },
+    {
+      name: "store_sales_today",
+      route: getRoute("projects.store.histories"),
+      label: t("store_sales_today"),
+      icon: <Storefront />,
+      render: (stats) =>
+        t("items_unit", { count: number(stats.storeSalesToday) }),
+      color: "primary",
+      permission: PermissionConfig.store.dashboard.viewOrderSoldStat,
     },
   ];
 
