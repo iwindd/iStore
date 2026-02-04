@@ -38,7 +38,10 @@ Multi Store:
   ✔ สามารถสลับร้านได้ @done(26-02-03 22:43)
 
 StoreDashboard:
-  ☐ แสดงเป็น Widgets และสามารถปรับแต่งได้
-  ☐ เพิ่ม dashboard widgets สำหรับร้านค้า
-  ☐ save การ custom widget แต่ละร้านไว้ใน local storage
-  ☐ ใช้ unstable_cache สำหรับ dashboard
+  ✔ แสดงเป็น Widgets และสามารถปรับแต่งได้ @done(26-02-04 23:24)
+  ✔ เพิ่ม dashboard widgets สำหรับร้านค้า @done(26-02-04 23:24)
+  ✔ save การ custom widget แต่ละร้านไว้ใน local storage @done(26-02-04 23:24)
+  ☐ ใช้ unstable_cache สำหรับ dashboard @started(26-02-04 23:24)
+
+Fix:
+  ☐ เมื่อคิดเงินแล้วมีโปรโมชั่นสินค้าในสต๊อกลดไม่สอดคล้องกัน
