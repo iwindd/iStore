@@ -1,19 +1,29 @@
 "use client";
 import {
+  DashboardAnalysisKey,
+  DEFAULT_DASHBOARD_ANALYSIS_VISIBILITY,
+} from "@/config/Dashboard/AnalysisConfig";
+import {
   DashboardStatKey,
   DEFAULT_DASHBOARD_STATS_VISIBILITY,
 } from "@/config/Dashboard/StatConfig";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type StatsDisplayMode = "auto" | "custom";
+export type DisplayMode = "auto" | "custom";
 
 export interface StatsSettings {
-  displayMode: StatsDisplayMode;
+  displayMode: DisplayMode;
   visibility: Record<DashboardStatKey, boolean>;
+}
+
+export interface AnalysisSettings {
+  displayMode: DisplayMode;
+  visibility: Record<DashboardAnalysisKey, boolean>;
 }
 
 export interface StoreSettings {
   stats: StatsSettings;
+  analysis: AnalysisSettings;
   widgets: {
     stats: boolean;
     analysis: boolean;
@@ -29,8 +39,14 @@ const defaultStatsSettings: StatsSettings = {
   visibility: DEFAULT_DASHBOARD_STATS_VISIBILITY,
 };
 
+const defaultAnalysisSettings: AnalysisSettings = {
+  displayMode: "auto",
+  visibility: DEFAULT_DASHBOARD_ANALYSIS_VISIBILITY,
+};
+
 const defaultStoreSettings: StoreSettings = {
   stats: defaultStatsSettings,
+  analysis: defaultAnalysisSettings,
   widgets: {
     stats: true,
     analysis: true,
@@ -65,20 +81,13 @@ const settingsSlice = createSlice({
       state,
       action: PayloadAction<{
         storeSlug: string;
-        mode: StatsDisplayMode;
+        mode: DisplayMode;
       }>,
     ) => {
       const { storeSlug, mode } = action.payload;
       if (!state.stores[storeSlug]) {
         state.stores[storeSlug] = { ...defaultStoreSettings };
       }
-      console.log(
-        "SELECTED MODE",
-        mode,
-        state.stores[storeSlug].stats.displayMode,
-      );
-
-      console.log(state.stores[storeSlug].stats, "STORES");
       state.stores[storeSlug].stats.displayMode = mode;
     },
     setStatVisibility: (
@@ -95,6 +104,33 @@ const settingsSlice = createSlice({
       }
       state.stores[storeSlug].stats.visibility[stat] = visible;
     },
+    setAnalysisDisplayMode: (
+      state,
+      action: PayloadAction<{
+        storeSlug: string;
+        mode: DisplayMode;
+      }>,
+    ) => {
+      const { storeSlug, mode } = action.payload;
+      if (!state.stores[storeSlug]) {
+        state.stores[storeSlug] = { ...defaultStoreSettings };
+      }
+      state.stores[storeSlug].analysis.displayMode = mode;
+    },
+    setAnalysisVisibility: (
+      state,
+      action: PayloadAction<{
+        storeSlug: string;
+        analysis: keyof AnalysisSettings["visibility"];
+        visible: boolean;
+      }>,
+    ) => {
+      const { storeSlug, analysis, visible } = action.payload;
+      if (!state.stores[storeSlug]) {
+        state.stores[storeSlug] = { ...defaultStoreSettings };
+      }
+      state.stores[storeSlug].analysis.visibility[analysis] = visible;
+    },
     initStoreSettings: (state, action: PayloadAction<string>) => {
       const storeSlug = action.payload;
       if (!state.stores[storeSlug]) {
@@ -108,6 +144,8 @@ export const {
   setWidgetVisibility,
   setStatsDisplayMode,
   setStatVisibility,
+  setAnalysisDisplayMode,
+  setAnalysisVisibility,
   initStoreSettings,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

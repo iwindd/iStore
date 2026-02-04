@@ -418,6 +418,18 @@
         "auth_sales_total_description": "แสดงยอดขายทั้งหมดของคุณ",
         "store_sales_today": "ยอดขายร้านวันนี้",
         "store_sales_today_description": "แสดงยอดขายของร้านในวันนี้"
+      },
+      "analysis_visibility": {
+        "yearly_sales": "กราฟยอดขายรายปี",
+        "yearly_sales_description": "แสดงกราฟรายได้และค่าใช้จ่ายรายเดือน",
+        "auth_yearly_sales": "กราฟยอดขายรายปี (ของฉัน)",
+        "auth_yearly_sales_description": "แสดงกราฟยอดขายของคุณรายเดือน",
+        "payment_method_traffic": "สัดส่วนวิธีการชำระเงิน",
+        "payment_method_traffic_description": "แสดงสัดส่วนการชำระเงินด้วยเงินสดและโอน",
+        "best_selling": "สินค้าขายดี",
+        "best_selling_description": "แสดงรายการสินค้าขายดีที่สุด",
+        "recent_orders": "รายการขายล่าสุด",
+        "recent_orders_description": "แสดงรายการขายล่าสุดของร้าน"
       }
     }
   },

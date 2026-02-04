@@ -1,17 +1,9 @@
 "use client";
-import { Close, ExpandMore, QueryStats } from "@mui/icons-material";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Drawer,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { Box, Drawer, IconButton, Stack, Typography } from "@mui/material";
 import { useTranslations } from "next-intl";
 import React from "react";
+import DrawerAnalysisSetting from "./Settings/DrawerAnalysisSetting";
 import DrawerStatsSetting from "./Settings/DrawerStatsSetting";
 
 interface WidgetSettingsDrawerProps {
@@ -57,32 +49,10 @@ const WidgetSettingsDrawer = ({ open, onClose }: WidgetSettingsDrawerProps) => {
         <DrawerStatsSetting expanded={expanded} handleChange={handleChange} />
 
         {/* Analysis Accordion */}
-        <Accordion
-          expanded={expanded === "analysis"}
-          onChange={handleChange("analysis")}
-          disableGutters
-          elevation={0}
-          sx={{
-            "&:before": { display: "none" },
-            borderRadius: 1,
-          }}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMore />}
-            aria-controls="analysis-content"
-            id="analysis-header"
-          >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <QueryStats color="secondary" />
-              <Typography>{t("categories.analysis")}</Typography>
-            </Stack>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body2" color="text.secondary">
-              {t("categories.analysis_description")}
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
+        <DrawerAnalysisSetting
+          expanded={expanded}
+          handleChange={handleChange}
+        />
       </Box>
     </Drawer>
   );
