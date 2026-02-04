@@ -130,7 +130,10 @@ export function YearlySalesChart({ sx }: Readonly<YearlySalesChartProps>) {
               height: 300,
             }}
           >
-            <YearlyChart series={chartSeries} />
+            <YearlyChart
+              series={chartSeries}
+              yAxisFormatter={(value) => f.number(value, "currency")}
+            />
           </Box>
         </Stack>
       </CardContent>

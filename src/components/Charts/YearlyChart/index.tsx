@@ -5,24 +5,31 @@ import { useTranslations } from "next-intl";
 
 const YearlyChart = ({
   series,
+  yAxisFormatter,
 }: {
   series: { name: string; data: number[] }[];
+  yAxisFormatter?: (value: number) => string;
 }) => {
   const t = useTranslations("COMPONENTS.charts.yearly_chart");
-  const chartOptions = useChartOptions([
-    t("months.short.jan"),
-    t("months.short.feb"),
-    t("months.short.mar"),
-    t("months.short.apr"),
-    t("months.short.may"),
-    t("months.short.jun"),
-    t("months.short.jul"),
-    t("months.short.aug"),
-    t("months.short.sep"),
-    t("months.short.oct"),
-    t("months.short.nov"),
-    t("months.short.dec"),
-  ]);
+  const chartOptions = useChartOptions({
+    months: [
+      t("months.short.jan"),
+      t("months.short.feb"),
+      t("months.short.mar"),
+      t("months.short.apr"),
+      t("months.short.may"),
+      t("months.short.jun"),
+      t("months.short.jul"),
+      t("months.short.aug"),
+      t("months.short.sep"),
+      t("months.short.oct"),
+      t("months.short.nov"),
+      t("months.short.dec"),
+    ],
+    options: {
+      yAxisFormatter,
+    },
+  });
 
   return (
     <Chart
@@ -35,7 +42,14 @@ const YearlyChart = ({
   );
 };
 
-function useChartOptions(months: string[]): ApexOptions {
+interface YearlyChartOptions {
+  months: string[];
+  options?: {
+    yAxisFormatter?: (value: number) => string;
+  };
+}
+
+function useChartOptions({ months, options }: YearlyChartOptions): ApexOptions {
   const theme = useTheme();
 
   return {
@@ -83,7 +97,7 @@ function useChartOptions(months: string[]): ApexOptions {
     },
     yaxis: {
       labels: {
-        formatter: (value) => (value > 0 ? `${value.toFixed(0)}฿` : `${value}`),
+        formatter: options?.yAxisFormatter,
         offsetX: -10,
         style: { colors: theme.palette.text.secondary },
       },
