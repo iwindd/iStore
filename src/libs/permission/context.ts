@@ -59,7 +59,7 @@ export function assertStoreCan(
     return true;
   }
 
-  return options.throw ? false : forbidden();
+  return options.throw ? forbidden() : false;
 }
 
 /**
@@ -75,18 +75,13 @@ export function assertStore(ctx: PermissionContext) {
 export function ifNotHasStorePermission<T = number, U = undefined>(
   ctx: PermissionContext,
   permission: StorePermissionEnum,
+  notHas: U,
   has?: T,
-  notHas?: U,
 ) {
   assertStore(ctx);
 
-  if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) {
-    return notHas;
-  }
-
-  if (ctx.storePermissions.has(permission)) {
-    return has ?? ctx.employeeId!;
-  }
+  if (globalCan(ctx, GlobalPermissionEnum.STORE_MANAGEMENT)) return has;
+  if (ctx.storePermissions.has(permission)) return has;
 
   return notHas;
 }

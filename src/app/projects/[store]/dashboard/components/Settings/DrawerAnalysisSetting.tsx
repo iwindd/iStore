@@ -102,9 +102,7 @@ const DrawerAnalysisSetting = ({
               labelId="analysis-display-mode-label"
               value={displayMode}
               label={t("display_mode.label")}
-              onChange={(e) =>
-                handleDisplayModeChange(e.target.value as "auto" | "custom")
-              }
+              onChange={(e) => handleDisplayModeChange(e.target.value)}
             >
               <MenuItem value="auto">{t("display_mode.auto")}</MenuItem>
               <MenuItem value="custom">{t("display_mode.custom")}</MenuItem>
@@ -115,17 +113,14 @@ const DrawerAnalysisSetting = ({
           {displayMode === "custom" && (
             <Stack spacing={1} sx={{ mt: 1 }}>
               {DASHBOARD_ANALYSIS_CONFIG.map((item) => {
-                const permission =
-                  "permission" in item && item.permission
-                    ? Array.isArray(item.permission)
-                      ? [...item.permission]
-                      : item.permission
-                    : [];
-
                 return (
                   <HasStorePermission
                     key={item.name}
-                    permission={permission}
+                    permission={
+                      Array.isArray(item.permission)
+                        ? item.permission.map((p) => p)
+                        : [item.permission]
+                    }
                     some={Array.isArray(item.permission)}
                   >
                     <Stack
