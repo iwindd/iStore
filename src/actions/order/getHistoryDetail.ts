@@ -20,6 +20,7 @@ const getHistoryDetail = async (storeId: string, id: number) => {
       creator_id: ifNotHasStorePermission(
         ctx,
         PermissionConfig.store.history.readAllUser,
+        ctx.employeeId,
       ),
     };
 

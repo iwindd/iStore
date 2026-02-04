@@ -4,10 +4,7 @@ import { HistoryFilter } from "@/app/projects/[store]/(store)/histories/types";
 import { TableFetch } from "@/components/Datatable";
 import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
-import {
-  assertStore,
-  ifNotHasStorePermission,
-} from "@/libs/permission/context";
+import { assertStore, assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
 import { Prisma } from "@prisma/client";
 
@@ -22,10 +19,6 @@ const getHistoryDatatable = async (
     // Build where clause with filters
     const where: Prisma.OrderWhereInput = {
       store_id: ctx.storeId!,
-      creator_id: ifNotHasStorePermission(
-        ctx,
-        PermissionConfig.store.history.readAllUser,
-      ),
     };
 
     // Date range filter
@@ -64,8 +57,19 @@ const getHistoryDatatable = async (
       where.note = null;
     }
 
+    if (
+      !assertStoreCan(ctx, PermissionConfig.store.history.readAllUser, {
+        throw: false,
+      })
+    ) {
+      where.creator_id = ctx.employeeId;
+    }
+
     const { data, total } = await db.order.getDatatable({
-      query: table,
+      query: {
+        ...table,
+        sort: [{ field: "created_at", sort: "desc" }, ...table.sort],
+      },
       select: {
         id: true,
         total: true,
@@ -103,7 +107,7 @@ const getHistoryDatatable = async (
           },
         },
       },
-      where,
+      where: where,
       searchable: {
         note: { mode: "insensitive" },
         products: {
@@ -141,7 +145,7 @@ const getHistoryDatatable = async (
       total,
     };
   } catch (error) {
-    console.error(error);
+    console.error("getHistoryDatatable error :", error);
     return { data: [], total: 0 };
   }
 };

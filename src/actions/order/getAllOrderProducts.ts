@@ -23,6 +23,7 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
           creator_id: ifNotHasStorePermission(
             ctx,
             PermissionConfig.store.history.getAllOrderProducts,
+            ctx.employeeId,
           ),
         },
       },

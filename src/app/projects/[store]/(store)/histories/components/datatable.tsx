@@ -9,13 +9,15 @@ import { InventoryTwoTone, ViewAgendaTwoTone } from "@mui/icons-material";
 import { Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Category } from "@prisma/client";
-import { useTranslations } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 import React from "react";
 import { HistoryFilter } from "../types";
 import HistoryFilterComponent from "./filter";
 
 const HistoryDatatable = () => {
   const t = useTranslations("HISTORIES.datatable");
+  const f = useFormatter();
+  const now = useNow();
   const [filter, setFilter] = React.useState<HistoryFilter>({});
   const route = useRoute();
 
@@ -31,7 +33,11 @@ const HistoryDatatable = () => {
         headerName: t("headers.date"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.date(data.value),
+        renderCell: (data: any) => (
+          <Tooltip title={f.dateTime(data.value, "full-time")}>
+            <span>{f.relativeTime(data.value, now)}</span>
+          </Tooltip>
+        ),
       },
       {
         field: "creator",
@@ -127,7 +133,6 @@ const HistoryDatatable = () => {
         field: "actions",
         type: "actions",
         headerName: t("headers.actions"),
-        flex: 0.8,
         getActions: ({ row }: { row: Category }) => [
           <GridLinkAction
             key="view"
@@ -136,7 +141,6 @@ const HistoryDatatable = () => {
             })}
             icon={<ViewAgendaTwoTone />}
             label={t("actions.view")}
-            showInMenu
           />,
         ],
       },

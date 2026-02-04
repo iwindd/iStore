@@ -1,6 +1,8 @@
 "use client";
 
 import getHistoryCreators from "@/actions/order/getHistoryCreators";
+import HasStorePermission from "@/components/Flagments/HasStorePermission";
+import { PermissionConfig } from "@/config/permissionConfig";
 import {
   ClearAllTwoTone,
   FilterAltTwoTone,
@@ -191,21 +193,25 @@ const HistoryFilterComponent = ({ onFilterChange }: HistoryFilterProps) => {
               </Grid>
 
               {/* Creator */}
-              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                <Autocomplete
-                  size="small"
-                  options={creators}
-                  getOptionLabel={(option) => option.name}
-                  value={selectedCreator}
-                  onChange={(_, newValue) => {
-                    setSelectedCreator(newValue);
-                    setCreatorId(newValue?.id ?? null);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} label={t("creator")} />
-                  )}
-                />
-              </Grid>
+              <HasStorePermission
+                permission={PermissionConfig.store.history.readAllUser}
+              >
+                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                  <Autocomplete
+                    size="small"
+                    options={creators}
+                    getOptionLabel={(option) => option.name}
+                    value={selectedCreator}
+                    onChange={(_, newValue) => {
+                      setSelectedCreator(newValue);
+                      setCreatorId(newValue?.id ?? null);
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label={t("creator")} />
+                    )}
+                  />
+                </Grid>
+              </HasStorePermission>
 
               {/* Total Range */}
               <Grid size={{ xs: 12, sm: 6, md: 3 }}>

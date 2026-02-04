@@ -175,6 +175,7 @@ export async function getPaymentMethodTrafficSummary(
         creator_id: ifNotHasStorePermission(
           ctx,
           PermissionConfig.store.dashboard.viewStorePaymentMethodTraffic,
+          ctx.employeeId,
         ),
         created_at: {
           gte: range.start,
