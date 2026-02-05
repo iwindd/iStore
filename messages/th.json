@@ -318,7 +318,7 @@
       "title": "ภาพรวม",
       "print": "พิมพ์",
       "refresh": "รีเฟรช",
-      "settings": "ตั้งค่า Widget",
+      "settings": "ตั้งค่าวิดเจ็ต",
       "range": {
         "label": "ช่วงเวลา",
         "today": "วันนี้",
@@ -385,12 +385,12 @@
       "sold_label": "ขายแล้ว"
     },
     "widget_settings": {
-      "title": "ตั้งค่า Widget",
+      "title": "ตั้งค่าวิดเจ็ต",
       "categories": {
         "stats": "สถิติ",
-        "stats_description": "กำหนดค่า widget สถิติที่แสดงในหน้า dashboard",
+        "stats_description": "กำหนดค่าวิดเจ็ต สถิติที่แสดงในหน้าแดชบอร์ด",
         "analysis": "วิเคราะห์",
-        "analysis_description": "กำหนดค่า widget วิเคราะห์ข้อมูลที่แสดงในหน้า dashboard"
+        "analysis_description": "กำหนดค่าวิดเจ็ต วิเคราะห์ข้อมูลที่แสดงในหน้าแดชบอร์ด"
       },
       "display_mode": {
         "label": "การแสดงผล",
@@ -405,7 +405,7 @@
         "preorders": "พรีออเดอร์",
         "preorders_description": "แสดงจำนวนพรีออเดอร์ที่รอดำเนินการ",
         "low_stock": "สินค้าใกล้หมด",
-        "low_stock_description": "แสดงจำนวนสินค้าที่ stock ต่ำ",
+        "low_stock_description": "แสดงจำนวนสินค้าที่สต๊อกต่ำ",
         "pending_stock": "รับสินค้ารอดำเนินการ",
         "pending_stock_description": "แสดงจำนวนการรับสินค้าที่รอดำเนินการ",
         "total_products": "สินค้าทั้งหมด",
