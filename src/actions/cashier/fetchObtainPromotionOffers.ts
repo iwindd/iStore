@@ -46,9 +46,10 @@ const fetchObtainPromotionOffer = async (
     id: number;
     quantity: number;
   }[],
+  storeSlug: string,
 ): Promise<ObtainPromotionOffer[]> => {
   try {
-    const ctx = await getPermissionContext();
+    const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.cashier.getObtainPromotionOffer);
 
     const result = await db.promotionOffer.findMany({

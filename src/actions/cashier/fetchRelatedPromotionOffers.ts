@@ -40,8 +40,9 @@ export type RelatedPromotionOffer = Prisma.PromotionOfferGetPayload<{
 
 const fetchRelatedPromotionOffer = async (
   productIds: number[],
+  storeSlug: string,
 ): Promise<RelatedPromotionOffer[]> => {
-  const ctx = await getPermissionContext();
+  const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.cashier.getRelatedPromotionOffer);
 
   const result = await db.promotionOffer.findRelatedPromotionOffer({
