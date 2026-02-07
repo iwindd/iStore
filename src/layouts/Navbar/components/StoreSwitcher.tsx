@@ -73,7 +73,7 @@ const StoreSwitcher = () => {
         data-open={open}
         sx={{
           color: "text.primary",
-          backgroundColor: "background.paper",
+          backgroundColor: "transparent",
           borderRadius: 1,
           px: 1,
           py: 0.5,
