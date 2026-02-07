@@ -36,7 +36,10 @@ const AppBreadcrumb = () => {
   if (items.length <= 1) return null;
 
   return (
-    <Breadcrumbs separator={<NavigateNextTwoTone fontSize="small" />}>
+    <Breadcrumbs
+      maxItems={3}
+      separator={<NavigateNextTwoTone fontSize="small" />}
+    >
       <div></div>
       {items}
     </Breadcrumbs>

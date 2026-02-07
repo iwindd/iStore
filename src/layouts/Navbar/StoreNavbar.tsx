@@ -62,7 +62,13 @@ const StoreNavbar = () => {
             </IconButton>
             <Stack spacing={0} direction={"row"} alignItems={"center"}>
               <StoreSelector />
-              <AppBreadcrumb />
+              <Box
+                sx={{
+                  display: { xs: "none", md: "block" },
+                }}
+              >
+                <AppBreadcrumb />
+              </Box>
             </Stack>
           </Stack>
           <Stack
