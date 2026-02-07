@@ -171,7 +171,9 @@ const PromotionPage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>{t("title")}</App.Header.Title>
+        <App.Header.Title subtitle={t("description")}>
+          {t("title")}
+        </App.Header.Title>
         <App.Header.Actions>
           <Button
             startIcon={<AddTwoTone />}

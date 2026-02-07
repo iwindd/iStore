@@ -50,7 +50,9 @@ const PromotionOfferCreatePage = () => {
   return (
     <Wrapper>
       <App.Header>
-        <App.Header.Title>{t("create_title")}</App.Header.Title>
+        <App.Header.Title subtitle={t("description")}>
+          {t("create_title")}
+        </App.Header.Title>
       </App.Header>
       <App.Main>
         <FormBuyXGetY
