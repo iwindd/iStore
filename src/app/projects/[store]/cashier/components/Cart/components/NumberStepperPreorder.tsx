@@ -8,13 +8,12 @@ import { IconButton, InputBase, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 
 const NumberStepperPreorder = ({
-  product: { quantity, id, data },
+  product: { quantity, cartId, data },
 }: {
   product: CartProduct;
 }) => {
   const [value, setValue] = useState<string | number>(quantity);
   const dispatch = useAppDispatch();
-  const stockCount = data?.stock?.quantity || quantity;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setValue(e.target.value);
@@ -27,7 +26,7 @@ const NumberStepperPreorder = ({
 
     setValue(parseValue);
 
-    dispatch(setProductPreOrderQuantity({ id: id, quantity: parseValue }));
+    dispatch(setProductPreOrderQuantity({ cartId, quantity: parseValue }));
   };
 
   useEffect(() => {
@@ -57,7 +56,7 @@ const NumberStepperPreorder = ({
         size="small"
         onClick={() =>
           dispatch(
-            setProductPreOrderQuantity({ id: id, quantity: quantity + 1 })
+            setProductPreOrderQuantity({ cartId, quantity: quantity + 1 }),
           )
         }
         className="stepper-btn"
@@ -89,7 +88,7 @@ const NumberStepperPreorder = ({
         size="small"
         onClick={() =>
           dispatch(
-            setProductPreOrderQuantity({ id: id, quantity: quantity - 1 })
+            setProductPreOrderQuantity({ cartId, quantity: quantity - 1 }),
           )
         }
         className="stepper-btn"

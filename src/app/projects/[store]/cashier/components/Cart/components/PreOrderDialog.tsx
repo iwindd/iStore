@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/hooks";
-import { preOrderProduct } from "@/reducers/cartReducer";
+import { preOrderProduct, setProductQuantity } from "@/reducers/cartReducer";
 import {
   Button,
   Dialog,
@@ -13,12 +13,12 @@ import { useState } from "react";
 const PreOrderDialog = ({
   open,
   handleClose,
-  product_id,
+  cartId,
   defaultValue,
 }: {
   open: boolean;
   handleClose: () => void;
-  product_id: number;
+  cartId: string;
   defaultValue: number;
 }) => {
   const t = useTranslations("CASHIER.cart.preorder_dialog");
@@ -30,7 +30,10 @@ const PreOrderDialog = ({
     if (quantity == "") realQuantity = defaultValue;
     if (Number.isNaN(realQuantity)) realQuantity = defaultValue;
 
-    dispatch(preOrderProduct({ id: product_id, quantity: realQuantity }));
+    dispatch(preOrderProduct({ cartId, quantity: realQuantity }));
+    dispatch(
+      setProductQuantity({ cartId, quantity: defaultValue - realQuantity }),
+    );
     handleClose();
   };
 

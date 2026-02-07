@@ -5,13 +5,14 @@ import { IconButton, InputBase, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 
 const NumberStepper = ({
-  product: { quantity, id, data },
+  product: { quantity, cartId, data, isLoading },
 }: {
   product: CartProduct;
 }) => {
   const [value, setValue] = useState<string | number>(quantity);
   const dispatch = useAppDispatch();
   const stockCount = data?.stock?.quantity || quantity;
+  const disabled = isLoading || !data;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setValue(e.target.value);
@@ -25,7 +26,7 @@ const NumberStepper = ({
 
     setValue(parseValue);
 
-    dispatch(setProductQuantity({ id: id, quantity: parseValue }));
+    dispatch(setProductQuantity({ cartId, quantity: parseValue }));
   };
 
   useEffect(() => {
@@ -54,9 +55,10 @@ const NumberStepper = ({
       <IconButton
         size="small"
         onClick={() =>
-          dispatch(setProductQuantity({ id: id, quantity: quantity + 1 }))
+          dispatch(setProductQuantity({ cartId, quantity: quantity + 1 }))
         }
         className="stepper-btn"
+        disabled={disabled}
         sx={{
           width: "100%",
           height: 12,
@@ -72,6 +74,7 @@ const NumberStepper = ({
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder={quantity.toString()}
+        disabled={disabled}
         inputProps={{
           sx: {
             textAlign: "center",
@@ -84,9 +87,10 @@ const NumberStepper = ({
       <IconButton
         size="small"
         onClick={() =>
-          dispatch(setProductQuantity({ id: id, quantity: quantity - 1 }))
+          dispatch(setProductQuantity({ cartId, quantity: quantity - 1 }))
         }
         className="stepper-btn"
+        disabled={disabled}
         sx={{
           width: "100%",
           height: 12,

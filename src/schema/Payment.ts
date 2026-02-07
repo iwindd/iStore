@@ -8,11 +8,16 @@ export const CashoutInputSchema = z.object({
 
 export type CashoutInputValues = z.infer<typeof CashoutInputSchema>;
 
-const ProductShape = z.object({
-  id: z.number(),
-  quantity: z.number().min(1, "จำนวนต้องมากกว่าหรือเท่ากับ 1"),
-  note: z.string().max(40).optional(),
-});
+const ProductShape = z
+  .object({
+    productId: z.number(),
+    quantity: z.number().min(1, "จำนวนต้องมากกว่าหรือเท่ากับ 1"),
+    note: z.string().max(40).optional(),
+  })
+  .transform((data) => ({
+    ...data,
+    id: data.productId,
+  }));
 
 export const CashoutSchema = z
   .object({

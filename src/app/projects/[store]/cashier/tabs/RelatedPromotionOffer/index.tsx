@@ -14,7 +14,9 @@ const RelatedPromotionOfferTab = () => {
   );
 
   const { data: relatedPromotionOffers, isLoading } = useRelatedPromotionOffer({
-    productIds: cartProducts.map((p) => p.id),
+    productIds: cartProducts
+      .filter((p) => p.productId !== undefined)
+      .map((p) => p.productId!),
   });
 
   if (isLoading) {

@@ -70,6 +70,7 @@ const ProductsTab = () => {
                 label={product.label}
                 price={product.price}
                 stock={product.stock?.quantity || 0}
+                usePreorder={product.usePreorder}
               />
             </Grid>
           ))}

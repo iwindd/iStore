@@ -76,7 +76,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
                 <IconButton
                   size="small"
                   onClick={() =>
-                    dispatch(removePreOrderProductFromCart(product.id))
+                    dispatch(removePreOrderProductFromCart(product.cartId))
                   }
                 >
                   <Delete fontSize="small" />
@@ -104,7 +104,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
             value={note}
             onChange={(e) => setNote(e.target.value)}
             onBlur={() =>
-              dispatch(setProductPreOrderNote({ id: product.id, note }))
+              dispatch(setProductPreOrderNote({ cartId: product.cartId, note }))
             }
             label={t("product.note")}
             variant="filled"

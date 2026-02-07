@@ -1,4 +1,8 @@
-import cartReducer, { CartState } from "@/reducers/cartReducer";
+import {
+  cartAddProductToCartBySerialRejectedListener,
+  cartListenerMiddleware,
+} from "@/reducers/cart/cart.listeners";
+import { cartReducer, CartState } from "@/reducers/cartReducer";
 import dashboardReducer, { DashboardState } from "@/reducers/dashboardReducer";
 import projectReducer from "@/reducers/projectReducer";
 import settingsReducer, { SettingsState } from "@/reducers/settingsReducer";
@@ -41,6 +45,7 @@ const rootReducer = combineReducers({
   dashboard: persistedDashboardReducer,
   project: projectReducer,
   settings: persistedSettingsReducer,
+  // Add other reducers here
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
@@ -54,7 +59,10 @@ export const store = (preloadedState?: Partial<RootState>) => {
         serializableCheck: {
           ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
         },
-      }),
+      }).prepend(
+        cartListenerMiddleware.middleware,
+        cartAddProductToCartBySerialRejectedListener.middleware,
+      ),
   });
 };
 

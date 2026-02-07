@@ -1,6 +1,6 @@
 import { ObtainPromotionOffer } from "@/actions/cashier/fetchObtainPromotionOffers";
 import { UseObtainPromotionOfferProps } from "@/hooks/useObtainPromotionOffer";
-import { CartProduct } from "@/reducers/cartReducer";
+import { CartProductLoaded } from "@/reducers/cartReducer";
 import { Prisma } from "@prisma/client";
 
 type PromotionItemOffer = Prisma.PromotionOfferBuyItemGetPayload<{
@@ -12,10 +12,12 @@ type PromotionItemOffer = Prisma.PromotionOfferBuyItemGetPayload<{
 
 const isSuccessCondition = (
   buyItems: PromotionItemOffer[],
-  items: Pick<CartProduct, "id" | "quantity">[],
+  items: Pick<CartProductLoaded, "productId" | "quantity">[],
 ): boolean => {
   for (const buyItem of buyItems) {
-    const cartItem = items.find((item) => item.id === buyItem.product_id);
+    const cartItem = items.find(
+      (item) => item.productId === buyItem.product_id,
+    );
     if (!cartItem) return false;
     if (cartItem.quantity < buyItem.quantity) return false;
   }
@@ -26,7 +28,7 @@ const isSuccessCondition = (
 export const getPromotionQuantities = (
   buyItems: PromotionItemOffer[],
   getItems: PromotionItemOffer[],
-  items: Pick<CartProduct, "id" | "quantity">[],
+  items: Pick<CartProductLoaded, "productId" | "quantity">[],
 ): { id: number; quantity: number }[] => {
   if (!isSuccessCondition(buyItems, items)) return [];
 
@@ -39,7 +41,9 @@ export const getPromotionQuantities = (
         getItem.quantity *
           Math.min(
             ...buyItems.map((buy) => {
-              const cartItem = items.find((item) => item.id === buy.product_id);
+              const cartItem = items.find(
+                (item) => item.productId === buy.product_id,
+              );
               if (!cartItem) return 0;
               return Math.floor(cartItem.quantity / buy.quantity);
             }),
@@ -54,7 +58,7 @@ export const getQuantityByItem = (
   product_id: number,
   buyItems: PromotionItemOffer[],
   getItems: PromotionItemOffer[],
-  items: Pick<CartProduct, "id" | "quantity">[],
+  items: Pick<CartProductLoaded, "productId" | "quantity">[],
 ): number => {
   const promotionQuantities = getPromotionQuantities(buyItems, getItems, items);
   const productPromotion = promotionQuantities.find(
@@ -131,7 +135,14 @@ export const getMergedPromotionQuantitiesFromOffers = (
   );
 
   const quantifiedOffers = offers.map((offer) =>
-    getPromotionQuantities(offer.buyItems, offer.getItems, products)
+    getPromotionQuantities(
+      offer.buyItems,
+      offer.getItems,
+      products.map((p) => ({
+        productId: p.id,
+        quantity: p.quantity,
+      })),
+    )
       .filter((item) => item.quantity > 0)
       .map((item) => ({
         id: item.id,

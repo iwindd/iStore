@@ -1,7 +1,7 @@
 "use client";
 import { useAppDispatch } from "@/hooks";
 import { money } from "@/libs/formatter";
-import { addProductToCartById } from "@/reducers/cartReducer";
+import { addProductToCartBySerial } from "@/reducers/cartReducer";
 import { AddTwoTone } from "@mui/icons-material";
 import {
   Card,
@@ -18,14 +18,22 @@ interface ProductCardProps {
   label: string;
   price: number;
   stock: number;
+  usePreorder: boolean;
 }
 
-const ProductCard = ({ id, serial, label, price, stock }: ProductCardProps) => {
+const ProductCard = ({
+  id,
+  serial,
+  label,
+  price,
+  stock,
+  usePreorder,
+}: ProductCardProps) => {
   const t = useTranslations("CASHIER.tabs.products.card");
   const dispatch = useAppDispatch();
 
   const handleAddToCart = () => {
-    dispatch(addProductToCartById(id));
+    dispatch(addProductToCartBySerial(serial));
   };
 
   return (
@@ -85,7 +93,7 @@ const ProductCard = ({ id, serial, label, price, stock }: ProductCardProps) => {
             color="secondary"
             onClick={handleAddToCart}
             size="small"
-            disabled={stock === 0}
+            disabled={stock === 0 && !usePreorder}
           >
             <AddTwoTone />
           </IconButton>

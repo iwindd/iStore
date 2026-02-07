@@ -8,9 +8,11 @@ import {
 } from "@/reducers/cartReducer";
 import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
+  CircularProgress,
   Collapse,
   IconButton,
   Paper,
+  Skeleton,
   Stack,
   TextField,
   Typography,
@@ -41,42 +43,73 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
         <Stack direction={"row"} spacing={1}>
           <NumberStepper product={product} />
           <Stack flex={1} minWidth={0} mr={1}>
-            <Typography variant="h6" noWrap sx={{ pr: 1 }}>
-              {product.data?.label}
-            </Typography>
+            {product.data ? (
+              // Has data - show normal display
+              <>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Typography variant="h6" noWrap sx={{ pr: 1 }}>
+                    {product.data?.label}
+                  </Typography>
+                  {product.isLoading && (
+                    <CircularProgress size={16} thickness={4} />
+                  )}
+                </Stack>
 
-            <Stack direction={"row"} spacing={1}>
-              {product.data?.serial && (
-                <Typography variant="caption" color="text.secondary" noWrap>
-                  {t("product.serial")} {product.data.serial}
-                </Typography>
-              )}
+                <Stack direction={"row"} spacing={1}>
+                  {product.data?.serial && (
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {t("product.serial")} {product.data.serial}
+                    </Typography>
+                  )}
 
-              <TextAction
-                onClick={preOrderDialog.handleOpen}
-                label={t("product.preorder_label")}
-              />
-            </Stack>
+                  {product.data.usePreorder && (
+                    <TextAction
+                      onClick={preOrderDialog.handleOpen}
+                      label={t("product.preorder_label")}
+                    />
+                  )}
+                </Stack>
+              </>
+            ) : (
+              // No data yet - show full skeleton
+              <>
+                <Skeleton variant="text" width="80%" height={32} />
+                <Stack direction={"row"} spacing={1}>
+                  {product.serial && (
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {t("product.serial")} {product.serial}
+                    </Typography>
+                  )}
+                  <Skeleton variant="text" width={60} height={20} />
+                </Stack>
+              </>
+            )}
           </Stack>
 
           <Stack justifyContent={"center"}>
-            <Typography
-              variant="h6"
-              fontWeight="bold"
-              whiteSpace="nowrap"
-              color="success.main"
-              textAlign={"right"}
-            >
-              {(product.data?.price || 0) > 0
-                ? money(product.data?.price || 0)
-                : t("product.free")}
-            </Typography>
+            {product.data ? (
+              <Typography
+                variant="h6"
+                fontWeight="bold"
+                whiteSpace="nowrap"
+                color="success.main"
+                textAlign={"right"}
+              >
+                {(product.data?.price || 0) > 0
+                  ? money(product.data?.price || 0)
+                  : t("product.free")}
+              </Typography>
+            ) : (
+              <Skeleton variant="text" width={80} height={32} />
+            )}
 
             <Stack direction={"row"} spacing={1}>
               <div>
                 <IconButton
                   size="small"
-                  onClick={() => dispatch(removeProductFromCart(product.id))}
+                  onClick={() =>
+                    dispatch(removeProductFromCart(product.cartId))
+                  }
                 >
                   <Delete fontSize="small" />
                 </IconButton>
@@ -102,7 +135,9 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
           <TextField
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            onBlur={() => dispatch(setProductNote({ id: product.id, note }))}
+            onBlur={() =>
+              dispatch(setProductNote({ cartId: product.cartId, note }))
+            }
             label={t("product.note")}
             variant="filled"
             sx={{
@@ -120,7 +155,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
       <PreOrderDialog
         open={preOrderDialog.open}
         handleClose={preOrderDialog.handleClose}
-        product_id={product.id}
+        cartId={product.cartId}
         defaultValue={product.quantity}
       />
     </Paper>

@@ -54,7 +54,9 @@ const CartSections = () => {
   });
 
   const { mergedPromotionQuantities } = useObtainPromotionOffer({
-    products: cart.map((p) => ({ id: p.id, quantity: p.quantity })),
+    products: cart
+      .filter((p) => p.productId !== undefined)
+      .map((p) => ({ id: p.productId, quantity: p.quantity })),
   });
 
   return (
@@ -82,14 +84,14 @@ const CartSections = () => {
       >
         {cart.length > 0 &&
           cart.map((product) => (
-            <CartProduct key={product.id} product={product} />
+            <CartProduct key={product.cartId} product={product} />
           ))}
 
         {checkoutMode == CheckoutMode.CASHOUT && (
           <>
             {cartPreOrder.length > 0 &&
               cartPreOrder.map((product) => (
-                <CartPreorder key={product.id} product={product} />
+                <CartPreorder key={product.cartId} product={product} />
               ))}
 
             {mergedPromotionQuantities.length > 0 &&
