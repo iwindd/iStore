@@ -62,7 +62,7 @@ const ProductsTab = () => {
       {!isLoading && !error && products.length > 0 && (
         <Grid container spacing={1}>
           {products.map((product) => (
-            <Grid size={3} key={product.id}>
+            <Grid size={{ xs: 6, sm: 3, md: 3, lg: 2 }} key={product.id}>
               <ProductCard
                 key={product.id}
                 id={product.id}
