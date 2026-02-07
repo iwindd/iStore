@@ -57,6 +57,7 @@ export default function MainLayout({
               lg: 5,
               xl: 8,
             }}
+            pb={4}
             mt={{
               xs: 1,
             }}

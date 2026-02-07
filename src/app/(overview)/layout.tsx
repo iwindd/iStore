@@ -56,6 +56,7 @@ export default async function OverviewLayout({
               lg: 5,
               xl: 8,
             }}
+            pb={4}
             mt={{
               xs: 1,
             }}
