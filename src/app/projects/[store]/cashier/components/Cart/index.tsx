@@ -6,6 +6,12 @@ import { money } from "@/libs/formatter";
 import {
   CheckoutMode,
   clearProductCart,
+  selectCartTotal,
+  selectCheckoutMode,
+  selectLoadingProducts,
+  selectPreOrderProducts,
+  selectProductList,
+  selectTotalPreOrder,
   setCheckoutMode,
 } from "@/reducers/cartReducer";
 import {
@@ -33,11 +39,12 @@ const CartSections = () => {
   const t = useTranslations("CASHIER.cart");
   const dispatch = useAppDispatch();
   const payment = usePayment();
-  const cart = useAppSelector((state) => state.cart.products);
-  const cartPreOrder = useAppSelector((state) => state.cart.preOrderProducts);
-  const totalProduct = useAppSelector((state) => state.cart.total);
-  const totalPreOrder = useAppSelector((state) => state.cart.totalPreOrder);
-  const checkoutMode = useAppSelector((state) => state.cart.checkoutMode);
+  const cart = useAppSelector(selectProductList);
+  const loadingProduct = useAppSelector(selectLoadingProducts);
+  const cartPreOrder = useAppSelector(selectPreOrderProducts);
+  const totalProduct = useAppSelector(selectCartTotal);
+  const totalPreOrder = useAppSelector(selectTotalPreOrder);
+  const checkoutMode = useAppSelector(selectCheckoutMode);
   const total = totalProduct + totalPreOrder;
 
   const confirmation = useConfirm({
@@ -58,6 +65,12 @@ const CartSections = () => {
       .filter((p) => p.productId !== undefined)
       .map((p) => ({ id: p.productId, quantity: p.quantity })),
   });
+
+  const isClearDisabled = cart.length <= 0 && cartPreOrder.length <= 0;
+  const isCheckoutDisabled =
+    checkoutMode === CheckoutMode.CASHOUT
+      ? cart.length + cartPreOrder.length <= 0
+      : cart.length <= 0;
 
   return (
     <Stack
@@ -176,6 +189,7 @@ const CartSections = () => {
                 borderRadius: 1,
               }}
               onClick={confirmation.handleOpen}
+              disabled={isClearDisabled}
             >
               <DeleteSweep />
             </Button>
@@ -187,6 +201,8 @@ const CartSections = () => {
                 fontWeight: "bold",
               }}
               onClick={payment.toggle}
+              loading={loadingProduct.length > 0}
+              disabled={isCheckoutDisabled}
             >
               {checkoutMode === CheckoutMode.CASHOUT
                 ? t("checkout")
