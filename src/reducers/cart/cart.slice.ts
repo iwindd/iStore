@@ -1,6 +1,8 @@
 "use client";
 import { FindProductByIdResult } from "@/actions/product/findById";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Formats } from "next-intl";
+import { enqueueSnackbar } from "notistack";
 import { CartHelper } from "./cart.helpers";
 import {
   addProductToCartBySerial,
@@ -272,6 +274,29 @@ export const cartSlice = createSlice({
     },
     setScanner: (state, action: PayloadAction<string>) => {
       state.scanner = action.payload;
+    },
+    enqueueSnackbar: (
+      _,
+      action: PayloadAction<{
+        message: string;
+        variant: "intlError";
+        key?: string;
+        values?: Record<string, string | number | Date>;
+        formats?: Formats;
+      }>,
+    ) => {
+      const message = action.payload.message;
+      const key = action.payload.key;
+      const values = action.payload.values;
+      const formats = action.payload.formats;
+
+      enqueueSnackbar(`CASHIER.cart.messages.${message}`, {
+        variant: "intlError",
+        preventDuplicate: true,
+        key: key,
+        values: values,
+        formats: formats,
+      });
     },
   },
   extraReducers: (builder) => {

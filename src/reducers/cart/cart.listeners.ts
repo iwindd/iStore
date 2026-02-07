@@ -5,7 +5,6 @@ import {
   cashoutCart,
   consignmentCart,
 } from "./cart.thunks";
-import { CartEvent } from "./cart.types";
 
 export const cartListenerMiddleware = createListenerMiddleware();
 
@@ -16,53 +15,21 @@ export const cartAddProductToCartBySerialRejectedListener =
 cartAddProductToCartBySerialRejectedListener.startListening({
   actionCreator: addProductToCartBySerial.rejected,
   effect: async (action) => {
-    let message;
-    const error = action.error.message as CartEvent | undefined;
-
-    switch (error) {
-      case CartEvent.OUT_OF_STOCK:
-        message = "สินค้าหมดสต๊อก";
-        break;
-      case CartEvent.PRODUCT_NOT_FOUND_IN_CART:
-        message = "ไม่พบสินค้าในตะกร้าที่จะอัปเดต";
-        break;
-      case CartEvent.PRODUCT_NOT_FOUND:
-        message = "ไม่พบรหัสสินค้านี้ในระบบ";
-        break;
-      case CartEvent.STORE_NOT_FOUND:
-        message = "ไม่พบข้อมูลร้านค้า กรุณารีเฟรชหน้าจอ";
-        break;
-      case CartEvent.UNKNOWN_ERROR:
-      default:
-        message = `เกิดข้อผิดพลาด: ${action.error.message || "Unknown error"}`;
-    }
-
-    enqueueSnackbar(message, {
-      variant: "error",
+    enqueueSnackbar("CASHIER.cart.messages.unknown", {
+      variant: "intlError",
       preventDuplicate: true,
       key: "scanner-error",
     });
   },
 });
 
+// Cashout
+
 cartListenerMiddleware.startListening({
   matcher: isAnyOf(cashoutCart.rejected, consignmentCart.rejected),
-  effect: async (action) => {
-    const error = action.error as { message?: string };
-    const message =
-      error.message || "เกิดข้อผิดพลาดกรุณาลองใหม่อีกครั้งภายหลัง";
-
-    if (action.payload) {
-      enqueueSnackbar(action.payload as string, {
-        variant: "error",
-        key: "error",
-        preventDuplicate: true,
-      });
-      return;
-    }
-
-    enqueueSnackbar(message, {
-      variant: "error",
+  effect: async () => {
+    enqueueSnackbar("CASHIER.cart.messages.unknown", {
+      variant: "intlError",
       key: "checkout-error",
       preventDuplicate: true,
     });
@@ -72,17 +39,19 @@ cartListenerMiddleware.startListening({
 cartListenerMiddleware.startListening({
   actionCreator: cashoutCart.fulfilled,
   effect: async () => {
-    enqueueSnackbar(`ทำรายการคิดเงินสำเร็จแล้ว!`, {
-      variant: "success",
+    enqueueSnackbar("CASHIER.cart.messages.cashout_success", {
+      variant: "intlSuccess",
     });
   },
 });
 
+// Consignment
+
 cartListenerMiddleware.startListening({
   actionCreator: consignmentCart.fulfilled,
   effect: async () => {
-    enqueueSnackbar(`ทำรายการฝากขายสำเร็จแล้ว!`, {
-      variant: "success",
+    enqueueSnackbar("CASHIER.cart.messages.consignment_success", {
+      variant: "intlSuccess",
     });
   },
 });

@@ -4,6 +4,7 @@ import { requestCache } from "@/libs/requestCache";
 import { RootState } from "@/libs/store";
 import { validationQueue } from "@/libs/validationQueue";
 import { AsyncThunkConfig, GetThunkAPI } from "@reduxjs/toolkit";
+import { CartError } from "./cart.error";
 import { selectProductList } from "./cart.selectors";
 import { cartSlice } from "./cart.slice";
 import { CartEvent, CartProduct } from "./cart.types";
@@ -13,6 +14,30 @@ export interface ScanResult {
   data?: FindProductByIdResult;
   isUpdate: boolean;
 }
+
+const getProductDeduplicate = async (
+  storeSlug: string,
+  serial: string,
+  dispatch: GetThunkAPI<AsyncThunkConfig>["dispatch"],
+) => {
+  try {
+    const product = await requestCache.deduplicate(
+      `serial-${storeSlug}-${serial}`,
+      () => findProductBySerial(storeSlug, serial),
+    );
+    return product;
+  } catch (error: any) {
+    if ("message" in error && error.message === "product_not_found") {
+      throw new CartError(CartEvent.PRODUCT_NOT_FOUND, dispatch, {
+        serial,
+      });
+    }
+
+    throw new CartError(CartEvent.UNKNOWN_ERROR, dispatch, {
+      serial,
+    });
+  }
+};
 
 export const handleExistingProductScan = async (
   serial: string,
@@ -61,11 +86,11 @@ export const handleExistingProductScan = async (
           }
 
           // deduplicate fetch requests
-          const product = await requestCache.deduplicate(
-            `serial-${storeSlug}-${serial}`,
-            () => findProductBySerial(storeSlug, serial),
+          const product = await getProductDeduplicate(
+            storeSlug,
+            serial,
+            dispatch,
           );
-
           // update product data
           dispatch(
             cartSlice.actions.updateProductData({
@@ -86,7 +111,9 @@ export const handleExistingProductScan = async (
               }),
             );
 
-            throw new Error(CartEvent.OUT_OF_STOCK);
+            throw new CartError(CartEvent.OUT_OF_STOCK, dispatch, {
+              name: product.label,
+            });
           }
 
           resolve({
@@ -154,11 +181,7 @@ export const handleNewProductScan = async (
 
   try {
     // Deduplicate fetch requests
-    const product = await requestCache.deduplicate(
-      `serial-${storeSlug}-${serial}`,
-      () => findProductBySerial(storeSlug, serial),
-    );
-
+    const product = await getProductDeduplicate(storeSlug, serial, dispatch);
     // update product data
     dispatch(
       cartSlice.actions.updateProductData({
@@ -191,13 +214,6 @@ export const handleNewProductScan = async (
     // Return data for fulfilled handler
     return { tempId, data: product, isUpdate: false };
   } catch (error) {
-    if (error instanceof Error) {
-      // Errors will be caught by listener
-    } else {
-      console.error("addProductToCartBySerial error : ", error);
-    }
-
-    // Remove optimistic entry on any error
     dispatch(cartSlice.actions.removeProductFromCart(tempId));
     throw error;
   }
@@ -278,6 +294,8 @@ const handleInsufficientStock = (
     return { tempId, data: product, isUpdate: false };
   } else {
     dispatch(cartSlice.actions.removeProductFromCart(tempId));
-    throw new Error(CartEvent.OUT_OF_STOCK);
+    throw new CartError(CartEvent.OUT_OF_STOCK, dispatch, {
+      name: product.label,
+    });
   }
 };

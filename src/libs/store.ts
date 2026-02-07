@@ -1,8 +1,9 @@
 import {
   cartAddProductToCartBySerialRejectedListener,
   cartListenerMiddleware,
-} from "@/reducers/cart/cart.listeners";
-import { cartReducer, CartState } from "@/reducers/cartReducer";
+  cartReducer,
+  CartState,
+} from "@/reducers/cartReducer";
 import dashboardReducer, { DashboardState } from "@/reducers/dashboardReducer";
 import projectReducer from "@/reducers/projectReducer";
 import settingsReducer, { SettingsState } from "@/reducers/settingsReducer";

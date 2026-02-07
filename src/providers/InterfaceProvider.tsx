@@ -2,6 +2,8 @@
 import { Backdrop, CircularProgress } from "@mui/material";
 import { SnackbarProvider } from "notistack";
 import React, { createContext, ReactNode, useContext } from "react";
+import IntlErrorSnakebar from "./snakebars/intlError";
+import IntlSuccessSnakebar from "./snakebars/intlSuccess";
 
 interface BackdropInterface {
   setBackdrop: React.Dispatch<React.SetStateAction<boolean>>;
@@ -43,6 +45,10 @@ export function InterfaceProvider({
           vertical: "bottom",
         }}
         autoHideDuration={3000}
+        Components={{
+          intlError: IntlErrorSnakebar,
+          intlSuccess: IntlSuccessSnakebar,
+        }}
       >
         {children}
       </SnackbarProvider>
