@@ -3,21 +3,32 @@ import { useRoute } from "@/hooks/use-route";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
 import {
+  alpha,
+  Chip,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import RouterLink from "next/link";
 
-function SidebarItem(route: Readonly<Route>): React.JSX.Element {
+interface SidebarItemProps extends Route {
+  badge?: number;
+}
+
+function SidebarItem({
+  badge,
+  ...route
+}: Readonly<SidebarItemProps>): React.JSX.Element {
   const activeRouteTrail = useActiveRouteTrail();
   const isActive = activeRouteTrail.some(
     (item: Route) => item.name === route.name,
   );
   const { path } = useRoute();
   const t = useTranslations("ROUTES");
+  const theme = useTheme();
 
   return (
     <ListItem
@@ -96,6 +107,27 @@ function SidebarItem(route: Readonly<Route>): React.JSX.Element {
             },
           }}
         />
+        {!!badge && badge > 0 && (
+          <Chip
+            label={badge}
+            size="small"
+            variant="filled"
+            color="secondary" // Use error color for notice
+            sx={{
+              height: 20,
+              minWidth: 20,
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              color: "inherit",
+              mr: 1,
+              border: 0,
+              borderRadius: 1,
+              backgroundColor: isActive
+                ? alpha(theme.palette.primary.main, 0.04)
+                : alpha(theme.palette.secondary.main, 0.04),
+            }}
+          />
+        )}
       </ListItemButton>
     </ListItem>
   );

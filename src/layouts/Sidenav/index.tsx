@@ -1,10 +1,13 @@
 "use client";
+import { getSidebarNotifications } from "@/actions/notification/getSidebarNotifications";
 import { SidebarItem } from "@/config/Navbar";
 import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
 import { usePermission } from "@/providers/PermissionProvider";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Collapse, List, ListItemButton, ListItemText } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import SidebarItemComponent from "./components/SidebarItem";
 
@@ -33,6 +36,28 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
     getDefaultExpand(items, activeRouteTrail),
   );
 
+  const params = useParams();
+  const storeSlug = params?.store as string;
+
+  const { data: badges } = useQuery({
+    queryKey: ["sidebar-notifications", storeSlug],
+    queryFn: () => getSidebarNotifications(storeSlug),
+    enabled: !!storeSlug,
+    refetchInterval: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
+
+  const getBadge = (routeName: string) => {
+    if (!badges) return undefined;
+    if (routeName === "projects.store.preorders") return badges.preorder;
+    if (routeName === "projects.store.consignments") return badges.consignment;
+    if (routeName === "projects.store.products") return badges.products;
+    if (routeName === "projects.store.stocks") return badges.stockReceipt;
+    if (routeName === "projects.store.promotions") return badges.promotion;
+    return undefined;
+  };
+
   const renderNormalItem = (sidebarItem: SidebarItem) => {
     if ("routes" in sidebarItem) return;
     const permission = sidebarItem.permission;
@@ -55,6 +80,7 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
       <SidebarItemComponent
         key={`navbar-item-${sidebarItem.name}`}
         {...sidebarItem}
+        badge={getBadge(sidebarItem.name)}
       />
     );
   };
