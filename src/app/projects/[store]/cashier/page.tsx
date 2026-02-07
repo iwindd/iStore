@@ -21,7 +21,14 @@ const CashierPage = () => {
       <App.Main>
         <Grid container spacing={1} direction={"row-reverse"}>
           <Grid size={{ xs: 12, lg: 3 }}>
-            <Card sx={{ height: "700px" }}>
+            <Card
+              sx={{
+                height: {
+                  sm: "auto",
+                  md: "700px",
+                },
+              }}
+            >
               <CardHeader title={t("cart.title")} />
               <CardContent sx={{ height: "100%" }}>
                 <CartSections />
