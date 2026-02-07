@@ -1,12 +1,16 @@
 "use client";
-import { CircularProgress, useTheme } from "@mui/material";
+import {
+  CircularProgress,
+  CircularProgressProps,
+  useTheme,
+} from "@mui/material";
 import React from "react";
 
-const GradientCircularProgress = () => {
+const GradientCircularProgress = ({ size = 50 }: CircularProgressProps) => {
   const theme = useTheme();
   return (
     <React.Fragment>
-      <svg width={100} height={100}>
+      <svg width={size} height={size}>
         <defs>
           <linearGradient
             id="gradient-curcular-progress-loading"
@@ -26,7 +30,7 @@ const GradientCircularProgress = () => {
             stroke: "url(#gradient-curcular-progress-loading)",
           },
         }}
-        size={50}
+        size={size}
       />
     </React.Fragment>
   );

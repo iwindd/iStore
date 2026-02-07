@@ -14,6 +14,7 @@ export interface CartProductLoading extends CartProductBase {
   isLoading: true;
   productId?: never;
   data?: never;
+  _data?: FindProductByIdResult; // old data when refreshing
 }
 
 export interface CartProductLoaded extends CartProductBase {

@@ -1,3 +1,4 @@
+import GradientCircularProgress from "@/components/Loading/GradientCircularProgress";
 import { useAppDispatch } from "@/hooks";
 import { useDialog } from "@/hooks/use-dialog";
 import { money } from "@/libs/formatter";
@@ -8,7 +9,6 @@ import {
 } from "@/reducers/cartReducer";
 import { Delete, ExpandLess, ExpandMore } from "@mui/icons-material";
 import {
-  CircularProgress,
   Collapse,
   IconButton,
   Paper,
@@ -30,6 +30,8 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
   const preOrderDialog = useDialog();
   const dispatch = useAppDispatch();
 
+  const productData = product.data ?? product._data;
+
   return (
     <Paper
       variant="outlined"
@@ -43,26 +45,26 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
         <Stack direction={"row"} spacing={1}>
           <NumberStepper product={product} />
           <Stack flex={1} minWidth={0} mr={1}>
-            {product.data ? (
+            {productData ? (
               // Has data - show normal display
               <>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Typography variant="h6" noWrap sx={{ pr: 1 }}>
-                    {product.data?.label}
+                    {productData?.label}
                   </Typography>
                   {product.isLoading && (
-                    <CircularProgress size={16} thickness={4} />
+                    <GradientCircularProgress size={16} thickness={4} />
                   )}
                 </Stack>
 
                 <Stack direction={"row"} spacing={1}>
-                  {product.data?.serial && (
+                  {productData?.serial && (
                     <Typography variant="caption" color="text.secondary" noWrap>
-                      {t("product.serial")} {product.data.serial}
+                      {t("product.serial")} {productData.serial}
                     </Typography>
                   )}
 
-                  {product.data.usePreorder && (
+                  {productData.usePreorder && (
                     <TextAction
                       onClick={preOrderDialog.handleOpen}
                       label={t("product.preorder_label")}
@@ -87,7 +89,7 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
           </Stack>
 
           <Stack justifyContent={"center"}>
-            {product.data ? (
+            {productData ? (
               <Typography
                 variant="h6"
                 fontWeight="bold"
@@ -95,8 +97,8 @@ const CartProduct = ({ product }: { product: CartProductType }) => {
                 color="success.main"
                 textAlign={"right"}
               >
-                {(product.data?.price || 0) > 0
-                  ? money(product.data?.price || 0)
+                {(productData?.price || 0) > 0
+                  ? money(productData?.price || 0)
                   : t("product.free")}
               </Typography>
             ) : (

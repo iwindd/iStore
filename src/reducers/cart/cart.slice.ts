@@ -7,7 +7,12 @@ import {
   cashoutCart,
   consignmentCart,
 } from "./cart.thunks";
-import { CartProduct, CartState, CheckoutMode } from "./cart.types";
+import {
+  CartProduct,
+  CartProductLoading,
+  CartState,
+  CheckoutMode,
+} from "./cart.types";
 
 export const initialCartState: CartState = {
   products: [],
@@ -54,11 +59,19 @@ export const cartSlice = createSlice({
       product.quantity += 1;
       // Construct new loading state (removing data)
       const { cartId, quantity, serial, note } = product;
-      const newProduct: CartProduct = {
+
+      const _data = (() => {
+        if ("data" in product && product.data) return product.data;
+        if ("_data" in product && product._data) return product._data;
+        return undefined;
+      })();
+
+      const newProduct: CartProductLoading = {
         cartId,
         quantity,
         serial,
         note,
+        _data,
         isLoading: true,
       };
       const index = state.products.findIndex(
@@ -138,6 +151,8 @@ export const cartSlice = createSlice({
           productId: action.payload.productId,
           data: action.payload.data,
         };
+
+        if ("_data" in current) delete current._data;
       }
       state.total = CartHelper.getTotalPrice(state.products);
     },
