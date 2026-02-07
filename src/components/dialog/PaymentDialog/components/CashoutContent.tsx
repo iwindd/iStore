@@ -24,6 +24,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Method } from "@prisma/client";
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { PaymentDialogContentProps } from "..";
@@ -95,6 +96,7 @@ const CashoutContent = ({
   total,
   onSubmit,
 }: PaymentDialogContentProps) => {
+  const t = useTranslations("CASHIER.payment_dialog");
   const { isBackdrop } = useInterface();
   const [moneyReceived, setMoneyReceived] = React.useState<number>(0);
 
@@ -148,7 +150,7 @@ const CashoutContent = ({
           <Stack spacing={2}>
             <Box>
               <Typography variant="h5" fontWeight={700} gutterBottom>
-                ชำระเงิน
+                {t("title")}
               </Typography>
             </Box>
 
@@ -161,7 +163,7 @@ const CashoutContent = ({
                   <PaymentsTwoTone />
                 </Box>
                 <Typography variant="body2" fontWeight={600}>
-                  เงินสด
+                  {t("methods.cash")}
                 </Typography>
               </MethodButton>
               <MethodButton
@@ -172,7 +174,7 @@ const CashoutContent = ({
                   <QrCodeTwoTone />
                 </Box>
                 <Typography variant="body2" fontWeight={600}>
-                  โอนเงิน
+                  {t("methods.bank")}
                 </Typography>
               </MethodButton>
             </Stack>
@@ -184,7 +186,7 @@ const CashoutContent = ({
                 color="text.secondary"
                 sx={{ mb: 1, display: "block", textTransform: "uppercase" }}
               >
-                จำนวนเงินที่ได้รับ
+                {t("received")}
               </Typography>
               <TextField
                 fullWidth
@@ -244,7 +246,9 @@ const CashoutContent = ({
                   }}
                 >
                   <Typography variant="body2" fontWeight={600}>
-                    {pick === total ? `ราคาพอดี (${money(pick)})` : money(pick)}
+                    {pick === total
+                      ? t("exact", { amount: money(pick) })
+                      : money(pick)}
                   </Typography>
                 </Button>
               ))}
@@ -264,14 +268,14 @@ const CashoutContent = ({
                   color="text.secondary"
                   sx={{ textTransform: "uppercase" }}
                 >
-                  หมายเหตุ
+                  {t("note_label")}
                 </Typography>
               </Stack>
               <TextField
                 fullWidth
                 multiline
                 rows={3}
-                placeholder="เช่น ชื่อผู้ใช้ รหัสการสั่งจอง คำอธิบาย ข้อมูล คำชี้แจงเพิ่มเติม หรือ อื่นๆ"
+                placeholder={t("note_placeholder")}
                 {...register("note")}
               />
             </Box>
@@ -301,7 +305,9 @@ const CashoutContent = ({
           >
             <Stack spacing={2}>
               <Stack direction="row" justifyContent="space-between">
-                <Typography color="text.secondary">ยอดสุทธิ</Typography>
+                <Typography color="text.secondary">
+                  {t("summary.total")}
+                </Typography>
                 <Typography variant="h6" fontWeight={700}>
                   {money(total)}
                 </Typography>
@@ -309,7 +315,7 @@ const CashoutContent = ({
               <Divider />
               <Stack direction="row" justifyContent="space-between">
                 <Typography color="text.secondary">
-                  จำนวนเงินที่ได้รับ
+                  {t("summary.received")}
                 </Typography>
                 <Typography variant="body1" fontWeight={600}>
                   {money(moneyReceived)}
@@ -325,7 +331,7 @@ const CashoutContent = ({
               color="primary"
               sx={{ textTransform: "uppercase", letterSpacing: 1.5 }}
             >
-              จำนวนเงินทอน
+              {t("summary.change_due")}
             </Typography>
             <Typography
               variant="h2"
@@ -355,7 +361,7 @@ const CashoutContent = ({
                   letterSpacing: 1,
                 }}
               >
-                เงินทอน
+                {t("summary.change")}
               </Typography>
               {breakdown.map((item) => (
                 <BanknoteCard key={item.unit} unit={item.unit}>
@@ -379,7 +385,9 @@ const CashoutContent = ({
                     fontWeight={700}
                     sx={{ opacity: 0.6 }}
                   >
-                    {item.unit >= 20 ? "ธนบัตร" : "เหรียญ"}
+                    {item.unit >= 20
+                      ? t("summary.banknote")
+                      : t("summary.coin")}
                   </Typography>
                 </BanknoteCard>
               ))}
@@ -402,7 +410,7 @@ const CashoutContent = ({
               mt: "auto",
             }}
           >
-            ยืนยันการชำระเงิน
+            {t("submit")}
           </Button>
         </Grid>
       </Grid>

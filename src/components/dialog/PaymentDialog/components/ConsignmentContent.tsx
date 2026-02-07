@@ -1,5 +1,5 @@
 "use client";
-import {money} from "@/libs/formatter";
+import { money } from "@/libs/formatter";
 import { useInterface } from "@/providers/InterfaceProvider";
 import {
   ConsignmentInputSchema,
@@ -16,6 +16,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { PaymentDialogContentProps } from "..";
 
@@ -25,6 +26,7 @@ const ConsignmentContent = ({
   total,
   onSubmit,
 }: PaymentDialogContentProps) => {
+  const t = useTranslations("CASHIER.consignment_dialog");
   const { isBackdrop } = useInterface();
   const form = useForm<ConsignmentInputValues>({
     resolver: zodResolver(ConsignmentInputSchema),
@@ -55,7 +57,7 @@ const ConsignmentContent = ({
           <Stack spacing={2}>
             <Box>
               <Typography variant="h5" fontWeight={700} gutterBottom>
-                ฝากขาย
+                {t("title")}
               </Typography>
             </Box>
 
@@ -73,14 +75,14 @@ const ConsignmentContent = ({
                   color="text.secondary"
                   sx={{ textTransform: "uppercase" }}
                 >
-                  หมายเหตุ
+                  {t("note_label")}
                 </Typography>
               </Stack>
               <TextField
                 fullWidth
                 multiline
                 rows={3}
-                placeholder="เช่น ชื่อผู้ใช้ รหัสการสั่งจอง คำอธิบาย ข้อมูล คำชี้แจงเพิ่มเติม หรือ อื่นๆ"
+                placeholder={t("note_placeholder")}
                 {...register("note")}
                 error={!!errors.note}
                 helperText={errors.note?.message}
@@ -112,7 +114,7 @@ const ConsignmentContent = ({
           >
             <Stack spacing={2}>
               <Stack direction="row" justifyContent="space-between">
-                <Typography color="text.secondary">ยอดสุทธิ</Typography>
+                <Typography color="text.secondary">{t("total")}</Typography>
                 <Typography variant="h6" fontWeight={700}>
                   {money(total)}
                 </Typography>
@@ -135,7 +137,7 @@ const ConsignmentContent = ({
               mt: "auto",
             }}
           >
-            ยืนยันการฝากขาย
+            {t("submit")}
           </Button>
         </Grid>
       </Grid>
