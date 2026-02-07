@@ -224,13 +224,8 @@ const HistoryDatatable = () => {
 
   return (
     <>
-      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
-        <Tabs
-          value={filterType}
-          onChange={(_, value) => setFilterType(value)}
-          textColor="primary"
-          indicatorColor="primary"
-        >
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs value={filterType} onChange={(_, value) => setFilterType(value)}>
           <Tab label={ts("all")} value="all" />
           <Tab label={ts("completed")} value="completed" />
           <Tab label={ts("draft")} value="draft" />
