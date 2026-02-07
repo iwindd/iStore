@@ -55,7 +55,7 @@ const MobileSidebar = ({ items, open, onClose }: MobileSidebarProps) => {
       onClose={onClose}
       open={open}
     >
-      <Stack spacing={2} sx={{ p: 3 }}>
+      <Stack spacing={2} sx={{ py: 3 }}>
         <NavLogo />
         <Box
           component="nav"

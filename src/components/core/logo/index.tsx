@@ -1,5 +1,6 @@
 import { Stack, StackProps, useTheme } from "@mui/material";
 import { ImageProps } from "next/image";
+import { useId } from "react";
 
 const Logo = ({
   width = 42,
@@ -16,7 +17,7 @@ const Logo = ({
   color?: "default" | "neutral";
 }) => {
   const theme = useTheme();
-
+  const gradientId = useId();
   const colors = {
     default: {
       main: theme.palette.primary.main,
@@ -37,22 +38,20 @@ const Logo = ({
       {...slotProps?.stack}
     >
       <svg
-        style={{
-          height: height,
-          width: width,
-        }}
+        width={width}
+        height={height}
         viewBox="0 0 810 810"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          <linearGradient id="logoGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={colors[color].main} />
-            <stop offset="50%%" stopColor={colors[color].light} />
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={colors[color].light} />
+            <stop offset="50%" stopColor={colors[color].light} />
             <stop offset="100%" stopColor={colors[color].main} />
           </linearGradient>
         </defs>
 
-        <circle cx="179" cy="158" r="77" fill="url(#logoGradient)" />
+        <circle cx="179" cy="158" r="77" fill={`url(#${gradientId})`} />
 
         <rect
           x="102"
@@ -60,7 +59,7 @@ const Logo = ({
           width="155"
           height="476"
           rx="60"
-          fill="url(#logoGradient)"
+          fill={`url(#${gradientId})`}
         />
 
         <rect
@@ -69,7 +68,7 @@ const Logo = ({
           width="155"
           height="648"
           rx="60"
-          fill="url(#logoGradient)"
+          fill={`url(#${gradientId})`}
         />
 
         <rect
@@ -78,7 +77,7 @@ const Logo = ({
           width="155"
           height="648"
           rx="60"
-          fill="url(#logoGradient)"
+          fill={`url(#${gradientId})`}
         />
       </svg>
     </Stack>
