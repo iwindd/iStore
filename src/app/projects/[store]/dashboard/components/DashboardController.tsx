@@ -2,6 +2,7 @@
 import HasStorePermission from "@/components/Flagments/HasStorePermission";
 import { PermissionConfig } from "@/config/permissionConfig";
 import { useRoute } from "@/hooks/use-route";
+import AppHeader from "@/layouts/App/Header";
 import {
   DashboardRange,
   EnumDashboardRange,
@@ -27,7 +28,6 @@ import {
   Select,
   Stack,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import { useQueryClient } from "@tanstack/react-query";
@@ -112,9 +112,7 @@ const DashboardController = () => {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
-        <Stack>
-          <Typography variant="h4">{t("title")}</Typography>
-        </Stack>
+        <AppHeader.Title>{t("title")}</AppHeader.Title>
 
         <Stack direction={"row"} spacing={1} alignItems="center">
           <HasStorePermission

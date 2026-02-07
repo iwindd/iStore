@@ -292,7 +292,7 @@ const ProductDatatable = () => {
 
   return (
     <>
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 3, mt: 0 }}>
         <Tabs value={filterType} onChange={(_, value) => setFilterType(value)}>
           <Tab label={t("filters.all")} value="all" />
           <Tab label={t("filters.stock")} value="stock" />
