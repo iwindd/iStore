@@ -3,43 +3,10 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
-import { Prisma } from "@prisma/client";
 
-export type ObtainPromotionOffer = Prisma.PromotionOfferGetPayload<{
-  select: {
-    id: true;
-    buyItems: {
-      select: {
-        id: true;
-        quantity: true;
-        product_id: true;
-      };
-    };
-    getItems: {
-      select: {
-        id: true;
-        quantity: true;
-        product: {
-          select: {
-            label: true;
-            price: true;
-            id: true;
-            serial: true;
-            stock: true;
-          };
-        };
-        product_id: true;
-      };
-    };
-    event: {
-      select: {
-        id: true;
-        start_at: true;
-        end_at: true;
-      };
-    };
-  };
-}>;
+export type ObtainPromotionOffer = Awaited<
+  ReturnType<typeof fetchObtainPromotionOffer>
+>[number];
 
 const fetchObtainPromotionOffer = async (
   products: {
@@ -47,7 +14,7 @@ const fetchObtainPromotionOffer = async (
     quantity: number;
   }[],
   storeSlug: string,
-): Promise<ObtainPromotionOffer[]> => {
+) => {
   try {
     const ctx = await getPermissionContext(storeSlug);
     assertStoreCan(ctx, PermissionConfig.store.cashier.getObtainPromotionOffer);
@@ -107,7 +74,16 @@ const fetchObtainPromotionOffer = async (
       },
     });
 
-    return result;
+    return result.map((item) => ({
+      ...item,
+      getItems: item.getItems.map((item) => ({
+        ...item,
+        product: {
+          ...item.product,
+          price: item.product.price.toNumber(),
+        },
+      })),
+    }));
   } catch (error) {
     console.error(error);
     return [];
