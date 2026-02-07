@@ -3,9 +3,18 @@ import { SidebarItem } from ".";
 
 const OverviewSidebarItems = [
   getRoute("overview"),
-  getRoute("projects"),
-  getRoute("users"),
-  getRoute("account"),
+  {
+    key: "business",
+    title: "ธุรกิจ",
+    defaultExpand: true,
+    routes: [getRoute("projects"), getRoute("users")],
+  },
+  {
+    key: "account",
+    title: "บัญชีของฉัน",
+    defaultExpand: true,
+    routes: [getRoute("account")],
+  },
 ] as const satisfies SidebarItem[];
 
 export default OverviewSidebarItems;
