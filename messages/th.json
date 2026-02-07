@@ -937,7 +937,8 @@
       "tabs": {
         "all": "ทั้งหมด",
         "product": "รายการสินค้า",
-        "preorder": "รายการพรีออเดอร์"
+        "preorder": "รายการพรีออเดอร์",
+        "promotion": "รายการของแถม"
       },
       "datatable": {
         "headers": {
@@ -949,6 +950,8 @@
           "cost": "ต้นทุน",
           "profit": "กำไร",
           "count": "จำนวน",
+          "received_count": "จำนวนที่ได้รับ",
+          "free_count": "จำนวนของแถม",
           "status": "สถานะ",
           "note": "หมายเหตุ",
           "promotion": "โปรโมชั่น",
@@ -959,7 +962,8 @@
         },
         "types": {
           "product": "สินค้า",
-          "preorder": "พรีออเดอร์"
+          "preorder": "พรีออเดอร์",
+          "promotion": "ของแถม"
         },
         "statuses": {
           "PENDING": "รอดำเนินการ",

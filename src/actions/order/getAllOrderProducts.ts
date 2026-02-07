@@ -45,16 +45,6 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
             },
           },
         },
-        promotionOffers: {
-          select: {
-            id: true,
-            event: {
-              select: {
-                note: true,
-              },
-            },
-          },
-        },
       },
     });
 
@@ -93,21 +83,96 @@ const getAllOrderProducts = async (table: TableFetch, orderId: number) => {
       },
     });
 
+    // Fetch OrderProductPromotionBuyXGetY
+    const promotionProducts = await db.orderProductPromotionBuyXGetY.findMany({
+      where: {
+        order: {
+          id: orderId,
+          store_id: ctx.storeId!,
+          creator_id: ifNotHasStorePermission(
+            ctx,
+            PermissionConfig.store.history.getAllOrderProducts,
+            ctx.employeeId,
+          ),
+        },
+      },
+      select: {
+        id: true,
+        received_count: true,
+        free_count: true,
+        cost: true,
+        product: {
+          select: {
+            serial: true,
+            label: true,
+            category: {
+              select: {
+                label: true,
+              },
+            },
+          },
+        },
+        promotionBuyXGetY: {
+          select: {
+            event: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
     // Combine and add type field
-    const combinedData = [
+    let combinedData = [
       ...orderProducts.map((item) => ({
         ...item,
-        type: "PRODUCT" as const,
+        type: "PRODUCT",
         status: null,
-        promotions: item.promotionOffers
-          .map((p) => p.event?.note || `#${p.id}`)
-          .join(", "),
       })),
       ...preOrderProducts.map((item) => ({
         ...item,
-        type: "PREORDER" as const,
+        type: "PREORDER",
+      })),
+      ...promotionProducts.map((item) => ({
+        ...item,
+        type: "PROMOTION",
+        count: item.received_count,
+        status: null,
+        promotions: item.promotionBuyXGetY.event?.name || "-",
       })),
     ];
+
+    // Filter data if specified
+    if (table.filter && table.filter.items.length > 0) {
+      table.filter.items.forEach((filterItem) => {
+        const { field, operator, value } = filterItem;
+        if (!value) return;
+
+        combinedData = combinedData.filter((item: any) => {
+          let itemValue = item[field];
+
+          // Handle nested fields
+          if (field.includes(".")) {
+            const fields = field.split(".");
+            itemValue = fields.reduce((obj, f) => obj?.[f], item);
+          }
+
+          if (operator === "equals") {
+            return itemValue === value;
+          }
+
+          if (operator === "contains") {
+            return String(itemValue)
+              .toLowerCase()
+              .includes(String(value).toLowerCase());
+          }
+          // Add more operators if needed
+          return true;
+        });
+      });
+    }
 
     // Apply sorting if specified
     let sortedData = [...combinedData];

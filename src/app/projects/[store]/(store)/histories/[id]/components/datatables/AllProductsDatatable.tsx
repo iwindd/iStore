@@ -1,11 +1,13 @@
 "use client";
 import getAllOrderProducts from "@/actions/order/getAllOrderProducts";
+import OrderProductTypeChip, {
+  OrderProductType,
+} from "@/components/Chips/OrderProductTypeChip";
+import PreOrderStatusChip from "@/components/Chips/PreOrderStatusChip";
 import Datatable from "@/components/Datatable";
-import * as ff from "@/libs/formatter";
 import { Chip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { PreOrderStatus } from "@prisma/client";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 interface AllProductsDatatableProps {
   orderId: number;
@@ -13,26 +15,7 @@ interface AllProductsDatatableProps {
 
 const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
   const t = useTranslations("HISTORIES.detail.datatable");
-  const getStatusChip = (status: PreOrderStatus | null) => {
-    if (!status) return "-";
-
-    switch (status) {
-      case "PENDING":
-        return (
-          <Chip label={t("statuses.PENDING")} color="warning" size="small" />
-        );
-      case "RETURNED":
-        return (
-          <Chip label={t("statuses.RETURNED")} color="success" size="small" />
-        );
-      case "CANCELLED":
-        return (
-          <Chip label={t("statuses.CANCELLED")} color="error" size="small" />
-        );
-      default:
-        return <Chip label={status} size="small" />;
-    }
-  };
+  const f = useFormatter();
 
   const columns = (): GridColDef[] => {
     return [
@@ -42,12 +25,7 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.type"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) =>
-          data.value === "PRODUCT" ? (
-            <Chip label={t("types.product")} color="primary" size="small" />
-          ) : (
-            <Chip label={t("types.preorder")} color="secondary" size="small" />
-          ),
+        renderCell: ({ value }) => <OrderProductTypeChip type={value} />,
       },
       {
         field: "product.serial",
@@ -79,7 +57,8 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.price"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.money(data.value),
+        renderCell: (data: any) =>
+          data.value ? f.number(data.value, "currency") : "-",
       },
       {
         field: "cost",
@@ -87,7 +66,7 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.cost"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.money(data.value),
+        renderCell: (data: any) => f.number(data.value, "currency"),
       },
       {
         field: "profit",
@@ -95,7 +74,8 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.profit"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.money(data.value),
+        renderCell: (data: any) =>
+          data.value ? f.number(data.value, "currency") : "-",
       },
       {
         field: "count",
@@ -103,7 +83,8 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.count"),
         flex: 0.8,
         editable: false,
-        renderCell: (data: any) => t("units.items", { count: data.value }),
+        renderCell: (data: any) =>
+          t("units.items", { count: f.number(data.value) }),
       },
       {
         field: "status",
@@ -111,7 +92,12 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.status"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => getStatusChip(data.value),
+        renderCell: ({ value, row: { type } }) =>
+          type === OrderProductType["PREORDER"] ? (
+            <PreOrderStatusChip status={value} />
+          ) : (
+            "-"
+          ),
       },
       {
         field: "promotions",
@@ -137,7 +123,7 @@ const AllProductsDatatable = ({ orderId }: AllProductsDatatableProps) => {
         headerName: t("headers.note"),
         flex: 1,
         editable: false,
-        renderCell: (data: any) => ff.text(data.value),
+        renderCell: ({ value }) => value || "-",
       },
     ];
   };
