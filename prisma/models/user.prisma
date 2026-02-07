@@ -2,7 +2,7 @@ model User {
   id             Int           @id @default(autoincrement())
   first_name     String        @db.VarChar(100)
   last_name      String        @db.VarChar(100)
-  email          String        @db.VarChar(255) @unique
+  email          String        @unique @db.VarChar(255)
   password       String        @db.VarChar(255)
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
@@ -44,10 +44,10 @@ model Employee {
   completed_consignments Consignment[]   @relation("CompletedConsignments")
   cancelled_consignments Consignment[]   @relation("CancelledConsignments")
 
+  @@unique([user_id, store_id])
   @@index([store_id])
   @@index([user_id])
   @@index([role_id])
   @@index([creator_id])
-  @@unique([user_id, store_id])
   @@map("employees")
 }

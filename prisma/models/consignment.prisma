@@ -45,7 +45,7 @@ model ConsigmentProduct {
 
   consignment Consignment @relation(fields: [consignment_id], references: [id])
   product     Product     @relation(fields: [product_id], references: [id])
-  
+
   @@index([consignment_id])
   @@index([product_id])
   @@map("consignment_products")

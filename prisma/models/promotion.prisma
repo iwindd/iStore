@@ -1,6 +1,6 @@
 model Event {
   id          Int       @id @default(autoincrement())
-  name        String?   @db.VarChar(100) @default("Untitled") 
+  name        String?   @default("Untitled") @db.VarChar(100)
   note        String?   @db.VarChar(255)
   store_id    String
   creator_id  Int?
@@ -28,10 +28,10 @@ model PromotionOffer {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  buyItems      PromotionOfferBuyItem[] @relation("BuyItems")
-  getItems      PromotionOfferGetItem[] @relation("GetItems")
-  event         Event                   @relation(fields: [event_id], references: [id], onDelete: Cascade)
-  orderProducts OrderProduct[]
+  buyItems                      PromotionOfferBuyItem[]         @relation("BuyItems")
+  getItems                      PromotionOfferGetItem[]         @relation("GetItems")
+  event                         Event                           @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  orderProductPromotionBuyXGetY OrderProductPromotionBuyXGetY[]
 
   @@index([event_id])
   @@map("promotion_offers")

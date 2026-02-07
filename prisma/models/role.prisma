@@ -1,17 +1,17 @@
 model GlobalRole {
-  id             Int      @id @default(autoincrement())
-  label          String   @db.VarChar(100)
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  is_hidden      Boolean  @default(false)
-  creator_id     Int?
+  id         Int      @id @default(autoincrement())
+  label      String   @db.VarChar(100)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  is_hidden  Boolean  @default(false)
+  creator_id Int?
 
   creator     Employee?          @relation("GlobalRoleCreations", fields: [creator_id], references: [id])
   users       User[]
   permissions GlobalPermission[] @relation("GlobalRolePermission")
 
-  @@index([creator_id])
   @@unique([label])
+  @@index([creator_id])
   @@map("global_roles")
 }
 
@@ -26,23 +26,23 @@ model GlobalPermission {
 }
 
 model StoreRole {
-  id           Int      @id @default(autoincrement())
-  name         String   @db.VarChar(100)
-  description  String?  @db.VarChar(255)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  store_id     String
-  is_hidden    Boolean  @default(false)
-  creator_id   Int?
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(255)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  store_id    String
+  is_hidden   Boolean  @default(false)
+  creator_id  Int?
 
   store       Store             @relation(fields: [store_id], references: [id])
   creator     Employee?         @relation("StoreRoleCreations", fields: [creator_id], references: [id])
   employees   Employee[]        @relation("EmployeeRole")
   permissions StorePermission[] @relation("StoreRolePermission")
 
+  @@unique([store_id, name])
   @@index([store_id])
   @@index([creator_id])
-  @@unique([store_id, name])
   @@map("store_roles")
 }
 

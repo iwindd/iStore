@@ -3,10 +3,15 @@ import { PermissionConfig } from "@/config/permissionConfig";
 import db from "@/libs/db";
 import { assertStoreCan } from "@/libs/permission/context";
 import { getPermissionContext } from "@/libs/permission/getPermissionContext";
+import { getPromotionQuantities } from "@/libs/promotion";
 import { CashoutSchema, CashoutValues } from "@/schema/Payment";
-import { Order, Prisma, ProductStockMovementType } from "@prisma/client";
+import { Prisma, ProductStockMovementType } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import { CashoutHelper } from "./cashout-helpers";
+import { uniq } from "lodash";
+import {
+  CashoutHelper,
+  GetObtainPromotionBuyXGetYInstance,
+} from "./cashout-helpers";
 
 export type ValidateProduct = {
   id: number;
@@ -18,15 +23,30 @@ export type ValidateProduct = {
   note?: string;
 };
 
+export type PromotionBuyXGetYValidateProduct = Omit<
+  ValidateProduct,
+  "quantity" | "profit"
+> & {
+  receivedCount: number;
+  freeCount: number;
+  promotion_buy_x_get_y_id: number;
+};
+
 export const validateProducts = async (
   store_id: string,
   cartProducts: CashoutValues["products"],
   preOrderProducts?: CashoutValues["preOrderProducts"],
 ) => {
-  const allRelateProductIds = [
+  const obtainPromotionBuyXGetYs =
+    await CashoutHelper.getObtainPromotionBuyXGetY(cartProducts, store_id);
+
+  const allRelateProductIds = uniq([
     ...cartProducts.map((p) => p.id),
     ...(preOrderProducts?.map((p) => p.id) || []),
-  ];
+    ...obtainPromotionBuyXGetYs.flatMap((p) =>
+      p.getItems.map((item) => item.product_id),
+    ),
+  ]);
 
   const where: Prisma.ProductWhereInput = {
     store_id,
@@ -56,9 +76,31 @@ export const validateProducts = async (
 
   const totalProducts: ValidateProduct[] = [];
   const totalPreOrderProducts: ValidateProduct[] = [];
+  const totalObtainPromotionBuyXGetYProducts: PromotionBuyXGetYValidateProduct[] =
+    [];
+
+  const getStockRemaining = (productId: number) => {
+    const product = findProduct(productId);
+    const productStock = product.stock?.quantity || 0;
+
+    const fromCart =
+      totalProducts.find((p) => p.id === productId)?.quantity || 0;
+    const fromObtainPromotionBuyXGetY = totalObtainPromotionBuyXGetYProducts
+      .filter((p) => p.id === productId)
+      .reduce((total, p) => total + p.receivedCount, 0);
+
+    console.log(
+      productStock,
+      fromCart,
+      fromObtainPromotionBuyXGetY,
+      product.id,
+      Math.max(productStock - (fromCart + fromObtainPromotionBuyXGetY), 0),
+    );
+    return Math.max(productStock - (fromCart + fromObtainPromotionBuyXGetY), 0);
+  };
 
   const validateProduct = (
-    cartProduct: CashoutValues["products"][number],
+    cartProduct: Omit<CashoutValues["products"][number], "productId">,
     isPreOrder?: boolean,
   ) => {
     const product = findProduct(cartProduct.id);
@@ -83,6 +125,51 @@ export const validateProducts = async (
     };
   };
 
+  const validateProductPromotionBuyXGetY = (
+    obtainPromotionBuyXGetY: GetObtainPromotionBuyXGetYInstance,
+  ) => {
+    const getProducts = getPromotionQuantities(
+      obtainPromotionBuyXGetY.buyItems,
+      obtainPromotionBuyXGetY.getItems,
+      totalProducts.map((p) => ({
+        productId: p.id,
+        quantity: p.quantity,
+      })),
+    );
+
+    const promotionProducts: PromotionBuyXGetYValidateProduct[] = [];
+
+    for (const getProduct of getProducts) {
+      const product = findProduct(getProduct.id);
+
+      const remainProductStock = getStockRemaining(getProduct.id);
+
+      const receivedCount = Math.min(getProduct.quantity, remainProductStock);
+      const freeCount = getProduct.quantity;
+
+      if (getProduct.quantity > remainProductStock) {
+        console.warn(
+          `[PromotionBuyXGetY Cashout] Adjust quantity of product ${getProduct.id} to ${remainProductStock}`,
+        );
+      }
+
+      const totalPrice = product.price.mul(receivedCount);
+      const totalCost = product.cost.mul(receivedCount);
+
+      promotionProducts.push({
+        id: product.id,
+        stock: product.stock?.quantity || 0,
+        receivedCount: receivedCount,
+        freeCount: freeCount,
+        cost: totalCost.toNumber(),
+        total: totalPrice.toNumber(),
+        promotion_buy_x_get_y_id: obtainPromotionBuyXGetY.id,
+      });
+    }
+
+    return promotionProducts;
+  };
+
   for (const cartProduct of cartProducts) {
     totalProducts.push(validateProduct(cartProduct));
   }
@@ -93,9 +180,18 @@ export const validateProducts = async (
     }
   }
 
+  for (const obtainPromotionBuyXGetY of obtainPromotionBuyXGetYs) {
+    const promotionProducts = validateProductPromotionBuyXGetY(
+      obtainPromotionBuyXGetY,
+    );
+
+    totalObtainPromotionBuyXGetYProducts.push(...promotionProducts);
+  }
+
   return {
     products: totalProducts,
     preOrderProducts: totalPreOrderProducts,
+    obtainPromotionBuyXGetYProducts: totalObtainPromotionBuyXGetYProducts,
     totalPrice: CashoutHelper.getTotalPrice([
       ...totalProducts,
       ...totalPreOrderProducts,
@@ -103,6 +199,7 @@ export const validateProducts = async (
     totalCost: CashoutHelper.getTotalCost([
       ...totalProducts,
       ...totalPreOrderProducts,
+      ...totalObtainPromotionBuyXGetYProducts,
     ]),
     totalProfit: CashoutHelper.getTotalProfit([
       ...totalProducts,
@@ -111,22 +208,23 @@ export const validateProducts = async (
   };
 };
 
-interface CashoutResponse extends Omit<Order, "created_at" | "updated_at"> {
-  created_at: string;
-  updated_at: string;
-}
-
 const Cashout = async (storeSlug: string, payload: CashoutValues) => {
   const ctx = await getPermissionContext(storeSlug);
   assertStoreCan(ctx, PermissionConfig.store.cashier.cashout);
 
   const validated = CashoutSchema.parse(payload);
-  const { products, preOrderProducts, totalPrice, totalCost, totalProfit } =
-    await validateProducts(
-      ctx.storeId!,
-      validated.products,
-      validated.preOrderProducts,
-    );
+  const {
+    products,
+    preOrderProducts,
+    obtainPromotionBuyXGetYProducts,
+    totalPrice,
+    totalCost,
+    totalProfit,
+  } = await validateProducts(
+    ctx.storeId!,
+    validated.products,
+    validated.preOrderProducts,
+  );
 
   const order = await db.$transaction(async (tx) => {
     const order = await tx.order.create({
@@ -154,17 +252,13 @@ const Cashout = async (storeSlug: string, payload: CashoutValues) => {
       })),
     });
 
-    // Remove Product Stock
+    // Remove Product Stock Of Cart
     for (const product of products) {
       const stock = await tx.productStock.upsert({
         where: { product_id: product.id },
         create: { product_id: product.id, quantity: 0 },
         update: {},
       });
-
-      if (stock.quantity < product.quantity) {
-        throw new Error(`Product ${product.id} is out of stock`);
-      }
 
       const before = stock.quantity;
       const after = before - product.quantity;
@@ -184,6 +278,54 @@ const Cashout = async (storeSlug: string, payload: CashoutValues) => {
         where: { id: stock.id },
         data: {
           quantity: { decrement: product.quantity },
+        },
+      });
+    }
+
+    // Create Order Product Promotion Buy X Get Y
+    await tx.orderProductPromotionBuyXGetY.createMany({
+      data: obtainPromotionBuyXGetYProducts.map((product) => ({
+        order_id: order.id,
+        promotionBuyXGetY_id: product.promotion_buy_x_get_y_id,
+        product_id: product.id,
+        received_count: product.receivedCount,
+        free_count: product.freeCount,
+        total: new Decimal(product.total),
+        cost: new Decimal(product.cost),
+        note: product.note,
+      })),
+    });
+
+    // Remove Product Stock Of Promotion
+    for (const product of obtainPromotionBuyXGetYProducts) {
+      const stock = await tx.productStock.upsert({
+        where: { product_id: product.id },
+        create: { product_id: product.id, quantity: 0 },
+        update: {},
+      });
+
+      if (stock.quantity < product.receivedCount) {
+        throw new Error(`Product ${product.id} is out of stock`);
+      }
+
+      const before = stock.quantity;
+      const after = before - product.receivedCount;
+
+      await tx.productStockMovement.create({
+        data: {
+          order_id: order.id,
+          product_id: product.id,
+          type: ProductStockMovementType.SOLD_PROMOTION,
+          quantity: -product.receivedCount,
+          quantity_before: before,
+          quantity_after: after,
+        },
+      });
+
+      await tx.productStock.update({
+        where: { id: stock.id },
+        data: {
+          quantity: { decrement: product.receivedCount },
         },
       });
     }
