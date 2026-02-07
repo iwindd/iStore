@@ -1,3 +1,4 @@
+import { getRoute } from "@/router";
 import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -33,27 +34,38 @@ const CashierTab = () => {
 
   const CASHIER_TAB = [
     {
-      name: "RELATED_PROMOTION",
-      label: t("related_promotion.title"),
-      component: RelatedPromotionOfferTab,
-    },
-    {
       name: "PRODUCTS",
       label: t("products.title"),
       component: ProductsTab,
+      icon: getRoute("projects.store.products").icon,
+    },
+    {
+      name: "RELATED_PROMOTION",
+      label: t("related_promotion.title"),
+      component: RelatedPromotionOfferTab,
+      icon: getRoute("projects.store.promotions").icon,
     },
   ];
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-    console.log({ newValue });
   };
 
   return (
     <Box sx={{ width: "100%" }}>
       <Tabs value={value} onChange={handleChange} sx={{ mb: 3, mt: 2 }}>
-        {CASHIER_TAB.map((tab, index) => (
-          <Tab id={`cashier-tab-${index}`} key={tab.name} label={tab.label} />
+        {CASHIER_TAB.map(({ icon: Icon, ...tab }, index) => (
+          <Tab
+            id={`cashier-tab-${index}`}
+            key={tab.name}
+            label={tab.label}
+            icon={<Icon fontSize="small" />}
+            iconPosition="start"
+            sx={{
+              py: 1,
+              minHeight: "48px",
+            }}
+          />
         ))}
       </Tabs>
 
