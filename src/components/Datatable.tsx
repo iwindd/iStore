@@ -59,12 +59,12 @@ const getDatatableVariantSxProps = (
     case "card":
       return {
         "& .MuiDataGrid-columnHeaders": {
-          backgroundColor: theme.palette.background.level1,
+          backgroundColor: `var(--mui-palette-background-level1)`,
         },
 
         "& .MuiDataGrid-columnHeader": {
-          backgroundColor: theme.palette.background.level1,
-          color: theme.palette.text.secondary,
+          backgroundColor: `var(--mui-palette-background-level1)`,
+          color: `var(--mui-palette-text-secondary)`,
         },
         "& .MuiDataGrid-columnSeparator": {
           color: alpha(theme.palette.secondary.main, 0.1),
