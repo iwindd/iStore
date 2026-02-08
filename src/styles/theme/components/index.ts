@@ -7,6 +7,7 @@ import { MuiCard } from "./card";
 import { MuiCardContent } from "./card-content";
 import { MuiCardHeader } from "./card-header";
 import { MuiGrid } from "./grid";
+import { MuiIconButton } from "./icon-button";
 import { MuiLink } from "./link";
 import { MuiPopover } from "./pop-over";
 import { MuiStack } from "./stack";
@@ -30,6 +31,7 @@ export const components = {
   MuiAutocomplete,
   MuiStack,
   MuiGrid,
+  MuiIconButton,
   MuiTab,
   MuiTableBody,
   MuiTableCell,
