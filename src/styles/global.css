@@ -74,3 +74,16 @@
   background: rgba(var(--custom-popover-bg-base) / 0.5);
   backdrop-filter: blur(24px) saturate(120%);
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  /* Use a large inset box-shadow to cover the default background */
+  -webkit-box-shadow: 0 0 0px 1000px
+    var(--mui-palette-background-defaultChannel) inset !important;
+  box-shadow: 0 0 0px 1000px var(--mui-palette-background-defaultChannel) inset !important;
+
+  /* Force text and caret color to match your design */
+  -webkit-text-fill-color: var(--mui-palette-text-primaryChannel) !important;
+  caret-color: var(--mui-palette-text-primaryChannel) !important;
+}
