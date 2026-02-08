@@ -1,35 +1,15 @@
 "use client";
 import StoreSidebarItems from "@/config/Navbar/store";
+import { useAppSelector } from "@/hooks";
 import { useAuth } from "@/hooks/use-auth";
 import StoreNavbar from "@/layouts/Navbar/StoreNavbar";
 import DesktopSidebar from "@/layouts/Sidenav/components/DesktopSidebar";
 import { Box, GlobalStyles, Stack } from "@mui/material";
 
-export default function MainLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  const { user } = useAuth();
-
-  if (!user) {
-    return children;
-  }
-
+function LayoutContent({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <GlobalStyles
-        styles={{
-          body: {
-            "--MainNav-height": "56px",
-            "--MainNav-zIndex": 1000,
-            "--SideNav-width": "300px",
-            "--SideNav-zIndex": 1100,
-            "--MobileNav-width": "320px",
-            "--MobileNav-zIndex": 1100,
-          },
-        }}
-      />
+      <SidebarGlobalStyles />
       <Box
         sx={{
           bgcolor: "var(--mui-palette-background-default)",
@@ -46,6 +26,7 @@ export default function MainLayout({
             flex: "1 1 auto",
             flexDirection: "column",
             pl: { md: "var(--SideNav-width)" },
+            transition: "padding-left 0.3s ease",
           }}
         >
           <StoreNavbar />
@@ -70,3 +51,37 @@ export default function MainLayout({
     </>
   );
 }
+
+export default function MainLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const { user } = useAuth();
+
+  if (!user) {
+    return children;
+  }
+
+  return <LayoutContent>{children}</LayoutContent>;
+}
+
+export const SidebarGlobalStyles = () => {
+  const navbarVariant = useAppSelector((state) => state.ui.navbarVariant);
+  const isCollapsed = navbarVariant === "collapse";
+
+  return (
+    <GlobalStyles
+      styles={{
+        body: {
+          "--MainNav-height": "56px",
+          "--MainNav-zIndex": 1000,
+          "--SideNav-width": isCollapsed ? "80px" : "300px",
+          "--SideNav-zIndex": 1200,
+          "--MobileNav-width": "320px",
+          "--MobileNav-zIndex": 1100,
+        },
+      }}
+    />
+  );
+};

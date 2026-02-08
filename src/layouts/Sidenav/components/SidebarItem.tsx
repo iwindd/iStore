@@ -4,11 +4,13 @@ import { useActiveRouteTrail } from "@/hooks/useActiveRouteTrail";
 import { Route } from "@/libs/route/route";
 import {
   alpha,
+  Badge,
   Chip,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Typography,
   useTheme,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
@@ -16,10 +18,12 @@ import RouterLink from "next/link";
 
 interface SidebarItemProps extends Route {
   badge?: number;
+  isCollapsed?: boolean;
 }
 
 function SidebarItem({
   badge,
+  isCollapsed = false,
   ...route
 }: Readonly<SidebarItemProps>): React.JSX.Element {
   const activeRouteTrail = useActiveRouteTrail();
@@ -30,7 +34,7 @@ function SidebarItem({
   const t = useTranslations("ROUTES");
   const theme = useTheme();
 
-  return (
+  const itemContent = (
     <ListItem
       sx={{
         p: 0,
@@ -55,9 +59,10 @@ function SidebarItem({
           textDecoration: "none",
           whiteSpace: "nowrap",
           transition: "0.2s background ease",
-          minHeight: "45px",
+          minHeight: isCollapsed ? "48px" : "45px",
           margin: "0 0 6px 0",
-          padding: "0 0",
+          padding: isCollapsed ? 1 : "0 0",
+          justifyContent: isCollapsed ? "center" : "flex-start",
           width: "100%",
           color: "var(--SidebarItem-color)",
           "&.Mui-focusVisible": {
@@ -75,6 +80,7 @@ function SidebarItem({
           "&:not([data-active='true']):hover": {
             bgcolor: "var(--SidebarItem-hover-background)",
           },
+          flexDirection: isCollapsed ? "column" : "row",
         }}
       >
         {route.icon && (
@@ -84,53 +90,91 @@ function SidebarItem({
                 ? "var(--SidebarItem-icon-active-color)"
                 : "var(--SidebarItem-icon-color)",
               minWidth: "0px",
-              marginX: "0.6em",
+              marginX: isCollapsed ? "0" : "0.6em",
             }}
           >
-            {<route.icon fontSize={"medium"} />}
+            <Badge
+              badgeContent={badge}
+              color="secondary"
+              invisible={!isCollapsed}
+              sx={{
+                "& .MuiBadge-badge": {
+                  border: `2px solid ${(theme.vars ?? theme).palette.background.paper}`,
+                  padding: "0 4px",
+                  backgroundColor: isActive
+                    ? "var(--SidebarItem-active-color)"
+                    : "var(--SidebarItem-color)",
+
+                  fontSize: theme.typography.sidebarCollapsed.fontSize,
+                  lineHeight: theme.typography.sidebarCollapsed.lineHeight,
+                },
+              }}
+            >
+              {<route.icon fontSize={isCollapsed ? "small" : "medium"} />}
+            </Badge>
           </ListItemIcon>
         )}
 
-        <ListItemText
-          primary={t(route.label)}
-          slotProps={{
-            primary: {
-              sx: {
-                color: isActive
-                  ? "var(--SidebarItem-active-color)"
-                  : "var(--SidebarItem-color)",
+        {!isCollapsed && (
+          <>
+            <ListItemText
+              primary={t(route.label)}
+              slotProps={{
+                primary: {
+                  sx: {
+                    color: isActive
+                      ? "var(--SidebarItem-active-color)"
+                      : "var(--SidebarItem-color)",
 
-                fontWeight: 500,
-                lineHeight: "28px",
-                fontSize: "0.875em",
-              },
-            },
-          }}
-        />
-        {!!badge && badge > 0 && (
-          <Chip
-            label={badge}
-            size="small"
-            variant="filled"
-            color="secondary" // Use error color for notice
-            sx={{
-              height: 20,
-              minWidth: 20,
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              color: "inherit",
-              mr: 1,
-              border: 0,
-              borderRadius: 1,
-              backgroundColor: isActive
-                ? alpha(theme.palette.primary.main, 0.04)
-                : alpha(theme.palette.secondary.main, 0.04),
-            }}
-          />
+                    fontWeight: 500,
+                    lineHeight: "28px",
+                    fontSize: "0.875em",
+                  },
+                },
+              }}
+            />
+            {!!badge && badge > 0 && (
+              <Chip
+                label={badge}
+                size="small"
+                variant="filled"
+                color="secondary"
+                sx={{
+                  height: 20,
+                  minWidth: 20,
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  color: "inherit",
+                  mr: 1,
+                  border: 0,
+                  borderRadius: 1,
+                  backgroundColor: isActive
+                    ? alpha(theme.palette.primary.main, 0.04)
+                    : alpha(theme.palette.secondary.main, 0.04),
+                }}
+              />
+            )}
+          </>
+        )}
+
+        {isCollapsed && (
+          <Typography
+            variant="sidebarCollapsed"
+            align="center"
+            color={
+              isActive
+                ? "var(--SidebarItem-active-color)"
+                : "var(--SidebarItem-color)"
+            }
+          >
+            {t(route.label)}
+          </Typography>
         )}
       </ListItemButton>
     </ListItem>
   );
+
+  return itemContent;
 }
 
 export default SidebarItem;

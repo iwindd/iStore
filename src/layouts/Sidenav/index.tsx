@@ -28,7 +28,15 @@ function getDefaultExpand(items: SidebarItem[], activeRouteTrail: Route[]) {
   return expandItems;
 }
 
-const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
+interface SidebarItemsProps {
+  items: SidebarItem[];
+  isCollapsed?: boolean;
+}
+
+const SidebarItems = ({
+  items,
+  isCollapsed = false,
+}: Readonly<SidebarItemsProps>) => {
   const activeRouteTrail = useActiveRouteTrail();
   const { hasStorePermission, hasGlobalPermission } = usePermission();
 
@@ -81,6 +89,7 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
         key={`navbar-item-${sidebarItem.name}`}
         {...sidebarItem}
         badge={getBadge(sidebarItem.name)}
+        isCollapsed={isCollapsed}
       />
     );
   };
@@ -94,6 +103,15 @@ const SidebarItems = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
             .filter((item) => item != null);
 
           if (items.length === 0) return null;
+
+          // When collapsed, show all items without group headers
+          if (isCollapsed) {
+            return (
+              <React.Fragment key={`Group-${sidebarItem.key}`}>
+                {items}
+              </React.Fragment>
+            );
+          }
 
           return (
             <React.Fragment key={`Group-${sidebarItem.key}`}>

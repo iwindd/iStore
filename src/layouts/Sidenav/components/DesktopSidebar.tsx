@@ -1,11 +1,30 @@
 "use client";
 import { SidebarItem } from "@/config/Navbar";
-import { alpha, Box, useTheme } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { toggleNavbarVariant } from "@/reducers/uiReducer";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import {
+  alpha,
+  Box,
+  IconButton,
+  Stack,
+  Tooltip,
+  useTheme,
+} from "@mui/material";
+import { useTranslations } from "next-intl";
 import SidebarItems from "..";
 import NavLogo from "./SidebarLogo";
 
 const DesktopSidebar = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const navbarVariant = useAppSelector((state) => state.ui.navbarVariant);
+  const isCollapsed = navbarVariant === "collapse";
+  const t = useTranslations("SIDEBAR");
+
+  const handleToggle = () => {
+    dispatch(toggleNavbarVariant());
+  };
 
   return (
     <Box
@@ -42,20 +61,55 @@ const DesktopSidebar = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
         top: 0,
         width: "var(--SideNav-width)",
         zIndex: "var(--SideNav-zIndex)",
+        transition: "width 0.3s ease",
       }}
     >
-      <NavLogo />
+      <Stack position={"relative"}>
+        {/* Toggle button positioned at center of right border */}
+        <Tooltip
+          title={isCollapsed ? t("expand") : t("collapse")}
+          placement="right"
+        >
+          <IconButton
+            onClick={handleToggle}
+            size="small"
+            sx={{
+              position: "absolute",
+              right: 0,
+              top: "50%",
+              transform: "translate(50%, -50%)",
+              width: 24,
+              height: 24,
+              bgcolor: "var(--mui-palette-background-paper)",
+              border: "1px solid var(--mui-palette-divider)",
+              color: "var(--SidebarItem-icon-color)",
+              "&:hover": {
+                color: theme.palette.primary.main,
+                bgcolor: "var(--mui-palette-background-paper)",
+              },
+            }}
+          >
+            {isCollapsed ? (
+              <ChevronRight sx={{ fontSize: 16 }} />
+            ) : (
+              <ChevronLeft sx={{ fontSize: 16 }} />
+            )}
+          </IconButton>
+        </Tooltip>
+        <NavLogo isCollapsed={isCollapsed} />
+      </Stack>
 
       <Box
         component="nav"
         sx={{
           flex: "1 1 auto",
-          px: "18px",
+          px: isCollapsed ? "8px" : "18px",
           overflowY: "auto",
           "&::-webkit-scrollbar": { display: "none" },
+          transition: "padding 0.3s ease",
         }}
       >
-        <SidebarItems items={items} />
+        <SidebarItems items={items} isCollapsed={isCollapsed} />
       </Box>
     </Box>
   );

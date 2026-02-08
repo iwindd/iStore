@@ -239,6 +239,10 @@
       }
     }
   },
+  "SIDEBAR": {
+    "collapse": "ย่อ",
+    "expand": "ขยาย"
+  },
   "CASHIER": {
     "title": "แคชเชียร์",
     "cart": {

@@ -7,6 +7,7 @@ import {
 import dashboardReducer, { DashboardState } from "@/reducers/dashboardReducer";
 import projectReducer from "@/reducers/projectReducer";
 import settingsReducer, { SettingsState } from "@/reducers/settingsReducer";
+import uiReducer, { UIState } from "@/reducers/uiReducer";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import persistReducer from "redux-persist/es/persistReducer";
 import storage from "redux-persist/lib/storage";
@@ -26,6 +27,11 @@ const settingsPersistConfig = {
   storage,
 };
 
+const uiPersistConfig = {
+  key: "ui",
+  storage,
+};
+
 const persistedCartReducer = persistReducer<CartState>(
   cartPersistConfig,
   cartReducer,
@@ -41,12 +47,14 @@ const persistedSettingsReducer = persistReducer<SettingsState>(
   settingsReducer,
 );
 
+const persistedUIReducer = persistReducer<UIState>(uiPersistConfig, uiReducer);
+
 const rootReducer = combineReducers({
   cart: persistedCartReducer,
   dashboard: persistedDashboardReducer,
   project: projectReducer,
   settings: persistedSettingsReducer,
-  // Add other reducers here
+  ui: persistedUIReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

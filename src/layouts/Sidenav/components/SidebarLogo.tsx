@@ -3,19 +3,23 @@ import { getPath } from "@/router";
 import { Box, Stack, StackProps } from "@mui/material";
 import Link from "next/link";
 
-const SidebarLogo = ({
-  slotProps,
-}: {
+interface SidebarLogoProps {
+  isCollapsed?: boolean;
   slotProps?: {
     stack?: StackProps;
   };
-}) => {
+}
+
+const SidebarLogo = ({ isCollapsed = false, slotProps }: SidebarLogoProps) => {
   return (
     <Stack
       spacing={1}
       sx={{
-        p: 2,
-        pt: 3,
+        p: isCollapsed ? 1 : 2,
+        pt: isCollapsed ? 2 : 3,
+        px: isCollapsed ? "8px" : "18px",
+        transition: "padding 0.3s ease",
+        alignItems: isCollapsed ? "center" : "flex-start",
       }}
       {...slotProps?.stack}
     >
@@ -32,7 +36,7 @@ const SidebarLogo = ({
           height={32}
           slotProps={{
             stack: {
-              justifyContent: "start",
+              justifyContent: isCollapsed ? "center" : "start",
             },
           }}
         />
