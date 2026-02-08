@@ -82,7 +82,7 @@ const DesktopSidebar = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
         transition: "width 0.3s ease",
       }}
     >
-      <Stack position={"relative"}>
+      <Stack position={"relative"} mb={isCollapsed ? 2 : 0}>
         {/* Toggle button positioned at center of right border */}
         <Tooltip
           title={isCollapsed ? t("expand") : t("collapse")}
