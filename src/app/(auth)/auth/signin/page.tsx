@@ -75,7 +75,7 @@ const SignIn = () => {
         display: "flex",
         minHeight: "100vh",
         width: "100%",
-        bgcolor: "grey.50",
+        bgcolor: "background.default",
       }}
     >
       {/* Container Card */}
