@@ -95,7 +95,7 @@ const DesktopSidebar = ({ items }: Readonly<{ items: SidebarItem[] }>) => {
               position: "absolute",
               right: 0,
               top: "50%",
-              transform: "translate(50%, -50%)",
+              translate: "50% -50%",
               width: 24,
               height: 24,
               bgcolor: "var(--mui-palette-background-paper)",
