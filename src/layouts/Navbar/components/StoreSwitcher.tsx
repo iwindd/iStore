@@ -124,6 +124,7 @@ const StoreSwitcher = () => {
               <Typography
                 variant="subtitle2"
                 sx={{ fontWeight: 600, color: "text.primary" }}
+                noWrap
               >
                 {selectedStore?.name}
               </Typography>
