@@ -2,6 +2,7 @@
 import fetchConsignmentDatatable, {
   ConsignmentDatatableInstance,
 } from "@/actions/consignment/fetchConsignmentDatatable";
+import ConsignmentStatusChip from "@/components/Chips/ConsignmentStatusChip";
 import Datatable from "@/components/Datatable";
 import GridLinkAction from "@/components/GridLinkAction";
 import { useRoute } from "@/hooks/use-route";
@@ -9,26 +10,11 @@ import { Colorization } from "@/libs/colorization";
 import * as ff from "@/libs/formatter";
 import { ViewAgendaTwoTone } from "@mui/icons-material";
 import { GridColDef } from "@mui/x-data-grid";
-import { ConsignmentStatus } from "@prisma/client";
 import { useTranslations } from "next-intl";
 
 const ConsignmentDatatable = () => {
   const t = useTranslations("CONSIGNMENTS.datatable");
-  const ts = useTranslations("CONSIGNMENTS.status");
   const route = useRoute();
-
-  const translateStatus = (status: ConsignmentStatus) => {
-    switch (status) {
-      case ConsignmentStatus.PENDING:
-        return ts("pending");
-      case ConsignmentStatus.COMPLETED:
-        return ts("completed");
-      case ConsignmentStatus.CANCELLED:
-        return ts("cancelled");
-      default:
-        return status;
-    }
-  };
 
   const columns = (): GridColDef<ConsignmentDatatableInstance>[] => {
     return [
@@ -64,7 +50,7 @@ const ConsignmentDatatable = () => {
         field: "status",
         headerName: t("headers.status"),
         flex: 2,
-        renderCell: ({ row }) => translateStatus(row.status),
+        renderCell: ({ row }) => <ConsignmentStatusChip status={row.status} />,
       },
       {
         field: "actions",
