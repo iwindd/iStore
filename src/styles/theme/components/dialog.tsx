@@ -2,7 +2,7 @@ import { type Components } from "@mui/material/styles";
 
 import type { Theme } from "../types";
 
-export const MuiPopover = {
+export const MuiDialog = {
   defaultProps: {
     slotProps: {
       paper: {
@@ -15,11 +15,9 @@ export const MuiPopover = {
       backgroundImage: "unset",
     },
     paper: ({ theme }) => ({
-      border: `1px solid ${theme.palette.divider}`,
-      elevation: 3,
-      boxShadow: "var(--custom-popover-shadow)",
-      backgroundImage: "var(--custom-popover-bg) !important",
+      boxShadow: "var(--custom-drawer-shadow)",
+      backgroundImage: "var(--custom-drawer-bg) !important",
       backdropFilter: "blur(24px) saturate(120%)",
     }),
   },
-} satisfies Components<Theme>["MuiPopover"];
+} satisfies Components<Theme>["MuiDialog"];

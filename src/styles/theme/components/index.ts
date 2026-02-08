@@ -6,6 +6,8 @@ import { MuiButton } from "./button";
 import { MuiCard } from "./card";
 import { MuiCardContent } from "./card-content";
 import { MuiCardHeader } from "./card-header";
+import { MuiDialog } from "./dialog";
+import { MuiDrawer } from "./drawer";
 import { MuiGrid } from "./grid";
 import { MuiIconButton } from "./icon-button";
 import { MuiLink } from "./link";
@@ -40,6 +42,8 @@ export const components = {
   MuiTextField,
   MuiTabs,
   MuiSwitch,
+  MuiDrawer,
+  MuiDialog,
   // @ts-ignore
   MuiDataGrid: {
     styleOverrides: {

@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/hooks";
+import { useAppDispatch, useAppSelector } from "@/hooks";
 import { money } from "@/libs/formatter";
 import {
   CartProduct as CartProductType,
@@ -23,6 +23,7 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
   const [expand, setExpand] = useState(false);
   const [note, setNote] = useState(product.note ?? "");
   const dispatch = useAppDispatch();
+  const mode = useAppSelector((state) => state.ui.themeMode);
 
   return (
     <Paper
@@ -30,7 +31,10 @@ const CartPreorder = ({ product }: { product: CartProductType }) => {
       sx={{
         p: 1,
         borderStyle: "dashed",
-        backgroundColor: "var(--mui-palette-primary-50)",
+        backgroundColor:
+          mode === "dark"
+            ? "var(--mui-palette-primary-950)"
+            : "var(--mui-palette-primary-50)",
         borderColor: "var(--mui-palette-primary-400)",
       }}
     >

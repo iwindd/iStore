@@ -4,41 +4,24 @@ import { useAuth } from "@/hooks/use-auth";
 import { usePopover } from "@/hooks/use-popover";
 import MobileSidebar from "@/layouts/Sidenav/components/MobileSidebar";
 import { MenuTwoTone, Settings } from "@mui/icons-material";
-import {
-  alpha,
-  Avatar,
-  Box,
-  IconButton,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Avatar, IconButton, Stack, Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import LayoutSettingsDrawer from "./components/LayoutSettingsDrawer";
 import OverviewUserPopover from "./components/OverviewUserPopover";
+import NavbarContainer from "./NavbarContainer";
 
 const OverviewNavbar = () => {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [openSettings, setOpenSettings] = React.useState<boolean>(false);
   const { user } = useAuth();
-  const theme = useTheme();
   const userPopover = usePopover<HTMLDivElement>();
   const pathname = usePathname();
   React.useEffect(() => setOpenNav(false), [pathname]);
 
   return (
     <React.Fragment>
-      <Box
-        component="header"
-        sx={{
-          backgroundColor: `${alpha(theme.palette.background.paper, 0.8)}`,
-          backdropFilter: "blur(20px)",
-          position: "sticky",
-          top: 0,
-          zIndex: "var(--mui-zIndex-appBar)",
-        }}
-      >
+      <NavbarContainer>
         <Stack
           direction="row"
           spacing={2}
@@ -88,7 +71,7 @@ const OverviewNavbar = () => {
             </Stack>
           </Stack>
         </Stack>
-      </Box>
+      </NavbarContainer>
       <OverviewUserPopover
         anchorEl={userPopover.anchorRef.current}
         onClose={userPopover.handleClose}

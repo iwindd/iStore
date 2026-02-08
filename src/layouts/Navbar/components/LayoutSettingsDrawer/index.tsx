@@ -1,6 +1,8 @@
 "use client";
 
-import { Close, Contrast, DarkMode, Refresh } from "@mui/icons-material";
+import { useAppDispatch, useAppSelector } from "@/hooks";
+import { setThemeMode } from "@/reducers/uiReducer";
+import { Close, Contrast, DarkMode } from "@mui/icons-material";
 import {
   Box,
   Drawer,
@@ -8,8 +10,10 @@ import {
   IconButton,
   Stack,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import SettingCart from "./components/SettingCart";
 
 interface LayoutSettingsDrawerProps {
@@ -19,6 +23,20 @@ interface LayoutSettingsDrawerProps {
 
 const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
   const t = useTranslations("LAYOUT_SETTINGS");
+  const dispatch = useAppDispatch();
+  const themeMode = useAppSelector((state) => state.ui.themeMode);
+  const { setMode } = useColorScheme();
+
+  const isDarkMode = themeMode === "dark";
+
+  // Sync Redux state with MUI color scheme
+  useEffect(() => {
+    setMode(themeMode);
+  }, [themeMode, setMode]);
+
+  const handleModeChange = (checked: boolean) => {
+    dispatch(setThemeMode(checked ? "dark" : "light"));
+  };
 
   return (
     <Drawer
@@ -41,9 +59,6 @@ const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
         >
           <Typography variant="h6">{t("title")}</Typography>
           <Stack direction="row" spacing={0.5}>
-            <IconButton size="small">
-              <Refresh fontSize="small" />
-            </IconButton>
             <IconButton size="small" onClick={onClose}>
               <Close fontSize="small" />
             </IconButton>
@@ -57,6 +72,8 @@ const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
             <SettingCart
               title={t("mode.label")}
               icon={<DarkMode fontSize="medium" />}
+              checked={isDarkMode}
+              onChange={handleModeChange}
             />
           </Grid>
           {/* Contrast Toggle */}
@@ -64,6 +81,9 @@ const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
             <SettingCart
               title={t("contrast.label")}
               icon={<Contrast fontSize="medium" />}
+              checked={false}
+              onChange={() => {}}
+              disabled
             />
           </Grid>
         </Grid>

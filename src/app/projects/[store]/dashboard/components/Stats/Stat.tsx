@@ -1,4 +1,5 @@
-import { Link, Skeleton } from "@mui/material";
+import { useAppSelector } from "@/hooks";
+import { Link, Skeleton, useTheme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -34,6 +35,9 @@ export function TotalStat({
   href,
   loading,
 }: Readonly<TotalStatProps>): React.JSX.Element {
+  const mode = useAppSelector((state) => state.ui.themeMode);
+  const theme = useTheme();
+
   return (
     <Link
       component={(href && RouterLink) || "div"}
@@ -64,7 +68,7 @@ export function TotalStat({
             </Stack>
             <Avatar
               sx={{
-                backgroundColor: `var(--mui-palette-${color}-main)`,
+                backgroundColor: `var(--mui-palette-${color}-${mode})`,
                 height: "56px",
                 width: "56px",
               }}

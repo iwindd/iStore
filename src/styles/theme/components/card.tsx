@@ -13,6 +13,7 @@ export const MuiCard = {
               ? "var(--custom-shadow-1-dark)"
               : "var(--custom-shadow-1-light)",
         },
+        backgroundImage: "none",
       };
     },
   },

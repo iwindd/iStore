@@ -1,24 +1,33 @@
 import { Box, Button, Stack, Switch, Typography } from "@mui/material";
-import { JSX, useState } from "react";
+import { JSX } from "react";
 
 interface SettingCartProps {
   title: string;
   icon: JSX.Element;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
 }
 
-const SettingCart = ({ title, icon }: SettingCartProps) => {
-  const [state, setState] = useState(false);
+const SettingCart = ({
+  title,
+  icon,
+  checked,
+  onChange,
+  disabled = false,
+}: SettingCartProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState(event.target.checked);
+    onChange(event.target.checked);
   };
 
   return (
     <Box>
       <Button
-        onClick={() => setState(!state)}
+        onClick={() => onChange(!checked)}
         variant="text"
         color="secondary"
         disableRipple
+        disabled={disabled}
         sx={{
           width: "100%",
           height: "100%",
@@ -29,7 +38,7 @@ const SettingCart = ({ title, icon }: SettingCartProps) => {
           textAlign: "left",
           borderRadius: 2,
           border: "1px solid var(--mui-palette-divider)",
-          backgroundColor: state ? `var(--mui-palette-action-hover)` : "",
+          backgroundColor: checked ? `var(--mui-palette-action-hover)` : "",
         }}
       >
         <Stack
@@ -40,7 +49,11 @@ const SettingCart = ({ title, icon }: SettingCartProps) => {
           width={"100%"}
         >
           {icon}
-          <Switch checked={state} onChange={handleChange} />
+          <Switch
+            checked={checked}
+            onChange={handleChange}
+            disabled={disabled}
+          />
         </Stack>
         <Stack sx={{ width: "100%" }}>
           <Typography variant="subtitle2" mt={1}>

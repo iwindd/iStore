@@ -10,35 +10,26 @@ import { usePopover } from "@/hooks/use-popover";
 import StoreSidebarItems from "@/config/Navbar/store";
 import { useAuth } from "@/hooks/use-auth";
 import { MenuTwoTone, Settings } from "@mui/icons-material";
-import { alpha, Typography, useTheme } from "@mui/material";
+import { Typography } from "@mui/material";
 import { usePathname } from "next/navigation";
 import MobileSidebar from "../Sidenav/components/MobileSidebar";
 import AppBreadcrumb from "./components/AppBreadcrumb";
 import LayoutSettingsDrawer from "./components/LayoutSettingsDrawer";
 import StoreSelector from "./components/StoreSwitcher";
 import StoreUserPopover from "./components/StoreUserPopover";
+import NavbarContainer from "./NavbarContainer";
 
 const StoreNavbar = () => {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const [openSettings, setOpenSettings] = React.useState<boolean>(false);
   const { user } = useAuth();
-  const theme = useTheme();
   const storeUserPopover = usePopover<HTMLDivElement>();
   const pathname = usePathname();
   React.useEffect(() => setOpenNav(false), [pathname]);
 
   return (
     <React.Fragment>
-      <Box
-        component="header"
-        sx={{
-          backgroundColor: `${alpha(theme.palette.background.paper, 0.8)}`,
-          backdropFilter: "blur(20px)",
-          position: "sticky",
-          top: 0,
-          zIndex: "var(--mui-zIndex-appBar)",
-        }}
-      >
+      <NavbarContainer>
         <Stack
           direction="row"
           spacing={2}
@@ -99,7 +90,7 @@ const StoreNavbar = () => {
             </Stack>
           </Stack>
         </Stack>
-      </Box>
+      </NavbarContainer>
       <StoreUserPopover
         anchorEl={storeUserPopover.anchorRef.current}
         onClose={storeUserPopover.handleClose}

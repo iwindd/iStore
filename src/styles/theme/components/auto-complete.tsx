@@ -17,9 +17,9 @@ export const MuiAutocomplete = {
     paper: ({ theme }) => ({
       border: `1px solid ${theme.palette.divider}`,
       elevation: 3,
-      boxShadow:
-        "0 0 2px 0 rgba(145 158 171 / 24%),-20px 20px 40px -4px rgba(145 158 171 / 24%)",
+      boxShadow: "var(--custom-popover-shadow)",
       backgroundImage: "var(--custom-popover-bg) !important",
+      backdropFilter: "blur(24px) saturate(120%)",
     }),
   },
 } satisfies Components<Theme>["MuiAutocomplete"];

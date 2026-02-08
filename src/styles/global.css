@@ -1,16 +1,60 @@
 :root {
   --custom-popover-bg: linear-gradient(
     45deg,
-    rgba(255, 245, 219, 0.6) 0%,
-    rgba(255, 255, 255, 1) 34%,
-    rgba(255, 255, 255, 1) 67%,
-    rgba(213, 240, 240, 0.6) 99%
+    rgba(var(--mui-palette-error-mainChannel) / 0.15) 0%,
+    rgba(var(--mui-palette-background-paperChannel) / 0.25),
+    rgba(var(--mui-palette-background-paperChannel) / 0.75),
+    rgba(var(--mui-palette-primary-mainChannel) / 0.15) 100%
   );
+
+  --custom-drawer-bg: linear-gradient(
+    45deg,
+    rgba(var(--mui-palette-error-mainChannel) / 0.05) 0%,
+    rgba(var(--mui-palette-background-paperChannel) / 0.15) 15%,
+    rgba(var(--mui-palette-background-paperChannel) / 0.15) 85%,
+    rgba(var(--mui-palette-primary-mainChannel) / 0.05) 100%
+  );
+
+  --custom-popover-bg-base: var(--mui-palette-background-paperChannel);
+
+  --custom-popover-shadow:
+    0 0 2px 0 rgba(0 0 0 / 24%), -20px 20px 40px -4px rgba(0 0 0 / 24%);
+
+  --custom-drawer-shadow:
+    0 0 2px 0 rgba(0 0 0 / 24%), -20px 20px 40px -4px rgba(0 0 0 / 24%);
 
   --custom-shadow-1-dark:
     0 5px 22px 0 rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.12);
   --custom-shadow-1-light:
     0 5px 22px 0 rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+[data-mui-color-scheme="light"] {
+  --custom-popover-bg: linear-gradient(
+    45deg,
+    rgba(var(--mui-palette-error-mainChannel) / 0.2) 0%,
+    rgba(var(--mui-palette-background-defaultChannel) / 0.25),
+    rgba(var(--mui-palette-background-defaultChannel) / 0.75),
+    rgba(var(--mui-palette-primary-mainChannel) / 0.2) 100%
+  );
+
+  --custom-popover-bg: linear-gradient(
+    45deg,
+    rgba(var(--mui-palette-error-mainChannel) / 0.2) 0%,
+    rgba(var(--mui-palette-background-defaultChannel) / 0.25),
+    rgba(var(--mui-palette-background-defaultChannel) / 0.75),
+    rgba(var(--mui-palette-primary-mainChannel) / 0.2) 100%
+  );
+
+  --custom-popover-bg-base: var(--mui-palette-background-defaultChannel);
+
+  --custom-popover-shadow:
+    0 0 2px 0 rgba(145 158 171 / 24%),
+    -20px 20px 40px -4px rgba(145 158 171 / 24%);
+
+  --custom-drawer-shadow:
+    0 0 2px 0 rgba(145 158 171 / 24%),
+    -20px 20px 40px -4px rgba(145 158 171 / 24%);
 }
 
 .MuiPopper-root.MuiDataGrid-panel .MuiDataGrid-paper {
@@ -21,4 +65,10 @@
 .MuiPopper-root.MuiDataGrid-menu .MuiPaper-root {
   background: white;
   background-image: var(--custom-popover-bg) !important;
+}
+
+.MuiPopper-root.MuiDataGrid-panel .MuiDataGrid-paper,
+.MuiPopper-root.MuiDataGrid-menu .MuiPaper-root {
+  background: rgba(var(--custom-popover-bg-base) / 0.5);
+  backdrop-filter: blur(24px) saturate(120%);
 }

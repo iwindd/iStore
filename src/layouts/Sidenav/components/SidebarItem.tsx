@@ -99,11 +99,11 @@ function SidebarItem({
               invisible={!isCollapsed}
               sx={{
                 "& .MuiBadge-badge": {
-                  border: `2px solid ${(theme.vars ?? theme).palette.background.paper}`,
+                  border: `2px solid ${(theme.vars ?? theme).palette.background.default}`,
                   padding: "0 4px",
                   backgroundColor: isActive
                     ? "var(--SidebarItem-active-color)"
-                    : "var(--SidebarItem-color)",
+                    : "var(--SidebarItem-icon-color)",
 
                   fontSize: theme.typography.sidebarCollapsed.fontSize,
                   lineHeight: theme.typography.sidebarCollapsed.lineHeight,
@@ -150,7 +150,7 @@ function SidebarItem({
                   borderRadius: 1,
                   backgroundColor: isActive
                     ? alpha(theme.palette.primary.main, 0.04)
-                    : alpha(theme.palette.secondary.main, 0.04),
+                    : alpha(theme.palette.secondary.light, 0.1),
                 }}
               />
             )}

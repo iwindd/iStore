@@ -12,20 +12,24 @@ import {
 } from "./colors";
 
 export const colorSchemes = {
-  /*   dark: {
+  dark: {
     palette: {
       action: { disabledBackground: "rgba(0, 0, 0, 0.12)" },
       background: {
-        default: "var(--mui-palette-neutral-950)",
-        defaultChannel: "9 10 11",
-        paperChannel: "var(--mui-palette-neutral-900)",
+        default: "#141A21",
+        defaultChannel: "20 26 33",
+        paper: "#1C252E",
+        paperChannel: "28 37 46",
         level1: "var(--mui-palette-neutral-800)",
         level2: "var(--mui-palette-neutral-700)",
         level3: "var(--mui-palette-neutral-600)",
       },
       common: { black: "#000000", white: "#ffffff" },
-      divider: "var(--mui-palette-neutral-700)",
-      dividerChannel: "50 56 62",
+      divider: "rgba(145 158 171 / 20%)",
+      dividerChannel: "145 158 171",
+      TableCell: {
+        border: "rgba(145 158 171 / 20%)",
+      },
       error: {
         ...redOrange,
         light: redOrange[300],
@@ -77,7 +81,7 @@ export const colorSchemes = {
         contrastText: "var(--mui-palette-common-black)",
       },
     },
-  }, */
+  },
   light: {
     palette: {
       action: { disabledBackground: "rgba(0, 0, 0, 0.06)" },
@@ -90,7 +94,11 @@ export const colorSchemes = {
         level3: "var(--mui-palette-neutral-200)",
       },
       common: { black: "#000000", white: "#ffffff" },
-      divider: "var(--mui-palette-neutral-100)",
+      divider: "rgba(145 158 171 / 20%)",
+      dividerChannel: "145 158 171",
+      TableCell: {
+        border: "rgba(145 158 171 / 20%)",
+      },
       error: {
         ...redOrange,
         light: redOrange[400],

@@ -1,5 +1,6 @@
 "use client";
 import { SidebarItem } from "@/config/Navbar";
+import { useAppSelector } from "@/hooks";
 import { alpha, Box, Drawer, Stack, useTheme } from "@mui/material";
 import SidebarItems from "..";
 import NavLogo from "./SidebarLogo";
@@ -12,6 +13,7 @@ export interface MobileSidebarProps {
 
 const MobileSidebar = ({ items, open, onClose }: MobileSidebarProps) => {
   const theme = useTheme();
+  const mode = useAppSelector((state) => state.ui.themeMode);
 
   return (
     <Drawer
@@ -20,8 +22,17 @@ const MobileSidebar = ({ items, open, onClose }: MobileSidebarProps) => {
           sx: {
             "--SideNav-color": "var(--mui-palette-common-white)",
             "--SideNav-background": "var(--mui-palette-background-paper)",
-            "--SidebarItem-color": alpha(theme.palette.secondary.light, 0.9),
-            "--SidebarItem-hover-background": "rgba(0, 0, 0, 0.04)",
+
+            "--SidebarItem-color":
+              mode === "dark"
+                ? `rgba(var(--mui-palette-secondary-lightChannel) / 48%)`
+                : alpha(theme.palette.secondary.light, 0.9),
+
+            "--SidebarItem-hover-background":
+              mode === "dark"
+                ? "rgba(var(--mui-palette-secondary-lightChannel) / 5%)"
+                : "rgba(var(--mui-palette-secondary-darkChannel) / 12%)",
+
             "--SidebarItem-active-background": alpha(
               theme.palette.primary.main,
               0.08,
@@ -30,18 +41,23 @@ const MobileSidebar = ({ items, open, onClose }: MobileSidebarProps) => {
               theme.palette.primary.main,
               0.2,
             ),
-            "--SidebarItem-active-color": theme.palette.primary.dark,
-            "--SidebarItem-icon-color": alpha(
-              theme.palette.secondary.light,
-              0.9,
-            ),
-            "--SidebarItem-icon-active-color": theme.palette.primary.dark,
-            "--SidebarItem-group-label-color": alpha(
-              theme.palette.secondary.light,
-              0.9,
-            ),
-            bgcolor: "var(--SideNav-background)",
-            color: "var(--SideNav-color)",
+            "--SidebarItem-active-color":
+              mode === "dark"
+                ? theme.palette.primary.light
+                : theme.palette.primary.dark,
+
+            "--SidebarItem-icon-color":
+              mode === "dark"
+                ? theme.palette.grey[600]
+                : alpha(theme.palette.secondary.light, 0.9),
+            "--SidebarItem-icon-active-color":
+              mode === "dark"
+                ? theme.palette.primary.light
+                : theme.palette.primary.dark,
+            "--SidebarItem-group-label-color":
+              mode === "dark"
+                ? `rgba(var(--mui-palette-secondary-lightChannel) / 38%)`
+                : `rgba(var(--mui-palette-secondary-darkChannel) / 60%)`,
             display: { xs: "flex", lg: "none" },
             flexDirection: "column",
             maxWidth: "100%",
