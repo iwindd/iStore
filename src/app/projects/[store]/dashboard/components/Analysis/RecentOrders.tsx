@@ -1,7 +1,6 @@
 "use client";
 import { getRecentOrders } from "@/actions/dashboard/getRecentOrders";
 import { useRoute } from "@/hooks/use-route";
-import * as formatter from "@/libs/formatter";
 import { ArrowRightTwoTone } from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -16,12 +15,14 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
 export function RecentOrders() {
   const t = useTranslations("DASHBOARD.recent_orders");
+  const f = useFormatter();
+  const now = useNow();
   const params = useParams<{ store: string }>();
   const route = useRoute();
   const { data: latestOrders, isLoading } = useQuery({
@@ -70,13 +71,13 @@ export function RecentOrders() {
               : latestOrders?.map((order) => {
                   return (
                     <TableRow hover key={order.id} sx={{ height: 55 }}>
-                      <TableCell>#{formatter.number(order.id)}</TableCell>
-                      <TableCell>{formatter.date(order.created_at)}</TableCell>
+                      <TableCell>#{f.number(order.id)}</TableCell>
                       <TableCell>
-                        {formatter.text(order.note || undefined)}
+                        {f.relativeTime(order.created_at, now)}
                       </TableCell>
+                      <TableCell>{order.note || "-"}</TableCell>
                       <TableCell>
-                        {formatter.money(order.total as any)}
+                        {f.number(+order.total, "currency")}
                       </TableCell>
                       <TableCell>
                         <Button

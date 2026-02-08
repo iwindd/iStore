@@ -55,7 +55,7 @@ export const PermissionConfig = {
       /** View auth yearly sales chart */
       viewAuthYearlySalesChart: StorePermissionEnum.CASHIER_CASHOUT,
       /** View recent orders */
-      viewRecentOrders: StorePermissionEnum.HISTORY_READ_ALL,
+      viewRecentOrders: StorePermissionEnum.CASHIER_CASHOUT,
       /** View best selling products */
       viewBestSellingProducts: StorePermissionEnum.HISTORY_READ_ALL,
       /** View order report */
