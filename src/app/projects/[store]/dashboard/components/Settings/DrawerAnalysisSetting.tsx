@@ -121,7 +121,7 @@ const DrawerAnalysisSetting = ({
                         ? item.permission.map((p) => p)
                         : [item.permission]
                     }
-                    some={Array.isArray(item.permission)}
+                    some={true}
                   >
                     <Stack
                       direction="row"
