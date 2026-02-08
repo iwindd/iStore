@@ -10,13 +10,13 @@ declare module "@mui/material/IconButton" {
 export const MuiIconButton = {
   styleOverrides: {
     root: {
-      "& .MuiSvgIcon-root": {
+      "& ": {
         transition: "transform 0.05s ease-in-out",
       },
-      "&:hover .MuiSvgIcon-root": {
+      "&:hover ": {
         transform: "scale(1.05)",
       },
-      "&:active .MuiSvgIcon-root": {
+      "&:active ": {
         transform: "scale(0.9)",
       },
     },
