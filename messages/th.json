@@ -250,6 +250,9 @@
     },
     "contrast": {
       "label": "คอนทราสต์"
+    },
+    "fontSize": {
+      "label": "ขนาดตัวอักษร"
     }
   },
   "CASHIER": {

@@ -10,6 +10,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Stack,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -57,7 +58,6 @@ function SidebarItem({
           gap: 1,
           position: "relative",
           textDecoration: "none",
-          whiteSpace: "nowrap",
           transition: "0.2s background ease",
           minHeight: isCollapsed ? "48px" : "45px",
           margin: "0 0 6px 0",
@@ -80,6 +80,7 @@ function SidebarItem({
           "&:not([data-active='true']):hover": {
             bgcolor: "var(--SidebarItem-hover-background)",
           },
+          whiteSpace: isCollapsed ? "normal" : "nowrap",
           flexDirection: isCollapsed ? "column" : "row",
         }}
       >
@@ -158,17 +159,19 @@ function SidebarItem({
         )}
 
         {isCollapsed && (
-          <Typography
-            variant="sidebarCollapsed"
-            align="center"
-            color={
-              isActive
-                ? "var(--SidebarItem-active-color)"
-                : "var(--SidebarItem-color)"
-            }
-          >
-            {t(route.label)}
-          </Typography>
+          <Stack width={"100%"}>
+            <Typography
+              variant="sidebarCollapsed"
+              align="center"
+              color={
+                isActive
+                  ? "var(--SidebarItem-active-color)"
+                  : "var(--SidebarItem-color)"
+              }
+            >
+              {t(route.label)}
+            </Typography>
+          </Stack>
         )}
       </ListItemButton>
     </ListItem>

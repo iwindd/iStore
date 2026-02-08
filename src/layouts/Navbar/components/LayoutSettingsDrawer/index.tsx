@@ -1,13 +1,15 @@
 "use client";
 
 import { useAppDispatch, useAppSelector } from "@/hooks";
-import { setThemeMode } from "@/reducers/uiReducer";
-import { Close, Contrast, DarkMode } from "@mui/icons-material";
+import { setFontSize, setThemeMode } from "@/reducers/uiReducer";
+import { Close, Contrast, DarkMode, TextFields } from "@mui/icons-material";
 import {
   Box,
+  Chip,
   Drawer,
   Grid,
   IconButton,
+  Slider,
   Stack,
   Typography,
   useColorScheme,
@@ -21,10 +23,25 @@ interface LayoutSettingsDrawerProps {
   onClose: () => void;
 }
 
+// Font size mapping: level 1-10 to actual px values
+const fontSizeMap: Record<number, string> = {
+  1: "0.75",
+  2: "0.8125",
+  3: "0.875",
+  4: "0.9375",
+  5: "1", // default
+  6: "1.0625",
+  7: "1.125",
+  8: "1.1875",
+  9: "1.25",
+  10: "1.3125",
+};
+
 const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
   const t = useTranslations("LAYOUT_SETTINGS");
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector((state) => state.ui.themeMode);
+  const fontSize = useAppSelector((state) => state.ui.fontSize);
   const { setMode } = useColorScheme();
 
   const isDarkMode = themeMode === "dark";
@@ -34,8 +51,20 @@ const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
     setMode(themeMode);
   }, [themeMode, setMode]);
 
+  // Apply font size to document root
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--font-scale",
+      fontSizeMap[fontSize],
+    );
+  }, [fontSize]);
+
   const handleModeChange = (checked: boolean) => {
     dispatch(setThemeMode(checked ? "dark" : "light"));
+  };
+
+  const handleFontSizeChange = (_: Event, value: number | number[]) => {
+    dispatch(setFontSize(value as number));
   };
 
   return (
@@ -87,6 +116,41 @@ const LayoutSettingsDrawer = ({ open, onClose }: LayoutSettingsDrawerProps) => {
             />
           </Grid>
         </Grid>
+
+        {/* Font Size Slider */}
+        <Box sx={{ mt: 4 }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            sx={{ mb: 2 }}
+          >
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <TextFields fontSize="small" color="action" />
+              <Typography variant="subtitle2">{t("fontSize.label")}</Typography>
+            </Stack>
+            <Chip
+              size="small"
+              label={`${fontSizeMap[fontSize]}x`}
+              color="primary"
+            />
+          </Stack>
+          <Slider
+            value={fontSize}
+            onChange={handleFontSizeChange}
+            min={1}
+            max={10}
+            step={1}
+            marks
+            sx={{
+              "& .MuiSlider-mark": {
+                width: 4,
+                height: 4,
+                borderRadius: "50%",
+              },
+            }}
+          />
+        </Box>
       </Box>
     </Drawer>
   );

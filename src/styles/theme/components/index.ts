@@ -21,6 +21,7 @@ import { MuiTableFooter } from "./table-footer";
 import { MuiTableHead } from "./table-head";
 import { MuiTabs } from "./tabs";
 import { MuiTextField } from "./textfield";
+import { MuiTypography } from "./typography";
 
 export const components = {
   MuiAvatar,
@@ -44,6 +45,7 @@ export const components = {
   MuiSwitch,
   MuiDrawer,
   MuiDialog,
+  MuiTypography,
   // @ts-ignore
   MuiDataGrid: {
     styleOverrides: {

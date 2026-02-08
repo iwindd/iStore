@@ -1,4 +1,6 @@
 :root {
+  --font-scale: 1;
+
   --custom-popover-bg: linear-gradient(
     45deg,
     rgba(var(--mui-palette-error-mainChannel) / 0.15) 0%,

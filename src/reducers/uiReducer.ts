@@ -7,11 +7,13 @@ export type ThemeMode = "light" | "dark";
 export interface UIState {
   navbarVariant: NavbarVariant;
   themeMode: ThemeMode;
+  fontSize: number; // 1-10, default 5
 }
 
 const initialState: UIState = {
   navbarVariant: "default",
   themeMode: "light",
+  fontSize: 5,
 };
 
 const uiSlice = createSlice({
@@ -31,6 +33,9 @@ const uiSlice = createSlice({
     toggleThemeMode: (state) => {
       state.themeMode = state.themeMode === "light" ? "dark" : "light";
     },
+    setFontSize: (state, action: PayloadAction<number>) => {
+      state.fontSize = Math.max(1, Math.min(10, action.payload));
+    },
   },
 });
 
@@ -39,5 +44,6 @@ export const {
   toggleNavbarVariant,
   setThemeMode,
   toggleThemeMode,
+  setFontSize,
 } = uiSlice.actions;
 export default uiSlice.reducer;
