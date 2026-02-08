@@ -58,25 +58,41 @@ const Stats = () => {
 
     switch (stat.name as DashboardStatKey) {
       case "orders":
-        return t("items_unit", { count: number(data?.order.sold) });
+        return t("items_unit", { count: number(data?.order.sold, "compact") });
       case "consignments":
-        return t("items_unit", { count: number(data?.consignment) });
+        return t("items_unit", { count: number(data?.consignment, "compact") });
       case "preorders":
-        return t("items_unit", { count: number(data?.preorder.pending) });
+        return t("items_unit", {
+          count: number(data?.preorder.pending, "compact"),
+        });
       case "low_stock":
-        return t("items_unit", { count: number(data?.product.lowStockCount) });
+        return t("items_unit", {
+          count: number(data?.product.lowStockCount, "compact"),
+        });
       case "pending_stock":
-        return t("items_unit", { count: number(data?.pendingStock) });
+        return t("items_unit", {
+          count: number(data?.pendingStock, "compact"),
+        });
       case "total_products":
-        return t("items_unit", { count: number(data?.totalProducts) });
+        return t("items_unit", {
+          count: number(data?.totalProducts, "compact"),
+        });
       case "active_promotions":
-        return t("items_unit", { count: number(data?.activePromotions) });
+        return t("items_unit", {
+          count: number(data?.activePromotions, "compact"),
+        });
       case "auth_sales_today":
-        return t("items_unit", { count: number(data?.authSalesToday) });
+        return t("items_unit", {
+          count: number(data?.authSalesToday, "compact"),
+        });
       case "auth_sales_total":
-        return t("items_unit", { count: number(data?.authSalesTotal) });
+        return t("items_unit", {
+          count: number(data?.authSalesTotal, "compact"),
+        });
       case "store_sales_today":
-        return t("items_unit", { count: number(data?.storeSalesToday) });
+        return t("items_unit", {
+          count: number(data?.storeSalesToday, "compact"),
+        });
       default:
         return "Unknown";
     }

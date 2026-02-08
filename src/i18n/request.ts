@@ -14,6 +14,10 @@ export default getRequestConfig(async () => {
           currency: "THB",
           currencyDisplay: "narrowSymbol",
         },
+        compact: {
+          notation: "compact",
+          compactDisplay: "short",
+        },
         percent: {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,

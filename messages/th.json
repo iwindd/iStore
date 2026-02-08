@@ -399,7 +399,7 @@
       "auth_sales_today": "คุณขายวันนี้",
       "auth_sales_total": "คุณขายทั้งหมด",
       "store_sales_today": "ร้านค้าขายวันนี้",
-      "items_unit": "{count} รายการ"
+      "items_unit": "{count}"
     },
     "yearly_sales": {
       "title": "ยอดขายรายปี",
