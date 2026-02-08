@@ -243,6 +243,15 @@
     "collapse": "ย่อ",
     "expand": "ขยาย"
   },
+  "LAYOUT_SETTINGS": {
+    "title": "การตั้งค่า",
+    "mode": {
+      "label": "โหมด"
+    },
+    "contrast": {
+      "label": "คอนทราสต์"
+    }
+  },
   "CASHIER": {
     "title": "แคชเชียร์",
     "cart": {
