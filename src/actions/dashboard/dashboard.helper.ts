@@ -463,8 +463,11 @@ export async function getTopSellingProductsData(
     },
   });
 
+  // Build a Map for O(1) lookups instead of O(n) Array.find per item
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
   return data.map((item) => {
-    const product = products.find((p) => p.id === item.product_id);
+    const product = productMap.get(item.product_id);
     return {
       id: item.product_id,
       label: product?.label || "Unknown",

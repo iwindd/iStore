@@ -68,8 +68,11 @@ export const validateProducts = async (
     },
   });
 
+  // Build a Map for O(1) lookups instead of O(n) Array.find on every call
+  const productById = new Map(products.map((p) => [p.id, p]));
+
   const findProduct = (id: number) => {
-    const product = products.find((p) => p.id === id);
+    const product = productById.get(id);
     if (!product) throw new Error(`Product with ID ${id} not found.`);
     return product;
   };
@@ -252,33 +255,66 @@ const Cashout = async (storeSlug: string, payload: CashoutValues) => {
       })),
     });
 
-    // Remove Product Stock Of Cart
-    for (const product of products) {
-      const stock = await tx.productStock.upsert({
-        where: { product_id: product.id },
-        create: { product_id: product.id, quantity: 0 },
-        update: {},
+    // Batch-fetch all product stocks needed for both the cart and
+    // the promotion products in a single query, then upsert only the
+    // records that are missing.  This avoids an individual upsert+update
+    // per product (3N queries → N + a small constant number of queries).
+    const allStockProductIds = [
+      ...products.map((p) => p.id),
+      ...obtainPromotionBuyXGetYProducts.map((p) => p.id),
+    ];
+    const uniqueStockProductIds = [...new Set(allStockProductIds)];
+
+    const existingStocks = await tx.productStock.findMany({
+      where: { product_id: { in: uniqueStockProductIds } },
+    });
+    const stockMap = new Map(existingStocks.map((s) => [s.product_id, s]));
+
+    // Create any missing stock records in a single batch
+    const missingProductIds = uniqueStockProductIds.filter(
+      (id) => !stockMap.has(id),
+    );
+    if (missingProductIds.length > 0) {
+      await tx.productStock.createMany({
+        data: missingProductIds.map((product_id) => ({
+          product_id,
+          quantity: 0,
+        })),
       });
+      const newStocks = await tx.productStock.findMany({
+        where: { product_id: { in: missingProductIds } },
+      });
+      newStocks.forEach((s) => stockMap.set(s.product_id, s));
+    }
 
-      const before = stock.quantity;
-      const after = before - product.quantity;
+    // Track in-memory running quantities so movement records for promotion
+    // products correctly reflect quantities already decremented by cart items.
+    const currentQty = new Map<number, number>();
+    for (const [id, s] of stockMap) {
+      currentQty.set(id, s.quantity);
+    }
 
-      await tx.productStockMovement.create({
-        data: {
+    // Remove Product Stock Of Cart
+    await tx.productStockMovement.createMany({
+      data: products.map((product) => {
+        const before = currentQty.get(product.id) ?? 0;
+        const after = before - product.quantity;
+        currentQty.set(product.id, after);
+        return {
           order_id: order.id,
           product_id: product.id,
           type: ProductStockMovementType.SOLD,
           quantity: -product.quantity,
           quantity_before: before,
           quantity_after: after,
-        },
-      });
+        };
+      }),
+    });
 
+    for (const product of products) {
       await tx.productStock.update({
-        where: { id: stock.id },
-        data: {
-          quantity: { decrement: product.quantity },
-        },
+        where: { id: stockMap.get(product.id)!.id },
+        data: { quantity: { decrement: product.quantity } },
       });
     }
 
@@ -297,36 +333,35 @@ const Cashout = async (storeSlug: string, payload: CashoutValues) => {
     });
 
     // Remove Product Stock Of Promotion
+    // Validate promotion product stock levels using in-memory quantities
+    // (which already reflect cart deductions computed above).
     for (const product of obtainPromotionBuyXGetYProducts) {
-      const stock = await tx.productStock.upsert({
-        where: { product_id: product.id },
-        create: { product_id: product.id, quantity: 0 },
-        update: {},
-      });
-
-      if (stock.quantity < product.receivedCount) {
+      const currentStock = currentQty.get(product.id) ?? 0;
+      if (currentStock < product.receivedCount) {
         throw new Error(`Product ${product.id} is out of stock`);
       }
+    }
 
-      const before = stock.quantity;
-      const after = before - product.receivedCount;
-
-      await tx.productStockMovement.create({
-        data: {
+    await tx.productStockMovement.createMany({
+      data: obtainPromotionBuyXGetYProducts.map((product) => {
+        const before = currentQty.get(product.id) ?? 0;
+        const after = before - product.receivedCount;
+        currentQty.set(product.id, after);
+        return {
           order_id: order.id,
           product_id: product.id,
           type: ProductStockMovementType.SOLD_PROMOTION,
           quantity: -product.receivedCount,
           quantity_before: before,
           quantity_after: after,
-        },
-      });
+        };
+      }),
+    });
 
+    for (const product of obtainPromotionBuyXGetYProducts) {
       await tx.productStock.update({
-        where: { id: stock.id },
-        data: {
-          quantity: { decrement: product.receivedCount },
-        },
+        where: { id: stockMap.get(product.id)!.id },
+        data: { quantity: { decrement: product.receivedCount } },
       });
     }
 

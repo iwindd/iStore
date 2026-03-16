@@ -2,6 +2,7 @@ import fetchObtainPromotionOffer from "@/actions/cashier/fetchObtainPromotionOff
 import { getMergedPromotionQuantitiesFromOffers } from "@/libs/promotion";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useMemo } from "react";
 
 export interface UseObtainPromotionOfferProps {
   products: {
@@ -14,8 +15,12 @@ const useObtainPromotionOffer = ({
   products,
 }: UseObtainPromotionOfferProps) => {
   const { store } = useParams<{ store: string }>();
+  // Serialize the products array so the queryKey is stable by value, not by
+  // object reference. Without this, a new array instance on every render would
+  // cause React Query to refetch unnecessarily even when the cart hasn't changed.
+  const productsKey = useMemo(() => JSON.stringify(products), [products]);
   const { data, isLoading } = useQuery({
-    queryKey: ["obtainPromotionOffer", products, store],
+    queryKey: ["obtainPromotionOffer", productsKey, store],
     queryFn: async () => {
       if (products.length === 0) return [];
 

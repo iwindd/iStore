@@ -123,33 +123,59 @@ const confirmConsignment = async (
     });
 
     // Return ProductStock
-    for (const cp of updatedConsignmentProducts) {
-      const quantityLeft = cp.quantityOut - cp.quantitySold;
-      if (quantityLeft <= 0) continue;
+    // Only products that were not fully sold need to have stock returned.
+    const productsToReturn = updatedConsignmentProducts.filter(
+      (cp) => cp.quantityOut - cp.quantitySold > 0,
+    );
 
-      const stock = await tx.productStock.upsert({
-        where: { product_id: cp.product.id },
-        create: { product_id: cp.product.id, quantity: 0 },
-        update: {},
+    if (productsToReturn.length > 0) {
+      // Batch-fetch all stocks for products that need a return, upsert only
+      // the missing ones.  This reduces per-product queries from 3N to
+      // N + a small constant.
+      const returnProductIds = productsToReturn.map((cp) => cp.product.id);
+      const existingStocks = await tx.productStock.findMany({
+        where: { product_id: { in: returnProductIds } },
+      });
+      const stockMap = new Map(existingStocks.map((s) => [s.product_id, s]));
+
+      const missingProductIds = returnProductIds.filter(
+        (id) => !stockMap.has(id),
+      );
+      if (missingProductIds.length > 0) {
+        await tx.productStock.createMany({
+          data: missingProductIds.map((product_id) => ({
+            product_id,
+            quantity: 0,
+          })),
+        });
+        const newStocks = await tx.productStock.findMany({
+          where: { product_id: { in: missingProductIds } },
+        });
+        newStocks.forEach((s) => stockMap.set(s.product_id, s));
+      }
+
+      await tx.productStockMovement.createMany({
+        data: productsToReturn.map((cp) => {
+          const quantityLeft = cp.quantityOut - cp.quantitySold;
+          const stockBefore = stockMap.get(cp.product.id)!.quantity;
+          return {
+            consignment_id: consignment.id,
+            product_id: cp.product.id,
+            type: ProductStockMovementType.CONSIGNMENT_RETURNED,
+            quantity: quantityLeft,
+            quantity_before: stockBefore,
+            quantity_after: stockBefore + quantityLeft,
+          };
+        }),
       });
 
-      await tx.productStockMovement.create({
-        data: {
-          consignment_id: consignment.id,
-          product_id: cp.product.id,
-          type: ProductStockMovementType.CONSIGNMENT_RETURNED,
-          quantity: quantityLeft,
-          quantity_before: cp.product.stock?.quantity || 0,
-          quantity_after: (cp.product.stock?.quantity || 0) + quantityLeft,
-        },
-      });
-
-      await tx.productStock.update({
-        where: { id: stock.id },
-        data: {
-          quantity: { increment: quantityLeft },
-        },
-      });
+      for (const cp of productsToReturn) {
+        const quantityLeft = cp.quantityOut - cp.quantitySold;
+        await tx.productStock.update({
+          where: { id: stockMap.get(cp.product.id)!.id },
+          data: { quantity: { increment: quantityLeft } },
+        });
+      }
     }
   });
 };

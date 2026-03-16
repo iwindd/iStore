@@ -36,36 +36,57 @@ export const Consignment = async (
     });
 
     // Remove Product Stock
-    for (const product of products) {
-      const stock = await tx.productStock.upsert({
-        where: { product_id: product.id },
-        create: { product_id: product.id, quantity: 0 },
-        update: {},
-      });
+    // Batch-fetch all product stocks in a single query and upsert only the
+    // missing ones, then batch-create movements. This reduces per-product
+    // queries from 3N to N + a small constant.
+    const consignmentProductIds = products.map((p) => p.id);
+    const existingStocks = await tx.productStock.findMany({
+      where: { product_id: { in: consignmentProductIds } },
+    });
+    const stockMap = new Map(existingStocks.map((s) => [s.product_id, s]));
 
+    const missingProductIds = consignmentProductIds.filter(
+      (id) => !stockMap.has(id),
+    );
+    if (missingProductIds.length > 0) {
+      await tx.productStock.createMany({
+        data: missingProductIds.map((product_id) => ({
+          product_id,
+          quantity: 0,
+        })),
+      });
+      const newStocks = await tx.productStock.findMany({
+        where: { product_id: { in: missingProductIds } },
+      });
+      newStocks.forEach((s) => stockMap.set(s.product_id, s));
+    }
+
+    // Validate stock levels before making any changes
+    for (const product of products) {
+      const stock = stockMap.get(product.id)!;
       if (stock.quantity < product.quantity) {
         throw new Error(`Product ${product.id} is out of stock`);
       }
+    }
 
-      const before = stock.quantity;
-      const after = before - product.quantity;
-
-      await tx.productStockMovement.create({
-        data: {
+    await tx.productStockMovement.createMany({
+      data: products.map((product) => {
+        const stock = stockMap.get(product.id)!;
+        return {
           consignment_id: consignment.id,
           product_id: product.id,
           type: ProductStockMovementType.CONSIGNMENT_SOLD,
           quantity: -product.quantity,
-          quantity_before: before,
-          quantity_after: after,
-        },
-      });
+          quantity_before: stock.quantity,
+          quantity_after: stock.quantity - product.quantity,
+        };
+      }),
+    });
 
+    for (const product of products) {
       await tx.productStock.update({
-        where: { id: stock.id },
-        data: {
-          quantity: { decrement: product.quantity },
-        },
+        where: { id: stockMap.get(product.id)!.id },
+        data: { quantity: { decrement: product.quantity } },
       });
     }
 
