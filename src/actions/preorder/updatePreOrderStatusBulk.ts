@@ -34,64 +34,66 @@ const updatePreOrderStatusBulk = async (
 
     // If updating to RETURNED, check and deduct stock
     if (status === PreOrderStatus.RETURNED) {
-      for (const preorder of preorders) {
-        // find or create
-        const productStock = await tx.productStock.upsert({
-          where: {
-            product_id: preorder.product_id,
-          },
-          create: {
-            product: {
-              connect: {
-                id: preorder.product_id,
-              },
-            },
-            quantity: 0,
-          },
-          update: {},
-          select: {
-            id: true,
-            quantity: true,
-            product: {
-              select: {
-                label: true,
-              },
-            },
-          },
-        });
+      // Batch-fetch all product stocks in a single query and upsert only
+      // the missing ones. This reduces per-preorder queries from 3N to
+      // N + a small constant.
+      const preorderProductIds = preorders.map((p) => p.product_id);
+      const existingStocks = await tx.productStock.findMany({
+        where: { product_id: { in: preorderProductIds } },
+        select: { id: true, quantity: true, product_id: true, product: { select: { label: true } } },
+      });
+      const stockMap = new Map(existingStocks.map((s) => [s.product_id, s]));
 
+      const missingProductIds = preorderProductIds.filter(
+        (id) => !stockMap.has(id),
+      );
+      if (missingProductIds.length > 0) {
+        await tx.productStock.createMany({
+          data: missingProductIds.map((product_id) => ({
+            product_id,
+            quantity: 0,
+          })),
+        });
+        const newStocks = await tx.productStock.findMany({
+          where: { product_id: { in: missingProductIds } },
+          select: { id: true, quantity: true, product_id: true, product: { select: { label: true } } },
+        });
+        newStocks.forEach((s) => stockMap.set(s.product_id, s));
+      }
+
+      // Validate all stock levels before making any changes
+      for (const preorder of preorders) {
+        const productStock = stockMap.get(preorder.product_id)!;
         if (productStock.quantity < preorder.count) {
           throw new Error(
             `สต๊อกสินค้า ${productStock.product.label} ไม่เพียงพอ (คงเหลือ ${productStock.quantity} แต่ต้องการ ${preorder.count})`,
           );
         }
+      }
 
-        const updatedProductStock = await tx.productStock.update({
-          where: {
-            id: productStock.id,
-            quantity: {
-              gte: preorder.count,
-            },
-          },
-          data: {
-            quantity: {
-              decrement: preorder.count,
-            },
-          },
-          select: {
-            quantity: true,
-          },
-        });
-
-        await tx.productStockMovement.create({
-          data: {
+      // Batch-create all stock movement records
+      await tx.productStockMovement.createMany({
+        data: preorders.map((preorder) => {
+          const productStock = stockMap.get(preorder.product_id)!;
+          return {
             product_id: preorder.product_id,
             quantity: preorder.count,
             quantity_before: productStock.quantity,
-            quantity_after: updatedProductStock.quantity,
+            quantity_after: productStock.quantity - preorder.count,
             type: ProductStockMovementType.PREORDER_SOLD,
             order_id: preorder.order_id,
+          };
+        }),
+      });
+
+      for (const preorder of preorders) {
+        const productStock = stockMap.get(preorder.product_id)!;
+        await tx.productStock.update({
+          where: {
+            id: productStock.id,
+            quantity: { gte: preorder.count },
           },
+          data: { quantity: { decrement: preorder.count } },
         });
       }
     }
